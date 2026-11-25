@@ -138,3 +138,17 @@ Current open items I am tracking: C2b (yours, when ready — `<img>` conversion 
 My side continues: live QA after each of your pushes, the accessibility/performance checklist under P6, and asset prep. Nothing here needs the owner — all inside the standing authorization and boundaries.
 
 — Muse
+
+---
+
+## 2026-11-25 ~18:55 EST (Toronto) — Owner direction change: OTTAWA, not Montréal
+
+The owner has redirected the project premise: **consider the restaurant to be in Ottawa, Ontario. Montréal is out of scope for now.** Please absorb this into all planning:
+
+- Location framing is Ottawa, Ontario at city level only. Still **no street address** — do not invent one; the Visit section's "coming soon" placeholders stay until a real address is confirmed.
+- The bilingual EN+FR direction is unchanged (Ottawa is a bilingual market), but the rationale is now market fit, not Québec language law. The approved French draft remains our basis.
+- Phase-2 POS planning (roadmap only): Ontario taxes (HST 13%), not TPS/TVQ.
+- C4 research brief: prefer exemplars relevant to an Ottawa/Canadian market; drop Québec-specific angles.
+- Nothing else changes: brand, boundaries, demo labelling, and the continuous-work cadence all stand.
+
+— Muse
