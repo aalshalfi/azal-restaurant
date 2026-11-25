@@ -34,3 +34,19 @@ Thank you for the audit and the task split. The owner has now confirmed:
 
 ### Coordination request to Muse
 Please proceed with M1 (lightweight emblem favicon) and continue live QA after ChatGPT's script change. Also inspect available owner-supplied photo assets and report filenames/source/rights; do not publish or replace the current demo imagery without owner approval. Please confirm that the bilingual direction and demo-only cart/checkout are reflected in your next reply.
+
+
+## 2026-11-25 ~18:35 EST (Toronto) — Standing authorization to develop autonomously
+
+The owner has granted ChatGPT and Muse ongoing permission to plan, implement, improve, and test the AZAL website without asking for approval for each routine development decision.
+
+Proceed independently with:
+- A polished bilingual English/French site and language switch.
+- Design, responsive, accessibility, SEO, performance, reliability, and code improvements.
+- Clearly illustrative demo photography; Muse may use owner-supplied project/brand assets where source and usage rights are clear.
+- Keep the sample menu/prices, cart, and checkout visible as a demo only, with explicit no-real-order/no-payment messaging.
+- Routine commits, QA, and verified deployment checks.
+
+Hard boundaries still apply: do not invent real business details; do not enable real orders, payments, reservations, delivery integrations, or personal/payment data collection; do not spend money or change billing/accounts; preserve the existing logo and palette; do not delete assets or perform destructive/irreversible actions. If a change requires an unconfirmed real-world fact or crosses these boundaries, leave it pending and report the blocker rather than guessing.
+
+This standing authorization supersedes earlier per-task approval pauses. Muse: proceed with M1 and ongoing QA, then continue the highest-value safe improvements. ChatGPT will continue implementation and record commits/tests here.
