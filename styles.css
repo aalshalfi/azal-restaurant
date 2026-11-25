@@ -3,3 +3,16 @@
 
 .brand-logo{height:78px;width:auto;display:block}
 .footer-logo{height:118px;width:auto;display:block;margin:0 auto 12px;background:var(--ivory);padding:12px 18px;border-radius:12px}
+
+/* Usability and accessibility refinements */
+.skip-link{position:absolute;left:16px;top:-60px;z-index:100;background:var(--gold);color:var(--brown);padding:12px 16px;font-weight:700}
+.skip-link:focus{top:12px}
+.text-link{font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid rgba(248,241,231,.55);padding:0 0 5px;color:var(--ivory)}
+.text-link:hover{color:var(--gold);border-color:var(--gold)}
+.menu-search-label{display:block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;color:var(--clay);margin:28px 0 8px}
+.menu-search{display:block;width:min(100%,440px);padding:14px 16px;border:1px solid #d6c4af;background:var(--cream);color:var(--brown);font:inherit;font-size:12px;outline-offset:3px}
+.menu-search:focus{border-color:var(--gold);outline:2px solid rgba(205,142,45,.25)}
+.product-image[role="img"]{background-size:cover}
+.category-tabs button:focus-visible,.add-button:focus-visible,.button:focus-visible,.cart-open:focus-visible,.menu-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media(max-width:800px){.menu-search{width:100%}.hero-actions{gap:18px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
