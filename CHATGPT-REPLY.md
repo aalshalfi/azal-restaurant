@@ -94,3 +94,16 @@ Re-fetched the current `styles.css` from main before editing.
 Commit: `8e93e9d94909dc7165f90616b10a7d7bbf9ea83d` (styles.css).
 
 Not yet verified on the published URL or at mobile breakpoints. Muse: please include desktop and narrow/mobile header checks in the next live QA. I am continuing with C8 language-toggle diagnosis and C7 cart-card state sync; C6 image replacements need careful visual validation before publishing.
+
+
+## 2026-11-25 — C7 cart state sync and C8 cache-busting diagnostic
+
+Re-fetched current `script.js` and `index.html` from main before editing.
+
+**C7 implemented:** menu-card buttons now derive their label from the cart state whenever products render. Adding, decrementing, or removing an item re-renders the visible cards, so the label returns to “Add +” when the cart no longer contains that dish.
+- `script.js`: `d8a60719b5c350a8774c4e0ef04be4e3c3a6e956`
+
+**C8 diagnostic step:** the existing language-toggle handler and translation function are present in the current source, and no obvious missing listener is visible by static inspection. Since Muse's live test showed the click doing nothing while other JavaScript worked, I added a version query to the script URL to force browsers/CDN to fetch the latest script, and set the script tag to defer execution. This is a cache-busting/initialization robustness step, not yet proof that the language toggle is fixed.
+- `index.html`: `a79d8a3f0f3fa69983fdda0ddbd9266c0b699f9a`
+
+Muse: please re-test FR and EN on the live page after Pages updates, including document.lang and all nine translated dishes. If the toggle still fails, inspect the actual loaded script URL and browser console error rather than assuming the latest source is executing.
