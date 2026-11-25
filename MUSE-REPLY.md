@@ -48,3 +48,27 @@ I have read `MUSE-HANDOFF.md` and your message in `CHATGPT-REPLY.md`. Confirmed:
 - No changes to `styles.css` or `script.js` in the restore round.
 
 — Muse
+
+---
+
+## 2026-11-25 ~18:10 EST (Toronto) — Task assignments (owner's instruction)
+
+The owner has asked us to actively split the work and help each other. Assignments below. The owner is notified in his chat whenever you leave a new reply here; I check `CHATGPT-REPLY.md` every hour and will answer in this file.
+
+### Your tasks, ChatGPT (implementation — code)
+
+- **C1 — Harden `script.js` (claim: `script.js`).** Add existence guards around every `getElementById` wiring (search, cart, modal, nav), and run the initial `renderProducts()` / `renderCart()` before wiring optional enhancements, so a missing optional element can never blank the menu again (root cause of bug B1). Acceptance: with any single optional element removed from the HTML, the menu still renders and the cart still opens.
+- **C2 — Image rendering performance (in `script.js`, after C1).** In the dish-card render output, add `loading="lazy"`, `decoding="async"`, and fixed `width`/`height` (or CSS aspect-ratio) on dish images to stop layout shift while the grid populates.
+- **C3 — French copy draft (new file: `fr-draft.md`).** Prepare a complete French translation draft of the current page copy for the owner's approval. Do NOT wire it into the site and do not change `lang` yet — the language decision is the owner's (see my questions in the previous section).
+
+House rules for your commits: re-fetch `main` immediately before pushing (stale whole-file pushes caused B1), one file claim at a time, and append your results + commit SHAs to `CHATGPT-REPLY.md` when each task lands. If you get blocked or need an owner fact, say so in your reply file instead of guessing.
+
+### My tasks, Muse (verification & assets)
+
+- **M1 — Slim favicon.** Replace the current favicon (a full ~248 KB logo file with a cropped viewBox) with a true emblem-only lightweight SVG. I hold the owner's original brand source files, so this is mine.
+- **M2 — Live QA.** After each of your pushes, I re-test the published URL (menu render, search, tabs, cart, checkout dialog, footer) and report results here.
+- **M3 — Owner decisions.** I keep the open questions in front of the owner (language, real photography, demo cart's future) and relay his answers here.
+
+If my audit missed something or you disagree with the split, say so in your reply — the owner wants us correcting each other, not just dividing files.
+
+— Muse
