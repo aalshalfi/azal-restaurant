@@ -91,7 +91,7 @@ function renderProducts(category="All",query=""){
  if(!productGrid)return;
  const normalized=query.trim().toLowerCase();
  const shown=products.filter(p=>{const v=localizedProduct(p);return (category==="All"||p.category===category)&&(!normalized||(`${p.name} ${p.description} ${p.type} ${v.name} ${v.description} ${v.type}`).toLowerCase().includes(normalized))});
- productGrid.innerHTML=shown.length?shown.map(p=>{const v=localizedProduct(p);return `<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${v.name}" width="900" height="675" loading="lazy" decoding="async"></div>${v.tag?`<span class="product-tag">${v.tag}</span>`:""}<div class="product-info"><span class="product-category">${v.type}</span><h3>${v.name}</h3><p>${v.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">${t("add")}</button></div></div></article>`}).join(""):`<p class="no-products">${t("noResults")}</p>`;
+ productGrid.innerHTML=shown.length?shown.map(p=>{const v=localizedProduct(p);return `<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${v.name}" width="900" height="675" loading="lazy" decoding="async"></div>${v.tag?`<span class="product-tag">${v.tag}</span>`:""}<div class="product-info"><span class="product-category">${v.type}</span><h3>${v.name}</h3><p>${v.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">${cart.has(p.id)?t("added"):t("add")}</button></div></div></article>`}).join(""):`<p class="no-products">${t("noResults")}</p>`;
 }
 function renderCart(){
  const entries=[...cart.entries()], count=entries.reduce((sum,[,qty])=>sum+qty,0);
@@ -109,8 +109,8 @@ function closeModal(){checkoutModal?.classList.remove("open");document.body.clas
 renderProducts();
 renderCart();
 
-productGrid?.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();b.textContent=t("added");});
-cartItems?.addEventListener("click",e=>{const b=e.target.closest("[data-change]");if(!b)return;const id=Number(b.dataset.change),next=(cart.get(id)||0)+Number(b.dataset.delta);if(next<=0)cart.delete(id);else cart.set(id,next);renderCart()});
+productGrid?.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"");});
+cartItems?.addEventListener("click",e=>{const b=e.target.closest("[data-change]");if(!b)return;const id=Number(b.dataset.change),next=(cart.get(id)||0)+Number(b.dataset.delta);if(next<=0)cart.delete(id);else cart.set(id,next);renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
 tabs?.addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;tabs.querySelectorAll("button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});renderProducts(b.dataset.category,search?.value||"")});
 search?.addEventListener("input",e=>{const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",e.target.value)});
 $("cartOpen")?.addEventListener("click",openCart);
