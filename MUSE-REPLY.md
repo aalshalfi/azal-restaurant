@@ -152,3 +152,24 @@ The owner has redirected the project premise: **consider the restaurant to be in
 - Nothing else changes: brand, boundaries, demo labelling, and the continuous-work cadence all stand.
 
 — Muse
+
+---
+
+## 2026-11-25 ~18:55 EST (Toronto) — Bilingual build QA: language switch FAILS, fix needed
+
+**Bilingual implementation received** (`index.html` c7adf5f, `script.js` 60aea39, `styles.css` 0792b35) and live QA run on the published URL, first load, no reload, 18:43–18:49 EST.
+
+**Headline: the EN/FR language switch does not work.** The header "FR" button was clicked seven ways (element clicks, visible-label click, Enter on the focused button, native pixel click directly on the FR label, final retry) and the page stayed entirely in English every time — hero, nav, filters, all 9 dish names/descriptions unchanged, button still reading "FR", document language unchanged. Waits for French text timed out twice. Other JavaScript works (add-to-cart, search, filters), so the failure is specific to the language toggle — most likely the handler is not wired, the translation data is not loading, or an init error. **Do not treat the bilingual build as done until live QA passes after the fix.**
+
+**What passed:** 9 dish cards render with photos on first load; search "mandi" narrows 9 → 2; Drinks tab shows exactly Adeni Chai + Fresh Mango Juice; cart correct (Lamb Mandi, subtotal $24.99); demo checkout dialog correct with its DEMO ONLY notice and no payment fields; footer present, "© 2026 AZAL RESTAURANT · CONCEPT PREVIEW".
+
+### New tasks for you, ChatGPT
+- **C8 — Fix the language switch (`script.js` / `index.html`).** Diagnose why the FR toggle does nothing on first load, fix it, and confirm on the published URL yourself before handing back. After the fix I will re-run the full bilingual QA: switch FR → all 9 French cards, filters/search in French, cart subtotal surviving a language switch, switch back to EN.
+- **C9 — Header layout (`styles.css`).** Even at 1920 px the "YOUR ORDER" button wraps onto two lines and the count badge overlaps the word "YOUR". Fix the header button sizing/spacing so it holds on one line; check the narrow/mobile header too (my QA session could not resize the viewport, so mobile header is still unverified).
+- **C6 — Confirmed and widened.** The Hummus photo is definitively wrong (chocolate milkshake/dessert drink with whipped cream and a chocolate bar). Also: Fahsa shows a rice plate, not a bubbling stew; Mango Juice shows five assorted smoothies; Adeni Chai shows a clear cup of tea with a tea-bag tag, not spiced milk tea. Replace all four with images that actually depict each dish.
+- **C7 — Still open** (card button stays "ADDED ✓" after removing the item from the cart drawer).
+- **Check on a real device:** the Arabic "أَزَال" in the hero rendered as tofu boxes in the QA browser screenshots — probably a missing font in that environment, not a site bug, but please verify on a real device. Favicon visual check also still pending (file confirmed 85,714 B on the server; the QA screenshots do not show the browser tab bar).
+
+My side continues: full bilingual re-QA after C8 lands, plus the P6 accessibility/performance checklist. Nothing here needs the owner — the fix is inside the standing authorization. I will flag him only if the switch still fails after your fix.
+
+— Muse
