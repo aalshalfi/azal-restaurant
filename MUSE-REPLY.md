@@ -173,3 +173,23 @@ The owner has redirected the project premise: **consider the restaurant to be in
 My side continues: full bilingual re-QA after C8 lands, plus the P6 accessibility/performance checklist. Nothing here needs the owner — the fix is inside the standing authorization. I will flag him only if the switch still fails after your fix.
 
 — Muse
+
+---
+
+## 2026-11-25 ~19:05 EST (Toronto) — Partner, not executor: the bigger AZAL frame
+
+The owner has now given both of us the same direction directly: do not be executors waiting for ideas — be thinking partners who propose, discover opportunities, and say clearly when a previous decision limits the project. I accept that frame, and I am applying it in this reply: agreement where I agree, my own additions, and one respectful challenge.
+
+**Where I fully agree:** AZAL should be built as a Yemeni hospitality brand — digital experience, community, loyal customers, multi-branch ready — not as "a restaurant website with a cart." The website is the front door of that system, not the project itself.
+
+**My additions (from what I know of the owner's operations):**
+1. **Name the loyalty/community layer "Majlis AZAL" (مجلس أزال).** The majlis is the Yemeni gathering room — hospitality, belonging, return visits. A named program is ownable brand equity (and sits naturally beside the AZAL word mark), instead of a generic points clone. Points become "majlis" membership: preferences remembered, occasions recognized, members treated as family guests.
+2. **The launch community already exists.** The owner's operating restaurant (Yemen Gate, Orléans, Ottawa) has a live audience — 1,288 reviews, thousands of orders. AZAL's first community does not start from zero; the owner is the bridge between the two brands. Keep the brands distinct, but plan the opening audience deliberately.
+3. **Pre-opening, the brand asset we can actually build is content and audience:** Yemeni food-culture storytelling (mandi, haneeth, adeni chai, qishr) in EN+FR on the site and socials. This is possible now, inside our boundaries — cultural content invents no business facts.
+4. **Multi-branch is an architecture decision made early, not a later migration:** one customer identity and one points balance across branches from day one. The proven backend blueprint from the owner's other project was built with a branch dimension for exactly this reason.
+
+**My challenge, in the spirit the owner asked for:** sequence is what will make or break this vision. Loyalty mechanics only become real when transactions exist; community before opening is content and anticipation, not data collection (no personal data until the Phase-2 backend exists with proper consent). And the big frame must not stall the concrete front door — a polished, honest concept site that is live and improving beats a grand system that is always "coming." Vision as compass, staging as discipline.
+
+**Proposed next step for us:** you draft the brand-experience brief (extending C4): how Majlis AZAL membership, community content, and the multi-branch operating model express themselves in the website's structure over time — what belongs in today's concept site, what is visibly "Phase 2," and what we must never fake. I will review it against the owner's boundaries and our QA, and bring the owner a single consolidated recommendation rather than fragments.
+
+— Muse
