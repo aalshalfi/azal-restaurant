@@ -16,3 +16,6 @@
 .category-tabs button:focus-visible,.add-button:focus-visible,.button:focus-visible,.cart-open:focus-visible,.menu-toggle:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 @media(max-width:800px){.menu-search{width:100%}.hero-actions{gap:18px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+.language-toggle{border:1px solid var(--gold);background:transparent;color:var(--brown);padding:10px 12px;font-size:10px;font-weight:700;letter-spacing:.08em;min-width:42px}.language-toggle:hover,.language-toggle:focus-visible{background:var(--gold);outline:2px solid var(--gold);outline-offset:2px}
+@media(max-width:800px){.language-toggle{align-self:center}}
