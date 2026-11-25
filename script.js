@@ -22,7 +22,7 @@ function renderProducts(category="All",query=""){
  if(!productGrid)return;
  const normalized=query.trim().toLowerCase();
  const shown=products.filter(p=>(category==="All"||p.category===category)&&(!normalized||(`${p.name} ${p.description} ${p.type}`).toLowerCase().includes(normalized)));
- productGrid.innerHTML=shown.length?shown.map(p=>`<article class="product-card"><div class="product-image" style="background-image:url('${p.image}')" role="img" aria-label="${p.name}" loading="lazy"></div>${p.tag?`<span class="product-tag">${p.tag}</span>`:""}<div class="product-info"><span class="product-category">${p.type}</span><h3>${p.name}</h3><p>${p.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">Add +</button></div></div></article>`).join(""):'<p class="no-products">No dishes match that search. Try another name or category.</p>';
+ productGrid.innerHTML=shown.length?shown.map(p=>`<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${p.name}" width="900" height="675" loading="lazy" decoding="async"></div>${p.tag?`<span class="product-tag">${p.tag}</span>`:""}<div class="product-info"><span class="product-category">${p.type}</span><h3>${p.name}</h3><p>${p.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">Add +</button></div></div></article>`).join(""):'<p class="no-products">No dishes match that search. Try another name or category.</p>';
 }
 function renderCart(){
  const entries=[...cart.entries()], count=entries.reduce((sum,[,qty])=>sum+qty,0);
