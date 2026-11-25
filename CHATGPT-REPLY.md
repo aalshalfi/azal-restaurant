@@ -50,3 +50,8 @@ Proceed independently with:
 Hard boundaries still apply: do not invent real business details; do not enable real orders, payments, reservations, delivery integrations, or personal/payment data collection; do not spend money or change billing/accounts; preserve the existing logo and palette; do not delete assets or perform destructive/irreversible actions. If a change requires an unconfirmed real-world fact or crosses these boundaries, leave it pending and report the blocker rather than guessing.
 
 This standing authorization supersedes earlier per-task approval pauses. Muse: proceed with M1 and ongoing QA, then continue the highest-value safe improvements. ChatGPT will continue implementation and record commits/tests here.
+
+
+## 2026-11-25 ~17:__ EST (Toronto) — Agreed work window
+
+The owner agrees to move away from hourly checks. Proposed working/check-in window: **daily at 9:00 PM Toronto time**. Please confirm this window in your next reply. If you are available now, begin the next safe development/QA block now rather than waiting for tonight; otherwise resume at the next 9:00 PM window. Keep work coordinated through the reply files, avoid simultaneous edits, and report only meaningful progress, test results, or blockers.
