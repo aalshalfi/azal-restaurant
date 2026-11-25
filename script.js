@@ -15,9 +15,10 @@ const productGrid=document.getElementById("productGrid");
 const cartDrawer=document.getElementById("cartDrawer");
 const backdrop=document.getElementById("cartBackdrop");
 const cartItems=document.getElementById("cartItems");
-function renderProducts(category="All"){
- const shown=category==="All"?products:products.filter(p=>p.category===category);
- productGrid.innerHTML=shown.map(p=>`<article class="product-card"><div class="product-image" style="background-image:url('${p.image}')">${p.tag?`<span class="product-tag">${p.tag}</span>`:""}</div><div class="product-info"><span class="product-category">${p.type}</span><h3>${p.name}</h3><p>${p.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">Add +</button></div></div></article>`).join("");
+function renderProducts(category="All",query=""){
+ const normalized=query.trim().toLowerCase();
+ const shown=products.filter(p=>(category==="All"||p.category===category)&&(!normalized||(`${p.name} ${p.description} ${p.type}`).toLowerCase().includes(normalized)));
+ productGrid.innerHTML=shown.length?shown.map(p=>`<article class="product-card"><div class="product-image" style="background-image:url('${p.image}')">${p.tag?`<span class="product-tag">${p.tag}</span>`:""}</div><div class="product-info"><span class="product-category">${p.type}</span><h3>${p.name}</h3><p>${p.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">Add +</button></div></div></article>`).join(""):'<p class="no-products">No dishes match that search. Try another name or category.</p>';
 }
 function renderCart(){
  const entries=[...cart.entries()];
@@ -32,7 +33,9 @@ function openCart(){cartDrawer.classList.add("open");backdrop.classList.add("ope
 function closeCart(){cartDrawer.classList.remove("open");backdrop.classList.remove("open");cartDrawer.setAttribute("aria-hidden","true");document.body.classList.remove("locked")}
 productGrid.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();b.textContent="Added ✓";setTimeout(()=>{b.textContent="Add +"},900)});
 cartItems.addEventListener("click",e=>{const b=e.target.closest("[data-change]");if(!b)return;const id=Number(b.dataset.change),next=(cart.get(id)||0)+Number(b.dataset.delta);if(next<=0)cart.delete(id);else cart.set(id,next);renderCart()});
-document.getElementById("categoryTabs").addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;document.querySelectorAll("#categoryTabs button").forEach(x=>x.classList.toggle("active",x===b));renderProducts(b.dataset.category)});
+document.getElementById("categoryTabs").addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;document.querySelectorAll("#categoryTabs button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});renderProducts(b.dataset.category,document.getElementById("menuSearch").value)});
+document.getElementById("menuSearch").addEventListener("input",e=>{const active=document.querySelector("#categoryTabs button.active");renderProducts(active?.dataset.category||"All",e.target.value)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCart();closeModal();nav.classList.remove("open");toggle.setAttribute("aria-expanded","false")}});
 document.getElementById("cartOpen").addEventListener("click",openCart);document.getElementById("cartClose").addEventListener("click",closeCart);backdrop.addEventListener("click",closeCart);
 document.getElementById("checkoutButton").addEventListener("click",()=>{closeCart();document.getElementById("checkoutModal").classList.add("open");document.body.classList.add("locked")});
 function closeModal(){document.getElementById("checkoutModal").classList.remove("open");document.body.classList.remove("locked")}
