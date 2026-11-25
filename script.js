@@ -1,3 +1,72 @@
+const translations = {
+ en: {
+  navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",
+  heroEyebrow:"YEMENI HOSPITALITY · ROOTED IN HERITAGE",heroTitle:"A Taste of Yemen,",heroTitleEm:"Like No Other.",
+  heroText:"Slow-cooked tradition, generous tables and the warmth of Yemeni hospitality.",heroMenu:"Explore the menu",heroStory:"Discover our story",sampleNote:"CONCEPT PREVIEW · SAMPLE DISHES AND PRICES",
+  storyKicker:"THE AZAL EXPERIENCE",storyTitle:"Gather around",storyTitleEm:"something special.",
+  storyText:"Inspired by Yemen’s rich culinary traditions, AZAL celebrates food made for sharing — fragrant rice, tender meats, warm spices and heartfelt hospitality.",
+  menuKicker:"FROM OUR KITCHEN",menuTitle:"Explore our",menuTitleEm:"menu.",menuIntro:"A first taste of what AZAL could serve. Browse the sample dishes below; all items and prices are illustrative and not available to order.",
+  demoLabel:"CONCEPT MENU · SAMPLE PRICES",searchLabel:"Find a dish",searchPlaceholder:"Search dishes or ingredients…",
+  catAll:"All dishes",catRice:"Rice & meat",catTraditional:"Traditional",catSides:"Sides",catDrinks:"Drinks",
+  visitKicker:"COME TOGETHER",visitTitle:"We look forward",visitTitle2:"to welcoming",you:"you.",
+  visitText:"AZAL is a restaurant concept in development. Location, contact details and opening hours will be shared once confirmed.",
+  visitCard:"VISIT AZAL",visitCardTitle:"One location.",visitCardTitle2:"One warm welcome.",locationLabel:"Location",toAnnounce:"To be announced",
+  addressLabel:"Address",comingSoon:"Coming soon",hoursLabel:"Hours",footerTagline:"A Taste of Yemen, Like No Other.",footerLegal:"AZAL RESTAURANT · CONCEPT PREVIEW",
+  cartKicker:"YOUR SELECTION",cartTitle:"Your order",subtotal:"Subtotal",cartDisclaimer:"Demo checkout only. No payment or restaurant order will be submitted.",
+  checkoutButton:"Continue to demo checkout",demoOnly:"DEMO ONLY",checkoutTitle:"Almost there.",
+  checkoutText:"This is a website preview. Your order will not be sent to AZAL and no payment will be taken.",
+  nameLabel:"Your name",namePlaceholder:"Name",orderType:"Order type",pickup:"Pickup (demo)",delivery:"Delivery (demo)",placeDemo:"Preview demo order",
+  add:"Add +",added:"Added ✓",noResults:"No dishes match that search. Try another name or category.",
+  emptyCart:"Your basket is waiting for something delicious.",each:"each",removeOne:"Remove one",addOne:"Add one",
+  nameRequired:"Please enter your name to preview the demo.",thankYou:"Thank you",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
+ },
+ fr: {
+  navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",
+  heroEyebrow:"HOSPITALITÉ YÉMÉNITE · UN HÉRITAGE VIVANT",heroTitle:"Le goût du Yémen,",heroTitleEm:"comme nulle part ailleurs.",
+  heroText:"Des recettes mijotées avec patience, des tables généreuses et toute la chaleur de l’hospitalité yéménite.",heroMenu:"Découvrir le menu",heroStory:"Notre histoire",sampleNote:"APERÇU DU CONCEPT · PLATS ET PRIX À TITRE INDICATIF",
+  storyKicker:"L’EXPÉRIENCE AZAL",storyTitle:"Réunissons-nous",storyTitleEm:"autour de quelque chose d’exceptionnel.",
+  storyText:"Inspiré par la richesse des traditions culinaires du Yémen, AZAL célèbre les repas à partager : riz parfumé, viandes tendres, épices chaleureuses et hospitalité sincère.",
+  menuKicker:"DE NOTRE CUISINE",menuTitle:"Découvrez notre",menuTitleEm:"menu.",menuIntro:"Un premier aperçu de ce qu’AZAL pourrait proposer. Parcourez les plats présentés ci-dessous; tous les articles et les prix sont illustratifs et ne sont pas disponibles à la commande.",
+  demoLabel:"MENU CONCEPT · PRIX INDICATIFS",searchLabel:"Rechercher un plat",searchPlaceholder:"Rechercher des plats ou des ingrédients…",
+  catAll:"Tous les plats",catRice:"Riz et viandes",catTraditional:"Plats traditionnels",catSides:"Accompagnements",catDrinks:"Boissons",
+  visitKicker:"RÉUNISSONS-NOUS",visitTitle:"Nous avons hâte",visitTitle2:"de vous accueillir",you:".",
+  visitText:"AZAL est un concept de restaurant en développement. L’emplacement, les coordonnées et les heures d’ouverture seront communiqués lorsqu’ils seront confirmés.",
+  visitCard:"VISITER AZAL",visitCardTitle:"Un seul lieu.",visitCardTitle2:"Un accueil chaleureux.",locationLabel:"Emplacement",toAnnounce:"À annoncer",
+  addressLabel:"Adresse",comingSoon:"À venir",hoursLabel:"Heures d’ouverture",footerTagline:"Le goût du Yémen, comme nulle part ailleurs.",footerLegal:"RESTAURANT AZAL · APERÇU DU CONCEPT",
+  cartKicker:"VOTRE SÉLECTION",cartTitle:"Votre commande",subtotal:"Sous-total",cartDisclaimer:"Paiement de démonstration uniquement. Aucune commande ne sera transmise au restaurant et aucun paiement ne sera effectué.",
+  checkoutButton:"Continuer vers le paiement démo",demoOnly:"DÉMONSTRATION UNIQUEMENT",checkoutTitle:"Presque terminé.",
+  checkoutText:"Ceci est un aperçu du site. Votre commande ne sera pas transmise à AZAL et aucun paiement ne sera prélevé.",
+  nameLabel:"Votre nom",namePlaceholder:"Nom",orderType:"Type de commande",pickup:"À emporter (démo)",delivery:"Livraison (démo)",placeDemo:"Prévisualiser la commande démo",
+  add:"Ajouter +",added:"Ajouté ✓",noResults:"Aucun plat ne correspond à votre recherche. Essayez un autre nom ou une autre catégorie.",
+  emptyCart:"Votre panier attend quelque chose de délicieux.",each:"l’unité",removeOne:"En retirer un",addOne:"En ajouter un",
+  nameRequired:"Veuillez saisir votre nom pour prévisualiser la démo.",thankYou:"Merci",demoContains:"Votre commande démo contient",items:"article(s)",notSent:"Cette commande n’a pas été transmise au restaurant."
+ }
+};
+const productTranslations = {
+ 1:{name:"Mandi d’agneau",description:"Riz yéménite parfumé accompagné d’agneau tendre, mijoté lentement.",type:"Riz et viandes",tag:"Spécialité"},
+ 2:{name:"Mandi au poulet",description:"Riz mandi aromatique servi avec du poulet rôti et assaisonné.",type:"Riz et viandes",tag:"Populaire"},
+ 3:{name:"Haneeth d’agneau",description:"Agneau traditionnel rôti lentement, tendre et riche en épices.",type:"Riz et viandes",tag:"Traditionnel"},
+ 4:{name:"Fahsa yéménite",description:"Un ragoût traditionnel riche, servi bien chaud avec du pain.",type:"Plats traditionnels"},
+ 5:{name:"Saltah yéménite",description:"Un plat yéménite réconfortant dans un bouillon savoureux et épicé.",type:"Plats traditionnels"},
+ 6:{name:"Sahawiq et pain frais",description:"Pain fraîchement cuit accompagné d’une sauce pimentée yéménite.",type:"Accompagnements"},
+ 7:{name:"Houmous",description:"Purée de pois chiches onctueuse, relevée d’huile d’olive.",type:"Accompagnements"},
+ 8:{name:"Thé adéni",description:"Thé au lait épicé à la yéménite, parfumé et réconfortant.",type:"Boissons"},
+ 9:{name:"Jus de mangue frais",description:"Une boisson rafraîchissante à la mangue douce.",type:"Boissons"}
+};
+let language="en";
+const t=key=>translations[language][key]||translations.en[key]||key;
+const localizedProduct=p=>language==="fr"?{...p,...productTranslations[p.id]}:p;
+function applyLanguage(){
+ document.documentElement.lang=language;
+ document.document.documentElement.dir="ltr";
+ document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});
+ document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
+ const switcher=$("languageToggle");
+ if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
+ const active=tabs?.querySelector("button.active");
+ renderProducts(active?.dataset.category||"All",search?.value||"");
+ renderCart();
+}
 const products = [
 {id:1,name:"Lamb Mandi",category:"Rice",type:"Rice & meat",price:24.99,description:"Fragrant Yemeni rice with slow-cooked tender lamb.",image:"https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80",tag:"Signature"},
 {id:2,name:"Chicken Mandi",category:"Rice",type:"Rice & meat",price:18.99,description:"Aromatic mandi rice served with seasoned roasted chicken.",image:"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=900&q=80",tag:"Popular"},
@@ -11,7 +80,7 @@ const products = [
 ];
 const cart = new Map();
 const $ = id => document.getElementById(id);
-const money = n => new Intl.NumberFormat("en-CA",{style:"currency",currency:"CAD"}).format(n);
+const money = n => new Intl.NumberFormat(language==="fr"?"fr-CA":"en-CA",{style:"currency",currency:"CAD"}).format(n);
 const productGrid=$("productGrid"), cartDrawer=$("cartDrawer"), backdrop=$("cartBackdrop"), cartItems=$("cartItems");
 const cartCount=$("cartCount"), cartTotal=$("cartTotal"), checkoutButton=$("checkoutButton");
 const checkoutModal=$("checkoutModal"), customerName=$("customerName"), checkoutMessage=$("checkoutMessage");
@@ -21,8 +90,8 @@ const search=$("menuSearch"), tabs=$("categoryTabs");
 function renderProducts(category="All",query=""){
  if(!productGrid)return;
  const normalized=query.trim().toLowerCase();
- const shown=products.filter(p=>(category==="All"||p.category===category)&&(!normalized||(`${p.name} ${p.description} ${p.type}`).toLowerCase().includes(normalized)));
- productGrid.innerHTML=shown.length?shown.map(p=>`<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${p.name}" width="900" height="675" loading="lazy" decoding="async"></div>${p.tag?`<span class="product-tag">${p.tag}</span>`:""}<div class="product-info"><span class="product-category">${p.type}</span><h3>${p.name}</h3><p>${p.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">Add +</button></div></div></article>`).join(""):'<p class="no-products">No dishes match that search. Try another name or category.</p>';
+ const shown=products.filter(p=>{const v=localizedProduct(p);return (category==="All"||p.category===category)&&(!normalized||(`${p.name} ${p.description} ${p.type} ${v.name} ${v.description} ${v.type}`).toLowerCase().includes(normalized))});
+ productGrid.innerHTML=shown.length?shown.map(p=>{const v=localizedProduct(p);return `<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${v.name}" width="900" height="675" loading="lazy" decoding="async"></div>${v.tag?`<span class="product-tag">${v.tag}</span>`:""}<div class="product-info"><span class="product-category">${v.type}</span><h3>${v.name}</h3><p>${v.description}</p><div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">${t("add")}</button></div></div></article>`}).join(""):`<p class="no-products">${t("noResults")}</p>`;
 }
 function renderCart(){
  const entries=[...cart.entries()], count=entries.reduce((sum,[,qty])=>sum+qty,0);
@@ -30,7 +99,7 @@ function renderCart(){
  if(cartCount)cartCount.textContent=count;
  if(cartTotal)cartTotal.textContent=money(total);
  if(checkoutButton)checkoutButton.disabled=count===0;
- if(cartItems)cartItems.innerHTML=entries.length?entries.map(([id,qty])=>{const p=products.find(x=>x.id===id);return `<div class="cart-row"><div><strong>${p.name}</strong><small>${money(p.price)} each · ${money(p.price*qty)}</small></div><div class="quantity-controls"><button data-change="${id}" data-delta="-1" aria-label="Remove one">−</button><span>${qty}</span><button data-change="${id}" data-delta="1" aria-label="Add one">+</button></div></div>`}).join(""):'<p class="empty-cart">Your basket is waiting for something delicious.</p>';
+ if(cartItems)cartItems.innerHTML=entries.length?entries.map(([id,qty])=>{const p=products.find(x=>x.id===id);const v=localizedProduct(p);return `<div class="cart-row"><div><strong>${v.name}</strong><small>${money(p.price)} ${t("each")} · ${money(p.price*qty)}</small></div><div class="quantity-controls"><button data-change="${id}" data-delta="-1" aria-label="${t("removeOne")}">−</button><span>${qty}</span><button data-change="${id}" data-delta="1" aria-label="${t("addOne")}">+</button></div></div>`}).join(""):`<p class="empty-cart">${t("emptyCart")}</p>`;
 }
 function openCart(){if(!cartDrawer||!backdrop)return;cartDrawer.classList.add("open");backdrop.classList.add("open");cartDrawer.setAttribute("aria-hidden","false");document.body.classList.add("locked")}
 function closeCart(){cartDrawer?.classList.remove("open");backdrop?.classList.remove("open");cartDrawer?.setAttribute("aria-hidden","true");document.body.classList.remove("locked")}
@@ -40,7 +109,7 @@ function closeModal(){checkoutModal?.classList.remove("open");document.body.clas
 renderProducts();
 renderCart();
 
-productGrid?.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();b.textContent="Added ✓";});
+productGrid?.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();b.textContent=t("added");});
 cartItems?.addEventListener("click",e=>{const b=e.target.closest("[data-change]");if(!b)return;const id=Number(b.dataset.change),next=(cart.get(id)||0)+Number(b.dataset.delta);if(next<=0)cart.delete(id);else cart.set(id,next);renderCart()});
 tabs?.addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;tabs.querySelectorAll("button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});renderProducts(b.dataset.category,search?.value||"")});
 search?.addEventListener("input",e=>{const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",e.target.value)});
@@ -49,9 +118,12 @@ $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
 checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
 $("modalClose")?.addEventListener("click",closeModal);
-$("placeDemoOrder")?.addEventListener("click",()=>{const name=customerName?.value.trim();if(!name){if(checkoutMessage)checkoutMessage.textContent="Please enter your name to preview the demo.";return}const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`Thank you, ${name}. Your demo order contains ${count} item(s). This has not been sent to the restaurant.`;cart.clear();renderCart()});
+$("placeDemoOrder")?.addEventListener("click",()=>{const name=customerName?.value.trim();if(!name){if(checkoutMessage)checkoutMessage.textContent=t("nameRequired");return}const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}, ${name}. ${t("demoContains")} ${count} ${t("items")}. ${t("notSent")}`;cart.clear();renderCart()});
 checkoutModal?.addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeModal()});
 toggle?.addEventListener("click",()=>{const open=nav?.classList.toggle("open")||false;toggle.setAttribute("aria-expanded",String(open))});
 nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCart();closeModal();nav?.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}});
 if($("year"))$("year").textContent=new Date().getFullYear();
+
+$("languageToggle")?.addEventListener("click",()=>{language=language==="en"?"fr":"en";applyLanguage()});
+applyLanguage();
