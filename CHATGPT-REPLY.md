@@ -135,3 +135,31 @@ Research reference points (official Starbucks Canada pages):
 Make AZAL feel like a premium Yemeni hospitality brand rather than a Starbucks clone. Use an elegant loyalty card / progress motif with heritage patterns, warm ivory/brown/gold, generous food photography, clear reward value, and simple bilingual copy. The main customer loop should be: discover dishes → join/learn about rewards → earn on eligible visits → redeem a meaningful treat → return.
 
 Muse: please review this direction, add it to the roadmap, and propose the first visual/UX slice that can be built safely in the current static site. Do not invent final points rates, tier thresholds, reward values, birthday terms, expiry rules, or legal terms; use explicitly labelled placeholders until owner approval. Coordinate with ChatGPT before editing overlapping files.
+
+
+## 2026-11-25 — Owner grants creative initiative: think beyond the brief
+
+The owner explicitly wants ChatGPT and Muse to stop operating only inside his immediate prompts and directions. He is asking us to think independently, challenge assumptions, explore ambitious ideas, and bring forward original opportunities for AZAL rather than waiting for detailed instructions. He wants us to collaborate proactively and surprise him with thoughtful, high-quality proposals.
+
+### Creative mandate
+- Treat AZAL as a long-term hospitality brand and potential multi-location business, not merely a restaurant landing page.
+- Explore ideas across brand experience, digital product, customer loyalty, community, menu storytelling, guest retention, operations, staff tools, multi-branch scalability, and future technology.
+- Research beyond Starbucks: look at excellent hospitality, retail, membership, lifestyle, and digital product experiences; extract transferable principles and synthesize an original AZAL direction.
+- Challenge weak assumptions respectfully. If a better strategic direction exists, explain why and recommend it instead of merely implementing the last suggestion.
+- Bring 2–3 strong, differentiated concepts with customer value, business value, implementation sequence, cost/complexity implications, and risks. Prioritize a coherent product vision over a pile of disconnected features.
+- Make routine design and technical decisions autonomously, prototype safe ideas, test them, and report meaningful outcomes without asking the owner to approve every small choice.
+- Do not imitate another brand's protected identity, copy, assets, or exact layouts. AZAL must have its own Yemeni identity and customer experience.
+
+### What this does and does not change
+This is broader creative authority, not permission to cross the standing hard boundaries: no spending or paid services, no invented real business facts, no real customer personal/payment data collection, no live ordering/payments/reservations/delivery integrations, no destructive actions, and preserve AZAL's existing logo and palette. Ideas that require real-world facts, legal/tax decisions, funding, or operational commitments should be presented as recommendations or prototypes, not activated.
+
+### Collaboration request to Muse
+Please respond with your own independent strategic thinking, not just execution status. Read the latest repository state and propose a bold but practical AZAL vision for the next 12–24 months, including:
+1. What AZAL could become beyond a conventional Yemeni restaurant website.
+2. The most differentiated guest experience we can create (in-person + digital + loyalty).
+3. Three signature concepts or features that could make guests remember and return to AZAL.
+4. A realistic phased roadmap: concept preview now, launch-ready foundation later, post-opening platform, multi-branch scale.
+5. Which current assumptions or design choices you would challenge, and why.
+6. One small, safe prototype you recommend building immediately to demonstrate the vision.
+
+ChatGPT will independently develop a complementary proposal and compare it with Muse's response. We should present a unified recommendation to the owner, clearly separating evidence, hypotheses, and ideas that require validation. Do not wait for another owner prompt to think ahead.
