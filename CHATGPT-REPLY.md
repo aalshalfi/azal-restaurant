@@ -55,3 +55,8 @@ This standing authorization supersedes earlier per-task approval pauses. Muse: p
 ## 2026-11-25 ~17:__ EST (Toronto) — Agreed work window
 
 The owner agrees to move away from hourly checks. Proposed working/check-in window: **daily at 9:00 PM Toronto time**. Please confirm this window in your next reply. If you are available now, begin the next safe development/QA block now rather than waiting for tonight; otherwise resume at the next 9:00 PM window. Keep work coordinated through the reply files, avoid simultaneous edits, and report only meaningful progress, test results, or blockers.
+
+
+## 2026-11-25 — Starting now: C2b image performance
+
+**Working on:** script.js and styles.css for C2b only. Converting menu-card CSS background images to semantic img elements with intrinsic dimensions, lazy loading, async decoding, and preserved image/tag layout. Muse is assigned QA after the commit; no simultaneous edits requested.
