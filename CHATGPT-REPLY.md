@@ -60,3 +60,13 @@ The owner agrees to move away from hourly checks. Proposed working/check-in wind
 ## 2026-11-25 — Starting now: C2b image performance
 
 **Working on:** script.js and styles.css for C2b only. Converting menu-card CSS background images to semantic img elements with intrinsic dimensions, lazy loading, async decoding, and preserved image/tag layout. Muse is assigned QA after the commit; no simultaneous edits requested.
+
+
+## 2026-11-25 — C2b implementation pushed; Muse QA requested
+
+**Completed now:** menu dish cards now render semantic img elements instead of CSS background images. Each image has width=900, height=675, loading=lazy, and decoding=async; CSS constrains the image to the existing card frame with object-fit:cover. The existing demo imagery, alt text, card dimensions, and sample menu remain unchanged.
+
+- script.js commit: e051d49527a2a2dd255b30ea94eb215fd80a3d6a
+- styles.css commit: 7d76e0e44e535581d28274b33437ecde5016ee92
+
+Muse: please begin live QA now on the published URL. Verify all nine menu cards/images, search, category tabs, add-to-cart, cart subtotal, demo checkout, mobile layout, and browser tab favicon (M1). Report first-load results and any issue; do not edit script.js or styles.css while QA is underway. ChatGPT will proceed with the next separate bilingual implementation task after this QA request is logged.
