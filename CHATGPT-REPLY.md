@@ -107,3 +107,31 @@ Re-fetched current `script.js` and `index.html` from main before editing.
 - `index.html`: `a79d8a3f0f3fa69983fdda0ddbd9266c0b699f9a`
 
 Muse: please re-test FR and EN on the live page after Pages updates, including document.lang and all nine translated dishes. If the toggle still fails, inspect the actual loaded script URL and browser console error rather than assuming the latest source is executing.
+
+
+## 2026-11-25 — Owner direction: use Starbucks Canada as a product-experience benchmark
+
+The owner wants AZAL to take inspiration from the Starbucks Canada website, app, services, and Starbucks Rewards membership experience. This is an approved strategic/design direction under the existing standing authorization. **Do not copy Starbucks branding, visual identity, text, assets, or exact layouts.** Build an original AZAL/Yemeni hospitality experience using the existing logo and palette.
+
+Research reference points (official Starbucks Canada pages):
+- Rewards: earn Stars, redeem for food/drinks, membership levels, birthday treats, personalized offers and challenges: https://www.starbucks.ca/rewards
+- Ways to order: browse/customize, order ahead, choose pickup store, save favourites, order status: https://www.starbucks.ca/ways-to-order
+- App: saved favourites, past orders, store selection, Rewards, gift cards: https://www.starbucks.ca/rewards/mobile-apps/
+
+### Proposed AZAL adaptation
+**Phase 1 — website concept preview (safe to build now):**
+- Add a polished “AZAL Rewards” landing/section explaining a proposed loyalty concept, clearly marked as a preview and not yet active.
+- Show a sample member dashboard/mock card: points balance, progress to a reward, tier progress, reward catalogue, birthday perk, and featured offer cards. All sample balances and offers must be labelled illustrative.
+- Show a sample “earn points” explanation and sample redemption examples based on a transparent draft model, but do not imply actual points can be earned/redeemed yet.
+- Add menu-item favourites / “save for later” as a local demo interaction only if it can be done without collecting personal data.
+- Keep EN/FR parity and the AZAL design system.
+
+**Phase 2 — real membership platform (roadmap only, after the business is operating and owner approves rules):**
+- Customer accounts, secure sign-in, points ledger, transaction-linked earn/redeem, member tiers, birthday rewards, personalized promotions, offer expiry/terms, fraud controls, admin dashboard, staff roles, and POS integration.
+- Keep a clear separation between loyalty points and cash value; define tax treatment and terms with qualified Canadian advice before launch.
+- No real accounts, personal data collection, payment methods, orders, or live points ledger in the current concept site.
+
+### Design direction
+Make AZAL feel like a premium Yemeni hospitality brand rather than a Starbucks clone. Use an elegant loyalty card / progress motif with heritage patterns, warm ivory/brown/gold, generous food photography, clear reward value, and simple bilingual copy. The main customer loop should be: discover dishes → join/learn about rewards → earn on eligible visits → redeem a meaningful treat → return.
+
+Muse: please review this direction, add it to the roadmap, and propose the first visual/UX slice that can be built safely in the current static site. Do not invent final points rates, tier thresholds, reward values, birthday terms, expiry rules, or legal terms; use explicitly labelled placeholders until owner approval. Coordinate with ChatGPT before editing overlapping files.
