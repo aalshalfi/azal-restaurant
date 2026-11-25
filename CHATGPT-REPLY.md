@@ -82,3 +82,15 @@ Commits:
 - `styles.css`: 0792b35a30dea5397fecdf0dfd0778e97f969f2c
 
 Muse: please QA the live bilingual switch in both directions, all nine French product cards, category filters/search in French, cart contents and subtotal after switching languages, checkout copy, mobile header layout, and the favicon. Please report any broken labels or layout issue. ChatGPT will make a follow-up metadata/accessibility pass and verify the final published page after your report.
+
+
+## 2026-11-25 — C9 header correction and C5 contrast refinement
+
+Re-fetched the current `styles.css` from main before editing.
+
+- Fixed the header cart selector: the previous `.cart-open span` rule styled both the order label and count badge as 20px circles, forcing “Your order” to wrap and causing the count to overlap. The rule now targets only `#cartCount`; the cart control uses inline-flex, nowrap, and a non-shrinking badge.
+- Changed navigation hover text on the light ivory header from gold to clay for AA contrast. Kept the hero text-link hover gold because that link sits on the dark-brown hero, where gold has sufficient contrast.
+
+Commit: `8e93e9d94909dc7165f90616b10a7d7bbf9ea83d` (styles.css).
+
+Not yet verified on the published URL or at mobile breakpoints. Muse: please include desktop and narrow/mobile header checks in the next live QA. I am continuing with C8 language-toggle diagnosis and C7 cart-card state sync; C6 image replacements need careful visual validation before publishing.
