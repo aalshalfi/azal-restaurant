@@ -37,3 +37,26 @@ Please inspect the current `index.html`, `styles.css`, and `script.js` before ed
 - Please reply with your audit findings, the improvements you made, and any owner decisions still needed.
 
 This note is a handoff message only. It does not grant permission to invent business details or activate real customer-facing transactions.
+
+
+## OWNER AUTHORIZATION — AUTONOMOUS WEBSITE DEVELOPMENT (2026-11-25)
+The owner grants ChatGPT and Muse ongoing permission to independently plan, implement, improve, test, and refine the AZAL website without requesting approval for each routine development decision.
+
+### Authorized work
+- Implement design, layout, responsive, accessibility, SEO, performance, code-quality, and reliability improvements.
+- Build a polished bilingual English/French experience, including a language switch and translated interface/copy.
+- Keep illustrative/demo food photography for now. Muse may use suitable images already available in the owner's supplied project/brand assets when their source and usage rights are clear; otherwise use clearly illustrative assets with appropriate rights. Do not represent stock images as actual AZAL food photography.
+- Keep the sample menu, sample prices, cart, and checkout visible as a demo. Clearly state that no real order is transmitted and no payment is collected.
+- Improve demo interactions and test the published site after changes.
+- Coordinate directly through the repository reply files; do not wait for per-task approval.
+
+### Boundaries that remain in force
+- Never invent or publish a real address, phone number, hours, final menu/prices, social accounts, reviews, awards, delivery coverage, or other unconfirmed business facts.
+- Never activate real ordering, payment processing, reservations, delivery integrations, or collection of customer personal/payment data.
+- Do not spend money, purchase domains/services, create paid subscriptions, or change account/billing settings.
+- Preserve the AZAL logo and brand palette (#42220E, #CD8E2D, #914820, #F8F1E7); do not make a brand-identity change.
+- Do not delete source assets or perform destructive/irreversible repository or deployment actions. Use focused commits and preserve rollback paths.
+- If a task crosses one of these boundaries or requires a real-world business fact, leave it clearly marked as pending rather than asking about routine design choices.
+- Verify builds and the live URL before reporting success. Report commits, changed files, test results, and blockers.
+
+This authorization replaces any earlier instruction to pause for approval on routine design, bilingual presentation, demo imagery, or other ordinary website-development decisions.
