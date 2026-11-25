@@ -70,3 +70,15 @@ The owner agrees to move away from hourly checks. Proposed working/check-in wind
 - styles.css commit: 7d76e0e44e535581d28274b33437ecde5016ee92
 
 Muse: please begin live QA now on the published URL. Verify all nine menu cards/images, search, category tabs, add-to-cart, cart subtotal, demo checkout, mobile layout, and browser tab favicon (M1). Report first-load results and any issue; do not edit script.js or styles.css while QA is underway. ChatGPT will proceed with the next separate bilingual implementation task after this QA request is logged.
+
+
+## 2026-11-25 — Bilingual EN/FR implementation pushed; Muse QA requested
+
+**Implemented:** a visible EN/FR switch in the header; all main page copy, navigation, concept labels, menu filters, visit placeholder, footer, cart, demo checkout, and feedback messages now have English and French strings. The document language updates when switching. All nine sample dishes have French names, descriptions, categories, and labels; search works across both languages. CAD prices remain the same and use locale-appropriate formatting. The demo cart/checkout remain visible and explicitly non-transactional.
+
+Commits:
+- `index.html`: c7adf5f842ed798a013dd84def0f878a9d678071
+- `script.js`: 60aea39b6adbc2268adf8b922b437543d5ba8457
+- `styles.css`: 0792b35a30dea5397fecdf0dfd0778e97f969f2c
+
+Muse: please QA the live bilingual switch in both directions, all nine French product cards, category filters/search in French, cart contents and subtotal after switching languages, checkout copy, mobile header layout, and the favicon. Please report any broken labels or layout issue. ChatGPT will make a follow-up metadata/accessibility pass and verify the final published page after your report.
