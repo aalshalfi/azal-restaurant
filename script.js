@@ -1,5 +1,13 @@
 const translations = {
  en: {
+  ritualClose:"In Yemen the meal ends when the talk does, not when the plates are empty.",
+  ritualJuice:"End with something cold: the mango juice.",
+  ritualChai:"Finish with Adeni chai, poured hot, and take your time.",
+  ritualBread:"Keep the sahawiq close: a little on the bread with every bite.",
+  ritualPlatter:"Put the platter in the middle of the table; everyone eats from the same plate.",
+  ritualStew:"Start with the stew while it still bubbles: tear the bread and scoop, no spoon needed.",
+  ritualDraft:"Draft serving guide, to be confirmed by our kitchen.",
+  ritualTitle:"Eat it the Yemeni way",
   nfText:"The link may be old or mistyped. Everything else is still here.",
   nfTitle:"This page isn’t on the menu.",
   storyMapKicker:"THE MAP",
@@ -186,6 +194,14 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  ritualClose:"Au Yémen, le repas finit quand la conversation s’arrête, pas quand les plats sont vides.",
+  ritualJuice:"Finissez sur une note fraîche : le jus de mangue.",
+  ritualChai:"Terminez par le thé adéni, servi bien chaud, sans vous presser.",
+  ritualBread:"Gardez le sahawiq à portée : un peu sur le pain à chaque bouchée.",
+  ritualPlatter:"Posez le plat au centre de la table ; chacun se sert dans le même plat.",
+  ritualStew:"Commencez par le ragoût encore bouillant : déchirez le pain et saucez, sans cuillère.",
+  ritualDraft:"Guide de service provisoire, à confirmer par notre cuisine.",
+  ritualTitle:"À la yéménite",
   nfText:"Le lien est peut-être ancien ou mal saisi. Tout le reste est toujours là.",
   nfTitle:"Cette page n’est pas au menu.",
   storyMapKicker:"LA CARTE",
@@ -400,7 +416,7 @@ function applyLanguage(){
  if(typeof renderSufraN==="function")renderSufraN();
  if(typeof renderPickup==="function"&&typeof pickupState!=="undefined"&&pickupState.plan)renderPickup();
  const liveRegion=document.getElementById("cartStatus");if(liveRegion)liveRegion.textContent="";
- if(checkoutMessage)checkoutMessage.textContent="";
+ if(checkoutMessage)checkoutMessage.textContent="";if(typeof clearRitual==="function")clearRitual();
  if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
  const active=tabs?.querySelector("button.active");
  renderProducts(active?.dataset.category||"All",search?.value||"");
@@ -481,9 +497,9 @@ $("cartOpen")?.addEventListener("click",openCart);
  stickyCartBar?.addEventListener("click",openCart);
 $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
-checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();pickupState.plan=null;pickupState.choice=null;pickupState.showAll=false;if(checkoutMessage)checkoutMessage.textContent="";renderPickup();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
+checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();pickupState.plan=null;pickupState.choice=null;pickupState.showAll=false;if(checkoutMessage)checkoutMessage.textContent="";if(typeof clearRitual==="function")clearRitual();renderPickup();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
 $("modalClose")?.addEventListener("click",closeModal);
-$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${typeof pickupLabel==="function"?pickupLabel()+" ":""}${t("notSent")}`.replace(/\.\./g,".");cart.clear();renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
+$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(typeof ritualKeys==="function"){ritualIds=[...cart.keys()];renderRitual();}if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${typeof pickupLabel==="function"?pickupLabel()+" ":""}${t("notSent")}`.replace(/\.\./g,".");cart.clear();renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
 checkoutModal?.addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeModal()});
 toggle?.addEventListener("click",()=>{const open=nav?.classList.toggle("open")||false;toggle.setAttribute("aria-expanded",String(open))});
 nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}));
@@ -549,3 +565,24 @@ function renderPickup(){
 function pickupLabel(){const plan=pickupState.plan;if(!plan)return "";const v=pickupState.choice;const time=v==="asap"?fmtMin(plan.asap):fmtMin(Number(v));return t("pickupChosen").replace("{time}",(plan.day==="tomorrow"?t("pickupTomorrow")+" ":"")+time)}
 document.addEventListener("change",e=>{if(e.target&&e.target.name==="pickup"){pickupState.choice=e.target.value}});
 document.addEventListener("click",e=>{if(e.target&&e.target.id==="pickupMore"){pickupState.showAll=true;renderPickup();document.querySelector('.pickup-slots input[type="radio"]:not(:checked)')?.focus()}});
+
+/* "Eat it the Yemeni way" serving-ritual PREVIEW (Claude). Rules = docs/serving-ritual.md; DRAFT until the kitchen confirms. Inert. */
+function ritualKeys(ids){
+ const has=id=>ids.includes(id),out=[];
+ const stew=has(4)||has(5),platter=has(1)||has(2)||has(3),bread=has(6),chai=has(8),juice=has(9);
+ if(!stew&&!platter&&!bread)return [];
+ if(stew)out.push("ritualStew");
+ if(platter)out.push("ritualPlatter");
+ if(bread&&!stew&&out.length<2)out.push("ritualBread");
+ out.push(chai?"ritualChai":juice?"ritualJuice":"ritualClose");
+ return out.slice(0,3);
+}
+var ritualIds=[];
+function renderRitual(){
+ const box=document.getElementById("ritualPreview");if(!box)return;
+ const keys=ritualKeys(ritualIds);
+ if(!keys.length){box.hidden=true;box.innerHTML="";return}
+ box.innerHTML=`<p class="ritual-title">${t("ritualTitle")}</p><ol>${keys.map(k=>`<li>${t(k)}</li>`).join("")}</ol><p class="ritual-draft">${t("ritualDraft")}</p>`;
+ box.hidden=false;
+}
+function clearRitual(){ritualIds=[];const box=document.getElementById("ritualPreview");if(box){box.hidden=true;box.innerHTML=""}}

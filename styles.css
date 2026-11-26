@@ -557,3 +557,10 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 @media(min-width:801px){.page-banner{padding-inline:clamp(24px,8vw,120px)}}
 @media(min-width:801px){.member-preview{place-items:start;padding-top:24px}}
 .notfound-actions{display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-top:24px}
+
+/* Serving-ritual preview (Claude) */
+.ritual{margin-top:16px;padding:16px 18px;border-left:3px solid var(--clay);background:var(--cream)}
+.ritual-title{font-family:'Source Serif 4',Georgia,serif;font-size:21px;margin:0 0 8px}
+.ritual ol{margin:0;padding-left:20px;line-height:1.55;font-size:16px}
+.ritual li{margin:4px 0}
+.ritual-draft{margin:10px 0 0;font-size:12px;color:var(--muted)}
