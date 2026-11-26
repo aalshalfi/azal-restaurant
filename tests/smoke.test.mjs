@@ -252,7 +252,7 @@ test("P1 page order puts the menu before story and uses compact mobile cart/menu
   const sufra = html.indexOf('id="sufra-guide"');
   const menu = html.indexOf('id="menu"');
   const story = html.indexOf('id="story"');
-  assert.ok(sufra >= 0 && menu > sufra && story > menu, "expected Sufra → Menu → Story section order");
+  assert.ok(menu >= 0 && sufra > menu && story > menu, "expected Menu (with Sufra shortcuts) → Story order");
 
   assert.ok(!html.includes('id="customerName"') && !html.includes('id="orderType"'), "demo checkout must not collect customer details or offer delivery");
   const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
