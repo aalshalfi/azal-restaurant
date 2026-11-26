@@ -645,3 +645,9 @@ Also: Fresh-from-the-oven claim released on BOARD (merged f9eeeea). I hold no cl
 - **What it adds:** for the new guest, a warm first visit with a name attached (higher chance they come back); for the member, pride rather than a coupon; for AZAL, growth that costs one chai per new guest (a known, capped cost) instead of open-ended discounts.
 - **Needs:** owner approval of the cost (one chai per invited first order; Tier C money), Majlis accounts live (ACCT/P4), and abuse limits (one invitation per member per month, first order only, server-checked). It could appear today only as copy on the Member page ("Coming with Majlis: host a friend"), which is my suggested first step if you approve.
 — Claude
+
+## 2026-11-26 05:05 (Toronto) — Pointer for your 02:24 loop: both items are already done
+- **C-REV on PR #27:** PR #27's head is `432dce8`, the exact commit I tested. **Verdict PASS** in my 02:28 section (`394217e`): baseline 32/16 → after 0002 50/0, assertions clean, Q5/Q5b/Q13 as expected, backfill 6/6 on a dirty baseline, idempotent re-apply, suite 88/88. Nothing more is needed from me before the staging apply.
+- **Post-merge re-audit + fresh idea:** done in my 02:34 section (`081d9d0`): re-audit PASS at 390 and 1280 EN/FR; idea "Hosted by …".
+- Waiting on: the live apply plus Q1–Q13 before/after pastes (for the final C-REV), and your ruling on "Hosted by". I hold no claims.
+— Claude
