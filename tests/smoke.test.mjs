@@ -20,7 +20,9 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const html = fs.readFileSync(path.join(root, "menu.html"), "utf8");
+const homeHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const storyHtml = fs.readFileSync(path.join(root, "story.html"), "utf8");
 const scriptPath = process.env.SCRIPT_PATH || path.join(root, "script.js");
 const source = fs.readFileSync(scriptPath, "utf8");
 
@@ -95,7 +97,7 @@ function find(sel) {
   );
 }
 
-function boot() {
+function boot(storage = new Map()) {
   const documentElement = new El("html", { lang: "en" });
   const body = new El("body");
   const documentStub = {
@@ -119,12 +121,13 @@ function boot() {
     Array,
     String,
     Math,
+    localStorage: { getItem: (key) => storage.has(key) ? storage.get(key) : null, setItem: (key, value) => storage.set(key, String(value)) },
   });
   context.window = context;
   context.matchMedia = () => ({ matches: false });
   vm.runInContext(source, context, { filename: "script.js" });
   const evalIn = (code) => vm.runInContext(code, context);
-  return { documentElement, evalIn };
+  return { documentElement, evalIn, storage };
 }
 
 const fire = (el, type, event = {}) => (el.listeners[type] || []).forEach((fn) => fn(event));
@@ -207,7 +210,7 @@ test("search clears an active Sufra guide instead of stranding the guest (C10)",
   assert.ok(grid.innerHTML.includes("Lamb Mandi") && grid.innerHTML.includes("Chicken Mandi"));
 });
 
-test("every translation key used by index.html exists in English and French", () => {
+test("every translation key used by menu.html exists in English and French", () => {
   const { evalIn } = boot();
   const translations = clone(evalIn("translations"));
   const used = new Set();
@@ -248,16 +251,20 @@ test("sticky demo cart stays reachable and mirrors cart count and total", () => 
   assert.ok(byId.get("cartDrawer").classList.contains("open"), "sticky cart should open the demo drawer");
 });
 
-test("P1 page order puts the menu before story and uses compact mobile cart/menu hooks", () => {
-  const sufra = html.indexOf('id="sufra-guide"');
-  const menu = html.indexOf('id="menu"');
-  const story = html.indexOf('id="story"');
-  assert.ok(menu >= 0 && sufra > menu && story > menu, "expected Menu (with Sufra shortcuts) → Story order");
-
-  assert.ok(!html.includes('id="customerName"') && !html.includes('id="orderType"'), "demo checkout must not collect customer details or offer delivery");
+test("P1 v3 separates Home, Menu and Story; commerce stays on Menu", () => {
+  assert.ok(homeHtml.includes('class="hero"') && homeHtml.includes('class="signature-section'), "Home should contain the short hero and signature selection");
+  assert.ok(!homeHtml.includes('id="productGrid"') && !homeHtml.includes('id="menuSearch"'), "Home must not contain the full menu surface");
+  assert.ok(html.includes('id="productGrid"') && html.includes('id="menuSearch"') && html.includes('id="sufra-guide"'), "Menu page must contain the full menu and Sufra guide");
+  assert.ok(storyHtml.includes('class="story-values') && storyHtml.includes('class="majlis-preview'), "Story page should carry the heritage and Majlis concept");
+  assert.ok(html.includes('class="sticky-cart"'), "sticky cart belongs on the Menu page");
+  assert.ok(!homeHtml.includes('class="sticky-cart"') && !storyHtml.includes('class="sticky-cart"'), "sticky cart must not clutter Home or Story");
+  for (const page of [homeHtml, html, storyHtml]) {
+    assert.ok(page.includes('id="languageToggle"') && page.includes('id="cartOpen"') && page.includes('id="cartDrawer"'), "shared language and cart controls must exist on every page");
+    assert.ok(!page.includes('id="customerName"') && !page.includes('id="orderType"'), "demo checkout must not collect customer details or offer delivery");
+  }
   const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
   assert.ok(css.includes(".sticky-cart{position:fixed"), "sticky cart should remain fixed at all scroll depths");
-  assert.ok(css.includes(".product-card{display:grid;grid-template-columns:96px"), "mobile cards should use compact horizontal rows");
+  assert.ok(css.includes(".product-card{display:grid;grid-template-columns:96px"), "mobile menu cards should use compact horizontal rows");
 });
 
 
@@ -284,4 +291,16 @@ test("P1 mobile CSS closes the interim C-DES size and tap-target gaps", () => {
   assert.ok(css.includes(".add-button{min-height:44px;height:44px"), "add buttons must be at least 44px tall");
   assert.ok(css.includes(".section-kicker{white-space:normal"), "long French section kickers must wrap");
   assert.ok(css.includes("-webkit-line-clamp:2"), "mobile dish descriptions must be clamped to two lines");
+});
+
+
+test("cart and language persist across page loads", () => {
+  const storage = new Map([["azal-demo-cart-v1", "[[1,2]]"], ["azal-language", "fr"]]);
+  const { evalIn, documentElement, storage: saved } = boot(storage);
+  assert.equal(evalIn("language"), "fr");
+  assert.equal(documentElement.lang, "fr");
+  assert.equal(evalIn("cart.get(1)"), 2);
+  evalIn("cart.set(2, 1); renderCart();");
+  assert.equal(saved.get("azal-demo-cart-v1"), "[[1,2],[2,1]]");
+  assert.equal(saved.get("azal-language"), "fr");
 });
