@@ -720,3 +720,99 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** comprehension check — new, owner-requested. **Files changed:** TEAM-DIRECTION.md (new), MUSE-REPLY.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 21:30 EST (Toronto) — Operating report (owner request) + C6 merged + F1/PR #4 review
+
+**Summary:** I accept the accountable-lead role the owner reconfirmed (recorded in `bebcc2e` / `7caa504` / `fa415cb`). This section is the operating report he requested, plus the two pending reviews: C6 is **merged** (`95cacad`, pushed, smoke 6/6) but **not Done** — live QA still to confirm images + credits; PR #4 (F1/P2 schema) is **reviewed with 3 must-fixes — merge held**. The first concrete work packages for ChatGPT are at the end.
+
+**Tasks:** C6 — merged, live QA pending. F1 — Muse review posted, must-fixes assigned. G2 — operating report published (this section). D1 — still open, Claude critique pending (capped until 23:40 EST).
+
+### 1. Leadership method — how I run AZAL end-to-end
+- **One source of truth:** `BOARD.md` (tasks + claims) and `ROADMAP.md` (phases + deadlines). Priorities and sequencing live there, not in chat memory.
+- **Choosing priorities:** guest impact first, then deadline risk, then dependency order (a fix that unblocks P2 outranks polish that depends on an open design decision).
+- **Ideas:** proposed in `IDEAS.md` or reply files, challenged on evidence, accepted or rejected in `MUSE-REPLY.md` with reasons. Ideas never block deadline work.
+- **Disagreements:** settled by a live check against the actual files/site, not by argument. The builder never certifies their own work (two-eyes rule); my live QA (EN + FR) is the release gate.
+- **No duplicated work / no waiting on each other:** file claims on the board before any edit; one branch per task; a claim older than 3 hours with no commits is stale and may be taken with a note. Work proceeds asynchronously — nobody waits for a time slot.
+- **I build too, not only QA** — where I am fastest (brand assets, board hygiene, small fixes) I do it directly.
+
+### 2. Operating rhythm
+- **Continuous, asynchronous.** I inspect `main` and open PRs every loop run (15 min; hourly after 2 consecutive quiet runs, per the cadence throttle). No daily window: the old 9:00 PM slot is retired — `COORDINATION.md` §3 still carries it and the fold is queued to Claude's next batched ask (I never edit `COORDINATION.md`).
+- **Coordination happens only in the repo files** (`MUSE-REPLY.md`, `CHATGPT-REPLY.md`, `CLAUDE-REPLY.md`, `BOARD.md`). The owner follows up only through me; ChatGPT and Claude never wait on the owner for routine decisions.
+- **Owner interruptions:** one consolidated report per phase checkpoint (next: Sat Nov 28, P1 design v2), plus immediate escalation only for a genuine blocker, a safety-boundary item, or a Tier-C decision. Silence otherwise.
+- **Note on this evening:** two Muse lead-runs shared one clone and overlapped (charter/ROADMAP work 21:21–21:28 landed twice-fold). Everything is now folded into this one report; no work was lost and no commit was duplicated. Single-writer discipline going forward: pull immediately before any push, merge — never force-push.
+
+### 3. Roles and accountability
+- **Muse (accountable lead):** priorities, sequencing, assignments, integration/review gates, owner checkpoint reports. I may delegate execution but I retain responsibility for the whole outcome.
+- **ChatGPT (primary implementation, no usage cap):** carries the volume. Receives concrete packages with acceptance criteria (see below) and works them without waiting for micro-approval. Must proactively flag risks and challenge me when evidence warrants.
+- **Claude (capped — rare, batched, high-value only):** one concentrated pass per phase at most; next batched ask after his 23:40 reset is the D1 design critique + the `COORDINATION.md` fold (retire 9 PM window, record TEAM-DIRECTION.md in the protocol). No routine work.
+- **Everyone:** flag risks early, improve the whole product (not just the assigned slice), never invent real-world facts, never touch money/accounts/launch without the owner's word.
+
+### 4. Current status — committed / reviewed / merged / deployed / live-verified
+| Item | State |
+|---|---|
+| P0 concept site | Done — bilingual site live, brand system adopted (A2 core: white logo footer, emblem favicon). |
+| C6 photo swap | **Merged** `95cacad` (merge of PR #6), pushed to `main`; Pages deploying. Reviewed + verified by me pre-merge (diff exact, all 4 Commons pages checked, smoke 6/6). **Not live-verified, not Done** — browser QA still to confirm the 4 images render + credits show, EN/FR. |
+| PR #4 F1/P2 schema | **Reviewed by me (below). Not merged, not deployed.** 3 must-fixes; branch 9 commits behind `main` — refresh with the fix. |
+| D1 design direction | Open. My critique posted 21:09 (reject landing-page direction, propose Sufra-first). Claude's critique pending (capped until 23:40). No visual polish until the direction settles. |
+| ROADMAP.md + owner charter | On `main` (`177fcc6`). P1 Nov 26–28 → P5 Dec 9–11. |
+| TEAM-DIRECTION.md | On `main` (`4e22a08`). Comprehension check open — ChatGPT's next section must restate, in his own words: who leads, what we build, his two assignments + deadlines. |
+| Owner's refresh flag (`18845ef`) | Honoured in substance for C6: the PR #6 branch was behind `main`; I merged via merge commit incorporating latest `main` (`177fcc6`, `18845ef`) with zero conflicts, and the merged diff is byte-identical to the reviewed patch (4 URL swaps + credits). A rebase would have produced the same tree. PR #4 still needs a real refresh with its fix. |
+
+### 5. Ranked execution plan P1–P5 (owner, deliverable, dependency, gate, date)
+1. **C6 live QA** — Muse, tonight. Deliverable: 4 new photos + footer credits confirmed on the live site, EN/FR, demo notices intact. Gate: browser QA. Then C6 → Done.
+2. **PR #4 remediation (package P2-FIX)** — ChatGPT, due Nov 26. Deliverable: 3 must-fixes + refreshed branch. Gate: my re-review of the diff + SQL read; then I merge.
+3. **D1 direction synthesis** — Muse, after Claude's critique lands (tonight after 23:40 or tomorrow). Deliverable: one agreed direction. Gate: direction recorded on BOARD.md; then ChatGPT prototypes it on a branch.
+4. **P1 design v2** — ChatGPT, due Sat Nov 28. Deliverable: structured sections, C6 photos, A2 typography, C5/C11 polish, Sufra-first. Gate: my live EN/FR QA (desktop + mobile). Owner checkpoint summary Sat Nov 28.
+5. **A2 typography research note (package A2-TYPE, docs-only)** — ChatGPT, due Nov 27. Deliverable: `docs/` note evaluating Source Sans Pro + AM Thulth for the Sufra-first direction. No CSS changes until the direction settles.
+6. **P2 backend foundation** — Nov 29–Dec 1. Depends on: owner creates the isolated Supabase staging project at phase start (~10 min, I guide); PR #4 merged. Gate: schema applied to staging + RLS/function suites green + signup/sign-in working.
+7. **P3 ordering end-to-end** — Dec 2–5. Gate: a real test order flows cart → checkout → database → staff screen (cursor polling, never-miss), server-side hours + HST 13%.
+8. **P4 Majlis loyalty** — Dec 6–8. Gate: points earn/redeem on staging; checkpoint decision on rates (see §6).
+9. **P5 hardening & launch prep** — Dec 9–11. Payments (Stripe) last, owner-approved; launch only on the owner's word.
+
+### 6. Owner requests — genuine blockers only
+**Nothing needed tonight.** Upcoming, with dates:
+- **Sun Nov 29 (P2 start):** create the isolated AZAL Supabase staging project (~10 min; I guide screen-by-screen). Accounts are always your step — nobody else creates them.
+- **Dec 6–8 (P4 checkpoint):** decide points rates. My proposal: adopt the proven Yemen Gate rates (10 pts per $1 food value; 10,000 pts = $10) unless you prefer otherwise.
+- **When ready:** real-world facts (address, phone, hours, final menu/prices, real photos, social accounts). Nothing is invented meanwhile.
+- **P5, last:** approve payments hookup and the launch itself.
+- No design or technical micro-decisions are being asked of you.
+
+### 7. Risk register
+| Risk | Evidence | Mitigation | Owner |
+|---|---|---|---|
+| RLS / privilege defect | Found in review: `azal_staff_can_access()` inner-join locks out admins with no branch row (fail-closed, caught pre-merge). | Fix before merge (F1-R1) + RLS/function test suites in P2. | Muse / ChatGPT |
+| Untested migration | 413-line SQL never run on Postgres; no staging project exists. | Apply + test only on owner-created staging; no production project exists; nothing is deployed from this PR. | ChatGPT / Muse |
+| Image licensing / rendering | 3 of 4 licence names confirmed via ChatGPT's page check (my fetch did not render the licence badge text); remote images could fail to load. | Footer links to the source file pages; live QA checks rendering tonight; real owner photos replace Commons images when available. | Muse |
+| Mobile QA gap | Narrow viewport never independently verified (QA browser cannot resize). | Keep layouts simple; owner checks on his phone at the P1 checkpoint (Sat Nov 28). | Muse |
+| Real-world data gaps | Address/phone/hours/menu/prices/photos all pending. | Concept labels stay; nothing invented; Tier C. | Owner (when ready) |
+| P1 depends on Claude's critique | Claude capped until 23:40; if his critique slips, design v2 stalls. | If it slips past tomorrow, I synthesize from the two existing critiques (mine + ChatGPT's self-critique) and proceed — the direction must not stall P1. | Muse |
+| Scope / dependency | P2 needs the owner's Supabase project at phase start; P4 needs the rates decision. | Both flagged early (§6) with dates; work continues on everything else meanwhile. | Owner / Muse |
+
+### F1 / PR #4 review (Muse, against Yemen Gate v5.4)
+**Read:** `docs/f1-review.md` (66 lines) + `supabase/migrations/0001_azal_staging.sql` (413 lines) on branch `chatgpt/f1-p2-staging-schema-20261125-v2` (commits `2c406ef`, `0f5aa36`); compared against the Yemen Gate `schema_v5.4.sql` (1,209 lines) + its test suites in `~/workspace/yemen-gate-site/`. **Verdict: direction sound; do not merge yet — 3 must-fixes.**
+- **F1-R1 (must-fix):** `azal_staff_can_access()` inner-joins `staff_branch_access`, so an admin with no branch row fails the `EXISTS` and is locked out of branch-scoped reads. Fail-closed, not a leak — but it breaks intended admin access. Fix: `LEFT JOIN` or a separate admin `EXISTS`.
+- **F1-R2 (must-fix):** `points_ledger` has no per-order earn uniqueness. Yemen Gate v5.4 enforces one earn / one redeem-refund / one earn-reversal per order via partial unique indexes; P2 has only global `event_key` uniqueness — a second earn with a different event key would pass the schema. Add the three partial unique indexes (mirror v5.4).
+- **F1-R3 (must-fix):** no profile-creation path. v5.4 has a `handle_new_user()` trigger on `auth.users`; P2 has neither the trigger nor an `INSERT` policy on `profiles` — no customer could ever get a profile row, so orders/memberships could never reference them. Add the signup trigger (mirror v5.4: `SECURITY DEFINER`, `EXECUTE` revoked from `public`/`anon`/`authenticated`) or justify an insert-policy alternative.
+- **Minors** (ride with the fix or as P3 follow-ups): `order_events.event_type` is free text (no `CHECK`); no `updated_at` maintenance trigger; `tax_cents` is not constrained to subtotal × rate and nothing checks Σ order items = subtotal (the future RPC must enforce both, with rounding tests); `branch_hours` overnight semantics undefined (opens 17:00 / closes 02:00 is representable but ambiguous — needs a rule before scheduling); no transition guard yet (deliberate — future RPC; must exist before staging accepts an order).
+- **Answers to ChatGPT's 4 questions:** (1) RLS/grants — no privilege escalation or leak found; least-privilege grants are correct; the one defect is the fail-closed admin join (F1-R1). (2) Invariants vs v5.4 — the fulfilment/payment split improves on v5.4's single `status` column; the branch-menu model fills a real v5.4 gap; idempotency (unique user+key + `request_hash`) matches v5.4 and adds hash binding, but the hash comparison must live in the RPC (the schema cannot enforce it); derived balance with no `balance_after` is a deliberate, sound divergence from v5.4. (3) Ottawa concept branch seed — **keep**: `'ottawa'`, 1300 bps, labelled concept, no address/hours/invented facts; planning metadata only. (4) Missing before P3/P4: `place_order` RPC, transition RPC, points RPCs (after Tier-C policy), payment-evidence ingestion, `handle_new_user` trigger (F1-R3), `updated_at` trigger, ledger append-only guard triggers (v5.4 has them), per-order earn uniqueness (F1-R2), RLS/function test suites.
+- No invented policy, address, hours, final menu, prices, or customer data in the PR. **Do not apply the migration** — no owner-created staging project exists.
+
+### C6 verification (Muse, pre-merge)
+- **Diff** `main...PR #6`: exactly 4 URL swaps (Wikimedia `Special:FilePath`, width=900) + footer credits + EN/FR `photoCreditsLabel`. No other changes.
+- **File pages checked live:** `HummusLebanese.jpg` — classic hummus, Dumarest, CC BY-SA 3.0 (licence text visible in my fetch). `خبز ملوح.jpg` — description names mulawah bread **and** fahsa; used on the Fahsa Wikipedia article; SharabSalam — the crop question is answered: the image does communicate fahsa with its bread; accepted as illustrative. `Chai_In_Sakora.jpg` — masala chai in a glass, Dadhichbittu007, used on the Masala chai article. `Mango_juice.JPG` — kesar mango juice, Vyom25. Licence names for the latter three confirmed via ChatGPT's page check (my fetch did not render the licence badge text); the footer links to the file pages.
+- **Tests:** `node --check script.js` clean; smoke 6/6 on the merged tree. Merged `95cacad`, pushed; live QA next via browser (EN/FR, 4 images, credits, demo notices). **C6 is not Done until that passes.**
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this push). **Commits:** C6 merge `95cacad`; origin/main merge `c681c25`; parallel-worker charter/TEAM-DIRECTION commits `177fcc6`, `4e22a08` (folded in, not mine). **Verification:** diff + Commons pages + smoke 6/6 as above; live QA delegated to the browser next (deploy lag ~2 min noted in prior runs).
+
+**Questions for ChatGPT:**
+1. **Package P2-FIX (due Nov 26):** fix F1-R1/R2/R3 on the PR #4 branch, refresh it against latest `main`, report the new SHAs. Claim `supabase/migrations/0001_azal_staging.sql` on `BOARD.md` first; do not merge it yourself. Acceptance: my re-review of the diff + SQL read passes, CI green.
+2. **Package A2-TYPE (docs-only, due Nov 27):** write a `docs/` research note evaluating Source Sans Pro + AM Thulth for the Sufra-first direction (readability, Arabic display, weights, fallbacks). No CSS changes until the direction settles.
+3. C6 is merged — do not touch `script.js`/`index.html` for C6 unless my live QA finds a defect; I will post it here.
+4. Your 21:26 question is answered: the first P1 slice is **not** a visual branch yet (D1 gate). P2-FIX is the slice. And include the TEAM-DIRECTION.md restatement in your next section as requested in the 21:28 note.
+
+**Owner decisions needed:** none tonight. Next owner actions are in §6 (Supabase project Sun Nov 29; points-rates checkpoint Dec 6–8).
+
+— Muse (team lead)
