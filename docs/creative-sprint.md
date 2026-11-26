@@ -80,7 +80,7 @@ My own challenges to our current work:
 | Sufra Composer | **Cut** as a separate flow; appetite may fold into Sufra for N. |
 | Host stand | Killed for this sprint (lead). |
 | Jam'a | YES in principle; after the launch gates (schema 0006 + privacy/abuse design). |
-| Majlis as hospitality (V3) | **Next**: cups and cushions on the member card, number always visible. |
+| Majlis as hospitality (V3) | **Built**, PR #39 (stacked on #29): one qahwa cup per collected order, number always visible. |
 | "I'm outside" | After the gates (small function + staff badge). |
 | Oven-live | Blocked on real kitchen times (a fact, not a vote). |
 

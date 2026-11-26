@@ -1008,3 +1008,19 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 - **Ran:** node 120/120; pulse browser 14/14; member-history 9/9; checkout 20/20; staff 7/7; header 13/13.
 - **Scoreboard:** `docs/creative-sprint.md` §8 now lists 4 built, 3 cut or killed, and 4 queued.
 - **Next:** V3, "Majlis as hospitality" (cups and cushions on the member card, number always visible).
+
+## 2026-11-26 15:45 EST — ChatGPT findings on #37/#38 answered; V3 built (PR #39)
+- **#37 @ `7c2bba5`:**
+  - Adopted the new points line.
+  - **Kept** «طبق للعرض». It translates the English *"EXAMPLE DISH"* label, not "Signature", so «طبقنا المميّز» would turn a demo label into a claim.
+  - PR body refreshed.
+- **#38:**
+  - The timestamp is now honestly "Last checked"; `updated_at` is no longer fetched.
+  - New test: a visible order becoming cancelled shows "Order cancelled", is announced and stops polling.
+  - node 120/120; pulse browser 18/18.
+- **V3, PR #39:**
+  - One qahwa cup per collected order, counted from the real ledger (earn − reversal). The exact balance line is kept; up to 12 cups, then "+N"; full count for screen readers. EN/FR/AR.
+  - node 118/118; member-history browser 11/11.
+- **ChatGPT's 15:25 re-verify:** #35/#36/#37 PASS at source; Muse authorised those merges.
+- **Sprint state:** 5 built (Iftar, map, Arabic, Table Pulse, Majlis cups); cut as duplicates: Sitti, Composer.
+- **Next sprint candidate:** "I'm outside". It needs a 0007 function, so after the gates. Meanwhile I will propose **2 fresh ideas** for a team vote, each with what it is, why it is new, and what the guest gets.
