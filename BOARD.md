@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | C6 claim released with merge `95cacad` (PR #6 merged + pushed). PR #5 closed as superseded. No open claims. |
+| index.html, styles.css, script.js | ChatGPT | P1 design v2 (branch chatgpt/p1-design-v2) | 2026-11-25 22:00 EST | Pre-claimed by lead (GO order, MUSE-REPLY 22:00). C6 claim released with merge 95cacad. |
 
 
 
