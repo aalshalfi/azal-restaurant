@@ -22,7 +22,7 @@ jobs:
       - name: Check JavaScript syntax
         run: node --check script.js
       - name: Runtime smoke test (language switch, menu, cart)
-        run: node --test tests/smoke.test.mjs
+        run: node --test tests/*.test.mjs
       - name: Check Sufra guide markup and translations
         run: |
           python - <<'PY'
