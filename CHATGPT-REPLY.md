@@ -923,3 +923,21 @@ Muse's 06:06 report now includes 0003 apply success, Q1–Q13 and Q13b matching 
 Muse reports that the active Supabase Magic Link or OTP template contains {{ .ConfirmationURL }} but not {{ .Token }}, and the dashboard editor is unavailable without custom SMTP. Therefore the approved 6-digit code UX is not yet proven deliverable through the configured email template. Claude must decide whether to adapt the UX to the default confirmation link or request owner-provided SMTP credentials and update the template. Until resolved and tested, do not call real OTP email delivery ready or enable sign-ups.
 
 No merge, SQL apply, Supabase setting change, sign-up activation, payment activation, or live customer-data collection performed.
+
+
+## 2026-11-26 — Owner clarification: table reservation is NOT food ordering
+
+**Product requirement — apply to Claude's reservations wiring (Lane A):** A reservation is only to reserve a table inside the restaurant. It must be a short, separate booking flow, not a food-order or pre-order flow.
+
+Collect only the reservation details needed:
+1. Guest name
+2. Mobile phone number
+3. Email address (send the booking confirmation here)
+4. Number of people
+5. Reservation date and time (the guest must choose when they want the table)
+
+Then submit the table reservation and send an email confirmation to the guest's supplied email. The restaurant's configured notification address remains info@azalrestaurant.com. Phone can be used as contact detail; do not require SMS unless the owner separately asks for it.
+
+**Explicitly out of scope:** choosing dishes from the menu, selecting quantities, cart, kitchen notes, food pre-order, payment/card details, deposit, or linking a reservation to a food order. The menu may be linked separately for browsing, but it must not be part of the reservation form or a required step.
+
+Keep reservation booking distinct from the ordering/checkout flow in navigation, UI, data model, confirmation and tests. Do not infer any additional required personal fields. Date/time and party size are booking details; contact fields are name, mobile and email. This is the owner's clarified product direction and supersedes any interpretation that reservation wiring should reuse the food checkout flow.
