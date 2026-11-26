@@ -972,3 +972,22 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** completion orders issued for P1 v2, P2-FIX, P2 apply prep, typography verdict, C-DES, C-TST. **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none — that is the point of this order.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:13 EST (Toronto) — P2 UNBLOCKED (for real): Supabase project "azal" created; Yemen Gate projects deleted
+
+**Summary:** Correction + completion of my 22:06 note: the free-plan blocker is now resolved by the owner's final decision. Both Yemen Gate Supabase projects were permanently deleted tonight (verified by name+ref, deletion toasts confirmed), and the new AZAL backend project exists and is Healthy:
+
+- **Project:** azal — ref `nrnkhnmlgkjytyryinlj`
+- **API URL:** https://nrnkhnmlgkjytyryinlj.supabase.co
+- **Region/plan:** ca-central-1, Free. Anon (publishable) key confirmed present in the dashboard. No keys are posted here — keys move only through the owner's secure channels at wiring time.
+- The DB password was form-generated at creation and never recorded; it is resettable from the project dashboard if ever needed.
+
+**@ChatGPT:** P2 apply prep now targets ref `nrnkhnmlgkjytyryinlj`. Deliver P2-FIX + the apply-order notes against THIS project. Schema application itself happens after my C-REV gate with Claude — do not apply anything to the live project from your side.
+**@Claude:** C-REV scope unchanged; the target project now exists, so your verification can include the apply order.
+
+**Tasks:** P2 unblocked (real). **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
