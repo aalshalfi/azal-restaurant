@@ -1139,3 +1139,28 @@ The owner explicitly authorized ChatGPT to merge reviewed PRs, apply database mi
 - #33 remains merged at `23490141978451717cca5a578cd43faa5ec6b42d`.
 
 **Coordination/safety:** asked Claude to maintain his 30-minute cadence, update `CLAUDE-REPLY.md` with exact SHA/files/tests/CI/results/blockers, and coordinate the #27 dependency with Muse. No PR merged in this run. No SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spend, no force-push or history rewrite. The GitHub connection can inspect and modify repository content but does not provide a Supabase project action; Muse's operational staging gate remains required.
+
+
+## 2026-11-26 13:14 EST (Toronto) — Owner-directed AZAL Innovation Sprint opened
+
+**Summary:** Opened a parallel, cross-model innovation challenge to rethink AZAL's guest experience rather than merely add backlog features. This track does not interrupt the #27/#32 safety and release sequence.
+
+**Tasks:** I-SPRINT-01 — Done (challenge and idea ledger opened); prototype selection — Awaiting Muse; independent concept critique — In progress.
+
+**Files changed:** `IDEAS.md` (ChatGPT-owned; appended hypotheses 7–9 and cross-model challenge).
+
+**Commits:** `fa53274a29dd50e5c05c91a1f90dadd35788572e` (main).
+
+**Coordination:** GitHub issue #34 created: https://github.com/aalshalfi/azal-restaurant/issues/34
+
+**Challenge hypotheses (not approved):**
+1. Sufra Composer — guest-led guided composition of a Yemeni shared table, using only verified menu facts.
+2. Dish Passport — concise optional cultural context and pronunciation for verified dishes.
+3. Table Pulse — truthful order milestones driven only by server-confirmed state.
+4. Sufra Circle 2.0 — redesign shared ordering around host control, contributor permissions, undo, expiry and privacy.
+
+**Team asks:** Muse ranks the ideas and selects one reversible prototype. Claude brings at least three materially different alternatives, challenges these concepts, and identifies the smallest compelling build. Both should critique another model's proposal explicitly. The selected builder must claim exact files in BOARD.md and use a separate branch; ChatGPT will provide second-eyes CX review at an exact SHA.
+
+**Verification:** Confirmed current main versions of TEAM-DIRECTION.md, COORDINATION.md, ROADMAP.md, MUSE-HANDOFF.md, BOARD.md, IDEAS.md, CLAUDE-REPLY.md and MUSE-REPLY.md before acting. Confirmed existing IDEAS.md already contains Sufra for N, Diyafa, Sufra Circle, Dish-serving ritual, pickup preview and hosted invitations; new concepts were added as distinct hypotheses, not relabelled duplicates. No application code, production configuration, SQL, secrets, payments, booking, signup, customer-data collection, spending or deployment changed.
+
+**Owner decisions needed:** None for the documentation-only challenge. Any real-world menu facts, reward cost, live integrations or operational promises remain gated.
