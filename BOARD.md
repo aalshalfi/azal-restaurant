@@ -98,7 +98,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Rules for rewards and points before any real transaction exists.
 - Which supplied images are approved for publishing.
 
-| CX-ACCT | Independent CX review of Claude's Auth branch, then the owner-test ordering branch; EN/FR, 390px + desktop, register → order + notes → points | ChatGPT | **Prepared 2026-11-26** — checklist in `docs/cx-review-checklist.md`; waiting for Claude to mark `claude/auth-wiring` ready and give exact head SHA. No review pass claimed yet. | Sign-ups OFF until Muse's merge gate. Staging only; review profile/RLS, session, errors, accessibility, points copy, and safe paid+handed-over test-settlement path. |
+| CX-ACCT | Independent CX review of Claude's Auth branch, then the owner-test ordering branch; EN/FR, 390px + desktop, register → order + notes → points | ChatGPT | **Initial source review done 2026-11-26 on PR #28 / `claude/auth-wiring` @ `9b7214f`; 3 blocking findings + branch behind main posted in PR conversation and CHATGPT-REPLY. Not approved; exact-head re-test pending Claude fixes/rebase.** | Checklist: `docs/cx-review-checklist.md`. Formal GitHub review cannot be submitted because connected account is PR author; findings posted as PR conversation comment. Sign-ups OFF until Muse's merge gate. Staging only. |
 
 ## Done
 
