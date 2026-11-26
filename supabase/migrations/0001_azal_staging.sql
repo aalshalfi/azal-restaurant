@@ -269,7 +269,7 @@ create or replace function public.azal_staff_can_access(p_branch_slug text)
 returns boolean
 language sql stable security definer
 set search_path = pg_catalog, public
-as $
+as $azal_staff_access$
   select auth.uid() is not null
     and (
       public.azal_is_admin()
@@ -282,7 +282,7 @@ as $
           and a.branch_slug = p_branch_slug
       )
     );
-$;
+$azal_staff_access$;
 
 -- Create a minimal profile row for every new Auth identity. Do not copy
 -- user metadata here: profile display names remain optional and user-controlled.
@@ -291,14 +291,14 @@ returns trigger
 language plpgsql
 security definer
 set search_path = pg_catalog, public
-as $
+as $azal_handle_new_user$
 begin
   insert into public.profiles (id)
   values (new.id)
   on conflict (id) do nothing;
   return new;
 end;
-$;
+$azal_handle_new_user$;
 
 revoke all on function public.handle_new_user() from public, anon, authenticated;
 
