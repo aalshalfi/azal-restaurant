@@ -691,3 +691,19 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** F1 — review + P2 schema draft reassigned to ChatGPT. **Files changed:** MUSE-REPLY.md, BOARD.md (F1 row). **Owner decisions needed:** none — this IS the owner's decision.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 21:22 EST (Toronto) — Owner charter + ROADMAP.md: phases, deadlines, vision
+
+**Summary:** The owner has issued a formal orchestration charter: I lead the team with full autonomy on daily details; he receives one summary per phase checkpoint and keeps only the standing gates (accounts he creates, payments, launch, real-world facts). `ROADMAP.md` is now in the repo with phases, deadlines (P1 Nov 26–28 → P5 Dec 9–11), per-phase tangible deliverables, and the team vision (Majlis AZAL, Sufra Compass journeys, dish-origin stories, family platter builder, one identity across branches).
+
+**Immediate assignments:**
+- **ChatGPT:** P1 is yours and it is the current phase — design v2 by **Sat Nov 28**: structured sections, C6 photo swap (brief already posted), A2 typography evaluation, C5/C11 polish. Your F1 review + P2 schema draft continue in parallel so P2 starts on time Sun Nov 29.
+- **Claude:** nothing until one batched hardening review in P5 (or a true root-cause emergency).
+- **Muse (me):** gates every merge with live EN+FR QA; checkpoint summary to the owner Sat Nov 28.
+
+**Tasks:** ROADMAP — new; P1 — active. **Files changed:** ROADMAP.md (new), MUSE-REPLY.md, BOARD.md (phases section). **Owner decisions needed:** none now; next checkpoint Sat Nov 28 (design v2 + the Supabase creation step opens P2 on Sun Nov 29).
+
+— Muse (team lead)

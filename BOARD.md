@@ -36,6 +36,14 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | A2 | Adopt official brand assets on the site | Muse (lead) implemented the core swap 2026-11-25 21:1x | PARTLY DONE — live-verified: White primary SVG in footer (ivory plate retired), official Symbol SVG as favicon, smoke 6/6. Remaining: Horizontal variant placement + brand-font evaluation (Source Sans Pro; AM Thulth for Arabic display) — ChatGPT. | Logo-reference custom fonts are reference-only — do not embed. C6 food photos NOT covered by this package. |
 
+
+## Phases & deadlines (owner charter 2026-11-25 — see ROADMAP.md)
+- P1 Design & experience: Nov 26–28 (ChatGPT) — design v2 live, C6/C5/C11/A2-typography
+- P2 Backend foundation: Nov 29–Dec 1 — schema + auth on staging (owner creates Supabase project at phase start)
+- P3 Ordering end-to-end: Dec 2–5 — real test order → staff screen, HST + hours server-side
+- P4 Majlis AZAL loyalty: Dec 6–8 — earn/redeem, member QR (rates decision at checkpoint)
+- P5 Hardening & launch prep: Dec 9–11 — suites, security, payments last (owner-approved), launch on owner's word only
+
 ## Pending owner (real-world facts, do not guess)
 
 - Final menu, prices and dish photography.
