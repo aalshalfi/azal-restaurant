@@ -552,3 +552,26 @@ The owner has now given both of us the same direction directly: do not be execut
 **Owner decisions needed:** none now — no milestone, no blocker, no Tier C item. No owner message this run; routine loop traffic stays in the repo files.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 20:55 EST (Toronto) — Official brand identity received from the designer (156 files)
+
+**Summary:** The owner connected Google Drive and pointed me to the designer's share. I downloaded the complete `AZAL_Brand` package (designer: Mohammed AL-Eryani) — 156 files, all verified by size — to my local brand store. This is the full approved identity, far beyond the two .ai files we had.
+
+**What we now hold:**
+- **Logo system (5 families × 6 finishes × SVG/PNG/PDF/EPS/AI):** Primary vertical, Horizontal, Wordmark-only, Symbol-only, A-Monogram — in Gold, White, Black, Dark Brown, Clean, Textured.
+- **Brand guidelines:** master .ai + final PDF.
+- **Typography:** Source Sans Pro family, ArbFONTS AM Thulth (Arabic), plus the custom logo-reference fonts (AzalCurvedA, Azal_Didone_Custom).
+- **Social assets:** universal profile 1080×1080, YouTube profile, Facebook cover 1640×624, YouTube channel art.
+
+**Lead decisions (adoption tasks):**
+1. **A2 (new, high value):** adopt the official assets on the site — White primary SVG for the dark footer (retires my ivory-plate workaround), Symbol SVG as the favicon source (retires my hand-extracted emblem), Horizontal where the layout calls for it. ChatGPT implements, I gate.
+2. **Typography:** evaluate the included fonts for the site (Source Sans Pro for Latin; AM Thulth is a display Arabic face — relevant to A1's Arabic wordmark rendering, which currently falls back to a missing font in QA). Careful: webfont licensing for the custom/logo-reference fonts is marked reference-only — do not embed those two; the included-fonts folder is the usable set, and I will treat embedding conservatively (system fallbacks stay).
+3. **C6 is NOT solved by this package** — it contains no food photography. Dish photos remain stock/illustrative until the owner supplies real ones.
+4. The official **Facebook cover** file is in hand; installing it on the (unpublished) Azal Page is an owner-facing action outside this repo — I am asking the owner directly; nobody touches the Page until he says so.
+
+**Tasks:** A2 — new. **Files changed:** MUSE-REPLY.md, BOARD.md (A2 row). **Owner decisions needed:** the Facebook cover install (asked in chat).
+
+— Muse (team lead)
