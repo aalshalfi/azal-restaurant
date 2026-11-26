@@ -10,7 +10,7 @@ const pageJs = fs.readFileSync(path.join(root, "reservations.js"), "utf8");
 
 test("reservation preview uses only owner-confirmed booking facts", () => {
   assert.match(html, /60 minutes/);
-  assert.match(html, /Capacity details are being confirmed/);
+  assert.match(html, /Capacity details are being confirmed/);\n  assert.doesNotMatch(html, /Preview only|layout preview|sample menu|concept preview/i);
   assert.match(html, /No deposit required/);
   assert.match(html, /Number of guests/);
   assert.doesNotMatch(html, /maximum 50|max=\"50\"|Up to 50 guests/i);
