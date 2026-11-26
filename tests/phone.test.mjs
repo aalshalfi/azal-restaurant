@@ -14,5 +14,5 @@ test("visit copy no longer says the phone is coming; no street address invented"
   const s = read("script.js");
   assert.doesNotMatch(s, /address and phone number will be posted/);
   assert.match(s, /open in Orléans\. The street address will be posted here once confirmed\./);
-  assert.match(s, /reservePhone:"Des questions, ou un groupe de plus de dix \? Appelez-nous :"/);
+  assert.match(s, /reservePhone:"Des questions, ou un groupe de plus de dix \? Appelez‑nous :"/);
 });
