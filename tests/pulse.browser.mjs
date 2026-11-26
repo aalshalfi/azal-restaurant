@@ -44,8 +44,15 @@ const labels = (page) => page.$$eval(".pulse-step", (ls) => ls.map((l) => l.clas
 }
 { const { page } = await open({ status: "preparing" }); await page.waitForSelector(".pulse-step");
   ok(/is-current:Being prepared/.test(await labels(page)), "Preparing shown only because the server reports preparing"); await page.close(); }
+{ const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");
+  st.status = "cancelled"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-step.is-cancelled");
+  const t = await page.textContent("#tablePulse");
+  ok(/Order cancelled/.test(t) && await page.locator(".pulse-step").count() === 1 && !/Pickup time/.test(t), "visible order becomes cancelled: explicit 'Order cancelled', timeline replaced");
+  ok(/Order cancelled/.test(await page.textContent("#tablePulse + p[role=status]")), "cancellation announced");
+  const n = st.polls; await page.clock.runFor(120000); ok(st.polls === n, "stops polling once cancelled");
+  ok(/Last checked/.test(t), "timestamp labelled as the last check, not a server update"); await page.close(); }
 { const { page } = await open({ status: "cancelled" }); await page.waitForTimeout(300);
-  ok(await page.locator("#tablePulse").isHidden(), "no OPEN paid order (cancelled): nothing shown, nothing invented"); await page.close(); }
+  ok(await page.locator("#tablePulse").isHidden(), "no open paid order at load (cancelled earlier): nothing shown, nothing invented"); await page.close(); }
 { const { page } = await open({ failAll: true }); await page.waitForSelector(".pulse-error");
   ok(/Status unavailable right now/.test(await page.textContent("#tablePulse")) && await page.locator(".pulse-step").count() === 0, "network/server error: explicit message, never 'Received'"); await page.close(); }
 { const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");

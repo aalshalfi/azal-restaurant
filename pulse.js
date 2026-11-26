@@ -23,7 +23,7 @@
   function createPulse({ config, fetch: fetchFn, getSession }) {
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
-    const cols = "select=id,fulfilment_status,payment_status,pickup_slot,updated_at";
+    const cols = "select=id,fulfilment_status,payment_status,pickup_slot"; // "Last checked" is the client poll time, labelled as such
     async function get(q) {
       const s = getSession ? await getSession() : null;
       const uid = s && s.user && s.user.id;
@@ -53,13 +53,13 @@
   if (!p.enabled || !card) return;
 
   const S = {
-    en: { title: "Your order", code: "Code {code}", updated: "Last updated {time}", refresh: "Refresh", pickup: "Pickup time: {time}",
+    en: { title: "Your order", code: "Code {code}", updated: "Last checked {time}", refresh: "Refresh", pickup: "Pickup time: {time}",
       placed: "Received", accepted: "Accepted by the kitchen", preparing: "Being prepared", ready: "Ready for pickup", handed_over: "Collected", cancelled: "Order cancelled",
       now: "Now", unavailable: "Status unavailable right now. Try again.", hint: "This updates by itself. It shows what the kitchen has confirmed, not an estimate." },
-    fr: { title: "Votre commande", code: "Code {code}", updated: "Mis à jour à {time}", refresh: "Actualiser", pickup: "Heure de retrait : {time}",
+    fr: { title: "Votre commande", code: "Code {code}", updated: "Dernière vérification à {time}", refresh: "Actualiser", pickup: "Heure de retrait : {time}",
       placed: "Reçue", accepted: "Acceptée par la cuisine", preparing: "En préparation", ready: "Prête à emporter", handed_over: "Récupérée", cancelled: "Commande annulée",
       now: "En cours", unavailable: "Statut indisponible pour le moment. Réessayez.", hint: "Cette page se met à jour seule. Elle montre ce que la cuisine a confirmé, pas une estimation." },
-    ar: { title: "طلبك", code: "الرمز {code}", updated: "آخر تحديث {time}", refresh: "تحديث", pickup: "وقت الاستلام: {time}",
+    ar: { title: "طلبك", code: "الرمز {code}", updated: "آخر تحقّق {time}", refresh: "تحديث", pickup: "وقت الاستلام: {time}",
       placed: "استُلم", accepted: "قبله المطبخ", preparing: "قيد التحضير", ready: "جاهز للاستلام", handed_over: "تم الاستلام", cancelled: "أُلغي الطلب",
       now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", hint: "تتحدّث هذه الصفحة تلقائياً. تعرض ما أكّده المطبخ، لا وقتاً تقديرياً." }
   };

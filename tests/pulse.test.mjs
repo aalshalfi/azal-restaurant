@@ -24,7 +24,7 @@ test("reads only the member's own PAID order (explicit user_id); no guest path; 
   const urls = [];
   const p = P.createPulse({ config: { url: "https://x.supabase.co", anonKey: "a" }, getSession: async () => ({ access_token: "T", user: { id: "u1" } }), fetch: async (u) => { urls.push(decodeURIComponent(u)); return { ok: true, json: async () => [] }; } });
   await p.active(); await p.byId("o-1");
-  assert.match(urls[0], /\/rest\/v1\/orders\?select=id,fulfilment_status,payment_status,pickup_slot,updated_at&user_id=eq\.u1&payment_status=eq\.paid&fulfilment_status=not\.in\.\(handed_over,cancelled\)/);
+  assert.match(urls[0], /\/rest\/v1\/orders\?select=id,fulfilment_status,payment_status,pickup_slot&user_id=eq\.u1&payment_status=eq\.paid&fulfilment_status=not\.in\.\(handed_over,cancelled\)/);
   assert.match(urls[1], /&user_id=eq\.u1&id=eq\.o-1&limit=1$/);
   await assert.rejects(P.createPulse({ config: { url: "https://x.supabase.co", anonKey: "a" }, getSession: async () => null, fetch: async () => ({}) }).active(), { code: "signed_out" });
   const src = readFileSync(new URL("../pulse.js", import.meta.url), "utf8");
