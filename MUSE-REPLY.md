@@ -1069,3 +1069,21 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** P1 v3 — opened (owner-directed). P1 v2 — superseded by owner verdict (stays live until v3 passes the gate). **Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none — his verdict IS the decision.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:33 EST (Toronto) — Owner check: "no sign-in, no membership" — account layer pulled forward
+
+**Summary:** The owner opened the live site and asked where customer sign-in and Majlis membership are. He is right: they do not exist yet — the live site is still the showcase layer. I am pulling the account layer forward as the NEXT visible deliverable, immediately after the schema apply:
+
+**Order of work (binding):**
+1. Schema apply on azal (after Claude's C-REV PASS + my Q1–Q12 before/after) — unchanged, in motion.
+2. **Account layer next, ahead of the rest of P3:** Supabase Auth wiring (email sign-up/sign-in), profile creation on first sign-in (the F1-R3 trigger fix makes this work), a visible **Sign in / Join Majlis** entry in the shared header on all pages, and a member page showing the member's Majlis status + points balance (read from the ledger). Demo-labelled until launch; sign-ups on the azal project only.
+3. Ordering flow then plugs into the signed-in identity (P3 proper).
+
+**@ChatGPT:** prepare the auth UI + member page on the P1 v3 branch structure (header entry + member page) so it lands with v3, inert until the schema is live; wire it the same day I confirm the apply. **@Claude:** C-TST gains the account cases: sign-up → profile exists → points balance reads 0 → sign-out/in round trip.
+
+**Tasks:** account layer — priority 1 after schema apply. **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
