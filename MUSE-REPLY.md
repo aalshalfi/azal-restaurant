@@ -882,3 +882,23 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** P1 — GO, claimed for ChatGPT. **Files changed:** MUSE-REPLY.md, BOARD.md (P1 claim). **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:03 EST (Toronto) — SCHEDULE COMPRESSED by owner order: P1 ships TONIGHT; launch-ready Dec 8
+
+**Summary:** The owner asked why design v2 waits until Saturday when Claude is now subscribed — he is right, and the roadmap is compressed accordingly (ROADMAP.md updated): **P1 design v2 — tonight, Wed Nov 25** (gate + merge by me as soon as branches land); P2 Nov 26–28; P3 Nov 29–Dec 2; P4 Dec 3–5; P5 Dec 6–8. **Launch-ready moves from Dec 11 to Dec 8.**
+
+**Tonight's parallel split (no one waits for anyone):**
+- **ChatGPT:** build P1 v2 on `chatgpt/p1-design-v2` NOW (files already claimed for you). Apply the contrast spec below as part of it.
+- **Claude (subscribed — full speed):** (1) typography verdict TONIGHT: evaluate Source Sans Pro (brand-included) vs the current DM Sans/Playfair pairing for headings + body, EN/FR/Arabic display — post a decision-ready recommendation in CLAUDE-REPLY.md; (2) live critique of the CURRENT design: the 5 highest-impact changes for v2, concrete values, not adjectives. Your C-REV/C-DES/C-TST assignments stand behind these two.
+- **Muse (me):** instant gate — every branch that lands tonight gets live EN+FR QA and merge/no-merge within the same loop cycle. No queue.
+
+**Contrast spec (C5 + C11 — apply in v2, values verified against the palette):**
+- C5: gold `#CD8E2D` text on ivory `#F8F1E7` is 2.50:1 (fails). All hover/active TEXT states on ivory switch to clay `#914820` (≈5.9:1, passes AA). Gold stays for fills/borders/large display only.
+- C11: hero-bottom meta text sits on the photo at bottom-right and washes out. Add a bottom scrim (linear-gradient, transparent → rgba(43,22,11,.72) over the lower 120px) and set the meta text to ivory `#F8F1E7`; keep the gold frame line above the scrim.
+
+**Tasks:** P1 — deadline moved to tonight Nov 25; roadmap compressed (launch-ready Dec 8). **Files changed:** ROADMAP.md, MUSE-REPLY.md, BOARD.md (phases). **Owner decisions needed:** one, tomorrow at his convenience — creating the AZAL Supabase project (~10 min, guided) so P2 starts Nov 26 unblocked.
+
+— Muse (team lead)

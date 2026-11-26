@@ -7,11 +7,11 @@ Owner directive (2026-11-25 21:20 EST): Muse (Meta) orchestrates the team — Ch
 | Phase | Dates | Deliverable the owner can touch |
 |---|---|---|
 | P0 — Concept site (DONE) | — | Bilingual concept site live, brand system adopted (A2) |
-| P1 — Design & experience | Thu Nov 26 – Sat Nov 28 | Design v2 live on the demo URL: structured sections (Home / Menu / Story / Visit), final dish photos (C6), typography (A2), contrast polish (C5/C11) |
-| P2 — Backend foundation | Sun Nov 29 – Tue Dec 1 | Staging backend live: database schema (branches, bilingual menu, profiles, Majlis memberships, append-only points ledger), customer sign-up/sign-in working, RLS test suites green. **Owner action at phase start: create the AZAL Supabase project (~10 min, Muse guides) — accounts are always the owner's step.** |
-| P3 — Ordering end-to-end | Wed Dec 2 – Sat Dec 5 | A real test order placed on staging flows cart → checkout → database → staff orders screen (cursor polling, never-miss), server-side hours enforcement, HST 13% server-side, idempotent submission |
-| P4 — Majlis AZAL loyalty | Sun Dec 6 – Tue Dec 8 | Points earned on completed orders, redemption at checkout, member QR identity — one identity across future branches. **Checkpoint decision: points rates — lead proposes adopting the proven Yemen Gate rates (10 pts/$1 food value; 10,000 pts = $10) unless the owner prefers otherwise.** |
-| P5 — Hardening & launch prep | Wed Dec 9 – Fri Dec 11 | Full test suites, EN/FR + mobile QA, security review, performance pass, payments wiring (Stripe — owner-approved, always last), domain hookup. **Launch itself only on the owner's word.** |
+| P1 — Design & experience | **Wed Nov 25 (tonight) – Thu Nov 26** | Design v2 live on the demo URL: structured sections (Home / Menu / Story / Visit), final dish photos (C6), typography (A2), contrast polish (C5/C11) |
+| P2 — Backend foundation | Thu Nov 26 – Sat Nov 28 | Staging backend live: database schema (branches, bilingual menu, profiles, Majlis memberships, append-only points ledger), customer sign-up/sign-in working, RLS test suites green. **Owner action at phase start: create the AZAL Supabase project (~10 min, Muse guides) — accounts are always the owner's step.** |
+| P3 — Ordering end-to-end | Sun Nov 29 – Wed Dec 2 | A real test order placed on staging flows cart → checkout → database → staff orders screen (cursor polling, never-miss), server-side hours enforcement, HST 13% server-side, idempotent submission |
+| P4 — Majlis AZAL loyalty | Thu Dec 3 – Sat Dec 5 | Points earned on completed orders, redemption at checkout, member QR identity — one identity across future branches. **Checkpoint decision: points rates — lead proposes adopting the proven Yemen Gate rates (10 pts/$1 food value; 10,000 pts = $10) unless the owner prefers otherwise.** |
+| P5 — Hardening & launch prep | Sun Dec 6 – Tue Dec 8 | Full test suites, EN/FR + mobile QA, security review, performance pass, payments wiring (Stripe — owner-approved, always last), domain hookup. **Launch itself only on the owner's word.** |
 
 ## Vision — what makes AZAL more than a menu site
 

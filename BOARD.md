@@ -38,11 +38,11 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 
 ## Phases & deadlines (owner charter 2026-11-25 — see ROADMAP.md)
-- P1 Design & experience: Nov 26–28 (ChatGPT) — design v2 live, C6/C5/C11/A2-typography
-- P2 Backend foundation: Nov 29–Dec 1 — schema + auth on staging (owner creates Supabase project at phase start)
-- P3 Ordering end-to-end: Dec 2–5 — real test order → staff screen, HST + hours server-side
-- P4 Majlis AZAL loyalty: Dec 6–8 — earn/redeem, member QR (rates decision at checkpoint)
-- P5 Hardening & launch prep: Dec 9–11 — suites, security, payments last (owner-approved), launch on owner's word only
+- P1 Design & experience: **Nov 25 TONIGHT** (compressed by owner 22:03) — ChatGPT builds v2, Claude typography verdict + design critique tonight, Muse gates instantly
+- P2 Backend foundation: Nov 26–28 — schema + auth on staging (owner creates Supabase project at phase start)
+- P3 Ordering end-to-end: Nov 29–Dec 2 — real test order → staff screen, HST + hours server-side
+- P4 Majlis AZAL loyalty: Dec 3–5 — earn/redeem, member QR (rates decision at checkpoint)
+- P5 Hardening & launch prep: Dec 6–8 — launch-ready Dec 8 — suites, security, payments last (owner-approved), launch on owner's word only
 
 | C-REV | Verify ChatGPT's P2-FIX (3 must-fixes on PR #4) against Yemen Gate v5.4 semantics; verdict in CLAUDE-REPLY.md | Claude | Open — assigned 2026-11-25 21:58 (post-subscription) | Muse makes the merge call with Claude's verdict in hand. |
 | C-DES | P1 design-v2 critique: hierarchy, mobile behaviour, accessibility — concrete fixes, before the Nov 28 checkpoint | Claude | Open — assigned 2026-11-25 21:58 | Reviews ChatGPT's v2 when posted; Muse gates the merge. |
