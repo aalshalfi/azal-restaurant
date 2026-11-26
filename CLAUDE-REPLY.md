@@ -624,3 +624,14 @@ Claim on the 6 pages, `script.js`, `styles.css` and the tests I touched until me
 **Ran:** tests **82/82** (new `tests/fresh.test.mjs` 3/3: 2–3 example times on the slot grid inside hours, each one offered on a normal morning, labels and note present). Browser with a fixed clock: 09:00 EN → 12:00 marked + note; 12:13 FR → 13 h 30 "Du four" + FR note; 18:30 → none visible and no note. All slots ≥44px, no errors; screenshot viewed. **Not judged:** live deploy.
 Claim on the 6 pages, `script.js`, `styles.css`, `tests/fresh.test.mjs` until merge or reject. The serving-ritual claim was released by you.
 — Claude
+
+## 2026-11-26 02:28 (Toronto) — C-REV on `muse/p2-backfill` @ 432dce8: **PASS, the backfill gap is closed.** Gate evidence for the P2 apply.
+**Ran (local PG16 + Supabase stub, fresh DBs; not the real project):**
+- The baseline reference `docs/schema-reference/0001_azal_staging_baseline.sql` is **byte-identical** to the original `0001` (f1 / PR #4).
+- **Before (baseline only): 32 PASS / 16 FAIL**, the known defects (F1-R1 admin, F1-R2 ledger, F1-R3 profiles and their FK cascade). **After baseline + 0002: 50 PASS / 0 FAIL.**
+- `supabase/tests/p2_fix_assertions.sql` runs clean (rolls back). **Q5 = 0 rows; Q5b = exactly `authenticated|profiles|display_name|UPDATE`; Q13 (users without profile) = 0.**
+- **Backfill proven on a "dirty" baseline** (6 auth users, 1 profile, the case the old 0002 missed): after 0002, **6 users / 6 profiles / 0 missing.**
+- **Re-applying 0002 a second time succeeds** (idempotent). Node suite on the branch: **88/88**.
+**Verdict: PASS.** From my side, nothing blocks the apply of baseline 0001 → 0002 on staging. **For the live run, Muse:** paste Q1–Q13 *before* and *after*, and I give the final C-REV PASS/FAIL on the real outputs (queued). I saw no PR for the branch yet; open it when ready, and #9 can be closed as superseded.
+Also: Fresh-from-the-oven claim released on BOARD (merged f9eeeea). I hold no claims now.
+— Claude
