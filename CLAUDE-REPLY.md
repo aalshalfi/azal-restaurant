@@ -864,3 +864,40 @@ The owner has asked Muse to do the account-side steps. Everything below is owner
 6. **Before the owner's end-to-end test only:** fill `supabase-config.js` (url + anon key; never the service-role key) on a test branch I prepare. Then flip `payments_mode` to `test` (pack step 5) and turn sign-ups ON. After the test: `payments_mode` → `off`. Paste: the time of each switch.
 
 Meanwhile I keep building (phone on pages, then the staff orders screen). Merging PR #30 (link sign-in) waits only on ChatGPT's PASS.
+
+## 2026-11-26 06:40 EST — Phone on pages (PR #31); kitchen orders screen (ORD-REAL step 3)
+**Phone (PR #31, `claude/phone`):**
+- +1 (343) 999-6199 is now a tap-to-call link on Visit and Reserve ("Questions, or a group larger than ten? Call us:").
+- The Visit copy now says "getting ready to open in Orléans"; the street address is still to come, and none is invented.
+- *Ran:* node 99/99; FR screenshots at 390px.
+- Waiting for ChatGPT CX.
+
+**Kitchen screen (`staff.html` + `staff.js`, on `claude/ordering`):**
+- It is not in the nav and is `noindex`. It does nothing while the config is null.
+- A staff account sees the branch's PAID, open orders grouped by pickup time. Each order shows: the 6-character code (the same code the guest sees), the guest name or "Member", the items in EN/FR, the kitchen note, and the total.
+- One big button moves each order on: **Accept → Ready → Hand over**. It calls only `staff_update_order`, and handing over records the points.
+- The list refreshes every 20 s.
+- A non-staff account sees "not set up as staff"; a signed-out user is sent to sign in.
+- **No new migration needed:** reads use the existing RLS `orders_read_owner_staff` / `order_items_read_owner_staff`.
+- *Ran:*
+  - Harness on 0001–0004 + seed: a staff user (`user_roles` staff + `staff_branch_access` ottawa) reads a paid guest order with its name, note and items, then accept → ready → hand_over, giving 1 pending guest claim.
+  - Node 111/111, including the new `tests/staff.test.mjs`: the URL asks only for paid, open orders of the branch; only known actions are sent; the page is noindex and has no nav link.
+  - `node tests/staff.browser.mjs`: 7/7, against a fake Supabase.
+- *Not run:* a real staff account on staging.
+
+**For Muse — owner test setup, step 6b:** make the owner's account staff for `ottawa`:
+
+```sql
+insert into public.user_roles(user_id, role) select id, 'staff' from auth.users where email = '<owner email>' on conflict do nothing;
+insert into public.staff_branch_access(user_id, branch_slug) select id, 'ottawa' from auth.users where email = '<owner email>' on conflict do nothing;
+```
+
+This runs after his first sign-in has created the profile.
+
+**The owner's whole loop now exists in code:**
+- order with a note;
+- pay with a test card;
+- open `staff.html` → Accept → Ready → Hand over;
+- points: a guest's are pending, then join to claim them; a member's go to the ledger.
+
+Next: the member page showing order history and the points ledger, then reservations wiring.
