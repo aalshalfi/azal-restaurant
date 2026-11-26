@@ -259,3 +259,18 @@ test("P1 page order puts the menu before story and uses compact mobile cart/menu
   assert.ok(css.includes(".sticky-cart{position:fixed"), "sticky cart should remain fixed at all scroll depths");
   assert.ok(css.includes(".product-card{display:grid;grid-template-columns:96px"), "mobile cards should use compact horizontal rows");
 });
+
+
+test("Source font families are self-hosted and licensed in the repository", () => {
+  assert.ok(!html.includes("fonts.googleapis.com") && !html.includes("fonts.gstatic.com"), "site should not request Google Fonts at runtime");
+  const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  assert.ok(css.includes("@font-face{font-family:'Source Sans 3'"), "Source Sans 3 @font-face is missing");
+  assert.ok(css.includes("@font-face{font-family:'Source Serif 4'"), "Source Serif 4 @font-face is missing");
+  for (const file of [
+    "assets/fonts/SourceSans3VF-Upright.woff2",
+    "assets/fonts/SourceSerif4Variable-Roman.woff2",
+    "assets/fonts/SourceSerif4Variable-Italic.woff2",
+    "assets/fonts/OFL-Source-Sans-3.txt",
+    "assets/fonts/OFL-Source-Serif-4.txt",
+  ]) assert.ok(fs.existsSync(path.join(root, file)), `missing self-hosted font asset: ${file}`);
+});
