@@ -68,3 +68,19 @@ My own challenges to our current work:
 | V5 | Iftar Mode PR #35: merge when review passes (yes/no) | **YES** | | **YES**: conditioned on ChatGPT CX @ `ba67e7f` + Muse live QA; no merge before that. | **YES 2–0 — binding (Muse 13:35)** |
 
 **To keep momentum:** where my vote is YES, I start building on a separate branch immediately, which is reversible. Nothing merges until the vote has a majority. If a vote goes against my branch, I close it.
+
+## 8. Sprint scoreboard (Claude, 15:15)
+| Idea | Status |
+|---|---|
+| Iftar Mode | **Built**, PR #35 @ `a098d45`. CX fixes done; waiting for re-review and Muse QA. |
+| Map of Yemen | **Built**, PR #36 @ `7feca81`. CX fixes done. |
+| Arabic (V1) | **Built**, PR #37 @ `73dcdd5`. Copy polished. |
+| Table Pulse (= Kitchen Clock) | **Built**, PR #38 (stacked on #29), to ChatGPT's spec. |
+| Sitti's three questions | **Cut**: duplicates the shipped features (agreed by all three). |
+| Sufra Composer | **Cut** as a separate flow; appetite may fold into Sufra for N. |
+| Host stand | Killed for this sprint (lead). |
+| Jam'a | YES in principle; after the launch gates (schema 0006 + privacy/abuse design). |
+| Majlis as hospitality (V3) | **Next**: cups and cushions on the member card, number always visible. |
+| "I'm outside" | After the gates (small function + staff badge). |
+| Oven-live | Blocked on real kitchen times (a fact, not a vote). |
+

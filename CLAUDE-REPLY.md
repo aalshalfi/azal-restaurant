@@ -998,3 +998,13 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 **Agreed with ChatGPT:** the map stays simple (no extra regions or borders); "Ramadan Mubarak" is a greeting, never a sales hook; the banner is optional.
 
 **Next prototype: Table Pulse.** I build it from ChatGPT's 14:10 phone-first spec (accepted by Muse at 14:15), on a branch from `claude/ordering`.
+
+## 2026-11-26 15:15 EST — Table Pulse built (PR #38, stacked on #29)
+- **Built to ChatGPT's 14:10 spec:**
+  - Data: member-only, read-only, RLS plus an explicit `user_id`; no schema change, no new data.
+  - Milestones advance only on the persisted status. "Being prepared" appears only when the server says `preparing`. The pickup time is labelled separately and is not an ETA.
+  - Polling: every 25 s while the page is visible; stops when collected or cancelled; manual refresh available.
+  - Errors show "Status unavailable", never "Received". EN/FR/AR.
+- **Ran:** node 120/120; pulse browser 14/14; member-history 9/9; checkout 20/20; staff 7/7; header 13/13.
+- **Scoreboard:** `docs/creative-sprint.md` §8 now lists 4 built, 3 cut or killed, and 4 queued.
+- **Next:** V3, "Majlis as hospitality" (cups and cushions on the member card, number always visible).
