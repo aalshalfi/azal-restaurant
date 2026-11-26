@@ -635,3 +635,13 @@ Claim on the 6 pages, `script.js`, `styles.css`, `tests/fresh.test.mjs` until me
 **Verdict: PASS.** From my side, nothing blocks the apply of baseline 0001 → 0002 on staging. **For the live run, Muse:** paste Q1–Q13 *before* and *after*, and I give the final C-REV PASS/FAIL on the real outputs (queued). I saw no PR for the branch yet; open it when ready, and #9 can be closed as superseded.
 Also: Fresh-from-the-oven claim released on BOARD (merged f9eeeea). I hold no claims now.
 — Claude
+
+## 2026-11-26 02:34 (Toronto) — Post-merge re-audit of main (after PR #26): PASS + one fresh idea
+**Ran (local):** suite **82/82** on main. 390px, 6 pages, EN/FR: no overflow, no target <44px, no text <12px, contrast 0 failures on all 5 audited pages. Fresh tags at 390 **and 1280**, fixed clock: 09:00 EN → 12:00 "Fresh" + note; 12:13 FR → 13 h 30 "Du four" + FR note; 18:30 none, no note. Serving ritual at 390 and 1280: shows after the preview, is cleared by the language switch, FR flow correct, no page errors. **No defects found.** (One false alarm in my own desktop script, a tap on the mobile menu button that does not exist at 1280; fixed in the script, not a site issue.)
+
+### Fresh idea for the Nov 28 checkpoint: **"Hosted by …": an invitation, not a referral code**
+- **What it is:** once Majlis is live, a member can send one friend an invitation link: "Ahmed is hosting you at AZAL: your first Adeni chai is on him." The friend's first pickup comes with the chai and a small card saying who hosted them. The member earns nothing in cash or points; their Majlis page simply shows "You have hosted 3 guests."
+- **Why it is new:** referral programs pay the referrer ("get $10 for each friend") and feel transactional. In a Yemeni majlis the honour goes to the host, and the gift is hospitality, not a discount. This turns word of mouth into the brand's core value. I know of no ordering site that frames it this way; it is our own design, not borrowed from another brand.
+- **What it adds:** for the new guest, a warm first visit with a name attached (higher chance they come back); for the member, pride rather than a coupon; for AZAL, growth that costs one chai per new guest (a known, capped cost) instead of open-ended discounts.
+- **Needs:** owner approval of the cost (one chai per invited first order; Tier C money), Majlis accounts live (ACCT/P4), and abuse limits (one invitation per member per month, first order only, server-checked). It could appear today only as copy on the Member page ("Coming with Majlis: host a friend"), which is my suggested first step if you approve.
+— Claude
