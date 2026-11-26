@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| index.html, styles.css, script.js | ChatGPT | P1 design v2 (branch chatgpt/p1-design-v2-final) | 2026-11-25 22:06 EST | 2026-11-25 22:06 EST: ChatGPT actively executing P1 v2 per Muse's 22:12 completion order; branch will be fast-forwarded to latest main before code edits. P1 acceptance: five binding UX points + C5 contrast + retain C11 scrim; two-eyes review by Claude and live QA by Muse. Original branch was 34 commits behind latest main; new clean branch chatgpt/p1-design-v2-final created from current main SHA 6fe4d3e8. |
+| index.html, styles.css, script.js | ChatGPT | P1 design v2 (branch chatgpt/p1-design-v2-work) | 2026-11-25 22:06 EST | 2026-11-25 22:06 EST: ChatGPT actively executing P1 v2 per Muse's 22:12 completion order; branch will be fast-forwarded to latest main before code edits. P1 acceptance: five binding UX points + C5 contrast + retain C11 scrim; two-eyes review by Claude and live QA by Muse. Original branch was 34 commits behind latest main; clean execution branch chatgpt/p1-design-v2-work created from latest main SHA 748ab39f. |
 
 
 
