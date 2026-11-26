@@ -1108,3 +1108,34 @@ The owner explicitly authorized ChatGPT to merge reviewed PRs, apply database mi
 - **Main branch comparison:** #27 5/17; #32 7/27; #29 14/8; #30 2/8; #31 3/8 (ahead/behind; all diverged). Do not assume mergeability means branch is current.
 
 **Actions this checkpoint:** posted exact-head re-review and dependency sequencing on #32 (comment 7200023440), requested #27 synchronization and 0001→0002 evidence (comment 7200023982), and requested Claude refresh #32 PR body plus coordinate with Muse. No SQL applied, no Supabase settings/secrets changed, no real signup/order/reservation/payment/email activation, no spending, no destructive Git operations. Owner's explicit authorization to merge/apply/activate is noted; sequencing and operational gates remain mandatory.
+
+
+## 2026-11-26 — Current review: #27 dependency, #32 feature gate, ordering history
+
+**Main reviewed:** `79f107297ebf896f1445774a259243ecfc1bc517`.
+
+### PR #27 — P2 baseline / dependency, exact head `1ee391ebf9e8997b821661bfde94e5feb3a52414`
+- GitHub Actions Site checks **run 415 succeeded** on this exact SHA. The single job `static-checks` passed JavaScript syntax, runtime smoke and page-markup checks. This is not proof of the full PostgreSQL 16 migration harness.
+- Source review of 0001→0002: 0001 baseline is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql`; 0002 is incremental, checks for expected baseline/Auth objects before proceeding, adds the minimal Auth profile trigger and pre-existing-user backfill, partial unique ledger indexes, and global client DML revokes with only the intended `profiles.display_name` update restored.
+- Current compare to main: **5 ahead / 17 behind**, status diverged; GitHub PR reports `mergeable=false`. Do not merge yet.
+- **Blocking runbook contradiction:** `docs/p2-staging-apply.md` says AZAL staging was verified empty and requires 0001 → verify → 0002; `docs/f1-review.md` says the existing staging baseline already has 0001 and explicitly says do not rerun it; PR body still says no SQL applied. Muse must confirm the exact live state using read-only evidence and reconcile one authoritative exact-target runbook before any SQL action.
+- Comment posted on #27: `7200026056` requesting non-destructive main sync, preserved additive files, exact 0001→0002 PostgreSQL 16 harness, full CI, refreshed body/reply, and Muse confirmation. No merge or SQL apply.
+
+### PR #32 — table-only reservations, exact head `5bbcb556e761151c3a520ac697243637d9c00524`
+- Source review PASS for the requested booking gate: DB `booking_enabled NOT NULL DEFAULT false`; availability returns no slots while closed; direct anon `reserve_table` is rejected with `booking_closed`; cancellation remains available. UI requires strict `bookingEnabled === true` and `goLiveAuthorized === true`, and both shipped flags remain false.
+- IP source review: prefer `cf-connecting-ip`, otherwise last proxy-appended XFF hop, never the client-controlled first hop. Claude records Muse's staging gateway check confirming CF contains the real client IP and XFF can contain a spoofed first hop; I did not independently access the gateway.
+- GitHub Site checks **run 413 succeeded** on this exact SHA. Claude reports PG16 reservations 66/66, ordering 80/80, two-session booking/cancel throttle races blocked at 10/10, capacity race one winner, Node 105/105 and reserve browser 19/19. I inspected source/tests but did not independently execute PostgreSQL or Playwright.
+- Current compare to main: **7 ahead / 27 behind**, diverged; GitHub reports `mergeable=false`. PR #27 remains a required prerequisite. Live booking additionally needs an outbox sender/real staging delivery test and gateway flood protection.
+- Updated PR #32 description to the exact current head and current gates; update succeeded, and GitHub still reports it non-mergeable. Comment `7200026754` records the second-eyes review; coordination comment `7200038524` asks Claude to maintain the 30-minute cycle and refresh reports.
+
+### PR #29 — ordering, exact head `e03927224c1dce9d65c5e83fc03a6f06029379e6`
+- New member history + points ledger source review PASS: explicit own-user filters on orders and ledger in addition to RLS; access token used; DOM values rendered with `textContent`; hidden signed out and inert with null config; EN/FR.
+- Claude reports Node 117/117, member-history browser 9/9, checkout 20/20, staff 7/7 and header 13/13. No PR-triggered workflow run was returned for this exact SHA; these are Claude-reported local results, not independently run by ChatGPT.
+- Current compare: **14 ahead / 8 behind**, diverged; GitHub reports `mergeable=false`. PR remains Draft. Body is stale (says member history is still to do and older test totals). Comment `7200027517` requests non-destructive sync, body/reply refresh, CI at exact head and continued Draft status until staging E2E.
+
+### PR #30 and #31
+- #30 exact head `fa6cce9bd21e4167af336eb4c34b1641032b2ea8`: Site checks **run 423 succeeded**; Claude reports Node 101/101 and fake-Supabase email-link browser flow. Compare **2 ahead / 8 behind**, GitHub `mergeable=false`; real email/redirect checks remain staging gates. Comment `7200028082` requests sync and body/reply refresh.
+- #31 exact head `b8b822d7a004f04b0c935692e3b3196c7a223f4e`: Site checks **run 422 succeeded**; Claude reports Node 102/102 and header browser 13/13. Phone links remain source-level PASS. Compare **3 ahead / 8 behind**, GitHub `mergeable=false`. Comment `7200028919` requests sync and body/reply refresh.
+- #33 remains merged at `23490141978451717cca5a578cd43faa5ec6b42d`.
+
+**Coordination/safety:** asked Claude to maintain his 30-minute cadence, update `CLAUDE-REPLY.md` with exact SHA/files/tests/CI/results/blockers, and coordinate the #27 dependency with Muse. No PR merged in this run. No SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spend, no force-push or history rewrite. The GitHub connection can inspect and modify repository content but does not provide a Supabase project action; Muse's operational staging gate remains required.
