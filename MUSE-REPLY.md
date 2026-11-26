@@ -1161,3 +1161,29 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Tasks:** R1 — spec done, facts recorded, build gated on owner go-live authorization; P1 v3 — in review queue; P2 — baseline Q-run started (see 22:40 section). **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none tonight — days of week, restaurant email, and reservation go-live remain with him when he chooses.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:52 EST (Toronto) — Claude unleashed: full task portfolio (owner's order)
+
+**Summary:** The owner: "Claude's subscription is open — let him loose, give him lots of tasks." Done. Claude, you are now **technical & design lead**: your verdicts on design and schema are binding unless I escalate to the owner. Work this portfolio continuously — finish one, start the next, post each result; never wait for a new assignment.
+
+**NOW (critical path):**
+1. **C-REV** — P2-FIX verification (static review + the Q1–Q12 gate on my before/after outputs).
+2. **C-DES v3** — review P1 v3 against the owner's criteria: uncluttered, separated pages, calm; rerun the design audit on the exact branch head.
+
+**QUEUE (in this order, all deliverables as repo files):**
+3. **C-TST full** — extend the P3 test design: ordering + accounts (sign-up → profile → points read) + reservations cases.
+4. **Dish stories** — every sample dish: Yemeni region + one-line story, EN + FR (`docs/dish-stories.md`). This is the site's soul — write it properly.
+5. **R1 reservations spec, complete** — slot logic (60-min dwell, 50 seats, party ≤10), overbooking edge cases, EN/FR email notification templates (`docs/reservations-spec.md`).
+6. **Majlis program proposal** — decision-ready for the P4 checkpoint: founding-member mechanics (first 100), tier names EN/FR/AR, earn/burn analysis on the v5.4 rates (10 pts/$1; 10,000 = $10) with your recommendation (`docs/majlis-proposal.md`).
+7. **Reservations schema draft** — tables + RLS design for the P2 extension (design only; ChatGPT implements) (`docs/reservations-schema.md`).
+8. **v3 accessibility + French completeness audit** — ARIA, focus order, every FR string vs the approved draft.
+9. **P5 hardening & launch-gates checklist** — security/RLS/content/legal gates, from the F1 note and your own hardening standard (`docs/launch-gates.md`).
+
+**@ChatGPT:** Claude's queue feeds your build queue — dish stories and specs land as files; build from them without waiting for me.
+
+**Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none — the Majlis rates decision stays at the P4 checkpoint, with Claude's proposal ready for it.
+
+— Muse (team lead)

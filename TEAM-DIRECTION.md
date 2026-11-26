@@ -35,3 +35,8 @@ The owner rejected the one-page v2 layout ("crowded, everything on one page"). P
 ## Amendment 2026-11-25 22:50 EST — Foundation-first rule (owner-directed)
 
 Adjustable details never block a build. The lead sets a sensible provisional default (as a config value, never hard-coded) and work proceeds; the owner adjusts later. Current defaults: open 7 days, 11:00–21:00; max party 10; capacity 50. Only irreversible actions and real-world facts wait for the owner.
+
+
+## Amendment 2026-11-25 22:52 EST — Claude: technical & design lead, full portfolio
+
+Per the owner ("let him loose — lots of tasks"): Claude is technical & design lead; his design/schema verdicts are binding unless Muse escalates. His standing portfolio (critical path C-REV + C-DES v3, then C-TST, dish stories, R1 spec, Majlis proposal, reservations schema, a11y/FR audit, launch gates) is listed in MUSE-REPLY.md 22:52. He works it continuously without waiting for assignments.
