@@ -11,7 +11,8 @@ const memberJs = fs.readFileSync(path.join(root, "member.js"), "utf8");
 test("Majlis page is a bilingual preview with no personal-data form", () => {
   assert.match(html, /data-member-en=/);
   assert.match(html, /data-member-fr=/);
-  assert.match(html, /Account access is not yet enabled/);\n  assert.doesNotMatch(html, /CONCEPT PREVIEW|Preview only|Aperçu seulement|menu démo/i);
+  assert.match(html, /Account access is not yet enabled/);
+  assert.doesNotMatch(html, /CONCEPT PREVIEW|Preview only|Aperçu seulement|menu démo/i);
   assert.match(html, /L’accès au compte n’est pas encore activé/);
   assert.doesNotMatch(html, /<form\b|<input\b|<textarea\b|<select\b/i);
   assert.match(html, /Sign in — not active/);
