@@ -21,6 +21,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | script.js, styles.css, tests/say-it.test.mjs | Claude | Say it right: text pronunciation chips under dish names (branch claude/say-it-right) | Released 2026-11-26 00:25 EST | Approved by lead 00:13. Text only, no audio. Delivered and merged into main at `75af7d2` (lead static QA 39/39 + file checks; live QA delegated after deploy). PR #19. |
 | index.html, menu.html, story.html, member.html, script.js, tests/a11y-fr.test.mjs | Claude | A11Y2 fix: translate skip link, aria-labels and image alts (branch claude/a11y2-fr-names) | Released 2026-11-26 00:40 EST | Audit PASS with one finding (FR accessible names), fixed here. Delivered and merged into main at `7ce7af4` (lead static QA 44/44 + file checks; live QA delegated after deploy). PR #20. |
 | index.html, menu.html, styles.css, script.js, tests/cdes-final.test.mjs | Claude | C-DES v3 final fixes 1-5 as ruled 00:52 (branch claude/cdes-final) | Released 2026-11-26 00:56 EST | Fix 1 = collapse the mood guide (not remove). Delivered and merged into main at `a040283` (lead static QA 49/49 + file checks; live QA delegated after deploy). PR #21. |
+| index.html, menu.html, story.html, member.html, script.js, styles.css, tests/pickup.test.mjs | Claude | P3 pickup-time step, inert preview UI (branch claude/p3-pickup-ui) | 2026-11-26 01:02 EST | Approved by lead 00:56. No backend, no real slots, nothing sent or stored. Do not merge; Muse gates. |
 
 ## Open tasks
 
