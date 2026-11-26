@@ -959,3 +959,35 @@ The owner explicitly approved the temporary arrangement through Muse's return to
 Priority: #32 table-only reservations, #31 phone/Visit CX, #30 email-link sign-in, #29 ordering and remaining member/staff UI, adjusted for dependencies. Claude must report exact SHAs, files changed, tests actually run/results and blockers in CLAUDE-REPLY.md.
 
 Hard boundaries remain: no production/live Supabase migration apply; no Supabase config/secrets changes; no real sign-up, order, reservation, payment or customer-data activation; no live email sender activation; no spending or destructive Git history changes. Such actions remain inert pending a separate explicit owner decision and environment verification. Muse resumes QA/staging duties on return. The table-only reservation scope is unchanged.
+
+## 2026-11-26 (Toronto) — Scheduled AZAL review checkpoint: exact heads #29–#32
+
+### Current PR state and synchronized SHAs
+- **#32 Reservations:** open, non-draft, branch claude/reservations, head 709771a10d6b4b488426f34f4532536b1b26f542, mergeable.
+- **#31 Visit + Reserve phone:** open, non-draft, branch claude/phone, head cc0a0e56d4931e22b58c6b658672d831e831cb06, mergeable. The owner's new mobile-header feedback is posted; no implementation commit yet.
+- **#30 Email-link sign-in:** open, non-draft, branch claude/otp-link, head e2898248d58ff386cddf0c382de0060bf206553e, mergeable.
+- **#29 Ordering + staff screen:** open, Draft, branch claude/ordering, head e27dcda906a11f571353e8cd1f0773ffdc044e30, GitHub reports not mergeable. The new staff screen is in this head.
+- Current PR comments and reply files show no Claude acknowledgement/update after the 09:05 EST reservation report. I re-pinged Claude about his own 30-minute loop and posted the mobile-header request on #31.
+
+### #32 — source review at exact head 709771a10d6b4b488426f34f4532536b1b26f542
+**Status: CHANGES REQUIRED before source-level PASS.** I inspected 0005_reservations.sql, reserve.js, reserve.html, the Node/browser tests and SQL behavior test source. I did not execute PostgreSQL or the browser suite. Findings posted in a PR comment:
+1. **DOM XSS:** reserve.js inserts booked.email into done.innerHTML at line 138. The client regex at line 7 accepts <svg/onload=alert(1)>@example.com; the SQL email constraint uses the same permissive pattern. Render untrusted values with text nodes / textContent or rigorously escape them; add a regression test.
+2. **False email-delivery claim:** the guest confirmation copy says the email “is sent”, but 0005 only queues reservation_outbox rows. The sender Edge Function/webhook and owner SMTP are not included or tested. Make copy truthful and keep booking inert until sending/retries are implemented and verified.
+3. **Abuse protection:** the anonymous reserve_table RPC is throttled only by email; cancel_reservation has no throttle, despite the reservations spec calling for contact/IP throttling and cancellation rate limiting. Add server-side limits that cannot be bypassed by changing email, or keep public endpoints gated.
+4. **Migration reproducibility:** the current main tree contains only 0003 and 0004 under supabase/migrations; 0001/0002 are absent although 0005 requires them. This also prevents independent verification of the core branch_hours constraints. Record/restore the exact baseline migration sources and hashes before any fresh-database deployment.
+
+The table-only field scope itself is correct: name, mobile, email, party size, date and time only. Claude reports PG16 53/53, ordering regression 80/80, one-winner concurrency, Node 99/99 and fake-Supabase browser 14/14; these are Claude-reported, not independently run by ChatGPT. No real Supabase/email test. The combined status endpoint returned no checks for this SHA.
+
+### #31 — phone CX at exact head cc0a0e56d4931e22b58c6b658672d831e831cb06
+**Phone-scope source review: PASS.** Both pages use tel:+13439996199; EN/FR Visit copy says opening preparation is underway in Orléans without inventing an address. Claude reports Node 99/99; the checked-in phone test covers the phone target and French copy. No independent execution or CI status. The separate owner mobile-header request remains open: menu control is still centered and the outlined YOUR ORDER block remains oversized. #31 and #32 touch overlapping page/style files, so Claude must coordinate before editing and provide responsive screenshots and touch-target checks.
+
+### #30 — email-link sign-in at exact head e2898248d58ff386cddf0c382de0060bf206553e
+**Source-level PASS for link adoption.** requestCode sets redirect_to; adoptLink verifies the returned access token, stores the session and the page removes the fragment after processing. Tests cover redirect construction, link adoption, invalid links and malformed email. No real email or redirect-allow-list verification. Keep config null and sign-ups OFF until Muse/owner gates and a real delivery test.
+
+### #29 — staff screen at exact head e27dcda906a11f571353e8cd1f0773ffdc044e30
+**Source-level PASS for the new staff orders screen.** It requires a session, checks branch staff access, queries only paid/open branch orders, escapes order data, and sends only accept/ready/hand_over through staff_update_order. The page is noindex, unlinked from public navigation and inert with null config. Claude reports Node 111/111 and fake-Supabase browser 7/7; not independently executed. Still outstanding: member order history/points ledger and owner end-to-end test. PR description is stale (signed-in/pay-at-pickup wording versus current guest/test-card code); Claude should update it and the reply file. PR remains Draft and GitHub reports not mergeable.
+
+### Actions / safety
+- Posted source-level review comments on #29–#31 and a blocker comment on #32. These are not merge approvals.
+- Asked Claude to continue his 30-minute cadence and record exact heads/tests/blockers in CLAUDE-REPLY.md; asked him to implement the mobile header refinement only after checking overlap with #32.
+- No PR merged, no SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spending and no destructive Git operation.
