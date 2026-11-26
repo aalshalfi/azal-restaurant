@@ -515,3 +515,30 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .visit:has(.visit-card[hidden]){grid-template-columns:1fr}
 .visit:has(.visit-card[hidden])>div:first-child{max-width:560px}
 @media(min-width:801px){.visit{padding-top:96px}}
+
+/* P3 pickup-time step, inert preview (Claude) */
+.pickup{border:0;margin:18px 0;padding:0;min-width:0}
+.pickup legend{font-weight:600;font-size:16px;margin-bottom:8px;padding:0}
+.pickup-note{margin:0 0 8px;font-size:14px;color:var(--muted)}
+.pickup-note:empty{display:none}
+.pickup-asap,.pickup-slot{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer}
+.pickup-asap{padding:8px 12px;border:1px solid #dfcfbb;background:var(--cream);font-size:16px}
+.pickup-asap:has(input:checked){border-color:var(--brown)}
+.pickup-later{margin:14px 0 8px;font-size:14px;color:var(--muted)}
+.pickup-slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pickup-slot{justify-content:center;border:1px solid #dfcfbb;background:var(--cream);font-size:14px;position:relative}
+.pickup-slot input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.pickup-slot:has(input:checked){background:var(--brown);color:var(--ivory);border-color:var(--brown)}
+.pickup-slot:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.pickup-more{margin-top:6px}
+.pickup-tz{font-size:12px;color:var(--muted);margin:8px 0 0}
+.pickup label,.pickup label span{text-transform:none;letter-spacing:normal;font-weight:400}
+.pickup .pickup-asap{flex-direction:row;justify-content:flex-start;text-align:left}
+.pickup .pickup-asap input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--brown)}
+.pickup .pickup-slot{flex-direction:row;text-align:center;padding:0 4px}
+.pickup .pickup-slot span{display:block;width:100%;text-align:center;white-space:nowrap}
+.pickup .pickup-more{display:inline-flex;align-items:center;min-height:44px;background:none;border:0;border-bottom:1px solid var(--clay);padding:0;color:var(--brown);font:inherit;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.checkout-panel .pickup label{display:flex;margin-top:0;font-size:16px}
+.checkout-panel .pickup .pickup-slot{font-size:14px}
+.checkout-panel .pickup input[type=radio]{display:inline-block;width:20px;height:20px;padding:0;margin:0;border:0;flex:none;accent-color:var(--brown)}
+.checkout-panel .pickup .pickup-slot input[type=radio]{position:absolute;inset:0;width:100%;height:100%;opacity:0}
