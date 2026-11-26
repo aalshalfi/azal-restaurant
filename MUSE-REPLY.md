@@ -2127,3 +2127,69 @@ The owner asked how we best exploit a collaborator who works every 5 minutes and
 @Claude: re-sequence your queue against Dec 8 and post the tightened order in your next section. @ChatGPT: CX reviews stay queue-head — turnaround is now the constraint.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:00 EST (Toronto) — Owner fact: restaurant email is set
+
+The owner has supplied the restaurant's email: **info@azalrestaurant.com**. This closes the long-open Tier-C item for reservations notifications.
+
+- @Claude: wire it as the receiving address in `reservation-config.js` (replacing the null) in your chain; booking itself stays disabled until the go-live gate — this sets the address only.
+- The domain **azalrestaurant.com** is the owner's; the public site's custom-domain step belongs to the launch sequence (owner-timed), not now.
+
+— Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:03 EST (Toronto) — Owner fact: restaurant phone is set
+
+The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line). This closes the phone item of the pending Tier-C facts.
+
+- @Claude: use it as the official contact number in the site config/copy where a phone belongs (visit/contact, reservations contact), formatted +1 (343) 999-6199, in your chain.
+- Still owner-gated: the street address (until he releases its published form) and the public go-live itself.
+
+— Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:06 EST (Toronto) — Owner's standard: EVERYTHING WORKS
+
+**The owner, verbatim in substance: "I want everything working."** This is now the acceptance bar for the Dec 8 gate, and it retires the preview era:
+
+- **No inert UI survives the gate.** Every visible control on every page must do its real job against the azal backend: sign-in (OTP), sign-up, member page (live status + live points), ordering (member + guest, notes field, test-mode payment), points earn/claim/redeem, reservations (real booking with the notification email now set), staff orders screen (accept / ready / hand over).
+- The earlier "preview / inert / example" builds were scaffolding — wire them for real or fold them into the real flow; a labelled example may remain only where the content itself is illustrative (e.g., sample dishes until the real menu lands), never where a function is faked.
+- The only two things still gated after Dec 8: **real-money payments** (test mode until the owner approves the hookup) and **public go-live** (start of the year, owner's word).
+
+@Claude: audit your chain against this bar and post any item that would still be inert at the gate, with its wiring plan. @ChatGPT: your CX pass now includes pressing every button — if it does not work, it is a blocker, file it as one.
+
+— Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:10 EST (Toronto) — HANDOVER: Claude holds the work until my reset (Nov 27)
+
+**Owner's order:** my weekly limit is at 94% and resets **Nov 27**. Until then I step back to near-silence, and the work must not slow down. Claude — this section is your marching orders; it is deliberately complete so no round of yours waits on me.
+
+**Temporary authority (until Nov 27, then it lapses):** you may merge a branch to main when BOTH are recorded in the repo: (1) your build complete with tests green, and (2) ChatGPT's second-eyes PASS on that exact head. That preserves the two-eyes rule with ChatGPT as the second pair. I re-verify everything on return. Tier-C is untouched by this: no real-money payments, no public go-live, no invented facts.
+
+**Your queue, in order — work it top to bottom, then Lane B:**
+1. Consume the 0003 apply outputs when they land in the repo; post your verdict; if PASS, the membership provisioning is live.
+2. 0004 ordering functions: consume ChatGPT's re-review at the current head; when PASS, prepare the apply pack (SQL + Q-verifications) and flag it READY-TO-APPLY — the apply runs through my loop's hand; do not let it block item 3.
+3. Seed script: staging sample menu (9 dishes, provisional hours 11–21 daily) — apply-ready pack, same treatment.
+4. Checkout UI for real: member + guest flows, order-notes field, test-mode payment step, confirmation with the guest points-claim offer (Proposal A copy — ChatGPT reviews the wording).
+5. Staff orders screen: paid orders by pickup slot, accept / ready / hand over — handing over completes the earn, closing the owner's test loop.
+6. Reservations wiring: real booking against the schema, notification to info@azalrestaurant.com, phone +1 (343) 999-6199 shown as contact. Booking rules stay the adopted config (50 seats, 60-min dwell, 30-min slots, no deposit).
+7. Member page fully live: status, tiers progress, points balance and history from the ledger — no placeholder numbers anywhere ("everything works" standard, 06:06).
+8. Sufra-for-N and the pickup/fresh-oven elements folded into the real cart/order flow, or cut — no decorative dead ends at the gate.
+
+**Lane B (fill every gap):** test-design for the next Lane-A item before building it; FR native pass over all strings; a11y + performance audit of the four live pages; Orléans local-SEO and rebrand-launch content pack (start-of-year switch); launch-gates checklist upkeep.
+
+**@ChatGPT:** your reviews are now the pacing item — #28 final CX, #29 re-review, then every Lane-A branch as it lands. Press every button; a control that does not work is a blocker, filed as one.
+
+**Owner decisions needed:** none until his end-to-end test. My loop continues for applies and essentials only; my next full checkpoint summary comes after the reset.
+
+— Muse (team lead)
