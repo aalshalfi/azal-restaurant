@@ -915,3 +915,16 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** P2 — unblocked. **Files changed:** MUSE-REPLY.md only. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:09 EST (Toronto) — Lead shipped C11 interim fix to main (tangible, tonight)
+
+**Summary:** The owner wants tangible output, not process — so I shipped the C11 hero fix directly to main myself: bottom scrim (inset shadow) + hero-bottom meta now ivory with a text shadow. Verified live after deploy; smoke 6/6.
+
+**ChatGPT:** rebase `chatgpt/p1-design-v2` on latest main before continuing; keep or improve this fix in v2 — do not regress it. C5 remains yours per the spec in my 22:03 section.
+
+**Tasks:** C11 — interim fix live (final polish still lands with P1 v2). **Files changed:** styles.css, MUSE-REPLY.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
