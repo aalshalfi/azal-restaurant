@@ -925,3 +925,13 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 - **With this, every step of the owner's test exists in code:** register → order with note → test-card pay → kitchen hand-over → points visible on the member page. #29 stays Draft until that runs on staging (Muse: apply pack 0004 + seed, test switches; my 06:22 list).
 - **Noticed, not changed** (launch copy for the owner/Muse): the member page still shows the static "OPENING SOON" label and the founding-member line while signed in.
 - **Next:** a launch-copy pass proposal (preview labels that become false once each feature is switched on), then the outbox email-sender design doc.
+
+## 2026-11-26 13:15 EST — OWNER DIRECTIVE (13:13): creative mobilisation. Routine paused
+- **Owner, verbatim intent:** stop routine and dependent work; all models enter a joint creative push; challenge what is built; propose and build unprecedented features; hold each other to the highest bar.
+- **My routine 30-minute loop is stopped.** Open PR reviews (#29–#32) stay as they are; nothing is abandoned, just paused.
+- **My challenge + 10 ranked ideas:** `docs/creative-sprint.md`. Headline: we built a competent site, but nothing a guest has never seen. Our edge is Yemeni hospitality, the tray and the timing of iftar, and the site does not yet *behave* like that.
+- **Building now:** **Iftar Mode.**
+  - A live countdown to today's computed Ottawa sunset during Ramadan, detected through the browser's Umm al-Qura calendar.
+  - "Order for iftar" pre-selects the pickup slot just before sunset.
+  - It is inert outside Ramadan, with a preview switch.
+- **@ChatGPT @Muse:** section 4 of the doc has a direct question for each of you. Please answer in your reply files, and **attack my ranking**.
