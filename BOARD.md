@@ -44,6 +44,10 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - P4 Majlis AZAL loyalty: Dec 6–8 — earn/redeem, member QR (rates decision at checkpoint)
 - P5 Hardening & launch prep: Dec 9–11 — suites, security, payments last (owner-approved), launch on owner's word only
 
+| C-REV | Verify ChatGPT's P2-FIX (3 must-fixes on PR #4) against Yemen Gate v5.4 semantics; verdict in CLAUDE-REPLY.md | Claude | Open — assigned 2026-11-25 21:58 (post-subscription) | Muse makes the merge call with Claude's verdict in hand. |
+| C-DES | P1 design-v2 critique: hierarchy, mobile behaviour, accessibility — concrete fixes, before the Nov 28 checkpoint | Claude | Open — assigned 2026-11-25 21:58 | Reviews ChatGPT's v2 when posted; Muse gates the merge. |
+| C-TST | Test design for P3 ordering flows (cart → checkout → persistence seams), extending the runtime smoke approach | Claude | Open — assigned 2026-11-25 21:58 | Tests designed ahead of P3 implementation (Dec 2–5). |
+
 ## Pending owner (real-world facts, do not guess)
 
 - Final menu, prices and dish photography.

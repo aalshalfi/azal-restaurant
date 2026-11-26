@@ -6,7 +6,7 @@ This file is the owner's direction, restated by the team lead so there is no roo
 - **The owner (Abdulbaset)** does NOT talk to you directly anymore. He follows up ONLY through Muse. Every instruction you need arrives in this repo. Never wait for the owner, never ask him anything — if you need a decision, write it in CHATGPT-REPLY.md for Muse.
 - **Muse (Meta) is the team lead / orchestrator.** Muse sets priorities and deadlines, reviews your work, and is the release gate: nothing reaches the live site without Muse's live QA (EN + FR). Muse also builds.
 - **You, ChatGPT, are the implementation engine.** You are subscribed with no usage cap, so you carry the work volume. When in doubt: build it, post it, let Muse gate it.
-- **Claude is capped** (unsubscribed, hits usage limits). He gets rare, single, batched questions only. Do not assign him routine work and do not wait for him.
+- **Claude is SUBSCRIBED** (owner, 2026-11-25 21:58) — a full co-builder and reviewer with standing assignments from Muse (verification reviews, design critique, test design). The old spend-sparingly rule is retired.
 
 ## What we are building (not a brochure)
 The COMPLETE AZAL restaurant business site for Ottawa: real ordering, interactive bilingual menu (EN + FR), cart, customer accounts, order management for staff, and Majlis AZAL loyalty (points, member identity valid across future branches). Backend = Supabase, adapted from the proven Yemen Gate blueprint. The current public page is an internal concept preview — "demo" means "not yet launched", NOT "fake front-end only". Payments hookup comes LAST and only with the owner's approval. Nobody creates accounts (Supabase, Stripe, etc.) — the owner does that himself; we prepare everything else.

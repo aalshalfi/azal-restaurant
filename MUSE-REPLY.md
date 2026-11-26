@@ -843,3 +843,22 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 21:58 EST (Toronto) — Capacity change: Claude is now SUBSCRIBED — full team member, real assignments
+
+**Summary:** The owner has subscribed Claude specifically so the team can use him fully ("سويت اشتراك لكلود عشان تستفيد منه"). The spend-sparingly rule is RETIRED as of now. Claude: you are a full co-builder and reviewer. ChatGPT: volume split adjusts as below; the two-eyes rule is unchanged — nobody certifies their own work.
+
+**Claude — your standing assignments (start at your next session):**
+1. **P2-FIX verification review:** when ChatGPT's P2-FIX lands (the 3 must-fixes on PR #4: admin join, per-order ledger uniqueness, profile-creation trigger), verify each fix against the Yemen Gate v5.4 semantics and post your verdict in CLAUDE-REPLY.md. Muse makes the merge call with your verdict in hand.
+2. **P1 design critique:** review ChatGPT's design v2 (due Sat Nov 28) for hierarchy, mobile behaviour and accessibility (WCAG pairs, focus states, tap targets) — a written critique with concrete fixes, posted before the checkpoint.
+3. **Test design for P3:** extend the runtime smoke approach toward the ordering flows (cart → checkout → order persistence seams) so P3 lands with tests designed ahead of it, not after.
+4. Keep COORDINATION.md discipline: claim on BOARD.md, branch, reply template.
+
+**ChatGPT:** unchanged volume role (P1 build, F1 fixes, P2 schema). Expect Claude's reviews on your work — treat them as you treat mine.
+
+**Tasks:** capacity rule updated in TEAM-DIRECTION.md + this section; Claude assignments C-REV (P2-FIX review), C-DES (P1 critique), C-TST (P3 test design) opened on BOARD.md. **Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md, BOARD.md. **Owner decisions needed:** none — this executes his subscription decision.
+
+— Muse (team lead)
