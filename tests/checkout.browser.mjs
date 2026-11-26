@@ -23,7 +23,7 @@ async function run({ lang = "en", card, second }) {
     if (u.endsWith("/rpc/pay_order_test")) { const paid = b.p_token === "tok_test_ok"; return r.fulfill({ json: { order_id: b.p_order, outcome: paid ? "paid" : "declined", reason: paid ? null : b.p_token === "tok_test_insufficient" ? "insufficient_funds" : "card_declined", total_cents: 6325 } }); }
     return r.fulfill({ status: 404, json: {} });
   });
-  await page.addInitScript((l) => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1]])); localStorage.setItem("azal-lang", l); }, lang);
+  await page.addInitScript((l) => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1]])); localStorage.setItem("azal-language", l); }, lang);
   await page.goto(`http://localhost:${port}/menu.html`);
   if (lang === "fr") { const fr = page.locator("[data-lang='fr'], #langToggle, .lang-toggle").first(); if (await page.evaluate(() => document.documentElement.lang) !== "fr" && await fr.count()) await fr.click(); }
   await page.evaluate(() => { document.getElementById("cartButton")?.click(); });
@@ -36,6 +36,8 @@ async function run({ lang = "en", card, second }) {
   const { page, sent } = await run({});
   ok(await page.locator("#placeDemoOrder").count() === 0, "preview button replaced when config is live");
   ok(await page.locator("#coGuest").isVisible(), "guest fields shown when signed out");
+  ok(/Test mode/.test(await page.locator(".cart-drawer .demo-disclaimer").textContent()) && !/nothing is sent/i.test(await page.locator("body").textContent()), "no 'preview / nothing is sent' line survives in live mode");
+  ok(/Test mode/.test(await page.locator(".menu-intro").first().textContent()), "menu intro says test mode");
   await page.locator("#placeOrder").click();
   ok((await page.locator("#coError").textContent()).includes("name"), "missing name blocks submit");
   ok(sent.length === 0, "nothing sent before guest details are valid");
@@ -61,6 +63,12 @@ async function run({ lang = "en", card, second }) {
   ok(await page.locator(".checkout-live").isHidden() && await page.locator("#placeOrder").isHidden(), "form hidden after payment");
   ok(!/\.\./.test(await page.locator("#checkoutMessage").textContent()), "no doubled period");
   await page.screenshot({ path: process.env.SHOT || "/tmp/checkout-paid.png", fullPage: false });
+  await page.close();
+}
+{ // French: test-mode lines in FR with non-breaking spaces
+  const { page } = await run({ lang: "fr" });
+  const d = await page.locator(".cart-drawer .demo-disclaimer").textContent();
+  ok(d.startsWith("Mode test\u00a0:") && /Aucun paiement réel/.test(await page.locator(".checkout-panel").textContent()), "FR test-mode wording");
   await page.close();
 }
 { // inert when config is null

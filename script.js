@@ -1,6 +1,9 @@
 const translations = {
  en: {
   authClaimed:"We added {points} points from your earlier orders.",
+  authClaimFailed:"We couldn’t collect points from your earlier orders just now. They are kept for you.",
+  authClaimRetry:"Try again",
+  authErrInvalidEmail:"Please check your email address.",
   authErrMissingEmail:"Enter your email.",
   authErrCode:"That code didn’t work or has expired. Try again or send a new one.",
   authUseCode:"Use an email code instead",
@@ -208,6 +211,8 @@ const translations = {
   cartTitle:"For pickup",
   subtotal:"Subtotal",
   cartDisclaimer:"Preview only: nothing is sent or charged.",
+  cartDisclaimerTest:"Test mode: orders are real, payment uses test cards only. No real payment is made.",
+  menuIntroTest:"Test mode: example dishes and prices. Pay with a test card; no real money moves.",
   checkoutButton:"Continue",
   demoOnly:"PREVIEW",
   checkoutTitle:"Almost there.",
@@ -237,6 +242,9 @@ const translations = {
  },
  fr: {
   authClaimed:"Nous avons ajouté {points} points de vos commandes précédentes.",
+  authClaimFailed:"Nous n’avons pas pu récupérer les points de vos commandes précédentes pour l’instant. Ils vous sont gardés.",
+  authClaimRetry:"Réessayer",
+  authErrInvalidEmail:"Veuillez vérifier votre adresse courriel.",
   authErrMissingEmail:"Entrez votre courriel.",
   authErrCode:"Ce code ne fonctionne pas ou a expiré. Réessayez ou demandez-en un nouveau.",
   authUseCode:"Utiliser un code par courriel",
@@ -444,6 +452,8 @@ const translations = {
   cartTitle:"À emporter",
   subtotal:"Sous-total",
   cartDisclaimer:"Aperçu seulement : rien n’est envoyé ni facturé.",
+  cartDisclaimerTest:"Mode test : les commandes sont réelles, le paiement se fait uniquement par carte test. Aucun paiement réel n’est effectué.",
+  menuIntroTest:"Mode test : plats et prix d’exemple. Payez avec une carte test ; aucun paiement réel n’est effectué.",
   checkoutButton:"Continuer",
   demoOnly:"APERÇU",
   checkoutTitle:"Presque prêt.",

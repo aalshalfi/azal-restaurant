@@ -116,24 +116,29 @@
       e_payment_window_expired: "This order expired before payment. Start again.", e_payments_not_in_test_mode: "Payments are off right now. Nothing was charged.",
       e_note_too_long: "The note is too long (500 characters max).", e_network: "Connection problem. Check your connection and try again: you will not be charged twice.",
       e_error: "Something went wrong. Nothing was charged. Please try again." },
-    fr: { kicker: "MODE TEST", title: "Votre commande", text: "Le paiement est en mode test : utilisez une carte test ci-dessous. Aucun argent réel n’est débité.",
+    fr: { kicker: "MODE TEST", title: "Votre commande", text: "Le paiement est en mode test : utilisez une carte test ci-dessous. Aucun paiement réel n’est effectué.",
       guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", signedAs: "Commande au nom de {email}",
       note: "Note pour la cuisine (facultatif)", notePh: "Allergies, moins épicé, plus de pain…",
-      card: "Numéro de carte (cartes test seulement)", cardHelp: "Cartes test : 4242 4242 4242 4242 paie · 4000 0000 0000 0002 est refusée · 4000 0000 0000 9995 a des fonds insuffisants.",
+      card: "Numéro de carte (cartes test seulement)", cardHelp: "Cartes test : 4242 4242 4242 4242 paie · 4000 0000 0000 0002 est refusée · 4000 0000 0000 9995 a des fonds insuffisants.",
       pay: "Payer {total}", payPlain: "Commander et payer", working: "Un instant…",
       paid: "Payé. Prêt à {time}. Montrez le code {code} au comptoir.", paidGuest: "Inscrivez-vous avec {email} pour recevoir les points de cette commande.",
-      declined: "Carte refusée. Votre commande est gardée 15 minutes : essayez une autre carte test.", insufficient: "Fonds insuffisants. Votre commande est gardée 15 minutes : essayez une autre carte test.",
+      declined: "Carte refusée. Votre commande est gardée 15 minutes : essayez une autre carte test.", insufficient: "Fonds insuffisants. Votre commande est gardée 15 minutes : essayez une autre carte test.",
       e_not_test_card: "Seuls les numéros de carte test indiqués fonctionnent ici.", e_name: "Veuillez indiquer votre nom.", e_email: "Veuillez vérifier votre courriel.",
       e_slot_full: "Cet horaire vient d’être complet. Choisissez un autre horaire.", e_closed: "Les commandes sont fermées à cette heure. Choisissez un autre horaire.", e_too_soon: "Cet horaire est trop proche. Choisissez un autre horaire.",
       e_item_unavailable: "Un article de votre commande n’est plus disponible.", e_rate_limited: "Trop de commandes non payées. Patientez quelques minutes.",
       e_payment_window_expired: "Cette commande a expiré avant le paiement. Recommencez.", e_payments_not_in_test_mode: "Les paiements sont désactivés pour l’instant. Rien n’a été débité.",
-      e_note_too_long: "La note est trop longue (500 caractères max.).", e_network: "Problème de connexion. Vérifiez votre connexion et réessayez : vous ne serez pas débité deux fois.",
+      e_note_too_long: "La note est trop longue (500 caractères max.).", e_network: "Problème de connexion. Vérifiez votre connexion et réessayez : vous ne serez pas débité deux fois.",
       e_error: "Un problème est survenu. Rien n’a été débité. Veuillez réessayer." }
   };
   const lang = () => (document.documentElement.lang === "fr" ? "fr" : "en");
   const L = (k, vars) => { let s = S[lang()][k] || S.en[k] || k; for (const v in vars || {}) s = s.replace("{" + v + "}", vars[v]); return s.replace(/\.\./g, "."); };
   const money = (c) => new Intl.NumberFormat(lang() === "fr" ? "fr-CA" : "en-CA", { style: "currency", currency: "CAD" }).format(c / 100);
   const timeOf = (iso) => new Intl.DateTimeFormat(lang() === "fr" ? "fr-CA" : "en-CA", { hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }).format(new Date(iso));
+
+  // Stage 2 (staging test): every "preview / nothing is sent" line becomes the honest test-mode line, in EN and FR.
+  for (const [from, to] of [["cartDisclaimer", "cartDisclaimerTest"], ["menuIntro", "menuIntroTest"]]) {
+    document.querySelectorAll(`[data-i18n="${from}"]`).forEach((el) => { el.dataset.i18n = to; if (typeof t === "function" && t(to)) el.textContent = t(to); });
+  }
 
   const modal = document.getElementById("checkoutModal");
   const panel = modal && modal.querySelector(".checkout-panel");

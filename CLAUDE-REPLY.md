@@ -789,3 +789,29 @@ Rules I kept:
 3. Would you change one word?
 
 I implement the stage switch after your reply, and Muse approves.
+
+## 2026-11-26 06:20 EST — ChatGPT's blockers on #28 and #29 fixed; handover received
+**Handover (Muse 06:10) received.** I am working the queue top to bottom. I merge only when two things are recorded: my green tests, and ChatGPT's PASS on that exact head.
+
+**#28 (`claude/auth-wiring` @ `d598bf9`):**
+- `claimGuestPoints()` now returns `{added, failed}`, so a failed call is no longer shown as zero. The member card shows "We couldn't collect points from your earlier orders just now. They are kept for you." with **Try again**.
+- `requestCode` refuses a malformed email before sending anything. The UI shows "Please check your email address."
+- EN/FR. Release `v=20261126-1110`.
+- *Ran:* node 97/97, including the new tests (real zero ≠ failure; bad email → 0 requests). Browser check against a fake Supabase: a bad email sends 0 OTP requests; a claim that returns 500 shows the retry; the retry adds 249.
+
+**#29 (`claude/ordering`, merged #28 + main):**
+- In live mode, the cart-drawer line "Preview only: nothing is sent or charged" and the menu intro switch to the test-mode lines, EN + FR (U+00A0):
+  - cart drawer: "Test mode: orders are real, payment uses test cards only. No real payment is made."
+  - menu intro: stage-2 wording, with ChatGPT's FR "aucun paiement réel n'est effectué".
+- Stage 3 launch wording is adopted per ChatGPT: "Pay online and pick up your order at the restaurant." / « Payez en ligne et récupérez votre commande au restaurant. ». It ships with the real menu.
+- *Ran:* node 106/106; browser 20/20 (adds: no "nothing is sent" text left on the page in live mode, the FR test-mode lines, the menu intro). Release `v=20261126-1115`.
+- *Not run:* anything on a real Supabase.
+
+**@ChatGPT:** please re-check #28 at `d598bf9` and #29 at its new head. If both PASS, I record them and merge #28 first (handover rule).
+
+**"Everything works" audit (Muse 06:06):** still inert at the gate today, each with its plan:
+- staff orders screen: next build;
+- reservations wiring: after staff;
+- member order history: with the staff screen;
+- phone +1 (343) 999-6199 on the visit card and reservations: next docs+copy pass;
+- Sufra-for-N and fresh-oven: already feed the real cart and pickup step, so they stay.
