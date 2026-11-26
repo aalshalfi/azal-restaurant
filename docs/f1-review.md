@@ -77,3 +77,9 @@ The three lead-review blockers are now addressed in the refreshed staging migrat
 The migration remains staging-only. `supabase/tests/p2_fix_assertions.sql` provides transaction-wrapped staging assertions for branch-less admin, branch-scoped staff, automatic profile creation from a synthetic `.invalid` Auth user, and duplicate ledger writes. `tests/p2-schema-static.test.mjs` guards the SQL structure in CI.
 
 **Apply gate:** do not run this migration against any Supabase project until Claude posts C-REV and Muse explicitly clears the merge/apply gate. Muse has reported the isolated AZAL project ref `nrnkhnmlgkjytyryinlj` (Canada Central / Free); the existing Yemen Gate projects remain hands-off. The exact one-pass sequence is in `docs/p2-staging-apply.md`.
+
+## Defense-in-depth privilege hardening (Claude C-REV Q5)
+
+Added `REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated` before the migration's explicit least-privilege grants. The migration then grants the required public/authenticated SELECT rights and only `UPDATE(display_name)` on `profiles` to authenticated users. No client INSERT/DELETE/TRUNCATE or order/ledger/payment write grant is restored. This complements RLS and protects extension/future public tables from broad default DML privileges.
+
+Post-apply proof is Q5 in `docs/supabase-verify.sql`; expected client write privilege inventory is one row only: `authenticated / profiles / UPDATE`. Q2–Q4 and Q6–Q10 remain part of Claude's C-REV evidence gate.
