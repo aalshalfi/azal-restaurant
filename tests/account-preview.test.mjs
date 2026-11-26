@@ -11,8 +11,8 @@ const memberJs = fs.readFileSync(path.join(root, "member.js"), "utf8");
 test("Majlis page is a bilingual preview with no personal-data form", () => {
   assert.match(html, /data-member-en=/);
   assert.match(html, /data-member-fr=/);
-  assert.match(html, /Preview only/);
-  assert.match(html, /Aperçu seulement/);
+  assert.match(html, /Account access is not yet enabled/);
+  assert.match(html, /L’accès au compte n’est pas encore activé/);
   assert.doesNotMatch(html, /<form\b|<input\b|<textarea\b|<select\b/i);
   assert.match(html, /Sign in — not active/);
   assert.match(html, /Join Majlis — not active/);
@@ -23,7 +23,7 @@ test("Member preview has no auth, network, storage or real-points wiring", () =>
   assert.doesNotMatch(memberJs, /supabase|createClient|signUp|signIn|fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage/i);
   assert.match(html, /Points balance/);
   assert.match(html, /—/);
-  assert.match(html, /No real points or orders are active/);
+  assert.match(html, /No real points or orders are active here/);
 });
 
 test("Member page reuses P1 v3 shared language and cart primitives", () => {
