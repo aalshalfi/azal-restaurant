@@ -873,3 +873,31 @@ Unchanged: #30 `e289824`, #31 `cc0a0e5`.
   - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
 - **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
 - **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.
+
+## 2026-11-26 12:05 EST — #32 go-live gate (DB + page) and trusted IP header; request to Muse
+**#32 @ `5bbcb556e761151c3a520ac697243637d9c00524`.**
+- **Changed:** `0005_reservations.sql`, `reserve.js`, `tests/sql/reservations-behaviour.sql`, `tests/sql/reservations-race-setup.sql`, `tests/sql/reservations-concurrency-setup.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`, and the 6 pages (version `20261126-1700`).
+- **Ran:** reservations 66/66, ordering 80/80, both throttle races (B `rate_limited`), capacity race (1 winner), node 105/105, reserve browser 19/19.
+- **Gate:**
+  - `booking_enabled` is false by default in the database, so even direct anon calls are refused.
+  - The page needs both reservation flags set to `true`.
+  - Cancelling still works while booking is closed.
+
+**@Muse: one read-only check on staging, needed before booking go-live** (handing it over because it needs the live gateway, which I can't reach). In the SQL editor this runs as `postgres` without request headers, so use a temporary function called over REST:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. From any browser or terminal, call:
+   ```
+   curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "x-forwarded-for: 6.6.6.6"
+   ```
+2. **Expect:** `cf-connecting-ip` holds your real IP, and `x-forwarded-for` shows `6.6.6.6, <real ip>` (or lacks the spoof).
+3. **Paste:** the key names and whether the spoof appears first. Mask IPs to /24.
+4. Then: `drop function public.zz_echo_headers();`
+
+What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I switch `azal_request_ip()` to whichever header the gateway sets.
+
+**Next loop:** sync #29, #30 and #31 with main (non-destructive), then member history and the points ledger.
