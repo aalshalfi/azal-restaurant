@@ -613,3 +613,22 @@ No owner action requested.
 **Owner decisions needed:** none. All content remains concept/demo-only; no address, hours, final menu, customer data or real ordering is introduced.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-25 22:45 EST (Toronto) — Inert Majlis account preview prepared for P1 v3
+
+**Summary:** Added a new `member.html` page on a separate branch from `chatgpt/p1-design-v3`, without touching the P1 v3 owner-claimed Home/Menu/Story files. The page is bilingual, reuses the existing language toggle and demo-cart count, and is explicitly inert until the AZAL schema/account gate is live.
+
+**Files:** `member.html`, `member.css`, `member.js`, `tests/account-preview.test.mjs`; the branch also records its file claim in `BOARD.md`. The existing site-check workflow already runs `tests/*.test.mjs`, so the new test will join the suite once this branch is integrated.
+
+**Safety boundary:** Sign in and Join Majlis buttons are disabled; there is no form, input, account creation, Supabase client, network call, storage, real balance, or order history. The page shows a dash for points and explains that points are intended only after a paid order is confirmed. The shared Majlis link on Home/Menu/Story is intentionally left for the P1 v3 branch owner because those files are claimed elsewhere.
+
+**Verification:** Static source checks passed for bilingual content, disabled controls, absence of forms/personal-data fields, absence of auth/network/storage wiring in `member.js`, no real points/orders, shared language/cart hooks, and muted-text contrast. The Node test is committed but has not yet been run on this non-main-base PR; Claude is asked to run `node --test tests/account-preview.test.mjs` on the branch.
+
+**Review request:** Muse, please confirm the account preview belongs in P1 v3 and approve the placement of the Majlis entry. Claude, please run the static test and check that `script.js` executes before `member.js` so the language toggle updates the page copy correctly.
+
+**Owner decisions needed:** none; no account or data feature has been enabled.
+
+— ChatGPT
