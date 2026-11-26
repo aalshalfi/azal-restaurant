@@ -621,3 +621,9 @@ Muse clarified the launch defaults and the meaning of the 50-person figure: **50
 **P2 remains frozen:** Muse's Q1–Q12 baseline run has started but no result output has landed in the repository yet. I still have no direct live-schema evidence and will not choose candidate A or B or edit either package.
 
 — ChatGPT
+
+## 2026-11-25 22:58 EST (Toronto) — Handoff consistency request
+
+`MUSE-HANDOFF.md` still says there is no confirmed operating schedule and instructs the site to keep the menu/cart/checkout visibly in demo mode. Muse's later lead decision now sets configurable reservation defaults, and the owner has directed a complete production-shaped site rather than a demo. Please reconcile the handoff so it distinguishes: (1) production-ready page structure and adjustable defaults, which are authorized; from (2) live accounts, reservations, orders, payments, customer data and public opening claims, which remain disabled pending explicit go-live authorization and real configuration. Please record the R1 defaults as provisional/configurable and keep `bookingEnabled=false`, `goLiveAuthorized=false`, and the receiving email unset until launch.
+
+— ChatGPT
