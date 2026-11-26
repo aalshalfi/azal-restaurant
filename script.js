@@ -1,5 +1,8 @@
 const translations = {
  en: {
+  pickupFreshNote:"Fresh: a batch of mandi and haneeth comes out of the oven at that time. Example times for this preview; our kitchen will set the real ones.",
+  pickupFreshLong:"fresh from the oven",
+  pickupFreshShort:"Fresh",
   ritualClose:"In Yemen the meal ends when the talk does, not when the plates are empty.",
   ritualJuice:"End with something cold: the mango juice.",
   ritualChai:"Finish with Adeni chai, poured hot, and take your time.",
@@ -194,6 +197,9 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  pickupFreshNote:"Du four : une fournée de mandi et de haneeth sort du four à cette heure-là. Heures d’exemple pour cet aperçu ; notre cuisine fixera les vraies.",
+  pickupFreshLong:"tout juste sorti du four",
+  pickupFreshShort:"Du four",
   ritualClose:"Au Yémen, le repas finit quand la conversation s’arrête, pas quand les plats sont vides.",
   ritualJuice:"Finissez sur une note fraîche : le jus de mangue.",
   ritualChai:"Terminez par le thé adéni, servi bien chaud, sans vous presser.",
@@ -536,7 +542,8 @@ sufraN?.addEventListener("click",e=>{
 });
 
 /* P3 pickup-time step, INERT PREVIEW (Claude). Rules = docs/p3-pickup-ui.md defaults; no backend, nothing sent or stored. */
-const PICKUP={open:660,close:1260,prep:20,step:15,last:1245,tz:"America/Toronto"};
+const PICKUP={open:660,close:1260,prep:20,step:15,last:1245,tz:"America/Toronto",freshExample:[720,810,1080]}; /* freshExample = EXAMPLE oven-batch times (12:00, 13:30, 18:00), not real; the kitchen sets them (Tier C) */
+const isFresh=m=>Array.isArray(PICKUP.freshExample)&&PICKUP.freshExample.includes(m);
 function pickupPlan(nowMin,c){
  const first=c.open+c.prep,up=(m,s)=>Math.ceil(m/s)*s,range=(a)=>{const out=[];for(let m=a;m<=c.last;m+=c.step)out.push(m);return out};
  if(nowMin<c.open)return {status:"before_open",day:"today",asap:null,slots:range(up(first,c.step))};
@@ -557,7 +564,7 @@ function renderPickup(){
  const radio=(val,label,cls)=>`<label class="${cls}"><input type="radio" name="pickup" value="${val}"${pickupState.choice===val?" checked":""}><span>${label}</span></label>`;
  const shown=pickupState.showAll?plan.slots:plan.slots.slice(0,8);
  box.innerHTML=(plan.asap!==null?radio("asap",t("pickupAsap").replace("{time}",fmtMin(plan.asap)),"pickup-asap"):"")+
-  `<p class="pickup-later" id="pickupLaterLabel">${plan.asap!==null?t("pickupLater"):t("pickupLaterTomorrow")}</p><div class="pickup-slots" role="group" aria-labelledby="pickupLaterLabel">`+shown.map(m=>radio(String(m),fmtMin(m),"pickup-slot")).join("")+`</div>`+
+  `<p class="pickup-later" id="pickupLaterLabel">${plan.asap!==null?t("pickupLater"):t("pickupLaterTomorrow")}</p><div class="pickup-slots" role="group" aria-labelledby="pickupLaterLabel">`+shown.map(m=>isFresh(m)?radio(String(m),`${fmtMin(m)}<small class="fresh-tag" aria-hidden="true">${t("pickupFreshShort")}</small><span class="visually-hidden">, ${t("pickupFreshLong")}</span>`,"pickup-slot is-fresh"):radio(String(m),fmtMin(m),"pickup-slot")).join("")+`</div>`+(shown.some(isFresh)?`<p class="fresh-note">${t("pickupFreshNote")}</p>`:"")+
   (!pickupState.showAll&&plan.slots.length>8?`<button type="button" class="text-link dark-link pickup-more" id="pickupMore">${t("pickupMore")}</button>`:"");
  const tz=document.getElementById("pickupTz");
  if(tz){let local="";try{local=Intl.DateTimeFormat().resolvedOptions().timeZone}catch{}tz.hidden=local===PICKUP.tz}

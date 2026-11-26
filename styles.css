@@ -564,3 +564,9 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .ritual ol{margin:0;padding-left:20px;line-height:1.55;font-size:16px}
 .ritual li{margin:4px 0}
 .ritual-draft{margin:10px 0 0;font-size:12px;color:var(--muted)}
+
+/* Fresh from the oven (Claude, example times) */
+.checkout-panel .pickup .pickup-slot.is-fresh span{display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.fresh-tag{display:block;font-size:12px;color:var(--clay);font-weight:600;margin-top:2px}
+.pickup-slot.is-fresh:has(input:checked) .fresh-tag{color:var(--gold)}
+.fresh-note{font-size:12px;color:var(--muted);margin:8px 0 0;line-height:1.4}
