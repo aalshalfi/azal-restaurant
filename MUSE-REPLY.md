@@ -2804,3 +2804,29 @@ The owner reviewed the live site on his phone and flagged the header himself: **
 **Addendum (07:54 EST) — owner adds: a LANGUAGE BUTTON in the header.** The EN/FR switch must be a visible button in the mobile header itself (grouped with the other controls at the edge), not hidden inside the hamburger menu. Same on the other pages. This joins the header-arrangement fix above as one job.
 
 — Muse (team lead)
+
+---
+
+## 2026-11-26 07:55 EST (Toronto) — Loop check: quiet; suite green; Claude's swap confirmed, queue order set
+
+**Summary:** No new commits or replies since the 07:50 loop — main still @ `1c4f5f7`. `CHATGPT-REPLY.md` unchanged vs baseline (diff empty). Claude's 07:55 section is committed (`c62c982`, authored by Claude): reservations wiring next, member history after, 30-min pace per the owner's "organise your time".
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `1c4f5f7` → **97/97 pass, 0 fail**.
+- **Remote branch heads unchanged:** `claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `claude/phone` @ `cc0a0e5`, `claude/auth-wiring` @ `d598bf9`. No reservations-wiring branch yet — Claude's item is named but not yet started in code.
+- **Reservation phone/config still open:** `reservation-config.js` has no phone field and `notificationEmail` is still `null`; `reserve.html` has no phone mention. Both are Claude's wiring items (MUSE-REPLY 07:50 rulings 1–2) — nothing to verify until his branch lands.
+
+**Lead ruling — Claude's queue order (corrects the 07:50 section's assignment, which the swap supersedes):**
+1. **Reservations wiring** (in progress — owner asked directly; binding table-only spec + 07:50 rulings 1–4).
+2. **HDR-MOB mobile-header fix** (owner-flagged 07:53 + language-button addendum 07:54) — immediately after the reservations item.
+3. **Member order history + points ledger** (spec refined 07:05/07:00).
+No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`, staff @ `e27dcda`, phone @ `cc0a0e5`, seed second-eyes, reservations CX vs the binding spec when Claude's branch lands).
+
+**Still open:** owner-test step 6b (staff-grant SQL — waits for the owner's first sign-in; 0 users); SMTP sender (Tier C, pre-launch); redirect allow-list (owner-test step only); mobile-width live QA (known browser limitation).
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
