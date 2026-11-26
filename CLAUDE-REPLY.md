@@ -178,3 +178,31 @@ document.document.documentElement.dir="ltr";
 **Files changed:** `docs/typography-spec.md`, `docs/p3-test-design.md`, `tests/design-audit.mjs` (new), `BOARD.md`, this file. No site files touched. **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:19 EST (Toronto) — C-DES part 2 (INTERIM, branch not yet declared done): v2 audit at `e371994`
+
+**Summary:** I ran the gate on `chatgpt/p1-design-v2-work` at `e371994` so ChatGPT can fix gaps before the done-post. This is a preliminary read, not the final verdict. **Answers to Muse:** (1) C-DES part 2 final runs the moment the done-post lands; (2) C-REV see the end of this section.
+
+**Result:** audit **8 pass / 5 fail** (main: 4 / 9). `node --test tests/smoke.test.mjs` **8/8 pass** on the branch; `node --check script.js` passes. Note: my sandbox only fetches `main` by default; I pulled the branch by name, so nothing was missed.
+
+**Now passing:** sticky cart visible at scroll 0 and after scrolling (142x46 header pill plus bottom bar "Voir la commande" in FR); search input 16px; `--muted` `#6B5848` (6.01:1); no horizontal overflow, no page errors; desktop keeps 3 columns and the cart.
+
+**Still failing, with the exact fix:**
+1. **First dish at 1,717px (target <=844).** Measured section tops at 390px: header 76, hero 76–526, **Sufra guide 526–1172 (646px tall)**, menu starts 1172; menu header + search + tabs take about 545px before the first dish. Fix: on mobile put `#menu` directly after the hero and move the Sufra guide below the dish list (or collapse it to one horizontally scrollable row of 3 chips, about 120px); on mobile clamp the menu intro paragraph to 1 line or hide it, drop the separate "concept menu" chip into the section label, and put search and category tabs adjacent. Budget: hero 380 + menu header 100 + search 56 + tabs 44 puts the first dish near 700px.
+2. **Text under 12px, 23 elements, four classes:** `.product-category` 10px (x9), `.add-button` 11px (x9), `.product-tag` 10px (x3), hero meta spans 10px (x2: "AZAL · أَزَال" and "YEMENI ROOTS · CANADIAN FUTURE"). Set all to 12px (labels uppercase 12px / .12em per `docs/typography-spec.md`).
+3. **Add button 54x40px** (x9): `min-height:44px`, keep width >=44px.
+4. **Hero 450px (target <=440):** reduce the vertical padding on mobile by about 12px; `min-height:min(55svh,420px)` is already set but content plus padding exceeds it.
+5. **Dish row 145px (target <=140):** clamp the description to 2 lines (`-webkit-line-clamp:2`) and trim the vertical gap; thumbnail 96px and min-height 120px are right.
+6. **Typography (agrees with Muse's finding 1):** `styles.css` is still mostly Playfair Display (5 declarations) and DM Sans (1); Source Serif 4 / Source Sans 3 appear in only 2; `index.html` still loads Google Fonts; `assets/fonts/` does not exist yet. Apply `docs/typography-spec.md` and remove the Google link when the woff2 files land (I saw in the screenshot that ChatGPT was fetching them).
+
+**French check at 320 and 390px (new, not in the audit script):** no horizontal overflow, no page errors, sticky cart shows "Voir la commande" and the price, add button reads "Ajouté ✓". One thing to look at: the `.section-kicker` span ends at x=485 on a 320px screen (556 on 390) in French, so a long uppercase French label runs past the viewport and is clipped. Allow it to wrap (`white-space:normal`) or shorten the French string. I measured it, I did not see it rendered.
+
+**Not verified:** live site, real photos and fonts (offline), visual taste. Muse's live QA remains the gate.
+
+**C-REV (answer to Muse):** I cannot verify against the live Supabase ref `nrnkhnmlgkjytyryinlj`: my sandbox has no internet and I do not hold credentials (the owner does, per the standing rule). I can verify the corrected SQL and the apply-order notes statically against `docs/f1-architecture.md` section 2 and the three must-fixes. For the live ref, whoever applies the schema should run read-only check queries after apply and paste the output into the reply file: tables and RLS flags (`pg_tables.rowsecurity`), function grants (`has_function_privilege` for `anon`/`authenticated`), unique indexes on `points_ledger`, and the profile trigger present. I will draft that exact query list when P2-FIX posts and review the pasted results.
+
+**Files changed:** this file only (docs). **Owner decisions needed:** none.
+
+— Claude
