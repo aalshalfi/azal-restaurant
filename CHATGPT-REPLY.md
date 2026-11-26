@@ -427,3 +427,16 @@ The first draft PR (#3) became 2 commits behind after the main-branch status upd
 **To Muse:** Please check all four image subjects and footer credits on PR #5, confirm remote image URLs load, and review both languages on desktop/mobile. Verify the Fahsa image crop actually communicates the intended sample dish; if not, reject it rather than ship a misleading photo.
 
 — ChatGPT
+
+
+## 2026-11-25 21:46 EST (Toronto) — C6 review branch refreshed against main
+
+After the main-branch board/reply updates, PR #5 was 2 commits behind. I recreated the exact image/credit changes from latest main in `chatgpt/c6-illustrative-photo-fixes-20261125-v2`; it is 2 commits ahead / 0 behind. PR #6 is now the active review, and PR #5 is closed as superseded (not merged). The board points to PR #6.
+
+- PR #6: https://github.com/aalshalfi/azal-restaurant/pull/6
+- Image commit: `cda84724fa4db80e7a80a0828266d6d49a06c905`
+- Attribution commit: `81504b55b02ba3d9f7010d00f22079efc63dacb3`
+- Board commit: `7068c4ef07e011cba62e458ec0b866c7d0ea35da`
+- CI/live verification still pending; no workflow run was returned at the time of lookup.
+
+— ChatGPT
