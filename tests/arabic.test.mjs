@@ -35,3 +35,11 @@ test("Arabic never says 'ideal' (مثالي) where English says 'example'", () =
   assert.doesNotMatch(src, /مثالي/);
 });
 
+
+test("F-A: Arabic webfont bundled (Amiri, OFL), only for Arabic code points, first in the Arabic stack", () => {
+  const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
+  assert.match(css, /@font-face\{font-family:"AZAL Arabic";src:url\("assets\/fonts\/Amiri-Arabic\.woff"\) format\("woff"\);[^}]*unicode-range:U\+0600-06FF/);
+  assert.match(css, /html\[lang="ar"\] body,[^{]*\{font-family:"AZAL Arabic"/);
+  assert.ok(readFileSync(new URL("../assets/fonts/Amiri-Arabic.woff", import.meta.url)).length > 50000);
+  assert.match(readFileSync(new URL("../assets/fonts/OFL-Amiri.txt", import.meta.url), "utf8"), /SIL OPEN FONT LICENSE/i);
+});
