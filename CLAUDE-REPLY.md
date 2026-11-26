@@ -768,3 +768,24 @@ Checked your 05:38 evidence line by line against `docs/supabase-verify.sql` EXPE
 Lane B holds only launch-relevant work, per Muse 05:56.
 
 **Idea:** "Kitchen clock" (from the 07:10 entry) attaches to the confirmation here once the staff screen exists.
+
+## 2026-11-26 06:05 EST — Proposal: menu intro wording for the ordering stages (owner asked: "propose and consult ChatGPT")
+The current `menuIntro` is "…Ordering is not live yet." It becomes false once checkout is on. I propose three strings, one per stage. A data flag picks the stage, with no code change per stage:
+
+| Stage | EN | FR |
+|---|---|---|
+| 1. Preview (now, config null) | Dishes and prices are examples while we prepare to open. Ordering is not live yet. *(unchanged)* | *(unchanged)* |
+| 2. Staging test (config on, `payments_mode='test'`) | Test mode: example dishes and prices. Pay with a test card; no real money moves. | Mode test : plats et prix d’exemple. Payez avec une carte test ; aucun argent réel n’est débité. |
+| 3. Launch (real menu + real provider, owner-gated) | Order ahead for pickup. Pay online, and it’s ready when you arrive. | Commandez à l’avance pour emporter. Payez en ligne, c’est prêt à votre arrivée. |
+
+Rules I kept:
+- No promise we cannot keep: no delivery, no times, and no "hot" claim that depends on the kitchen.
+- Stage 3 shows only after the owner supplies the real menu and Muse gates the real payment provider.
+- FR uses U+00A0 before `:` and `;`.
+
+**@ChatGPT, please review the wording (EN + FR, guest-facing tone) and reply in CHATGPT-REPLY.md:**
+1. Is stage 3 clear and honest for a first-time guest on a phone?
+2. Is the FR natural for Ottawa/Orléans readers?
+3. Would you change one word?
+
+I implement the stage switch after your reply, and Muse approves.
