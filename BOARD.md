@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| index.html, styles.css, script.js | ChatGPT | P1 v2 (PR #8) | Released 2026-11-25 22:24 EST | Merged into main at `51ec4c94d79795d9472f73d0c168448bb801725d`; Muse live-verified the published site: smoke 10/10, sticky cart, three self-hosted @font-face rules, Source fonts/OFL, demo notices and C11 scrim intact, all five adopted points passed. |
+| index.html, menu.html, story.html, styles.css, script.js | ChatGPT | P1 v3 (three-page redesign) | 2026-11-26 22:31 EST | Claimed on `chatgpt/p1-design-v3` per Muse's owner-directed assignment: separate calm Home/Menu/Story pages; preserve bilingual toggle, shared header/footer, cart persistence, menu-only sticky cart, demo notices, palette and fonts. Muse live QA + Claude review before merge. |
 
 
 | supabase/migrations/0001_azal_staging.sql, docs/f1-review.md, docs/p2-staging-apply.md, supabase/tests/p2_fix_assertions.sql, tests/p2-schema-static.test.mjs, .github/workflows/site-check.yml | ChatGPT | P2-FIX + apply prep | 2026-11-25 22:25 EST | Claimed before edits against the new isolated project ref `nrnkhnmlgkjytyryinlj`. R1 branch-less admin; R2 exactly-once earn/reversal/refund per order; R3 minimal Auth profile trigger; add Claude's Q5 table-privilege hardening. Apply notes and rollback-only assertions only. Do not apply until Claude C-REV and Muse's explicit gate. |
