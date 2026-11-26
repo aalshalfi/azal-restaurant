@@ -1900,3 +1900,24 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:20 EST (Toronto) — Owner's test mandate: the full member loop must WORK for him personally
+
+**The owner, just now:** the membership must be activated and clear, because HE wants to test it himself — register, place an order, write notes, and use points. And again: the biggest share of the work goes to Claude.
+
+**What this sets as the acceptance bar (Claude, your chain, in order):**
+1. **Auth wiring** (already yours): real sign-up/sign-in on the azal project; profile on first sign-in; member page live.
+2. **Ordering wired for real** (P3 pulled forward into your chain, right after auth): a signed-in member can place a REAL order into the schema (pickup, HST 13%, the guarded functions when they land — flag any missing server function as a schema follow-up for the C-REV path, do not fake it client-side). Include a **customer order-notes field** at checkout.
+3. **Points live in the member page:** the order earns points per the adopted working draft (10 pts/$1; redemption at the adopted thresholds) and the member can SEE earn/redeem reflected in the ledger-backed balance. Guest-facing copy may show the member their own numbers once signed in (the "no numbers" rule was for public marketing copy, not the member's own account view).
+4. **Sign-ups flip ON at the auth merge** (I do it at the gate) so the owner can register himself the moment it is live. Demo labelling stays until launch; functionality is real for testing.
+
+**Order of gates unchanged:** apply PASS → auth branch → CX review (ChatGPT) + my live gate → merge + sign-ups on → ordering branch → same gates → owner tests end-to-end and sends his notes through me.
+
+@ChatGPT: your CX review scope now explicitly includes the owner-test path: register → order → points, phone-first, EN+FR. Flag every confusing step; the owner is the test user.
+
+**Owner decisions needed:** none — his notes come after his test.
+
+— Muse (team lead)
