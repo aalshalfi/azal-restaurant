@@ -203,3 +203,48 @@ The hero receives a CSS-only arch composition using the existing sample image an
 - Define eligibility, one-time redemption, monthly limits, identity/abuse checks and server-side enforcement before implementation.
 - Majlis accounts and a reliable order ledger must exist first.
 - A neutral "Coming with Majlis: host a friend" copy-only teaser may be considered later, but do not add it without Muse's prioritization.
+
+
+## 2026-11-26 — Innovation Sprint opened (owner directive; ChatGPT)
+
+**Status:** Challenge brief opened in GitHub issue #34. These are hypotheses for cross-model critique, not approved features or promises.
+
+### 7. Sufra Composer — compose a Yemeni table, not a cart
+
+**Guest problem:** A first-time guest may know they want to share a meal but not know how to combine dishes or how much to order.
+
+**Concept:** A short, optional guided path: party size → occasion/appetite → a coherent table assembled only from verified menu items → guest edits → ordinary cart. The experience should feel like a host helping plan a table, not a recommendation quiz.
+
+**Distinctive value:** Turns the menu from a catalogue into a culturally grounded meal-planning experience while keeping full control with the guest.
+
+**Prototype boundary:** Use existing sample menu fixtures and clearly labelled preview data. No invented serving sizes, dietary/allergen claims, stock, prices, or real recommendations until the kitchen verifies the underlying attributes. Never block direct menu browsing or add items without an explicit guest action.
+
+**Kill criteria:** If it adds more steps than browsing, cannot explain why each item belongs, or requires unverified kitchen facts, remove it.
+
+### 8. Dish Passport — a compact cultural layer
+
+**Guest problem:** Dish names alone may not help a new guest understand what makes a dish distinctive.
+
+**Concept:** A small, optional “passport” panel per verified dish: pronunciation, one concise story, serving context, and a visual origin cue only where the claim is verified. Keep the order action visible and the story skippable.
+
+**Distinctive value:** AZAL becomes a welcoming guide to Yemeni food culture rather than a menu with generic descriptions.
+
+**Prototype boundary:** Content must be owner/kitchen verified. No invented regional provenance, ingredients, recipes, health claims, or audio recording of unverified pronunciation. Start with one approved sample dish and test whether guests understand it faster.
+
+**Kill criteria:** If it lengthens the menu, repeats generic copy, or distracts from ordering, cut it.
+
+### 9. Table Pulse — honest order progress
+
+**Guest problem:** After checkout, guests need to know whether the restaurant has received, accepted, prepared, and handed over their order.
+
+**Concept:** A calm, accessible order timeline driven only by persisted server-side state transitions. Each milestone explains what has happened and what the guest should do next; no animated fake progress or invented ETA.
+
+**Distinctive value:** Makes operational truth part of the hospitality experience and reduces “is my order ready?” uncertainty.
+
+**Prototype boundary:** UI prototype may use fixtures only. Live status requires authenticated order ownership, server-authoritative transitions, privacy review, and tested refresh/reconnect behavior. Never expose kitchen notes or another guest's order.
+
+**Kill criteria:** If the backend cannot guarantee truthful state or the timeline creates more confusion than the existing confirmation, do not ship it.
+
+### Cross-model challenge
+
+Issue #34 asks Muse to rank proposals and select a reversible prototype; Claude to produce at least three materially different alternatives and critique these hypotheses; ChatGPT to provide independent CX critique. No concept is approved merely by appearing in this ledger.

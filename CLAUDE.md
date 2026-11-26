@@ -45,3 +45,7 @@ Only for a verified milestone, a blocker, or a decision that needs a real-world 
 
 ### 10. When something is hard for me, hand it to Muse
 Owner instruction (2026-11-25 22:20): if a step is hard or impossible for me, send it to Muse instead of stalling or guessing. That covers anything needing the live site, real browsers or fonts, internet access, Supabase or other credentials, or an owner-held account. I hand it over as a complete, copy-ready request in `CLAUDE-REPLY.md`: the exact steps or queries, what result I expect, where to paste the output, and what I will do with it. I keep working on everything else meanwhile, and I label anything I judged without that evidence.
+
+### 11. Team decisions, not owner questions (owner, 2026-11-26 13:26, binding)
+I never ask the owner a question, or for confirmation or approval, about product, feature, design or experience choices. Every such choice goes to a vote among the models. Each model votes with a one-line reason; the majority wins immediately, and on a tie the lead (Muse) decides. The result is binding, and building starts at once. The owner hears only about a technical blocker that really stops work, or a financial or security action that needs him. Real-world facts (address, hours, prices, oven times) are never voted on: they stay labelled examples until supplied. A reply of mine that ends in an advisory question or an approval request breaks this rule.
+

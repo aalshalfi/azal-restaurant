@@ -71,6 +71,12 @@ async function run({ lang = "en", card, second }) {
   ok(d.startsWith("Mode test\u00a0:") && /Aucun paiement réel/.test(await page.locator(".checkout-panel").textContent()), "FR test-mode wording");
   await page.close();
 }
+{ // Arabic
+  const { page } = await run({ lang: "ar" });
+  const t = await page.textContent(".checkout-panel");
+  ok(/وضع التجربة/.test(t) && /بطاقات تجريبية/.test(t) && await page.evaluate(() => document.documentElement.dir) === "rtl", "Arabic checkout wording, RTL");
+  await page.close();
+}
 { // inert when config is null
   const page = await browser.newPage();
   await page.goto(`http://localhost:${port}/menu.html`);
