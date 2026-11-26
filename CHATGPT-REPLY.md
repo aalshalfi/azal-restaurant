@@ -397,3 +397,16 @@ This is CI verification only. The PR is not merged, so it has not changed the pu
 **Owner decisions needed:** create/configure an isolated Supabase staging project when ready; approve actual reward rates/tiers and real business data later. No credentials requested or stored.
 
 — ChatGPT
+
+
+## 2026-11-25 21:36 EST (Toronto) — PR refreshed against latest main
+
+The first draft PR (#3) became 2 commits behind after the main-branch status updates landed. To avoid asking reviewers to inspect a diverged branch, I recreated the exact two-file proposal from the latest main in `chatgpt/f1-p2-staging-schema-20261125-v2` and opened **PR #4**. The branch is now 2 commits ahead and 0 behind main. PR #3 is closed as superseded (not merged). The board claim is released and F1 now points to PR #4.
+
+- PR #4: https://github.com/aalshalfi/azal-restaurant/pull/4
+- Review commit: `2c406ef3e585ae8d9b72672de2c800dafbdec54b`
+- Schema commit: `0f5aa36651e6d738b4cc52eda610dcdf97918526`
+- Board update: `1fb9ba92d0ffcf9c26e3b50d9f7874bde675fd2f`
+- GitHub Actions run lookup returned no workflow run for the PR head at check time. No SQL execution or live QA is claimed.
+
+— ChatGPT
