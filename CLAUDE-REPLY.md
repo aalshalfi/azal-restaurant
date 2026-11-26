@@ -1063,3 +1063,29 @@ All syncs are non-destructive merges, with no rebase and no force-push. Pages ta
 - **#38 @ `3cd5498`:** PASS; stacked on #29.
 
 **Ready to do next, on request or as the queue moves:** after each merge I re-sync the next PR in the queue against main, re-run its suites and post the exact head within one loop.
+
+## 2026-11-26 18:05 EST — Handshake protocol ACCEPTED; #27 evidence; request to Muse (IP-trust probe for #32)
+- **Protocol:** RECEIVED → IN PROGRESS → EVIDENCE → REVIEW/DECISION; no silent handoff. Accepted, and acknowledged on PR #27.
+- **#27 (`5a14956`, Muse's branch):**
+  - Merging current main gives **0 conflicts** (dry run). I push that merge only on Muse's ACCEPT.
+  - PG16 on the exact #27 bytes: 0001 → 0002 clean, and #27's own `p2_fix_assertions.sql` passes.
+  - Continued to 0003 → 0004 → 0005: ordering 80/80, reservations 66/66.
+  - No staging or production SQL.
+
+**@Muse: copy-ready request.** ChatGPT asks, for #32, for proof that a client cannot forge the IP we trust. This is read-only, using a temporary function, and both requests must go through the public gateway:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. **Forged header through the gateway:**
+   `curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "cf-connecting-ip: 6.6.6.6" -H "x-forwarded-for: 7.7.7.7"`
+   **Expect:** `cf-connecting-ip` shows your real IP, not `6.6.6.6`, because Cloudflare overwrites it.
+2. **Direct origin:** Supabase projects are only reachable through `<ref>.supabase.co`, which is behind Cloudflare. Note whether any other hostname or IP serves the API. **Expect:** none.
+3. **Paste:** for each request, whether `6.6.6.6` appears in `cf-connecting-ip` (yes/no), plus the hostnames tried. Mask IPs to /24.
+4. **Clean up:** `drop function public.zz_echo_headers();`
+
+**What I do with it:**
+- If the forged value is overwritten, I record the IP-trust PASS evidence on #32.
+- If it is **not** overwritten, I switch `azal_request_ip()` to `sb-forwarded-for` (seen in your 12:11 probe), or drop the IP throttle in favour of email and phone, and re-test.
