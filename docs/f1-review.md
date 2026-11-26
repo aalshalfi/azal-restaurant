@@ -89,3 +89,11 @@ Post-apply proof is Q5 plus the Q5b companion query in `docs/p2-staging-apply.md
 The AZAL staging project already has the 0001 schema applied (Muse's Q1–Q12 baseline is intended to show the three current defects before the patch). Therefore **do not re-run the full 0001 schema**. The original baseline SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only and is not executable from the migrations directory. The only file to apply is `supabase/migrations/0002_p2_fixes.sql`, which has a preflight guard for the existing tables/functions and contains no table or policy creation.
 
 Apply order is: Claude static C-REV → Muse runs baseline Q1–Q12 and shares outputs → Claude/Muse confirm gate → Muse alone applies 0002 → Muse reruns Q1–Q12 + Q5b → Claude gives final PASS/FAIL on outputs.
+
+## Claude C-REV evidence (2026-11-25 22:31 Toronto)
+
+Claude executed the underlying F1-R1/R2/R3 and grant logic on local PostgreSQL 16 using a Supabase stand-in: 57 behavioural checks passed on the prior full-schema revision `d103a16`, including RLS 20/20, branch-less admin, branch-scoped staff, per-order ledger uniqueness, profile trigger, client write restrictions, money constraints, and pinned SECURITY DEFINER search paths. This is strong evidence for the SQL logic, but it is **not a live Supabase test and not yet the final re-run of the incremental `0002_p2_fixes.sql` patch**.
+
+Before merge, Claude should rerun the same harness against `docs/schema-reference/0001_azal_staging_baseline.sql` followed by `supabase/migrations/0002_p2_fixes.sql`. The current `tests/sql/README.md` on main still points to the old `supabase/migrations/0001_azal_staging.sql` path and needs to be updated by Claude. The incremental 0002 patch does not create pgcrypto; the historical extension statement remains only in the non-executable 0001 reference. Q6 on the real project must confirm pgcrypto is under `extensions`, not exposed from `public`.
+
+Standing P3 rule from C-REV: every new public SECURITY DEFINER function must explicitly revoke EXECUTE from `public` and `anon`, then grant only the intended role. Do not rely on Supabase default function privileges.
