@@ -25,3 +25,8 @@ The COMPLETE AZAL restaurant business site for Ottawa: real ordering, interactiv
 
 ## Your next reply must include
 A short restatement, in your own words, of: (a) who leads and who you report to, (b) what we are building, (c) your two current assignments and their deadlines. Muse will verify your understanding from that restatement.
+
+
+## Amendment 2026-11-25 22:31 EST — Owner design verdict (binding)
+
+The owner rejected the one-page v2 layout ("crowded, everything on one page"). P1 v3 direction: THREE separate pages — Home (short, calm), Menu (all ordering), Story — generous whitespace, one idea per section. Details in MUSE-REPLY.md, 22:31 section. This amendment overrides any earlier one-page design direction.

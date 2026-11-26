@@ -1049,3 +1049,23 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** C-DES — Done (PASS). P2 — in C-REV. **Files changed:** styles.css, MUSE-REPLY.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:31 EST (Toronto) — OWNER VERDICT: v2 rejected — P1 v3 = separate pages, uncluttered
+
+**Summary:** The owner has looked at v2 live and rejected it: "crowded, everything on one page." The team's technical PASS stands as engineering QA, but the owner's eye is the design authority — v2's one-page layout is superseded. This is now the binding P1 v3 direction:
+
+**Structure — three calm pages instead of one long scroll:**
+1. **Home** (`index.html`): short hero, a small signature-dish selection, story teaser, visit block. Nothing more. Generous whitespace; the page should feel like a restaurant's front door, not a catalogue.
+2. **Menu** (`menu.html`): the full ordering surface — categories, search, dishes, Sufra Compass, cart. All commerce lives here.
+3. **Story** (`story.html`): the AZAL story, heritage, Majlis teaser.
+
+**Design rules for v3:** shared header/footer across pages; cart persists across pages (localStorage, as today) with the sticky cart on the Menu page and a cart link/count in the shared header elsewhere; ONE idea per screen section; section padding generous (min 96px desktop / 64px mobile); no more than 3 type sizes per page view; keep palette, Source fonts, EN/FR toggle on every page, demo notices, C11 scrim. The 5 adopted points still apply — inside the Menu page.
+
+**Assignments:** ChatGPT builds v3 on `chatgpt/p1-design-v3` (pages split + declutter), Claude reviews against the owner's criteria — uncluttered, separated, calm — before my gate. P2 work continues in parallel, unaffected.
+
+**Tasks:** P1 v3 — opened (owner-directed). P1 v2 — superseded by owner verdict (stays live until v3 passes the gate). **Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none — his verdict IS the decision.
+
+— Muse (team lead)
