@@ -4,7 +4,7 @@ Scope: Muse's content order (23:05). Each row is keyed to its page and its exist
 
 ## Writing rules used
 - Short, specific, warm. No filler words ("exceptional", "like no other", "something special"). A sentence earns its place by telling the guest something true or useful.
-- French written in French: natural word order, Canadian usage where it matters ("à emporter", "courriel"), typographic spaces before `: ; ? !` handled by the page (or a non-breaking space ` `).
+- French written in French: natural word order, Canadian usage where it matters ("à emporter", "courriel"), before `: ; ? !` put a non-breaking space (U+00A0) directly in the FR string, so no render logic is needed (Muse FR gate 23:15).
 - No invented facts: no city, address, founding year, founder biography, awards or reviews. Where a real fact belongs, the copy holds a **{placeholder}** and the fact is listed in "Pending owner" at the end. Until filled, ChatGPT renders the fallback line given in the row.
 - Demo notices stay while the site is a preview (CLAUDE.md rule 6). Each demo string has a **launch** version beside it, so switching to real ordering is a value swap, not a rewrite.
 - Hero headline: the current "A Taste of Yemen, Like No Other" is a generic superlative and repeats in the footer. Replaced below.
@@ -52,8 +52,8 @@ Scope: Muse's content order (23:05). Each row is keyed to its page and its exist
 | demoContains | Your order would include | Votre commande comprendrait | launch: `Your order` / `Votre commande` |
 | items | item(s) | article(s) | better: plural-aware keys `item_one`/`item_other` |
 | notSent | Nothing was sent to the restaurant. | Rien n’a été envoyé au restaurant. | launch: `Order {code} confirmed. Pickup at {time}.` / `Commande {code} confirmée. Retrait à {time}.` |
-| **cartLive** (new, aria-live) | {dish} added to your order. | {dish} ajouté à votre commande. | for the required `role="status"` announcement |
-| **cartLiveRemoved** (new) | {dish} removed. | {dish} retiré. | |
+| **cartLive** (new, aria-live) | Added to your order: {dish}. | Ajouté à votre commande : {dish}. | for the required `role="status"` announcement |
+| **cartLiveRemoved** (new) | Removed from your order: {dish}. | Retiré de votre commande : {dish}. | |
 
 ---
 
@@ -139,7 +139,7 @@ Scope: Muse's content order (23:05). Each row is keyed to its page and its exist
 | 1 | Lamb and rice cooked together until the meat is tender and the rice holds its flavour. | Agneau et riz cuits ensemble jusqu’à ce que la viande soit fondante et le riz bien parfumé. |
 | 2 | Spiced chicken over mandi rice, roasted until golden. | Poulet épicé sur riz mandi, rôti jusqu’à être doré. |
 | 3 | Lamb slow-roasted on the bone, simply seasoned. | Agneau rôti lentement sur l’os, simplement assaisonné. |
-| 4 | Shredded meat stew served bubbling, with bread for scooping. | Ragoût de viande effilochée servi bouillant, avec du pain pour le saisir. |
+| 4 | Shredded meat stew served bubbling, with bread for scooping. | Ragoût de viande effilochée servi bouillant, avec du pain pour saucer. |
 | 5 | A hot stew finished with whipped fenugreek, eaten with bread. | Un ragoût chaud nappé de fenugrec fouetté, à manger avec du pain. |
 | 6 | Warm bread with fresh chilli, tomato and garlic relish. | Pain chaud et sauce fraîche au piment, tomate et ail. |
 | 7 | Smooth chickpea purée with olive oil. | Purée de pois chiches onctueuse à l’huile d’olive. |

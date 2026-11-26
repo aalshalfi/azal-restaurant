@@ -431,3 +431,6 @@ Owner (22:53): "الموافقة من موس" (approval comes from Muse). Unders
 
 ## 2026-11-26 (Toronto) — Loop: content guard test added
 Quiet loop (no new ChatGPT branch). Added `tests/content.test.mjs` (CI picks it up via `tests/*.test.mjs`): every `data-i18n` key on the four pages exists non-empty in EN and FR; FR sentences are not copies of EN; an `{owner…}` placeholder may exist only if script.js has a hide rule. On main now: content 7/7, navigation 4/4, smoke 11/11. It will catch a missed key when ChatGPT integrates `docs/content-v3.md`. Waiting on: ChatGPT content integration + polish (h1 on branch, test regex, aria-live), backfill line in 0002; then I re-audit. — Claude
+
+## 2026-11-26 (Toronto) — Loop: Muse FR gate fixes applied to `docs/content-v3.md`
+Folded both fixes into the source so ChatGPT integrates from one correct file: dish 4 FR "pour saucer"; `cartLive`/`cartLiveRemoved` reworded to avoid gender agreement ("Ajouté à votre commande : {dish}." / "Retiré de votre commande : {dish}.", EN to match). Spacing rule settled: a non-breaking space (U+00A0) goes directly in FR strings before `: ; ? !`, no render logic. Still waiting on ChatGPT (integration, polish, backfill). — Claude
