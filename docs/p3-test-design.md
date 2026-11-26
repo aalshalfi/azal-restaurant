@@ -74,3 +74,33 @@ P0 (merge blockers for P3): D1, D2, D4, D6, D8, D10, D11, S1, E1, U2, U3, U4. P1
 ## What this cannot cover
 
 No real payments, no real customer data, no load testing, no check of visual quality or real-device behavior. Those stay with Muse's live QA and the owner's real-world facts (hours, tax registration, menu prices).
+
+---
+# Full extension (task 3, 2026-11-25 22:59): accounts, points read, reservations
+
+Same environment rules as above (staging only, synthetic `*@example.invalid` users, owner holds credentials, rows tagged and cleaned). IDs continue the series.
+
+## Accounts (ACCT) — sign-up → profile → points read
+| ID | Case | Pass criterion |
+|---|---|---|
+| A1 | Sign-up creates one profile | Creating an auth user yields exactly one `profiles` row with role `customer`; repeating the trigger adds none (F1-R3). |
+| A2 | Role safety | A customer cannot set their own role or `member_since`; only `display_name` is updatable (column grant). |
+| A3 | Profile privacy | Customer A cannot select customer B's profile or points. |
+| A4 | Points read | `my_balance()` returns the sum of the caller's ledger rows only; a user with no rows gets 0, not null. |
+| A5 | Ledger is append-only | No client INSERT/UPDATE/DELETE on `points_ledger` (privilege test, 42501). |
+| A6 | Earn exactly once | Completing the same paid+handed-over order twice yields one `earn` row; unpaid or cancelled orders earn nothing. |
+| A7 | Rate arithmetic | 10 pts per $1 on the subtotal before tax (decision pending at P4 checkpoint, test reads rates from config); $12.99 earns 129 pts (floor). |
+| A8 | Signup disabled probe | While public sign-ups are off, an anonymous signup is rejected (E6). |
+| A9 | Member page UI | `member.html` shows no balance and no forms until the schema is live; once live, balance shows only for the signed-in user; EN/FR keys complete (smoke test). |
+| A10 | Sign-out | Sign-out clears local session state; cart survives sign-out; no personal data remains in `localStorage`. |
+| A11 | Anonymous cart then sign-in | The cart built before sign-in is still there after sign-in (no lost steps). |
+
+## Reservations (RS) — see `docs/reservations-spec.md` and `docs/reservations-schema.md`
+RS1–RS18 as listed there. Priorities: P0 = RS3 and RS16 (no overbooking under race), RS4 (idempotent), RS6/RS12/RS13 (privacy and grants), RS11 (middle-tick overflow), RS1 (hours), RS10 (390px, targets ≥44px).
+Additional UI cases: RS19 the booking form never asks for more than name, email, optional phone, optional note; RS20 the "11+ guests" path creates no booking and shows the owner-supplied contact email; RS21 confirmation shows the code and the cancel link; RS22 EN and FR confirmation and email templates contain no unfilled `{placeholders}`.
+
+## Cross-feature
+X1 One session, one language: switching EN↔FR on any page keeps the chosen language on every other page (multipage). X2 Cart, account state and a pending reservation draft survive a page reload. X3 Axe-style checks (labels, focus order, contrast) on Home/Menu/Story/Member/Reserve at 390px; no tap target under 44px (v3 currently fails this, see C-DES verdict).
+
+## Counting rule
+Each implemented case carries its ID in the test name. Reports quote `passed/total` for the implemented subset only and state what was not run.
