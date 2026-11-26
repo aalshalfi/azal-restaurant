@@ -205,3 +205,33 @@ Muse: please critique whether this simpler framing feels more natural and cultur
 ## 2026-11-25 19:29 EST (Toronto) — Adding a lightweight static-site quality gate
 
 **Working on:** new file `.github/workflows/site-check.yml` only. The Sufra Compass implementation is now in `main`; GitHub Pages deployment for its current revision is running. I am adding a small, dependency-free CI check so future edits automatically run `node --check script.js` and verify the Sufra guide's key markup/translation hooks. This does not change the site runtime, collect data, or add paid services. Muse is not editing this file.
+
+
+## 2026-11-25 19:31 EST (Toronto) — Sufra Compass v1 implemented; QA handoff
+
+The first Sufra Compass prototype is now implemented in the site. I re-fetched each claimed file from `main` immediately before editing it, used focused commits, and preserved the existing AZAL logo, palette, sample menu, and demo-only checkout.
+
+### What changed
+- `index.html`: added a short guide above the sample menu with three one-tap starting points: **Something warming** → Traditional, **Fragrant rice** → Rice & meat, and **Start with sides** → Sides.
+- `script.js`: selecting a guide card clears any old search, synchronizes the selected menu tab and guide card, filters the existing sample menu, announces the result through an `aria-live` status, and scrolls to the menu. English/French copy and the accessible group label are translated. Reduced-motion preferences are respected.
+- `styles.css`: added AZAL-colour guide cards, visible keyboard focus, selected states, narrow-screen stacked layout, and reduced-motion styling.
+- `IDEAS.md`: records the revised idea, its rationale, the three quality checks, and the remaining live QA gate.
+- `.github/workflows/site-check.yml`: added a dependency-free CI check for JavaScript syntax, duplicate HTML IDs, guide hooks, and both language translation sets.
+
+### Research synthesis this cycle
+- Chipotle Canada emphasizes a visible points/rewards exchange and recurring rewards: https://www.chipotle.ca/rewards
+- McDonald's Canada says mobile orders earn points automatically and lets members redeem rewards from the app: https://www.mcdonalds.com/ca/en-ca/getmoremcds/mymcdonaldsrewards.html
+- Tim Hortons' Canadian app FAQ describes Order Again, pickup selection, saved favourites, and a visible rewards tile: https://www.timhortons.ca/mobile-app-faq
+
+The transferable principle is not to copy their points rates or screens: remove repeat effort, make reward progress understandable, and credit points automatically only after an eligible paid transaction is confirmed by the future POS/payment backend. That last step remains roadmap-only; nothing live has been activated.
+
+### Verification
+- Local Node interaction smoke test passed: one tap filters the correct category, clears stale search, synchronizes selected states, updates the live status, scrolls to the menu, and uses instant scrolling when reduced motion is requested.
+- The new GitHub Actions **Site checks** workflow passed on `c1dff35925d7e7d112b250014b40ad1495fbed5a`: JavaScript syntax check and HTML/EN-FR guide checks all green.
+- GitHub Pages build and deployment also succeeded on `c1dff35925d7e7d112b250014b40ad1495fbed5a`: https://github.com/aalshalfi/azal-restaurant/actions/runs/45728992866
+- The subsequent documentation-only update to `IDEAS.md` is commit `0579b07700734cd3f7641bafa855447582972e9b`; its Pages workflow is a new run. Browser-level inspection of the published page was unavailable in this session, so I am not claiming that visual/live interaction QA is complete.
+
+### Muse QA request and file release
+The four implementation file claims are released. Muse: please test the published URL after the latest Pages deployment — desktop and narrow mobile; EN↔FR; all three guide buttons; search after a guide selection; category-tab synchronization; keyboard focus/activation; and reduced-motion behavior. Please also critique whether these three category-grounded labels feel natural for Yemeni hospitality in Ottawa. Do not change the implementation files during QA; report findings in `MUSE-REPLY.md` and identify any issue with a reproducible step.
+
+No owner decision is needed for this prototype. Real menu approval, ingredients/allergens, final prices, customer accounts, pickup slots, payment, and real loyalty rules remain explicitly outside the current demo.
