@@ -1,6 +1,7 @@
 const translations = {
  en: {
-  navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",stickyCartLabel:"View order",
+  navHome:"Home",navHome:"Accueil",navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",stickyCartLabel:"View order",
+  signatureKicker:"A FIRST TASTE",signatureTitle:"A few dishes to begin.",signatureIntro:"An illustrative selection from the sample menu. Explore the full menu for more.",signatureLabel:"SAMPLE DISH",signatureMandi:"Lamb Mandi",signatureMandiText:"Fragrant rice with slow-cooked lamb.",signatureFahsa:"Yemeni Fahsa",signatureFahsaText:"A rich traditional stew, served warm.",signatureChai:"Adeni Chai",signatureChaiText:"Yemeni-style spiced milk tea.",storyTeaserLink:"Discover the AZAL story",menuPageTitle:"The AZAL menu.",menuPageIntro:"A sample of Yemeni dishes, made for discovery. All dishes and prices are illustrative only.",storyPageKicker:"THE AZAL STORY",storyPageTitle:"Rooted in Yemen. Made for gathering.",storyPageIntro:"A restaurant concept shaped by food, memory and the warmth of sharing a table.",storyValuesKicker:"OUR TABLE, OUR INSPIRATION",storyValuesTitle:"Food is a reason to come together.",storyValuesText:"Yemeni hospitality is generous by nature. AZAL takes inspiration from the dishes, aromas and traditions that turn a meal into a moment shared with family and friends.",majlisKicker:"A PLACE AT THE TABLE",majlisTitle:"The Majlis, by AZAL.",majlisText:"A future expression of belonging and shared hospitality. The Majlis AZAL experience is in development; membership, benefits and points are not active.",
   heroEyebrow:"YEMENI HOSPITALITY · ROOTED IN HERITAGE",heroTitle:"A Taste of Yemen,",heroTitleEm:"Like No Other.",
   heroText:"Slow-cooked tradition, generous tables and the warmth of Yemeni hospitality.",heroMenu:"Explore the menu",heroStory:"Discover our story",sampleNote:"CONCEPT PREVIEW · SAMPLE DISHES AND PRICES",
   storyKicker:"THE AZAL EXPERIENCE",storyTitle:"Gather around",storyTitleEm:"something special.",
@@ -31,7 +32,8 @@ const translations = {
   thankYou:"Demo preview",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
  },
  fr: {
-  navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",stickyCartLabel:"Voir la commande",
+  navHome:"Home",navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",stickyCartLabel:"Voir la commande",
+  signatureKicker:"UN PREMIER APERÇU",signatureTitle:"Quelques plats pour commencer.",signatureIntro:"Une sélection illustrative du menu démo. Découvrez le menu complet.",signatureLabel:"PLAT DÉMO",signatureMandi:"Mandi d’agneau",signatureMandiText:"Riz parfumé accompagné d’agneau mijoté.",signatureFahsa:"Fahsa yéménite",signatureFahsaText:"Un ragoût traditionnel riche, servi chaud.",signatureChai:"Thé adéni",signatureChaiText:"Thé au lait épicé à la yéménite.",storyTeaserLink:"Découvrir l’histoire d’AZAL",menuPageTitle:"Le menu AZAL.",menuPageIntro:"Un aperçu de plats yéménites. Tous les plats et prix sont donnés à titre illustratif.",storyPageKicker:"L’HISTOIRE D’AZAL",storyPageTitle:"Enraciné au Yémen. Fait pour se retrouver.",storyPageIntro:"Un concept de restaurant inspiré par la cuisine, la mémoire et la chaleur du partage.",storyValuesKicker:"NOTRE TABLE, NOTRE INSPIRATION",storyValuesTitle:"La cuisine est une invitation à se retrouver.",storyValuesText:"L’hospitalité yéménite est généreuse par nature. AZAL s’inspire des plats, des parfums et des traditions qui transforment un repas en un moment partagé en famille ou entre amis.",majlisKicker:"UNE PLACE À TABLE",majlisTitle:"Le Majlis, par AZAL.",majlisText:"Une future expression de l’appartenance et de l’hospitalité partagée. L’expérience Majlis AZAL est en développement; l’adhésion, les avantages et les points ne sont pas actifs.",
   heroEyebrow:"HOSPITALITÉ YÉMÉNITE · UN HÉRITAGE VIVANT",heroTitle:"Le goût du Yémen,",heroTitleEm:"comme nulle part ailleurs.",
   heroText:"Des recettes mijotées avec patience, des tables généreuses et toute la chaleur de l’hospitalité yéménite.",heroMenu:"Découvrir le menu",heroStory:"Notre histoire",sampleNote:"APERÇU DU CONCEPT · PLATS ET PRIX À TITRE INDICATIF",
   storyKicker:"L’EXPÉRIENCE AZAL",storyTitle:"Réunissons-nous",storyTitleEm:"autour de quelque chose d’exceptionnel.",
@@ -73,12 +75,13 @@ const productTranslations = {
  8:{name:"Thé adéni",description:"Thé au lait épicé à la yéménite, parfumé et réconfortant.",type:"Boissons"},
  9:{name:"Jus de mangue frais",description:"Une boisson rafraîchissante à la mangue douce.",type:"Boissons"}
 };
-let language="en";
+let language=(()=>{try{return localStorage.getItem("azal-language")==="fr"?"fr":"en"}catch{return "en"}})();
 const t=key=>translations[language][key]||translations.en[key]||key;
 const localizedProduct=p=>language==="fr"?{...p,...productTranslations[p.id]}:p;
 function applyLanguage(){
  document.documentElement.lang=language;
  document.documentElement.dir="ltr";
+ try{localStorage.setItem("azal-language",language)}catch{}
  document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
@@ -99,7 +102,9 @@ const products = [
 {id:8,name:"Adeni Chai",category:"Drinks",type:"Drinks",price:3.99,description:"Yemeni-style spiced milk tea, fragrant and warming.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Chai_In_Sakora.jpg?width=900",tag:""},
 {id:9,name:"Fresh Mango Juice",category:"Drinks",type:"Drinks",price:5.49,description:"A refreshing sweet mango drink.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Mango_juice.JPG?width=900",tag:""}
 ];
-const cart = new Map();
+function loadCart(){try{const saved=JSON.parse(localStorage.getItem("azal-demo-cart-v1")||"[]");if(!Array.isArray(saved))return new Map();return new Map(saved.filter(x=>Array.isArray(x)&&products.some(p=>p.id===Number(x[0]))&&Number.isInteger(Number(x[1]))&&Number(x[1])>0&&Number(x[1])<=50).map(x=>[Number(x[0]),Number(x[1])]))}catch{return new Map()}}
+const cart = loadCart();
+function persistCart(){try{localStorage.setItem("azal-demo-cart-v1",JSON.stringify([...cart.entries()]))}catch{}}
 const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat(language==="fr"?"fr-CA":"en-CA",{style:"currency",currency:"CAD"}).format(n);
 const productGrid=$("productGrid"), cartDrawer=$("cartDrawer"), backdrop=$("cartBackdrop"), cartItems=$("cartItems");
@@ -127,6 +132,7 @@ function renderCart(){
  if(stickyCartTotal)stickyCartTotal.textContent=money(total);
  if(checkoutButton)checkoutButton.disabled=count===0;
  if(cartItems)cartItems.innerHTML=entries.length?entries.map(([id,qty])=>{const p=products.find(x=>x.id===id);const v=localizedProduct(p);return `<div class="cart-row"><div><strong>${v.name}</strong><small>${money(p.price)} ${t("each")} · ${money(p.price*qty)}</small></div><div class="quantity-controls"><button data-change="${id}" data-delta="-1" aria-label="${t("removeOne")}">−</button><span>${qty}</span><button data-change="${id}" data-delta="1" aria-label="${t("addOne")}">+</button></div></div>`}).join(""):`<p class="empty-cart">${t("emptyCart")}</p>`;
+ persistCart();
 }
 function openCart(){if(!cartDrawer||!backdrop)return;cartDrawer.classList.add("open");backdrop.classList.add("open");cartDrawer.setAttribute("aria-hidden","false");document.body.classList.add("locked")}
 function closeCart(){cartDrawer?.classList.remove("open");backdrop?.classList.remove("open");cartDrawer?.setAttribute("aria-hidden","true");document.body.classList.remove("locked")}
