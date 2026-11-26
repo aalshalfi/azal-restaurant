@@ -6,35 +6,61 @@
 
 - Isolated AZAL Supabase project ref: `nrnkhnmlgkjytyryinlj` (Muse-reported name `azal`, Canada Central, Free).
 - Existing Yemen Gate projects remain hands-off.
-- **Muse is the only person authorized to execute the migration in the project.** ChatGPT and Claude do not apply SQL.
-- Hard gate order: (1) Claude static C-REV PASS on the exact 0002 patch; (2) Muse runs and shares baseline Q1–Q12 from `docs/supabase-verify.sql`; (3) Claude/Muse confirm the baseline; (4) **Muse explicitly clears the merge/apply gate**; (5) Muse applies 0002; (6) Muse reruns Q1–Q12 + Q5b; (7) Claude gives final PASS/FAIL on the post-apply outputs.
+- **Muse is the only person authorized to execute SQL in the project.** ChatGPT and Claude do not apply SQL.
+- Apply order for the verified-empty project: **0001 baseline → verify → 0002 P2 fixes → verify**.
+- Hard gates: (1) confirm exact project ref and sign-ups OFF; (2) run read-only baseline checks and confirm the project is empty; (3) Claude/Muse confirm the exact 0001 + 0002 files and expected outputs; (4) Muse explicitly clears the apply gate; (5) Muse applies 0001; (6) Muse runs Q1–Q13 and confirms the baseline state; (7) Muse applies 0002; (8) Muse reruns Q1–Q13 + Q5b; (9) Claude gives final live C-REV PASS/FAIL on the post-0002 outputs.
 
-## Important: this is an incremental patch
+## Package B — verified-empty project only
 
-The AZAL staging project was verified EMPTY at 23:01; Package B applies the 0001 baseline first, then 0002. Do **not** assume the 0001 schema is already present. The original 0001 SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only; it is not in the executable migrations directory.
+The AZAL staging project was verified EMPTY at 23:01. Therefore the **full Package B sequence is required**:
 
-The only file to apply is `supabase/migrations/0002_p2_fixes.sql`. It has a preflight guard requiring the existing profiles, roles, staff access, points ledger, orders, admin helper, and Supabase Auth tables. It contains no `CREATE TABLE`, `CREATE POLICY`, or extension-creation statements. The 0001 reference retains its historical `CREATE EXTENSION IF NOT EXISTS pgcrypto` line; it is documentation only and must never be executed. Confirm Q6 shows pgcrypto under `extensions`, not as exposed public functions. If the 0002 preflight fails, stop; do not try the baseline file.
+1. Apply the complete baseline SQL from `docs/schema-reference/0001_azal_staging_baseline.sql`.
+2. Verify the resulting baseline with the read-only checks in `docs/supabase-verify.sql` (Q1–Q13). Expected: the 0001 schema exists and the three known P2 defects remain visible.
+3. Apply the complete `supabase/migrations/0002_p2_fixes.sql`.
+4. Verify the fixed state with Q1–Q13 + Q5b and the approved assertion script.
 
-## 1. Baseline checks — before applying anything
+**Do not skip 0001. Do not apply only 0002 to an empty project.** The 0001 file is the approved baseline for this specific verified-empty AZAL staging project; it is not a production migration and must never be applied to either Yemen Gate project or any non-empty/unverified project.
+
+If the initial read-only checks show that the project is not empty or the project ref differs, STOP. Do not apply 0001 or 0002 until Muse and Claude reconcile the actual state and issue a revised, exact-target runbook. Do not use 0001 as a repair/reset script.
+
+## 1. Preflight — read-only
 
 1. Open Supabase Dashboard and verify the project ref is exactly `nrnkhnmlgkjytyryinlj`. Do not use either Yemen Gate project.
-2. Verify the project contains the expected AZAL 0001 schema. Do not expect an empty public schema; the existing schema is the baseline being reviewed.
-3. Verify there are no real customer accounts, orders, ledger events, payment events, or settlement rows. Existing concept/fixture rows such as the Ottawa branch/hours may be present; do not delete or alter them.
-4. Muse runs all Q1–Q12 in `docs/supabase-verify.sql` as read-only catalog queries and pastes the non-sensitive outputs into `MUSE-REPLY.md` for Claude.
-5. Expected baseline: Q8 shows the branch-less-admin join defect; Q9 lacks the three per-order partial unique indexes; Q10 lacks the Auth profile trigger; Q5 shows the broad client DML privileges. Q2/Q4 must be reviewed for RLS/policies, Q6 for anon EXECUTE, and Q7 for pinned search paths. If any unrelated blocker appears, stop and ask Claude/Muse to reconcile before applying.
+2. Confirm public sign-ups are OFF and email confirmation remains ON.
+3. Run the read-only baseline queries in `docs/supabase-verify.sql`. Confirm the project is the verified-empty AZAL project: no AZAL application tables/schema objects from 0001, no customer accounts, orders, ledger events, payment events, or settlement rows. Capture all Q1–Q13 outputs.
+4. If any AZAL application schema already exists, or any unexpected data is present, STOP. Do not apply 0001 and do not proceed with 0002.
+5. Confirm the exact reviewed file revisions: `docs/schema-reference/0001_azal_staging_baseline.sql` and `supabase/migrations/0002_p2_fixes.sql` from the approved P2 branch/PR. Record their commit SHA values in Muse's reply. Never record secrets.
 
-## 2. Apply — Muse only, one file, one transaction
+## 2. Apply 0001 baseline — Muse only
 
-Only after Claude's static C-REV PASS and Muse's explicit approval:
+Only after the preflight is confirmed empty and Muse explicitly clears the gate:
 
-1. Open the reviewed `supabase/migrations/0002_p2_fixes.sql` from the approved PR #9/main SHA.
-2. Muse copies the **entire 0002 file only** into one new SQL Editor query. Do not paste `docs/schema-reference/0001_azal_staging_baseline.sql`.
-3. Execute once. The file contains `BEGIN` / `COMMIT` and a preflight guard. If any statement errors, stop and capture the error; do not paste fragments or retry selectively.
-4. Record the applied main SHA, project ref, Toronto time, SQL Editor result, and operator in the team reply. Never record secrets.
+1. Open the exact reviewed `docs/schema-reference/0001_azal_staging_baseline.sql`.
+2. Muse copies the **entire 0001 baseline** into one new SQL Editor query and executes it once.
+3. If any statement errors, stop and capture the error. Do not paste fragments, retry selectively, or move to 0002.
+4. Record the project ref, exact source SHA, Toronto time, SQL Editor result, and operator. Do not record credentials or keys.
+5. Run Q1–Q13 from `docs/supabase-verify.sql`. Confirm the 0001 baseline exists and the expected P2 defects are present:
+   - Q2: AZAL application tables with RLS enabled.
+   - Q4/Q5: the baseline's known broad client DML privileges are visible for review.
+   - Q8: the branch-less-admin join defect is present.
+   - Q9: the three per-order partial unique indexes are absent.
+   - Q10: the Auth profile trigger is absent.
+   - Q11/Q12: baseline constraints and fixture-only branch/hours are intact.
+   - Q13: no real customer/order/ledger/payment data.
+6. Paste every non-sensitive output block into `MUSE-REPLY.md`. Claude must confirm the exact baseline outputs before Muse proceeds.
 
-## 3. Post-apply verification — Q1–Q12 + Q5b
+## 3. Apply 0002 P2 fixes — Muse only
 
-Muse reruns all Q1–Q12 in `docs/supabase-verify.sql` and shares every non-sensitive output block with Claude. Also run this Q5b companion query because the migration deliberately uses a column-level grant:
+Only after the 0001 post-apply outputs are reviewed and Muse explicitly clears the second gate:
+
+1. Open the exact reviewed `supabase/migrations/0002_p2_fixes.sql` from the approved P2 branch/PR.
+2. Muse copies the **entire 0002 file** into one new SQL Editor query. Do not paste selected fragments.
+3. Execute once. The migration contains its own transaction and preflight. If any statement errors, stop and capture the error; do not retry selectively or apply a partial patch.
+4. Record the applied source SHA, project ref, Toronto time, SQL Editor result, and operator. Never record secrets.
+
+## 4. Post-0002 verification — Q1–Q13 + Q5b
+
+Muse reruns Q1–Q13 in `docs/supabase-verify.sql` and shares every non-sensitive output block with Claude. Also run this Q5b companion query because the migration deliberately uses a column-level grant:
 
 ```sql
 select grantee, table_name, column_name, privilege_type
@@ -45,7 +71,7 @@ order by table_name, grantee, column_name;
 ```
 
 Expected after 0002:
-- Q2: 20 AZAL application tables, all `rowsecurity = true`.
+- Q2: AZAL application tables remain present with RLS enabled.
 - Q3/Q4: only the intended write policy remains (`profiles_update_self_or_admin`); no order, ledger, payment, membership, role, or branch-access write policies.
 - Q5 table-level DML grants: zero rows for anon/authenticated.
 - Q5b column-level privileges: exactly one row — `authenticated | profiles | display_name | UPDATE`.
@@ -55,18 +81,22 @@ Expected after 0002:
 - Q9: three partial unique indexes on `points_ledger(order_id)` for `earn`, `earn_reversal`, and `redeem_refund`.
 - Q10: `auth.users` AFTER INSERT trigger calls the fixed-search-path SECURITY DEFINER profile function.
 - Q11/Q12: existing money constraints and fixture-only branch/hours remain intact; no real address/phone/hours are introduced.
+- Q13: no real customer/order/ledger/payment data.
 
-After Q1–Q12 and Q5b, Muse may run `supabase/tests/p2_fix_assertions.sql` as one query. It uses synthetic `.invalid` fixtures and ends in `ROLLBACK`; it must not leave users, orders, or ledger rows. Claude reviews the pasted post-apply outputs and records final PASS/FAIL. P2 is not Done until that verdict is recorded.
+After Q1–Q13 and Q5b, Muse may run `supabase/tests/p2_fix_assertions.sql` as one query. It uses synthetic `.invalid` fixtures and ends in `ROLLBACK`; it must not leave users, orders, or ledger rows. Claude reviews the pasted post-apply outputs and records final PASS/FAIL. P2 is not Done until that verdict is recorded.
 
-## 4. Dashboard-only checks
+## 5. Dashboard-only checks
 
-From the bottom of `docs/supabase-verify.sql`, Muse also confirms: public signup is disabled; no service-role key exists in the repository or front-end bundle; and there are zero real rows in orders, order_items, points_ledger, and payment_events. Never paste anon/service-role keys, passwords, or connection strings into GitHub or chat.
+From the bottom of `docs/supabase-verify.sql`, Muse also confirms: public signup remains disabled; no service-role key exists in the repository or front-end bundle; and there are zero real rows in orders, order_items, points_ledger, and payment_events. Never paste anon/service-role keys, passwords, or connection strings into GitHub or chat.
 
-## 5. Failure and rollback policy
+## 6. Failure and rollback policy
 
-- If the preflight guard fails or any statement errors before COMMIT, stop; the transaction should abort. Do not run the baseline file or apply partial statements.
+- If the initial preflight does not confirm the exact verified-empty project, STOP. Do not apply 0001 or 0002.
+- If 0001 fails, stop; do not apply 0002. Capture the error and request a reviewed recovery plan.
+- If 0001 succeeds but its Q1–Q13 outputs do not match the expected baseline, stop before 0002 and ask Claude/Muse to reconcile.
+- If 0002's preflight fails or any statement errors before COMMIT, stop; do not paste fragments or apply partial statements.
 - If 0002 commits but postflight or tests fail, do not drop tables, reset the project, or rewrite history. Keep staging isolated and ask Claude/Muse for a reviewed forward-fix migration.
-- Do not enable signup, customer account creation, order placement, points accrual, payment processing, delivery, or real data collection as part of this schema patch.
+- Do not enable signup, customer account creation, order placement, points accrual, payment processing, delivery, or real data collection as part of this P2 schema patch. Later features require their own reviewed migrations and Muse's separate gates.
 - Never apply to production or either Yemen Gate project.
 
-— Prepared by ChatGPT. No database action performed.
+— Prepared by ChatGPT. Documentation only; no database action performed.
