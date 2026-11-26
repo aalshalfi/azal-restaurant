@@ -484,3 +484,8 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 
 /* Arabic wordmark as outlined Amiri (OFL) glyphs: renders without any Arabic font on the device (A1) */
 .wordmark-ar{display:inline-block;height:1.9em;width:auto;vertical-align:-.6em;margin-inline-start:.2em}
+
+/* Say it right (Claude): pronunciation line under dish names, text only */
+.product-info p.say-it{display:flex;gap:6px;align-items:baseline;margin:2px 0 6px;font-size:13px;line-height:1.3;color:var(--muted)}
+.say-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--clay)}
+.say-sound{font-weight:600;letter-spacing:.02em}

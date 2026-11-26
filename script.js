@@ -1,5 +1,6 @@
 const translations = {
  en: {
+  sayIt:"Say it",
   signatureMore:"See the full menu",
   sfnSummary:"Ordering for a group? Build a spread",
   sfnTitle:"How many at the table?",
@@ -138,6 +139,7 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  sayIt:"Prononcez",
   signatureMore:"Voir tout le menu",
   sfnSummary:"Vous commandez pour un groupe ? Composez une sufra",
   sfnTitle:"Combien êtes-vous à table ?",
@@ -277,14 +279,14 @@ const translations = {
  }
 };
 const productTranslations = {
- 1:{name:"Mandi d’agneau",description:"Agneau et riz cuits ensemble jusqu’à ce que la viande soit fondante et le riz bien parfumé.",story:"Née dans l’Hadramaout : l’agneau et le riz cuisent ensemble, les sucs de la viande parfumant le riz en dessous.",type:"Riz et viandes",tag:"Spécialité"},
- 2:{name:"Mandi au poulet",description:"Poulet épicé sur riz mandi, rôti jusqu’à être doré.",story:"La même cuisson lente et fumée du mandi, plus légère avec le poulet, idéale à partager.",type:"Riz et viandes",tag:"Populaire"},
- 3:{name:"Haneeth d’agneau",description:"Agneau rôti lentement sur l’os, simplement assaisonné.",story:"Agneau rôti lentement en four fermé jusqu’à ce qu’il se détache de l’os, assaisonné simplement pour laisser parler la viande.",type:"Riz et viandes",tag:"Traditionnel"},
- 4:{name:"Fahsa yéménite",description:"Ragoût de viande effilochée servi bouillant, avec du pain pour saucer.",story:"Un ragoût de viande effilochée servi bouillant dans une marmite en pierre, à saisir avec du pain chaud.",type:"Plats traditionnels"},
- 5:{name:"Saltah yéménite",description:"Un ragoût chaud nappé de fenugrec fouetté, à manger avec du pain.",story:"Souvent appelé le plat national du Yémen : un ragoût mijoté couronné d’une mousse de fenugrec, au centre de la table.",type:"Plats traditionnels"},
- 6:{name:"Sahawiq et pain frais",description:"Pain chaud et sauce fraîche au piment, tomate et ail.",story:"Une sauce fraîche de piment, tomate et ail présente à presque tous les repas yéménites, faite pour y tremper le pain.",type:"Accompagnements"},
- 7:{name:"Houmous",description:"Purée de pois chiches onctueuse à l’huile d’olive.",story:"Un plat que se partagent bien des cuisines ; ici, une entrée douce aux côtés des plats yéménites.",type:"Accompagnements"},
- 8:{name:"Thé adéni",description:"Thé noir infusé au lait et aux épices douces.",story:"Le thé d’Aden : un thé noir corsé au lait et aux épices douces, comme on commence et finit un repas dans la ville portuaire.",type:"Boissons"},
+ 1:{name:"Mandi d’agneau",say:"MANN-di",description:"Agneau et riz cuits ensemble jusqu’à ce que la viande soit fondante et le riz bien parfumé.",story:"Née dans l’Hadramaout : l’agneau et le riz cuisent ensemble, les sucs de la viande parfumant le riz en dessous.",type:"Riz et viandes",tag:"Spécialité"},
+ 2:{name:"Mandi au poulet",say:"MANN-di",description:"Poulet épicé sur riz mandi, rôti jusqu’à être doré.",story:"La même cuisson lente et fumée du mandi, plus légère avec le poulet, idéale à partager.",type:"Riz et viandes",tag:"Populaire"},
+ 3:{name:"Haneeth d’agneau",say:"ha-NIZ",description:"Agneau rôti lentement sur l’os, simplement assaisonné.",story:"Agneau rôti lentement en four fermé jusqu’à ce qu’il se détache de l’os, assaisonné simplement pour laisser parler la viande.",type:"Riz et viandes",tag:"Traditionnel"},
+ 4:{name:"Fahsa yéménite",say:"FAH-sa",description:"Ragoût de viande effilochée servi bouillant, avec du pain pour saucer.",story:"Un ragoût de viande effilochée servi bouillant dans une marmite en pierre, à saisir avec du pain chaud.",type:"Plats traditionnels"},
+ 5:{name:"Saltah yéménite",say:"SAL-ta",description:"Un ragoût chaud nappé de fenugrec fouetté, à manger avec du pain.",story:"Souvent appelé le plat national du Yémen : un ragoût mijoté couronné d’une mousse de fenugrec, au centre de la table.",type:"Plats traditionnels"},
+ 6:{name:"Sahawiq et pain frais",say:"sa-HA-wik",description:"Pain chaud et sauce fraîche au piment, tomate et ail.",story:"Une sauce fraîche de piment, tomate et ail présente à presque tous les repas yéménites, faite pour y tremper le pain.",type:"Accompagnements"},
+ 7:{name:"Houmous",say:"HOU-mous",description:"Purée de pois chiches onctueuse à l’huile d’olive.",story:"Un plat que se partagent bien des cuisines ; ici, une entrée douce aux côtés des plats yéménites.",type:"Accompagnements"},
+ 8:{name:"Thé adéni",say:"A-dé-ni tchaï",description:"Thé noir infusé au lait et aux épices douces.",story:"Le thé d’Aden : un thé noir corsé au lait et aux épices douces, comme on commence et finit un repas dans la ville portuaire.",type:"Boissons"},
  9:{name:"Jus de mangue frais",description:"Mangue mûre pressée, servie bien froide.",story:"Les mangues mûrissent sur la plaine côtière de la mer Rouge, la Tihama, et deviennent une boisson fraîche et douce.",type:"Boissons"}
 };
 let language=(()=>{try{return localStorage.getItem("azal-language")==="fr"?"fr":"en"}catch{return "en"}})();
@@ -306,14 +308,14 @@ function applyLanguage(){
  renderCart();
 }
 const products = [
-{id:1,name:"Lamb Mandi",category:"Rice",type:"Rice & meat",price:24.99,description:"Lamb and rice cooked together until the meat is tender and the rice holds its flavour.",story:"Born in Hadramaut: lamb and rice cooked together, the meat's juices falling into the fragrant rice below.",image:"https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80",tag:"Signature"},
-{id:2,name:"Chicken Mandi",category:"Rice",type:"Rice & meat",price:18.99,description:"Spiced chicken over mandi rice, roasted until golden.",story:"The same slow, smoky mandi method, lighter with chicken and a favourite for sharing.",image:"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=900&q=80",tag:"Popular"},
-{id:3,name:"Lamb Haneeth",category:"Rice",type:"Rice & meat",price:26.99,description:"Lamb slow-roasted on the bone, simply seasoned.",story:"Lamb roasted slowly in a sealed oven until it falls off the bone, seasoned simply so the meat speaks.",image:"https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80",tag:"Traditional"},
-{id:4,name:"Yemeni Fahsa",category:"Traditional",type:"Traditional",price:19.99,description:"Shredded meat stew served bubbling, with bread for scooping.",story:"A shredded-meat stew served sizzling in a stone pot, eaten by scooping it up with warm bread.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/%D8%AE%D8%A8%D8%B2_%D9%85%D9%84%D9%88%D8%AD.jpg?width=900",tag:""},
-{id:5,name:"Yemeni Saltah",category:"Traditional",type:"Traditional",price:17.99,description:"A hot stew finished with whipped fenugreek, eaten with bread.",story:"Often called Yemen’s national dish: a bubbling stew topped with whipped fenugreek, the table’s centrepiece.",image:"https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80",tag:""},
-{id:6,name:"Sahawiq & Fresh Bread",category:"Sides",type:"Sides",price:5.99,description:"Warm bread with fresh chilli, tomato and garlic relish.",story:"A fresh chilli, tomato and garlic relish that sits beside nearly every Yemeni meal, made for tearing bread into.",image:"https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=900&q=80",tag:""},
-{id:7,name:"Hummus",category:"Sides",type:"Sides",price:7.99,description:"Smooth chickpea purée with olive oil.",story:"A dish many cuisines share, here a gentle starter to the table beside the Yemeni plates.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/HummusLebanese.jpg?width=900",tag:""},
-{id:8,name:"Adeni Chai",category:"Drinks",type:"Drinks",price:3.99,description:"Black tea brewed with milk and warm spices.",story:"Aden’s tea: strong black tea with milk and warm spices, the way the port city starts and ends a meal.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Chai_In_Sakora.jpg?width=900",tag:""},
+{id:1,name:"Lamb Mandi",say:"MAN-dee",category:"Rice",type:"Rice & meat",price:24.99,description:"Lamb and rice cooked together until the meat is tender and the rice holds its flavour.",story:"Born in Hadramaut: lamb and rice cooked together, the meat's juices falling into the fragrant rice below.",image:"https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80",tag:"Signature"},
+{id:2,name:"Chicken Mandi",say:"MAN-dee",category:"Rice",type:"Rice & meat",price:18.99,description:"Spiced chicken over mandi rice, roasted until golden.",story:"The same slow, smoky mandi method, lighter with chicken and a favourite for sharing.",image:"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=900&q=80",tag:"Popular"},
+{id:3,name:"Lamb Haneeth",say:"ha-NEETH",category:"Rice",type:"Rice & meat",price:26.99,description:"Lamb slow-roasted on the bone, simply seasoned.",story:"Lamb roasted slowly in a sealed oven until it falls off the bone, seasoned simply so the meat speaks.",image:"https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80",tag:"Traditional"},
+{id:4,name:"Yemeni Fahsa",say:"FAH-sah",category:"Traditional",type:"Traditional",price:19.99,description:"Shredded meat stew served bubbling, with bread for scooping.",story:"A shredded-meat stew served sizzling in a stone pot, eaten by scooping it up with warm bread.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/%D8%AE%D8%A8%D8%B2_%D9%85%D9%84%D9%88%D8%AD.jpg?width=900",tag:""},
+{id:5,name:"Yemeni Saltah",say:"SAL-tah",category:"Traditional",type:"Traditional",price:17.99,description:"A hot stew finished with whipped fenugreek, eaten with bread.",story:"Often called Yemen’s national dish: a bubbling stew topped with whipped fenugreek, the table’s centrepiece.",image:"https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80",tag:""},
+{id:6,name:"Sahawiq & Fresh Bread",say:"sa-HA-wik",category:"Sides",type:"Sides",price:5.99,description:"Warm bread with fresh chilli, tomato and garlic relish.",story:"A fresh chilli, tomato and garlic relish that sits beside nearly every Yemeni meal, made for tearing bread into.",image:"https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=900&q=80",tag:""},
+{id:7,name:"Hummus",say:"HOOM-moos",category:"Sides",type:"Sides",price:7.99,description:"Smooth chickpea purée with olive oil.",story:"A dish many cuisines share, here a gentle starter to the table beside the Yemeni plates.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/HummusLebanese.jpg?width=900",tag:""},
+{id:8,name:"Adeni Chai",say:"AH-deh-nee chai",category:"Drinks",type:"Drinks",price:3.99,description:"Black tea brewed with milk and warm spices.",story:"Aden’s tea: strong black tea with milk and warm spices, the way the port city starts and ends a meal.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Chai_In_Sakora.jpg?width=900",tag:""},
 {id:9,name:"Fresh Mango Juice",category:"Drinks",type:"Drinks",price:5.49,description:"Ripe mango, pressed and served cold.",story:"Mangoes ripen along Yemen’s Red Sea plain, the Tihama, and are pressed into a cool, sweet drink.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Mango_juice.JPG?width=900",tag:""}
 ];
 function loadCart(){try{const saved=JSON.parse(localStorage.getItem("azal-demo-cart-v1")||"[]");if(!Array.isArray(saved))return new Map();return new Map(saved.filter(x=>Array.isArray(x)&&products.some(p=>p.id===Number(x[0]))&&Number.isInteger(Number(x[1]))&&Number(x[1])>0&&Number(x[1])<=50).map(x=>[Number(x[0]),Number(x[1])]))}catch{return new Map()}}
@@ -336,7 +338,7 @@ function renderProducts(category="All",query=""){
  if(!productGrid)return;
  const normalized=query.trim().toLowerCase();
  const shown=products.filter(p=>{const v=localizedProduct(p);return (category==="All"||p.category===category)&&(!normalized||(`${p.name} ${p.description} ${p.type} ${v.name} ${v.description} ${v.type}`).toLowerCase().includes(normalized))});
- productGrid.innerHTML=shown.length?shown.map(p=>{const v=localizedProduct(p);return `<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${v.name}" width="900" height="675" loading="lazy" decoding="async"></div>${v.tag?`<span class="product-tag">${v.tag}</span>`:""}<div class="product-info"><span class="product-category">${v.type}</span><h3>${v.name}</h3><p>${v.description}</p>${v.story?`<p class="dish-story">${v.story}</p>`:""}<div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">${cart.has(p.id)?t("added"):t("add")}</button></div></div></article>`}).join(""):`<p class="no-products">${t("noResults")}</p>`;
+ productGrid.innerHTML=shown.length?shown.map(p=>{const v=localizedProduct(p);return `<article class="product-card"><div class="product-image"><img src="${p.image}" alt="${v.name}" width="900" height="675" loading="lazy" decoding="async"></div>${v.tag?`<span class="product-tag">${v.tag}</span>`:""}<div class="product-info"><span class="product-category">${v.type}</span><h3>${v.name}</h3>${v.say?`<p class="say-it"><span class="say-label">${t("sayIt")}</span> <span class="say-sound">${v.say}</span></p>`:""}<p>${v.description}</p>${v.story?`<p class="dish-story">${v.story}</p>`:""}<div class="product-bottom"><span class="product-price">${money(p.price)}</span><button class="add-button" data-add="${p.id}">${cart.has(p.id)?t("added"):t("add")}</button></div></div></article>`}).join(""):`<p class="no-products">${t("noResults")}</p>`;
 }
 function renderCart(){
  const entries=[...cart.entries()], count=entries.reduce((sum,[,qty])=>sum+qty,0);
