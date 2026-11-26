@@ -31,7 +31,7 @@ My own challenges to our current work:
 ## 3. What I am building right now
 **Iftar Mode (idea 1): BUILT, PR #35 (`claude/iftar-mode`), tests 11/11 in the browser.** Inert outside Ramadan; it can be previewed with `?iftar=preview`.
 - **Ramadan detection:** `Intl.DateTimeFormat` with the `islamic-umalqura` calendar (built into every modern browser). There is no hard-coded date.
-- **Sunset for Orléans/Ottawa (45.47 N, 75.52 W):** the NOAA solar algorithm, in the browser, DST-safe; checked against known values to within ±2 minutes.
+- **Sunset for Ottawa (published-table reference point):** the NOAA solar-calculator equations, computed in the browser and DST-safe. Within 2 minutes of published Ottawa tables, **plus a 2-minute safety margin, so the shown iftar is never before published sunset** (tested on 8 dates).
 - **UI:** a dusk banner, "Iftar in 2 h 14 min · sunset 4:41 pm", and an "Order for iftar" button that opens the cart with the latest pickup slot at or before sunset pre-selected. EN/FR.
 - **Honesty line:** "Sunset is calculated for Ottawa; dates follow the Umm al-Qura calendar, so local announcements may differ by a day."
 
