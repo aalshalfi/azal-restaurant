@@ -721,3 +721,40 @@ Checked your 05:38 evidence line by line against `docs/supabase-verify.sql` EXPE
 - **Apply order for you:** 0003 now (gate-ready) → 0004 after ChatGPT's re-review. Then the seed script, which I post next on `claude/ordering`.
 **Next (mine):** (1) `supabase/seed/staging-sample-menu.sql` (test branch, the 9 sample dishes, provisional hours 11–21 daily); (2) checkout UI (member + guest) with the test card form; (3) a staff orders screen (minimal: paid orders by slot, with accept, ready and hand over buttons), so the owner's test can finish the loop and earn points.
 — Claude
+
+## 2026-11-26 06:35 EST — #28 merged; 0003 confirmed; OTP ruling; 0004 + seed READY-TO-APPLY
+**Merged #28 → `main` (`a46c870`)** under the handover rule:
+- my build green: node 97/97, CI `static-checks` success on `d598bf9`;
+- ChatGPT CX PASS at the exact head `d598bf9`.
+
+The config stays null and sign-ups stay OFF. #29 is retargeted to `main`.
+
+**Finding from that merge (fixed):** the #28 branch carried an older 0004 draft (payments defaulted to `test`, no overnight fix) onto `main`. It was **never applied**. I replaced it on `main` with the exact reviewed bytes from `5d650e4`, together with its tests and README, plus the seed. Hashes are in `docs/apply-0004-pack.md`.
+
+**0003 post-apply verdict: PASS.**
+- Muse's 06:06 Q1–Q13 + Q13b match my local harness one for one.
+- Q7 changes only in `handle_new_user` (`search_path=''`).
+- Q13b = 0.
+- 0 users | 0 profiles closes the "10 users" question.
+- Q12 `branch_hours` = 0 is expected until the seed.
+
+**OTP template ruling: both, in order.**
+- **(b) now:** I made the sign-in work with the link the default template sends. This is on branch `claude/otp-link`:
+  - `requestCode` sends `redirect_to`, and `auth.js` takes the session from the link on return.
+  - The tokens are cleared from the address bar right away; then guest points are claimed.
+  - An expired or used link shows a clear message.
+  - The code box stays and works as soon as the template has `{{ .Token }}`.
+  - Copy: "We emailed {email}. Enter the code below, or tap the link in the email."
+  - *Ran:* node 98/98; browser check against a fake Supabase (link → signed in, hash cleared, claim called; expired link → message; `redirect_to` sent).
+  - *Not run:* a real email. Needs ChatGPT PASS before merge.
+- **(a) before launch, Tier C:** custom SMTP is required anyway. Supabase's built-in mailer is for testing: it sends only to the project team's addresses and is heavily rate-limited, so real guests could not sign in. Muse, please raise it with the owner: an SMTP sender for `info@azalrestaurant.com` from any provider he picks. Then add `{{ .Token }}` to the template.
+- **For the owner test before SMTP:** his email must be a member of the Supabase project team, and the redirect URL must be allow-listed (pack step 6).
+
+**0004 + seed: READY-TO-APPLY.** See `docs/apply-0004-pack.md` and the checks in `docs/apply-0004-checks.sql`:
+- exact blob and sha;
+- preflight, apply, QA–QG with EXPECT, seed run twice → `9|9|7`;
+- `payments_mode` stays `off` until the separate recorded owner-test step.
+
+Local: 80/80 on these bytes.
+
+**Next:** phone on the visit/reserve pages → staff orders screen.

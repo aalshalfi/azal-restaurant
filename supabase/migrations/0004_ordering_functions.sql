@@ -45,7 +45,9 @@ create table if not exists public.app_settings (
 );
 alter table public.app_settings enable row level security;
 revoke all on table public.app_settings from anon, authenticated;
-insert into public.app_settings (key, value) values ('payments_mode', 'test'), ('claim_days', '90') on conflict (key) do nothing;
+-- Fail-closed (ChatGPT review): payments start OFF. The lead switches staging to 'test' as a separate, recorded step:
+--   update public.app_settings set value = 'test', updated_at = now() where key = 'payments_mode';
+insert into public.app_settings (key, value) values ('payments_mode', 'off'), ('claim_days', '90') on conflict (key) do nothing;
 
 create table if not exists public.points_claims (
   id bigint generated always as identity primary key,
@@ -94,6 +96,7 @@ declare
   v_hours public.branch_hours;
   v_open timestamptz; v_close timestamptz; v_first timestamptz; v_last timestamptz;
   v_ready timestamptz; v_slot timestamptz;
+  v_day date; v_found boolean;
   v_count integer;
   v_lines jsonb;
   v_subtotal integer := 0; v_tax integer; v_order_id uuid;
@@ -166,16 +169,22 @@ begin
     if p_pickup_at < v_now + c_prep - interval '1 minute' then raise exception 'too_soon'; end if;
     v_ready := p_pickup_at;
   end if;
+  -- Opening window: a time after midnight may belong to the PREVIOUS day's overnight window (e.g. 18:00-02:00),
+  -- so check yesterday's window first, then today's.
   v_local := v_ready at time zone v_branch.timezone;
-  select * into v_hours from public.branch_hours where branch_slug = p_branch and weekday = pg_catalog.date_part('dow', v_local)::smallint;
-  if not found or v_hours.closed then raise exception 'closed'; end if;
-  v_open  := (v_local::date + v_hours.opens_local) at time zone v_branch.timezone;
-  v_close := (v_local::date + v_hours.closes_local) at time zone v_branch.timezone;
-  if v_close <= v_open then v_close := v_close + interval '1 day'; end if;   -- overnight hours
-  v_first := v_open + c_prep;
-  v_last := v_close - c_last_before_close;
-  if p_pickup_at is null and v_ready < v_first then v_ready := v_first; end if;
-  if v_ready < v_first or v_ready > v_last then raise exception 'closed'; end if;
+  v_found := false;
+  foreach v_day in array array[v_local::date - 1, v_local::date] loop
+    select * into v_hours from public.branch_hours where branch_slug = p_branch and weekday = pg_catalog.date_part('dow', v_day)::smallint;
+    continue when not found or v_hours.closed;
+    v_open  := (v_day + v_hours.opens_local) at time zone v_branch.timezone;
+    v_close := (v_day + v_hours.closes_local) at time zone v_branch.timezone;
+    if v_close <= v_open then v_close := v_close + interval '1 day'; end if;   -- overnight window
+    v_first := v_open + c_prep;
+    v_last := v_close - c_last_before_close;
+    if p_pickup_at is null and v_day = v_local::date and v_ready < v_first then v_ready := v_first; end if;
+    if v_ready >= v_first and v_ready <= v_last then v_found := true; exit; end if;
+  end loop;
+  if not v_found then raise exception 'closed'; end if;
   -- Canonical slot: explicit times are already on the grid; ASAP rounds its ready time up to the grid.
   v_slot := pg_catalog.to_timestamp(pg_catalog.ceil(pg_catalog.date_part('epoch', v_ready) / (c_step * 60)) * (c_step * 60));
   if v_slot > v_last then v_slot := pg_catalog.to_timestamp(pg_catalog.floor(pg_catalog.date_part('epoch', v_last) / (c_step * 60)) * (c_step * 60)); end if;

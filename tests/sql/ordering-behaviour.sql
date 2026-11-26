@@ -19,6 +19,8 @@ insert into public.branch_menu_items(branch_slug,menu_item_id,price_cents,availa
 insert into auth.users(id,email) values ('00000000-0000-0000-0000-0000000000c1','c1@example.invalid'),('00000000-0000-0000-0000-0000000000c2','c2@example.invalid'),('00000000-0000-0000-0000-0000000000f1','staff@example.invalid');
 insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000f1','staff');
 insert into public.staff_branch_access(user_id,branch_slug) values ('00000000-0000-0000-0000-0000000000f1','test');
+select zz_eq('payments_mode ships OFF (fail-closed) until the lead enables test', (select value from public.app_settings where key = 'payments_mode'), 'off');
+update public.app_settings set value = 'test' where key = 'payments_mode';
 select 'PASS  fixtures: trigger created memberships for new users = ' || count(*) from public.memberships;
 
 \echo ===== anon
@@ -173,5 +175,20 @@ select set_config('request.jwt.claim.email','old@example.invalid',false) \gset
 set role authenticated;
 select zz_eq('expired claim not shown', public.my_pending_claims()->>'points', '0');
 select zz_eq('expired claim not claimable', public.claim_guest_points()->>'points_added', '0');
+reset role;
+\echo ===== overnight hours (18:00-02:00), attributed to the previous day
+insert into public.branches(slug,name_en,name_fr,city,timezone,tax_rate_bps) values ('night','Night','Nuit','Toronto','America/Toronto',1300);
+insert into public.branch_hours(branch_slug,weekday,opens_local,closes_local,closed) select 'night', d, '18:00','02:00', false from generate_series(0,6) d;
+insert into public.branch_menu_items(branch_slug,menu_item_id,price_cents,available) values ('night','00000000-0000-0000-0000-00000000a002',599,true);
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
+set role authenticated;
+select zz_eq('01:00 after midnight belongs to the previous evening window', public.place_order('night','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',((current_date + 2) + time '01:00') at time zone 'America/Toronto',null,'night-key-000000001')->>'status', 'placed');
+select zz_eq('01:45 is past last pickup (02:00 - 15 min)', zz_try($$select public.place_order('night','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',((current_date + 2) + time '02:00') at time zone 'America/Toronto',null,'night-key-000000002')$$), 'closed');
+select zz_eq('03:00 refused', zz_try($$select public.place_order('night','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',((current_date + 2) + time '03:00') at time zone 'America/Toronto',null,'night-key-000000003')$$), 'closed');
+reset role;
+update public.branch_hours set closed = true, opens_local = null, closes_local = null where branch_slug = 'night' and weekday = extract(dow from (current_date + 3))::smallint;
+set role authenticated;
+select zz_eq('01:00 on a closed day still valid when the previous evening was open', public.place_order('night','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',((current_date + 3) + time '01:00') at time zone 'America/Toronto',null,'night-key-000000004')->>'status', 'placed');
+select zz_eq('but that closed day''s evening is refused', zz_try($$select public.place_order('night','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',((current_date + 3) + time '19:00') at time zone 'America/Toronto',null,'night-key-000000005')$$), 'closed');
 reset role;
 \echo ===== done
