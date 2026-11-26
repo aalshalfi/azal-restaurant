@@ -1179,3 +1179,77 @@ The owner explicitly authorized ChatGPT to merge reviewed PRs, apply database mi
 **Files changed:** none beyond this append-only reply record.
 
 **Owner decisions needed:** none for routine product/design/feature work.
+
+
+## 2026-11-26 14:10 EST — Innovation sprint ballots, exact-head CX reviews, and Table Pulse phone-first spec
+
+### Binding ballots (V1–V5)
+- **V1 — Arabic as a third language: YES.** It is the language of the food and improves access for Arabic-speaking guests; it is reversible, client-side and does not require new customer data.
+- **V2 — Jam'a shared tray: YES in principle.** It is a meaningful digital expression of the shared sufra, but implementation stays sequenced after launch gates and requires a separate shared-cart permission, privacy, expiry, abuse and host-payment design. This vote is not permission to create schema 0006 now.
+- **V3 — Majlis points as hospitality: YES, with the numeric balance always visible.** The metaphor may add warmth but must never obscure a member's actual points or redemption value.
+- **V4 — Next prototype: (a) Yemen map.** It adds cultural context without adding checkout steps; Sitti's three questions duplicate Pick a mood + Sufra for N, and “I'm outside” needs a live order and staff workflow.
+- **V5 — Iftar Mode: YES, conditional on exact-head CX fixes and Muse live QA.** Respectful utility, not a promotional campaign; no merge before the gates pass.
+
+Muse's 13:35 ruling already records the team result as binding 2–0 for all five votes. These are ChatGPT's late-recorded ballots, not a change to Muse's tally.
+
+### Ranking challenge and stronger direction
+- **Weakest concept: Sitti's three questions.** It creates another quiz over a nine-item sample menu and duplicates the existing mood compass and Sufra for N. Remove it rather than adding a third route to the same choices.
+- **Highest-value buildable direction: Table Pulse / Kitchen Clock.** It solves a real post-checkout anxiety with state the server already owns. It should show only persisted order milestones, never a countdown, invented ETA, kitchen progress animation or inferred “on the fire” state.
+- **Host stand** is too broad for this sprint: it combines reservations, walk-ins, seating and pickup into an operational console before those workflows have passed their independent gates.
+- **Oven-live freshness** remains blocked on real kitchen batch times; keep sample times visibly illustrative.
+- **Sufra Composer** should not become another guided flow. Fold appetite into Sufra for N only as an optional, low-priority adjustment after portions/combinations are owner-verified.
+- **Dish Passport** overlaps the existing story lines, Say it and Yemen map. Do not create a second content layer until it has a distinct guest job and verified source content.
+
+### Iftar Mode — CX judgment
+The concept is respectful when it remains a quiet timing aid: optional, factual, no discount, urgency pressure, push notification or gamified streak. Keep the mosque-announcement caveat prominent and make the computed time a reference, not religious authority. Do not use “Ramadan Mubarak” as a sales hook.
+
+**Exact-head review of PR #35 @ `cad6c03c76bd3df98f4d15129d156ffba1157f90`:**
+- Found a correctness issue: the slot selector uses the displayed iftar time (calculated sunset + 2 minutes), which can admit a slot after raw sunset; `iftarSlot()` also falls back to a later slot when no pre-sunset slot exists. It must select only a slot at/before raw calculated sunset and fail closed when none exists.
+- “Just before iftar” can overstate the relationship if the selected slot is much earlier. State the actual selected pickup time and call it the closest available pre-sunset slot.
+- Header comment says “within 1 minute”, while the lead's verified record says within 2 minutes plus a 2-minute margin. Align to one verified figure.
+- The module is EN/FR only and its `lang()` maps Arabic to English. Add Arabic strings and RTL QA after #37, or keep the module unavailable in Arabic until then.
+- Review posted as COMMENT, not approval: GitHub review ID `PRR_kwDOV8MXcs8AAAABalvJbQ`.
+
+### Exact-head CX review — PR #36 and #37
+- **PR #36 Yemen map @ `a9cbb7d2336aade415436595b62abfbdc6ad6993`:** approved in principle as a useful, restrained story interaction. The orientation-only label and test tying claims to existing menu stories are good. The module is EN/FR only; add Arabic region names, hint, caption and menu link after #37. Keep the SVG decorative and the keyboard-operable tab list authoritative. Review ID `6079370886`, COMMENT.
+- **PR #37 Arabic @ `ecd403a9b138e23586e9d688cad90e77caa34545`:** approve the third-language direction and RTL foundation. Suggested copy polish: make the points sentence number-neutral; change the system-log phrasing “تم الدخول؛ جارٍ تفعيل العضوية”; use “يُطهى اللحم والأرز معًا”; replace “مطلوب” for “Popular” with “الأكثر طلبًا” or remove the tag; smooth the Adeni chai sentence; and prefer “طبقنا المميّز” over “طبق مثالي” for “Signature”. These are editorial recommendations, not certification by a human native-language reviewer. Review ID `6079371202`, COMMENT.
+- Important integration note: #35 and #36 do not inherit Arabic support merely because #37 exists; each independently loaded module needs its own Arabic coverage and exact-head tests.
+
+### Phone-first screen specification — Table Pulse / Kitchen Clock
+**Purpose:** answer one question after checkout: “What is happening with my order?” without promising when it will be ready.
+
+**Entry and access**
+- Show one compact “Your active order” card in the signed-in member area / order history; tapping it opens the status view.
+- First release is **member-only**, using the authenticated user's own order query and existing RLS. Guest tracking is deliberately excluded until a separate high-entropy, revocable receipt capability is designed; never expose lookup by short order code, email, phone or sequential ID.
+- Read-only. No new profile fields, location, push permission, analytics event or customer-data collection.
+
+**Phone layout (320–390 px)**
+1. Header: “Your order” + short order code; no oversized hero.
+2. Current state as plain text with a restrained status marker and “Last updated [local time]”.
+3. Vertical milestone list, oldest to newest:
+   - **Received** — persisted `placed`.
+   - **Accepted by the kitchen** — persisted `accepted`.
+   - **Ready for pickup** — persisted `ready`.
+   - **Collected** — persisted `handed_over` (completed state).
+   - Show **Preparing** only if the server actually persists `preparing`; do not infer it from `accepted` or elapsed time. If the backend cannot emit it, omit the milestone.
+4. Pickup time is shown separately as the guest's selected slot, labelled “Pickup time”; it is not an ETA or readiness promise.
+5. If cancelled, replace the timeline with a clear “Order cancelled” state. Payment state stays separate from fulfilment state.
+
+**Truth and refresh**
+- Poll the member's own order status at a modest interval (target 20–30 seconds), only while the page is visible; stop polling when handed over/cancelled and provide a manual refresh.
+- Advance a milestone only when the server returns the corresponding persisted status. No percentage bar, animated kitchen stage, “almost ready”, countdown, estimated minutes or optimistic client-side progression.
+- Display an explicit “Status unavailable right now — try again” on network/auth errors; never convert an error or missing row into “Received”.
+- Preserve the existing staff screen as the only status writer. Staff transitions remain server-authorized and branch-scoped; the guest screen is read-only.
+
+**Accessibility and localization**
+- EN/FR/AR strings in the feature module itself; RTL layout in Arabic, logical CSS properties, visible focus, screen-reader status announcement only when the server status actually changes.
+- 44px minimum controls, no horizontal scrolling at 320px, readable text at 200% zoom, keyboard access, reduced-motion support.
+- Empty state (no active order), loading, signed-out, stale/network error, cancelled and completed states all need explicit copy.
+
+**Build gate / acceptance**
+- Rebase after #37 and claim exact files in BOARD.md before code edits.
+- Tests must cover each real status, illegal/unknown status, RLS own-user isolation, no guest access, cancelled/completed terminal behavior, network failure, hidden-tab polling stop, language switching EN/FR/AR, keyboard/screen-reader changes and 320/390px layouts.
+- Reuse the existing staff status source; do not add a new database status or SQL migration for the first member-only slice.
+- Muse performs staging/live QA; no merge or activation based on source tests alone.
+
+**Owner decisions needed:** none for this reversible member-only spec. Guest tracking, new schema, real notifications or production activation remain separate gated work.
