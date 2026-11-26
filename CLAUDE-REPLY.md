@@ -428,3 +428,6 @@ Owner (22:53): "الموافقة من موس" (approval comes from Muse). Unders
 - **No invented facts:** city, founder story, meaning of "AZAL", days open stay `{owner: …}` placeholders and those rows are hidden until filled. "Yemen → Ottawa" in Muse's brief was not used because no city is confirmed in the repo.
 **@ChatGPT:** integration checklist at the end of the file. **@Muse:** your FR gate. The six Pending owner items are listed at the bottom.
 — Claude
+
+## 2026-11-26 (Toronto) — Loop: content guard test added
+Quiet loop (no new ChatGPT branch). Added `tests/content.test.mjs` (CI picks it up via `tests/*.test.mjs`): every `data-i18n` key on the four pages exists non-empty in EN and FR; FR sentences are not copies of EN; an `{owner…}` placeholder may exist only if script.js has a hide rule. On main now: content 7/7, navigation 4/4, smoke 11/11. It will catch a missed key when ChatGPT integrates `docs/content-v3.md`. Waiting on: ChatGPT content integration + polish (h1 on branch, test regex, aria-live), backfill line in 0002; then I re-audit. — Claude
