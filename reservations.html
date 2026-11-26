@@ -34,12 +34,12 @@
   </section>
 
   <section class="reservation-facts" aria-label="Reservation settings">
-    <article class="reservation-fact"><span data-res-en="Reservation length" data-res-fr="Durée de réservation">Reservation length</span><strong id="reservationDuration">60 minutes</strong></article>
-    <article class="reservation-fact"><span data-res-en="Largest party" data-res-fr="Groupe maximal">Largest party</span><strong id="reservationPartyLimit">Up to 10 guests</strong></article>
-    <article class="reservation-fact"><span data-res-en="Total dining capacity" data-res-fr="Capacité totale">Total dining capacity</span><strong id="reservationTotalSeats">50 seats</strong></article>
-    <article class="reservation-fact"><span data-res-en="Deposit" data-res-fr="Dépôt">Deposit</span><strong id="reservationDeposit">No deposit required</strong></article>
-    <article class="reservation-fact"><span data-res-en="Opening days" data-res-fr="Jours d’ouverture">Opening days</span><strong id="reservationDays">Daily</strong></article>
-    <article class="reservation-fact"><span data-res-en="Opening hours" data-res-fr="Heures d’ouverture">Opening hours</span><strong id="reservationHours">11:00–21:00</strong></article>
+    <article class="reservation-fact"><span data-res-en="Reservation length" data-res-fr="Durée de réservation">Reservation length</span><strong id="reservationDuration">—</strong></article>
+    <article class="reservation-fact"><span data-res-en="Largest party" data-res-fr="Groupe maximal">Largest party</span><strong id="reservationPartyLimit">—</strong></article>
+    <article class="reservation-fact"><span data-res-en="Total dining capacity" data-res-fr="Capacité totale">Total dining capacity</span><strong id="reservationTotalSeats">—</strong></article>
+    <article class="reservation-fact"><span data-res-en="Deposit" data-res-fr="Dépôt">Deposit</span><strong id="reservationDeposit">—</strong></article>
+    <article class="reservation-fact"><span data-res-en="Opening days" data-res-fr="Jours d’ouverture">Opening days</span><strong id="reservationDays">—</strong></article>
+    <article class="reservation-fact"><span data-res-en="Opening hours" data-res-fr="Heures d’ouverture">Opening hours</span><strong id="reservationHours">—</strong></article>
   </section>
 
   <section class="reservation-layout" aria-label="Reservation request">
@@ -53,7 +53,7 @@
         <div class="reservation-field"><label for="guest-phone" data-res-en="Phone number" data-res-fr="Numéro de téléphone">Phone number</label><input id="guest-phone" type="tel" autocomplete="off" placeholder="Phone"></div>
         <div class="reservation-field"><label for="booking-date" data-res-en="Date" data-res-fr="Date">Date</label><input id="booking-date" type="date"></div>
         <div class="reservation-field"><label for="booking-time" data-res-en="Preferred time" data-res-fr="Heure souhaitée">Preferred time</label><select id="booking-time"><option data-res-en="Times appear when booking opens" data-res-fr="Les heures seront affichées à l’ouverture">Times appear when booking opens</option></select></div>
-        <div class="reservation-field"><label for="party-size" data-res-en="Number of guests (up to 10)" data-res-fr="Nombre de personnes (jusqu’à 10)">Number of guests (up to 10)</label><input id="party-size" type="number" min="1" max="10" placeholder="1–10"></div>
+        <div class="reservation-field"><label for="party-size" data-res-en="Number of guests" data-res-fr="Nombre de personnes">Number of guests</label><input id="party-size" type="number" min="1" placeholder=""></div>
         <div class="reservation-field reservation-field-wide"><label for="booking-note" data-res-en="Optional note" data-res-fr="Note facultative">Optional note</label><textarea id="booking-note" rows="3" placeholder=""></textarea></div>
       </fieldset>
       <p class="reservation-disabled-note" id="reservation-disabled-note" data-res-en="These fields are disabled and do not accept or store information." data-res-fr="Ces champs sont désactivés et n’acceptent ni n’enregistrent de renseignements.">These fields are disabled and do not accept or store information.</p>
@@ -64,8 +64,8 @@
       <p class="reservation-kicker" data-res-en="BEFORE BOOKINGS OPEN" data-res-fr="AVANT L’OUVERTURE DES RÉSERVATIONS">BEFORE BOOKINGS OPEN</p>
       <h2 data-res-en="A few details are still being confirmed." data-res-fr="Quelques détails restent à confirmer.">A few details are still being confirmed.</h2>
       <ul>
-        <li id="reservation-party-note" data-res-en="The largest party is set to 10 guests; total dining capacity is 50 seats." data-res-fr="Le groupe maximal est fixé à 10 personnes; la capacité totale est de 50 places.">The largest party is set to 10 guests; total dining capacity is 50 seats.</li>
-        <li id="reservation-email-note" data-res-en="Reservation notices are by email; the receiving address is configured at launch." data-res-fr="Les avis de réservation sont envoyés par courriel; l’adresse de réception sera configurée au lancement.">Reservation notices are by email; the receiving address is configured at launch.</li>
+        <li id="reservation-party-note" data-res-en="Reservation capacity settings are loading." data-res-fr="Les paramètres de capacité de réservation se chargent.">Reservation capacity settings are loading.</li>
+        <li id="reservation-email-note" data-res-en="Reservation notification settings are loading." data-res-fr="Les paramètres de notification de réservation se chargent.">Reservation notices are by email; the receiving address is configured at launch.</li>
         <li id="reservation-go-live-note" data-res-en="Online booking remains disabled until explicit go-live approval." data-res-fr="La réservation en ligne reste désactivée jusqu’à l’autorisation explicite de mise en service.">Online booking remains disabled until explicit go-live approval.</li>
       </ul>
       <p class="reservation-side-note" data-res-en="These settings can be adjusted before launch. No booking can be created from this page yet." data-res-fr="Ces paramètres peuvent être ajustés avant le lancement. Aucune réservation ne peut encore être créée depuis cette page.">These settings can be adjusted before launch. No booking can be created from this page yet.</p>
