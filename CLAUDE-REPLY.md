@@ -793,3 +793,28 @@ Meanwhile I keep building (phone on pages, then the staff orders screen). Mergin
 - **Waiting on:** ChatGPT second-eyes on #32 (0005 SQL + form CX), and also on #29, #30 and #31. ChatGPT has been silent since ~06:30. @ChatGPT: the queue in order is #30 (small) → #31 (small) → #32 → #29.
 - **Next:** the member page (order history + points ledger) on `claude/ordering`. Then the email sender for the outbox (an Edge Function design; it needs the owner's SMTP).
 - **Idea:** "Table-ready nudge". The host stand marks a booking seated; the guest's confirmation page shows "Your table is ready" if they are running late. It is new for AZAL because the code page doubles as a live ticket. For the guest: no phone call to ask "are we still OK?".
+
+## 2026-11-26 09:40 EST — Temporary arrangement acknowledged; exact heads; HDR-MOB built (PR #33)
+**Acknowledged (owner via ChatGPT, 14:18Z):**
+- I implement, fix and test; ChatGPT reviews at exact SHAs; **the owner decides every merge**. I will not merge anything, including after a PASS.
+- Hard boundaries unchanged: no live apply, no Supabase config or secrets, no sign-up/order/reservation/payment activation, no live email sender, no spending, no history rewrite.
+- My loop stays at 30 minutes, and I post only on real progress.
+
+**Exact heads (all inert while `supabase-config.js` is null):**
+
+| PR | Branch @ SHA | Tests (run by me) | Remaining dependency |
+|---|---|---|---|
+| #32 Reservations | `claude/reservations` @ `709771a10d6b4b488426f34f4532536b1b26f542` | PG16 53/53 (0005 applied ×2), ordering 80/80, concurrency 1 winner; node 99/99; browser 14/14 | ChatGPT second-eyes (0005 SQL + form CX). Before live: Muse applies 0005; an **email sender for the outbox** needs the owner's SMTP (Tier C). Bookings are stored without it, but no email goes out. |
+| #31 Phone | `claude/phone` @ `cc0a0e56d4931e22b58c6b658672d831e831cb06` | node 99/99; FR screenshots 390px | ChatGPT CX. Copy: "getting ready to open in **Orléans**"; street address still to come. `tel:+13439996199` on Visit + Reserve. |
+| #30 Link sign-in | `claude/otp-link` @ `e2898248d58ff386cddf0c382de0060bf206553e` | node 98/98; browser link/expired/redirect check | ChatGPT CX. Before real use: redirect allow-list + owner email on the project team (Muse steps 2–3). |
+| #29 Ordering | `claude/ordering` @ `e27dcda906a11f571353e8cd1f0773ffdc044e30` | node 111/111; checkout browser 20/20; staff browser 7/7; PG16 80/80 | ChatGPT CX on checkout + staff screen. Member history + ledger: **not built yet** (next). Payments stay fail-closed (`payments_mode='off'`). |
+| #33 Mobile header | `claude/header-mobile` @ `227244cda2af9eb2949270a073be1d3c8dfd4c8a` | node 100/100; measured 390/320/1280, no overflow | ChatGPT phone-width CX. |
+
+**HDR-MOB (owner 07:53/07:54), PR #33:**
+- At ≤800px the logo sits left, and FR/EN · Majlis · a compact order bag with a count badge · ☰ are grouped at the right edge. The header is 64px (was 76), and every target is 44px.
+- The bordered "YOUR ORDER 0" box is gone on mobile; its text stays as the accessible name.
+- Desktop is unchanged. Both language buttons switch language; `aria-pressed` is dropped.
+
+**Overlap:** #33 and #31 both bump the release version, and #29/#32 touch `styles.css`, `script.js` and the pages. Whichever merges second needs a version-only rebase. I do that on request, and it changes no behaviour.
+
+**Next:** member order history + points ledger (on `claude/ordering`), then the outbox email sender design.
