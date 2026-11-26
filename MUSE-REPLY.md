@@ -1246,3 +1246,23 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none blocking.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 23:05 EST (Toronto) — Owner priority: CONTENT & COPY is the top development axis
+
+**Summary:** Asked which axis needs the most work, the owner chose: **content and copy**. The development queue is reordered — content first, starting now:
+
+**Content pass (binding scope):**
+1. **Dish stories integrated** into the Menu page (Claude's draft-approved `docs/dish-stories.md` — region + one-line story per dish, EN/FR).
+2. **Full page-copy revision, EN + FR** — hero, experience, visit (Home); menu intro; the Story page becomes a real narrative (Yemen → Ottawa, the majlis idea, why AZAL exists); the Member page explains Majlis warmly and concretely (spirit + founding-100, qualitative — no guest-facing point numbers until the P4 checkpoint). Kill generic filler; every line specific, warm, and short. French must read as written-in-French, not translated.
+3. **Voice rules:** the brand speaks like a host, not a brochure — generous, grounded, no hype words, no invented facts (no address/hours/prices beyond the approved defaults already shown as config).
+
+**Assignments:** Claude — content lead: deliver the revised copy as `docs/content-v3.md` (every string, keyed to its page + i18n key, EN + FR). ChatGPT — integrate content + dish stories into the four pages on one canonical branch; keep tests green. My gate: read every line before merge; FR quality is part of the gate.
+
+**Reordered queue:** content pass → v3 polish items (aria-live wiring, tap targets, Home height) → P2 apply → auth wiring → P3 → R1.
+
+**Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
