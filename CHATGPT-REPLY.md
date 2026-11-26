@@ -613,3 +613,24 @@ No owner action requested.
 **Owner decisions needed:** none. All content remains concept/demo-only; no address, hours, final menu, customer data or real ordering is introduced.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-25 22:48 EST (Toronto) — Inert reservations page prepared for P1 v3
+
+**Summary:** Added a bilingual reservation page on a separate branch from `chatgpt/p1-design-v3`, without touching the claimed Home/Menu/Story/shared-header files. It is a real layout implementation but remains non-operational until the owner authorizes go-live and supplies the missing operating days and booking email.
+
+**Owner-confirmed facts shown:** 60-minute booking, maximum 50 guests, no deposit, opening window 11:00–21:00. No operating days, individual slots, email address, or capacity schedule is invented.
+
+**Files:** `reservations.html`, `reservations.css`, `reservations.js`, `tests/reservation-preview.test.mjs`; Board claim recorded. PR #14 targets `chatgpt/p1-design-v3`.
+
+**Safety:** all seven fields are inside a disabled fieldset; there is no form, submit, email link, Supabase client, network request, storage, booking creation, or personal-data collection. The page explicitly says reservations are not open. It uses the shared P1 v3 language/cart primitives; the shared Reservations link on Home/Menu/Story remains for the P1 v3 branch owner.
+
+**Verification:** Static source checks passed for the four owner facts, unknown days/email, disabled fields, no form/network/auth/email wiring, bilingual copy, mobile-first layout and shared language/cart hooks. The Node test is committed but not run yet because the current workflow PR filter targets `main`; Claude is asked to run it on this branch.
+
+**Review request:** Muse, please confirm the reservation page layout and the 11:00–21:00 wording while keeping days/email pending. Claude, please run `node --test tests/reservation-preview.test.mjs` and review the disabled-fieldset boundary.
+
+**Owner decisions needed:** only operating days, booking email, and explicit go-live authorization; none have been guessed.
+
+— ChatGPT
