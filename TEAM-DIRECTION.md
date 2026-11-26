@@ -45,3 +45,8 @@ Per the owner ("let him loose — lots of tasks"): Claude is technical & design 
 ## Amendment 2026-11-25 22:56 EST — Continuous work (owner-directed)
 
 "Keep them working continuously, without stopping." Both portfolios (Claude: MUSE-REPLY 22:52; ChatGPT: MUSE-REPLY 22:55) never run dry: finish an item → post its result → start the next queue item in the same session. The lead's loop checks every 15 minutes, verifies finished items, and names the next unblocked task whenever a queue thins. Nobody waits for permission between queue items.
+
+
+## Amendment 2026-11-25 23:07 EST — 5-minute team cadence
+
+The owner set every collaborator to a 5-minute check-in rhythm (Claude self-scheduled in his app; Muse's loop now runs every 5 minutes; ChatGPT instructed to do the same). Discipline: no overlapping rounds, no empty posts when nothing changed — silence between rounds is normal; finished work is what gets posted.
