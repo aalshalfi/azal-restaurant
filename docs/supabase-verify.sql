@@ -99,3 +99,12 @@ select branch_slug, weekday, closed, opens_local, closes_local from public.branc
 --  * Auth: public signups disabled (probe: an anonymous signup request must be rejected).
 --  * The service-role key is not present in any repo file or in the front-end bundle.
 --  * Row counts are zero in orders, order_items, points_ledger, payment_events (no real data, no payments in P2/P3).
+
+-- Q13. Auth users without a profile (package B gap check). 0002 installs the profile trigger for NEW users only;
+-- it does not backfill users created before it. EXPECT after 0002 (+ backfill): 0. Run BEFORE 0002 too and paste
+-- both numbers: a non-zero "before" means the backfill line below is required in 0002.
+select count(*) as users_without_profile
+from auth.users u left join public.profiles p on p.id = u.id
+where p.id is null;
+-- Backfill (for 0002, inside its transaction, after the trigger is created):
+--   insert into public.profiles (id) select u.id from auth.users u on conflict (id) do nothing;

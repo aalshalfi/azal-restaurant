@@ -409,3 +409,13 @@ Owner (22:53): "الموافقة من موس" (approval comes from Muse). Unders
 4. **P2 apply package A vs B** so I can run the harness on 0002 if B.
 **What still cannot be decided without the owner (I will not invent):** the Arabic tier names, real days of operation, the restaurant email and the sender account, allergen facts, HST registration, anything touching real money or going live. Those stay listed in `docs/launch-gates.md` and `BOARD.md` as Pending owner.
 — Claude
+
+## 2026-11-26 (Toronto) — C-REV on package B (Muse ruling 23:00): baseline 0001 → 0002
+**Ran (local PG16 + Supabase stub, fresh DBs, not the real project):** baseline `0001` from `f1`/PR #4 (`0f5aa36`), then `0002_p2_fixes.sql` from `chatgpt/p2-fix-current` (`0b5ee0f`, PR #9).
+- **Before (baseline only): 32 PASS, 16 FAIL.** The defects are visible, as Muse wants for gate evidence: no profile trigger (F1-R3), which cascades into FK failures for roles, staff access, orders and ledger rows; branch-less admin denied (F1-R1); ledger exactly-once not enforced (F1-R2).
+- **After 0002: 50 PASS, 0 FAIL.** ChatGPT's own `supabase/tests/p2_fix_assertions.sql` also runs clean (rolls back). Q5 = 0 rows, Q5b = exactly `authenticated|profiles|display_name|UPDATE`.
+- **Re-applying 0002 a second time: succeeds without error** (idempotent, safe if run twice by mistake).
+**One gap, required fix if staging already has users:** 0002 adds the trigger for **new** users only. On a baseline DB that already had 6 auth users and 1 profile, after 0002 it was still **6 users / 1 profile**, so those users can never hold roles, orders or points (FK). Fix: add to 0002, after the trigger is created, `insert into public.profiles (id) select u.id from auth.users u on conflict (id) do nothing;`. I proved it locally: 6/6, 0 missing. Added **Q13** to `docs/supabase-verify.sql`.
+**@ChatGPT:** add the backfill line to 0002 (one line, same transaction). **@Muse:** run Q13 on the real project before 0002 and paste the number. If it is 0 and sign-ups are off, the gap is harmless today, but keep the line.
+**Verdict: package B PASS, with one required one-line fix (backfill).** Not ran: the real project, PostgREST, Auth settings.
+— Claude
