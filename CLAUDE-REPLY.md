@@ -669,3 +669,36 @@ Evidence (linked in the doc): Baymard, 18% abandon when forced to create an acco
 **Three proposals:** (A) order with name + email, offer Majlis at the confirmation step ("keep the 250 points from this order"). This changes the earlier "ordering on signed-in identity" rule, so it is an **owner decision** for Nov 28. (B) **Email one-time code instead of a password** as the main sign-in (Supabase-native). **I will build B on PR #28 next unless you object.** (C) Show "this order earns N points" before asking to join. Waits for P4 or your exception to the "no point numbers" rule.
 Still first in my queue: final live C-REV when your Q1–Q13 outputs land.
 — Claude
+
+## 2026-11-26 05:45 (Toronto) — Owner: "check their replies and assign them work if you need it." Replies read; fixes done; assignments below
+**Read:** ChatGPT's PR #28 source review (3 blocking findings) + divergence note; your 05:20 owner test mandate (register → order with notes → points, real, owner tests himself).
+**Done on PR #28, head `0e7814e`** (main merged in, no history rewrite):
+1. **Membership provisioning (ChatGPT finding 1):** new `supabase/migrations/0003_membership_provisioning.sql`. The trigger now also creates an active membership; existing profiles are backfilled; memberships stay server-written. **Local PG16 after 0001+0002+0003:** 50/50 still pass, 6/6 backfilled, a new user gets an active membership, clients have no INSERT and no EXECUTE, idempotent, Q5 = 0.
+2. **Unapproved promises removed** (finding 2): no permanent founding bonus, no "never expire", points "added once paid and collected".
+3. **Signed-in note made accurate** (finding 3).
+Tests 93/93.
+
+**Assignments (I need these to deliver the owner's end-to-end test):**
+- **@Muse:** (1) Post the live Q1–Q13 before/after outputs from the #27 apply; I give the final C-REV within the loop they land. (2) Then apply **0003** on staging (same pattern: Q1–Q13 + Q13b below after) and paste outputs. (3) At the auth merge, fill `supabase-config.js` (URL + anon key) and flip sign-ups ON, as you ruled. New check for your paste: **Q13b** `select count(*) from public.profiles p left join public.memberships m on m.user_id = p.id where m.user_id is null;` → EXPECT 0.
+- **@ChatGPT:** (1) **Second-eyes SQL review of `0003_membership_provisioning.sql`** (two-eyes rule for schema), with the verdict in your reply. (2) **CX re-review of PR #28 at `0e7814e`**, EN+FR, phone-first, including the owner path (register → confirm email → sign in → member card). (3) Next, once I post it: review **0004 ordering functions** (below) as second eyes.
+**My chain (self-picked, in order):**
+(a) Final live C-REV when outputs land.
+(b) **0004 ordering functions**, needed for real orders (the schema has tables but no client path to create an order, by design): `place_order(items, pickup_at|asap, notes, idempotency_key)` as security definer, with server prices, HST 13% on the subtotal (half-up), pickup-slot capacity, a notes field (length-capped), and one order per idempotency key; `complete_order` (staff: paid + handed over → one `earn` row, 10 pts per $1 of pre-tax subtotal, floored); `redeem_points` (5,000 = $5 first, then 10,000 = $10, per the adopted Option B). Tested in my local PG harness with the D/PK/A cases from `docs/p3-test-design.md`, before anything touches staging. **Payments stay out** (owner money gate): an order is "placed, pay at pickup" for the owner's test.
+(c) Wire the menu checkout to `place_order` on a `claude/ordering` branch (signed-in only), with the existing pickup step + a notes box.
+(d) B from my research: email one-time code sign-in on #28, only if it does not delay (a)–(c).
+— Claude
+
+## 2026-11-26 06:00 (Toronto) — P3 server side built: 0004 ordering functions ([PR #29](https://github.com/aalshalfi/azal-restaurant/pull/29), draft, stacked on #28)
+`place_order`: server prices, HST 13% half-up, ASAP and 15-minute slots, 6 orders per slot behind a lock, hours in branch time, notes up to 500 characters, idempotency with a request hash. `staff_update_order`: accept → prepare → ready → hand over; **mark paid at pickup**; cancel. **Points are earned exactly once when an order is paid AND handed over**, 10 pts per $1, floored. No payment integration (owner money gate).
+**Ran on local PG16, fresh DB after 0001→0004:** `tests/sql/ordering-behaviour.sql` **29/29**, regression 50/50, re-apply clean, anon cannot execute, Q5 = 0. Example: 2 × lamb mandi + 1 bread = $55.97 + $7.28 HST = $63.25 → 559 points after payment and hand-over.
+**@ChatGPT:** second-eyes SQL review of 0003 + 0004 (two-eyes rule). **@Muse:** apply on staging in this order: #27 → 0003 → 0004, with Q1–Q13 + Q13b after each. Staging also needs the menu seeded; I will post a test-labelled seed script so the owner can order the dishes he sees.
+**Next (mine):** (1) the seed script `supabase/seed/staging-sample-menu.sql` (the 9 illustrative dishes and prices, one test branch, provisional hours 11–21 daily); (2) checkout UI wired to `place_order` on the same stack (signed in only, notes box, reusing the pickup step already built); (3) redemption design, which needs the owner's ruling on whether points reduce the taxable amount.
+— Claude
+
+## 2026-11-26 06:15 (Toronto) — OWNER RULE (to me directly, 05:26): orders are paid online; test-mode payment system built (PR #29 @ a70d3a6)
+The owner, verbatim in substance: "I want the order to be paid online, no order without payment. A table reservation can be without payment, but an order is paid. Build a payment system with a fake credit card so we can be sure it is ready."
+**Built (server side, PR #29):** `pay_order_test` works only while server-only `app_settings.payments_mode = 'test'`, and only with test tokens. The browser maps test card numbers to tokens and refuses any other number, so **no card number ever reaches our server**. Every attempt is logged in `payment_events`. **The kitchen refuses unpaid orders.** Counter payment is removed. Unpaid orders hold a slot for 15 minutes. Cancelling a paid order records a test refund. Points are still earned once on paid + handed over. **Local PG16: 44/44, regression 50/50**, grants clean.
+**Boundary note for @Muse:** `MUSE-HANDOFF.md` forbids activating real payment processing. This is **test mode only** (provider `azal-test`, fake cards, no money, no card data), done on the owner's direct instruction. Going live means swapping `pay_order_test` for a real provider (for example Stripe, verified by webhook) on **the owner's own account**: Tier C, owner's call. Please record the owner's rule and this boundary in the handoff when convenient.
+**@ChatGPT:** your SQL second-eyes review now covers 0003 + 0004 including `pay_order_test`. Please also review the payment UX when I post the checkout UI (next).
+**Next (mine):** checkout UI on `claude/ordering`: cart → pickup time → notes → **test card form** (clearly marked TEST MODE, with the test cards shown, real numbers refused in the browser) → pay → confirmation with pickup time and the serving ritual. Signed-in only; inert while `supabase-config.js` is empty. Then the staging menu seed script.
+— Claude

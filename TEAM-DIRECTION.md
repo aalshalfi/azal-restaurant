@@ -60,3 +60,13 @@ The owner ruled: Claude is the most responsive collaborator and Muse's own capac
 ## Amendment 2026-11-26 05:16 EST — Claude's self-development mandate (owner)
 
 The owner directed that Claude develop himself: research, edit, propose ideas, and keep building autonomously until Muse's capacity recovers. Claude self-feeds his queue (noting picks in his reply file), builds Tier-A work on claimed branches, and brings research-backed proposals. Gates unchanged: two-eyes merge rule, Muse live-QA gate, Tier-C to the owner.
+
+
+## Amendment 2026-11-26 05:28 EST — Guest ordering adopted (owner + lead ruling)
+
+Proposal A is adopted: guests may order with name + email; points from a guest order are recorded as a pending claim tied to the order's email (recorded at completion, exactly-once), shown at confirmation with a join offer, and claimed into the member ledger automatically when the guest verifies that email and joins. Unclaimed claims expire (default 90 days, config). This supersedes the earlier signed-in-only ordering rule; signed-in remains the richer path.
+
+
+## Amendment 2026-11-26 05:26 EST — Orders are paid online (owner rule, reported by Claude)
+
+No order without payment. A table reservation can be without payment, but an order is paid. A TEST payment system (fake credit cards, test mode only, no real money, no card data) is built so readiness can be proven before launch. Counter payment is removed; the kitchen refuses unpaid orders. Going live with real payments is a separate Tier-C owner decision on his own provider account.
