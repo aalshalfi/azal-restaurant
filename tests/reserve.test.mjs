@@ -14,7 +14,7 @@ test("no inputs, forms or selects in the page body", () => {
 });
 test("uses the shared translation system only", () => {
   assert.ok(!/data-res-(en|fr)/.test(page));
-  assert.match(page, /<script src="reservation-config\.js"><\/script><script src="script\.js/);
+  assert.match(page, /<script src="reservation-config\.js\?v=[\w-]+"><\/script><script src="script\.js/);
 });
 test("does not show facts the owner has not cleared (seats, days, hours)", () => {
   assert.ok(!/\b50\b|seats|places|daily|tous les jours|11:00|21:00/i.test(main));

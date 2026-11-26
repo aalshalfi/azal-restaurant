@@ -1,5 +1,14 @@
 const translations = {
  en: {
+  nfText:"The link may be old or mistyped. Everything else is still here.",
+  nfTitle:"This page isn’t on the menu.",
+  storyMapKicker:"THE MAP",
+  title_404:"Page not found · AZAL",
+  title_reserve:"Book a table · AZAL",
+  title_member:"Majlis · AZAL",
+  title_story:"Our story · AZAL",
+  title_menu:"Menu · AZAL",
+  title_home:"AZAL · Yemeni kitchen",
   reserveMeanwhile:"See the menu meanwhile",
   reserveNotice:"Booking is not open yet. Nothing on this page books a table or collects your details.",
   reserveDeposit:"No deposit to book.",
@@ -177,6 +186,15 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  nfText:"Le lien est peut-être ancien ou mal saisi. Tout le reste est toujours là.",
+  nfTitle:"Cette page n’est pas au menu.",
+  storyMapKicker:"LA CARTE",
+  title_404:"Page introuvable · AZAL",
+  title_reserve:"Réserver · AZAL",
+  title_member:"Majlis · AZAL",
+  title_story:"Notre histoire · AZAL",
+  title_menu:"Menu · AZAL",
+  title_home:"AZAL · Cuisine yéménite",
   reserveMeanwhile:"Voir le menu en attendant",
   reserveNotice:"Les réservations ne sont pas encore ouvertes. Rien sur cette page ne réserve une table ni ne recueille vos coordonnées.",
   reserveDeposit:"Aucun dépôt pour réserver.",
@@ -377,6 +395,7 @@ function applyLanguage(){
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
  document.querySelectorAll("[data-i18n-alt]").forEach(el=>{el.setAttribute("alt",t(el.dataset.i18nAlt))});
  document.querySelectorAll("[data-i18n-title]").forEach(el=>{el.setAttribute("title",t(el.dataset.i18nTitle))});
+ if(document.body&&document.body.dataset&&document.body.dataset.titleKey){const tt=t(document.body.dataset.titleKey);if(tt&&tt!==document.body.dataset.titleKey)document.title=tt}
  const switcher=$("languageToggle");
  if(typeof renderSufraN==="function")renderSufraN();
  if(typeof renderPickup==="function"&&typeof pickupState!=="undefined"&&pickupState.plan)renderPickup();

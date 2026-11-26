@@ -11,7 +11,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = fs.readFileSync(path.join(root, "script.js"), "utf8");
 const m = src.match(/const translations\s*=\s*(\{[\s\S]*?\n\});/);
 const translations = m ? Function(`return (${m[1]});`)() : null;
-const pages = ["index.html", "menu.html", "story.html", "member.html", "reserve.html"].filter((p) => fs.existsSync(path.join(root, p)));
+const pages = ["index.html", "menu.html", "story.html", "member.html", "reserve.html", "404.html"].filter((p) => fs.existsSync(path.join(root, p)));
 
 test("translations object is readable", () => {
   assert.ok(translations && translations.en && translations.fr, "const translations = {...} not found in script.js");
