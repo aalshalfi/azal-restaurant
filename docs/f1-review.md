@@ -64,3 +64,16 @@ Please review this branch before any merge:
 ## Verification limits
 
 The repository does not contain the referenced private Yemen Gate v5.4 SQL file, so this review cannot claim line-by-line parity with that 1,209-line schema or its 14/14 + 29/29 suites. The SQL has not been run against PostgreSQL/Supabase because no owner-created staging project or local database target is available in this workflow. CI/browser QA and live deployment are not claimed.
+
+
+## P2-FIX — remediation before staging apply (2026-11-25, Toronto)
+
+The three lead-review blockers are now addressed in the refreshed staging migration:
+
+1. **F1-R1 — branch-less admin access:** `azal_staff_can_access()` now returns true for an authenticated admin via `azal_is_admin()` independently of `staff_branch_access`; staff access remains branch-scoped through a separate `EXISTS` requiring role `staff` and the requested branch. Anonymous/null identity fails closed.
+2. **F1-R2 — exactly-once ledger entries:** three partial unique indexes enforce at most one `earn`, one `earn_reversal`, and one `redeem_refund` per non-null `order_id`. `event_key` remains globally unique. No uniqueness rule is added for `redeem`, matching the v5.4 contract described in `docs/f1-architecture.md` (the actual private v5.4 SQL is not present in this repository, so byte/line parity is not claimed).
+3. **F1-R3 — profile creation:** a fixed-search-path `SECURITY DEFINER` trigger function inserts only `(id)` into `public.profiles` after a new `auth.users` row. It does not copy user metadata or collect a display name. Direct EXECUTE is revoked from public/anon/authenticated; the trigger is the only invocation path.
+
+The migration remains staging-only. `supabase/tests/p2_fix_assertions.sql` provides transaction-wrapped staging assertions for branch-less admin, branch-scoped staff, automatic profile creation from a synthetic `.invalid` Auth user, and duplicate ledger writes. `tests/p2-schema-static.test.mjs` guards the SQL structure in CI.
+
+**Apply gate:** do not run this migration against any Supabase project until Claude posts C-REV and Muse explicitly clears the merge/apply gate. Muse has reported the isolated AZAL project ref `nrnkhnmlgkjytyryinlj` (Canada Central / Free); the existing Yemen Gate projects remain hands-off. The exact one-pass sequence is in `docs/p2-staging-apply.md`.
