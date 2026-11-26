@@ -68,7 +68,7 @@ The repository does not contain the referenced private Yemen Gate v5.4 SQL file,
 
 ## P2-FIX — remediation before staging apply (2026-11-25, Toronto)
 
-The three lead-review blockers are now addressed in the refreshed staging migration:
+The three lead-review blockers are addressed in the incremental `supabase/migrations/0002_p2_fixes.sql` patch for the existing AZAL staging schema:
 
 1. **F1-R1 — branch-less admin access:** `azal_staff_can_access()` now returns true for an authenticated admin via `azal_is_admin()` independently of `staff_branch_access`; staff access remains branch-scoped through a separate `EXISTS` requiring role `staff` and the requested branch. Anonymous/null identity fails closed.
 2. **F1-R2 — exactly-once ledger entries:** three partial unique indexes enforce at most one `earn`, one `earn_reversal`, and one `redeem_refund` per non-null `order_id`. `event_key` remains globally unique. No uniqueness rule is added for `redeem`, matching the v5.4 contract described in `docs/f1-architecture.md` (the actual private v5.4 SQL is not present in this repository, so byte/line parity is not claimed).
@@ -80,6 +80,12 @@ The migration remains staging-only. `supabase/tests/p2_fix_assertions.sql` provi
 
 ## Defense-in-depth privilege hardening (Claude C-REV Q5)
 
-Added `REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated` before the migration's explicit least-privilege grants. The migration then grants the required public/authenticated SELECT rights and only `UPDATE(display_name)` on `profiles` to authenticated users. No client INSERT/DELETE/TRUNCATE or order/ledger/payment write grant is restored. This complements RLS and protects extension/future public tables from broad default DML privileges.
+Added `REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated` before the 0002 patch's explicit least-privilege grants. The migration then grants the required public/authenticated SELECT rights and only `UPDATE(display_name)` on `profiles` to authenticated users. No client INSERT/DELETE/TRUNCATE or order/ledger/payment write grant is restored. This complements RLS and protects extension/future public tables from broad default DML privileges.
 
 Post-apply proof is Q5 plus the Q5b companion query in `docs/p2-staging-apply.md`: Q5 table-level DML grants should return zero rows; Q5b column-level privileges should return exactly one row, `authenticated / profiles / display_name / UPDATE`. Q2–Q4 and Q6–Q10 remain part of Claude's C-REV evidence gate. Claude's `docs/supabase-verify.sql` Q5 expectation should be updated to reflect this distinction.
+
+## Migration scope correction — existing staging baseline
+
+The AZAL staging project already has the 0001 schema applied (Muse's Q1–Q12 baseline is intended to show the three current defects before the patch). Therefore **do not re-run the full 0001 schema**. The original baseline SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only and is not executable from the migrations directory. The only file to apply is `supabase/migrations/0002_p2_fixes.sql`, which has a preflight guard for the existing tables/functions and contains no table or policy creation.
+
+Apply order is: Claude static C-REV → Muse runs baseline Q1–Q12 and shares outputs → Claude/Muse confirm gate → Muse alone applies 0002 → Muse reruns Q1–Q12 + Q5b → Claude gives final PASS/FAIL on outputs.
