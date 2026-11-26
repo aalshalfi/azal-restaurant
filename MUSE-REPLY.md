@@ -3312,3 +3312,42 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 09:40 EST (Toronto) — Loop check: ChatGPT's full checkpoint landed (#29–#33 verdicts); Claude built HDR-MOB (PR #33); lead verifies and rules
+
+**Summary:** Three new commits since 09:25 — `0b8b6ef`, `97d30b6`, `187b315` (all ChatGPT reply-file sections, plus Claude's 09:40 acknowledgement folded in). ChatGPT delivered the full second-eyes checkpoint at exact heads: #32 CHANGES REQUIRED (4 findings), #31 phone PASS, #30 link sign-in PASS, #29 staff screen PASS, and a source CX PASS on the new PR #33 (HDR-MOB, branch `claude/header-mobile` @ `227244c`). The lead verified all four #32 findings in source, re-ran the main suite (97/97) and the #33 branch suite (100/100 on the exact head), and rules below. No merge, apply or activation moves this run — merges wait for the owner's decision under the temporary arrangement (09:20).
+
+**Verification (lead):**
+- **Main suite green:** `node --test` on main @ `187b315` → **97/97 pass, 0 fail**.
+- **#33 branch suite green:** worktree at exact head `227244c` → **100/100 pass, 0 fail**. (Note: a first invocation as `node --test tests/` failed on harness grounds — it treats the directory as a test file; the proper `node --test` form passes. Recorded so nobody chases a phantom failure.)
+- **Branch heads match the reviewed heads exactly:** `claude/reservations` @ `709771a`, `claude/phone` @ `cc0a0e5`, `claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `claude/header-mobile` @ `227244c`.
+- **#32 finding 1 (DOM XSS) — CONFIRMED in source:** `reserve.js` line 138 interpolates `booked.email` into `done.innerHTML`; `L()` (line 103) is plain substitution with no escaping; the client `EMAIL` regex (`/^[^@\s]+@[^@\s]+\.[^@\s]+$/`) accepts `<svg/onload=alert(1)>@example.com`. The value is the guest's own email echoed by the server, so the live exposure is self-XSS today — but the pattern is a real defect class and must not spread (e.g. into any staff rendering). Fix is cheap; it blocks the merge.
+- **#32 finding 2 (false email claim) — CONFIRMED:** `doneMail` reads "The confirmation is sent to {email}." (EN line 81 / FR "La confirmation est envoyée à {email}." line 93) while 0005 only queues `reservation_outbox` rows; no sender exists. Copy must become truthful.
+- **#32 finding 3 (abuse protection) — CONFIRMED:** 0005 throttles `reserve_table` by guest email only (5 attempts / 10 min, lines 188–189); `cancel_reservation` carries no throttle. Email-only limits are bypassable by changing email.
+- **#32 finding 4 (migration reproducibility) — CONFIRMED:** main's `supabase/migrations/` holds only 0003 + 0004; 0001 was removed from executable migrations in `2514279`; `docs/schema-reference/` does not exist on main. The exact bytes DO survive on `origin/muse/p2-backfill` (`docs/schema-reference/0001_azal_staging_baseline.sql` + `supabase/migrations/0002_p2_fixes.sql`) — the fix is a restore from there with hash verification against the live-apply evidence, not a rewrite.
+- **#33 header fix — spot-checked in source:** ≤800px header groups logo left with FR/EN · Majlis · compact bag/count · ☰ at the right edge; the bordered YOUR ORDER box is gone on mobile; desktop controls unchanged. Matches the owner bar (07:53/07:54).
+- **0005 NOT applied live** — still waits for the four fixes + ChatGPT re-verification + Claude's READY-TO-APPLY flag. The 09:00 wiring gaps fold into this fix round: step-2 copy is now part of finding 2's copy fix; spec-doc pre-order/item 14 cleanup and the config `notificationEmail` value are still open.
+
+**Lead rulings (Tier A/B — merges stay the owner's):**
+1. **#32: CHANGES REQUIRED upheld — all four findings are merge/apply blockers.** @Claude fixes on `claude/reservations`: (F1) render the confirmation with textContent/escaping + a regression test, and tighten the client email regex to reject `<`/`>` (check the SQL email constraint pattern too); (F2) truthful copy — booking saved + keep the code, no sent-claim until a sender is built and tested; (F3) server-side abuse limits that cannot be bypassed by changing email, for both `reserve_table` and `cancel_reservation`, or keep the public endpoints gated until then (they are inert while config is null, but the apply gate needs this resolved); (F4) restore the exact applied 0001/0002 bytes into the repo with hash verification before any fresh-database deploy. Then post the new head and re-verify.
+2. **#33 HDR-MOB: ChatGPT's source CX PASS accepted; lead suite 100/100 on the exact head.** Merge decision is the owner's under the temporary arrangement. The 320px positions/visibility follow-up is non-blocking for that decision (320px no-overflow already measured) — @Claude posts the positions/assertion with his next loop.
+3. **#30 link sign-in: source PASS recorded.** Merge decision owner's. Remaining gates are the Muse owner-test steps (redirect allow-list + owner email on the project team) — not this run.
+4. **#31 phone: CX PASS recorded.** Merge decision owner's. Overlap noted: #33 and #31 both bump the release version — whichever merges second rebases version-only (Claude already flagged this).
+5. **#29 ordering/staff: source PASS recorded.** PR still Draft and GitHub reports not mergeable; description is stale (signed-in/pay-at-pickup wording vs current guest/test-card code) — @Claude updates the description and his reply file. Merge decision owner's, only after it leaves Draft and is mergeable.
+6. **Seed second-eyes still owed** (@ChatGPT, assigned 06:16) — please post it; the seed stays held until then.
+
+**Assignments (both collaborators have named, unblocked next tasks):**
+- **@Claude:** (1) #32 fixes F1–F4 on `claude/reservations` (next item — jumps the queue ahead of member history, since it is a CHANGES REQUIRED on his just-built item); (2) member history + points ledger on `claude/ordering`; (3) outbox email-sender design. Also: PR #29 description update; #33 320px follow-up. No merges — the owner decides.
+- **@ChatGPT:** (1) re-verify the #32 fixes at the new exact head when posted; (2) seed second-eyes; (3) #33 320px follow-up check when Claude posts it. A PASS is a review verdict, not a merge command.
+
+**Still open:** #32 fixes (blocking 0005 apply); owner-test step 6b (staff-grant SQL — waits for the owner's first sign-in; 0 users); SMTP sender (Tier C, pre-launch); redirect allow-list (owner-test step only); mobile-width live QA (known browser limitation).
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run — the pending merge decisions (#29–#33) already sit with the owner under the temporary arrangement; nothing new to ask.
+
+— Muse (team lead)
