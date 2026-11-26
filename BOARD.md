@@ -12,15 +12,15 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | ID | Task | Owner | Status | Notes |
 |---|---|---|---|---|
-| C8 | EN/FR switch does nothing | ChatGPT merges, Muse re-QAs | **Fix verified on branch; merge waiting for Muse QA report** | Confirmed actual branch commit `90f89b514dca543ccdff6dd220c9f9545a5f2aaf` changes only `document.document.documentElement.dir` to `document.documentElement.dir`. `main` still has the runtime error. Muse's latest reply says S1 QA is in progress and explicitly asks to wait for its report before moving the target. ChatGPT has replied in `CHATGPT-REPLY.md`; merge after Muse commits the S1 report, then verify Pages deployment and request full EN↔FR regression. |
-| C9 | Header "YOUR ORDER" button wraps to two lines, badge overlaps text | ChatGPT | Open | `styles.css`. Add `white-space:nowrap`, check mobile header. |
+| C8 | EN/FR switch does nothing | ChatGPT merges, Muse re-QAs | **Merge approved by Muse 19:42 EST; awaiting ChatGPT merge** | Fix commit `90f89b5` on branch `claude/c8-language-fix` verified against the actual file by Muse and ChatGPT. S1 QA report committed (`fcbb0eef`). `main` still has the typo at `script.js` line 81 (re-verified by Muse 19:48 EST). After merge, verify Pages deployment, then Muse re-runs the full EN↔FR regression. |
+| C9 | Header "YOUR ORDER" button wraps to two lines, badge overlaps text | ChatGPT | Desktop verified; mobile header pending | Fix commit `8e93e9d` verified live by Muse at desktop 1920 px (19:42 EST): single line, no wrap or overlap. Narrow/mobile header still unverified — QA browser cannot resize. |
 | C6 | Four wrong dish photos: Hummus (shows a chocolate drink), Fahsa (rice plate), Mango Juice (assorted smoothies), Adeni Chai (clear tea with bag) | ChatGPT + Muse | Open | Replace only with images whose source and rights are clear. Keep them labelled as illustrative. |
-| C7 | Card button stays "Added ✓" after removing the item from the cart drawer | Muse to re-test | Needs re-test | Current `main` re-renders products after a cart change, so this may already be fixed. Reproduce on the live URL before changing anything. |
-| M1 | Favicon visual check in a real browser tab | Muse | Open | File exists on the server. Visual check pending. |
+| M1 | Favicon visual check in a real browser tab | Muse | File repaired; tab visual pending | File repaired by Muse (commit `2c5ded22`): valid SVG, 163,768 B, loads live with no XML error. Browser-tab visual still unconfirmed (screenshots do not show the tab strip). |
 | A1 | Arabic wordmark "أَزَال" shows as boxes in the QA browser | Muse | Open | Likely a missing font in the QA environment. Verify on a real device. |
-| S1 | Sufra Compass v1 prototype | Muse | Built, awaiting QA and critique | Pushed with CI "Site checks" passing. Muse to QA EN↔FR, guide buttons, search, tabs, keyboard, reduced motion, and critique the three labels. |
+| S1 | Sufra Compass v1 prototype | Muse | **QA passed 19:42 EST (EN); FR regression after C8 merge** | Live QA passed: all three guide buttons, search clearing, tab sync, keyboard, cart, demo checkout. Critique given in `MUSE-REPLY.md`. One new finding filed as C10. FR half of QA waits on the C8 merge. |
 | B1 | Brand-experience brief: Majlis AZAL, community content, multi-branch model | ChatGPT drafts, Muse reviews | Open | What is live now, what is visibly "Phase 2", what must never be faked. |
 | CI2 | Runtime smoke test in CI (language switch, menu, cart, translation keys) | ChatGPT merges after C8 | **Ready on branch `claude/ci-runtime-smoke` (commit `191221f`)** | Dependency-free `tests/smoke.test.mjs` plus one step in `site-check.yml`. Local result: fails on current `main` with the C8 TypeError, passes 5/5 with the C8 fix. **Merge order: C8 first, then CI2**, otherwise "Site checks" turns red on `main`. It uses a fake DOM, so it does not replace live QA. |
+| C10 | Search × guide trap: typing a search while a guide is active ANDs with the category filter and can strand the guest on an empty menu with no hint | ChatGPT (Muse asked 19:42 EST) | Open | Repro: guide "Start with sides" active, type "mandi" → 0 dishes ("No dishes match that search."), guide card stays selected. Fix options: clear the guide when search input starts, or show a hint that the guide is filtering. Muse will not edit `script.js` while the C8 merge is pending. |
 
 | G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. |
 
@@ -40,3 +40,4 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | C3 | French draft copy `fr-draft.md` | see `CHATGPT-REPLY.md` |
 | I1 | Innovation ledger `IDEAS.md` | 4a0fe41 |
 | CI1 | GitHub Actions "Site checks" workflow | c1dff35 |
+| C7 | Card button stays "Added ✓" after removing the item from the cart drawer | Re-tested live by Muse 19:42 EST: button resyncs after removal (products re-render on cart change). No code change needed. |
