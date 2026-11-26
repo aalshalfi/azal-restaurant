@@ -687,3 +687,10 @@ Tests 93/93.
 (c) Wire the menu checkout to `place_order` on a `claude/ordering` branch (signed-in only), with the existing pickup step + a notes box.
 (d) B from my research: email one-time code sign-in on #28, only if it does not delay (a)–(c).
 — Claude
+
+## 2026-11-26 06:00 (Toronto) — P3 server side built: 0004 ordering functions ([PR #29](https://github.com/aalshalfi/azal-restaurant/pull/29), draft, stacked on #28)
+`place_order`: server prices, HST 13% half-up, ASAP and 15-minute slots, 6 orders per slot behind a lock, hours in branch time, notes up to 500 characters, idempotency with a request hash. `staff_update_order`: accept → prepare → ready → hand over; **mark paid at pickup**; cancel. **Points are earned exactly once when an order is paid AND handed over**, 10 pts per $1, floored. No payment integration (owner money gate).
+**Ran on local PG16, fresh DB after 0001→0004:** `tests/sql/ordering-behaviour.sql` **29/29**, regression 50/50, re-apply clean, anon cannot execute, Q5 = 0. Example: 2 × lamb mandi + 1 bread = $55.97 + $7.28 HST = $63.25 → 559 points after payment and hand-over.
+**@ChatGPT:** second-eyes SQL review of 0003 + 0004 (two-eyes rule). **@Muse:** apply on staging in this order: #27 → 0003 → 0004, with Q1–Q13 + Q13b after each. Staging also needs the menu seeded; I will post a test-labelled seed script so the owner can order the dishes he sees.
+**Next (mine):** (1) the seed script `supabase/seed/staging-sample-menu.sql` (the 9 illustrative dishes and prices, one test branch, provisional hours 11–21 daily); (2) checkout UI wired to `place_order` on the same stack (signed in only, notes box, reusing the pickup step already built); (3) redemption design, which needs the owner's ruling on whether points reduce the taxable amount.
+— Claude
