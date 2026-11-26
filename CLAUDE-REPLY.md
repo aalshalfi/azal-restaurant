@@ -624,3 +624,252 @@ Claim on the 6 pages, `script.js`, `styles.css` and the tests I touched until me
 **Ran:** tests **82/82** (new `tests/fresh.test.mjs` 3/3: 2–3 example times on the slot grid inside hours, each one offered on a normal morning, labels and note present). Browser with a fixed clock: 09:00 EN → 12:00 marked + note; 12:13 FR → 13 h 30 "Du four" + FR note; 18:30 → none visible and no note. All slots ≥44px, no errors; screenshot viewed. **Not judged:** live deploy.
 Claim on the 6 pages, `script.js`, `styles.css`, `tests/fresh.test.mjs` until merge or reject. The serving-ritual claim was released by you.
 — Claude
+
+## 2026-11-26 02:28 (Toronto) — C-REV on `muse/p2-backfill` @ 432dce8: **PASS, the backfill gap is closed.** Gate evidence for the P2 apply.
+**Ran (local PG16 + Supabase stub, fresh DBs; not the real project):**
+- The baseline reference `docs/schema-reference/0001_azal_staging_baseline.sql` is **byte-identical** to the original `0001` (f1 / PR #4).
+- **Before (baseline only): 32 PASS / 16 FAIL**, the known defects (F1-R1 admin, F1-R2 ledger, F1-R3 profiles and their FK cascade). **After baseline + 0002: 50 PASS / 0 FAIL.**
+- `supabase/tests/p2_fix_assertions.sql` runs clean (rolls back). **Q5 = 0 rows; Q5b = exactly `authenticated|profiles|display_name|UPDATE`; Q13 (users without profile) = 0.**
+- **Backfill proven on a "dirty" baseline** (6 auth users, 1 profile, the case the old 0002 missed): after 0002, **6 users / 6 profiles / 0 missing.**
+- **Re-applying 0002 a second time succeeds** (idempotent). Node suite on the branch: **88/88**.
+**Verdict: PASS.** From my side, nothing blocks the apply of baseline 0001 → 0002 on staging. **For the live run, Muse:** paste Q1–Q13 *before* and *after*, and I give the final C-REV PASS/FAIL on the real outputs (queued). I saw no PR for the branch yet; open it when ready, and #9 can be closed as superseded.
+Also: Fresh-from-the-oven claim released on BOARD (merged f9eeeea). I hold no claims now.
+— Claude
+
+## 2026-11-26 02:34 (Toronto) — Post-merge re-audit of main (after PR #26): PASS + one fresh idea
+**Ran (local):** suite **82/82** on main. 390px, 6 pages, EN/FR: no overflow, no target <44px, no text <12px, contrast 0 failures on all 5 audited pages. Fresh tags at 390 **and 1280**, fixed clock: 09:00 EN → 12:00 "Fresh" + note; 12:13 FR → 13 h 30 "Du four" + FR note; 18:30 none, no note. Serving ritual at 390 and 1280: shows after the preview, is cleared by the language switch, FR flow correct, no page errors. **No defects found.** (One false alarm in my own desktop script, a tap on the mobile menu button that does not exist at 1280; fixed in the script, not a site issue.)
+
+### Fresh idea for the Nov 28 checkpoint: **"Hosted by …": an invitation, not a referral code**
+- **What it is:** once Majlis is live, a member can send one friend an invitation link: "Ahmed is hosting you at AZAL: your first Adeni chai is on him." The friend's first pickup comes with the chai and a small card saying who hosted them. The member earns nothing in cash or points; their Majlis page simply shows "You have hosted 3 guests."
+- **Why it is new:** referral programs pay the referrer ("get $10 for each friend") and feel transactional. In a Yemeni majlis the honour goes to the host, and the gift is hospitality, not a discount. This turns word of mouth into the brand's core value. I know of no ordering site that frames it this way; it is our own design, not borrowed from another brand.
+- **What it adds:** for the new guest, a warm first visit with a name attached (higher chance they come back); for the member, pride rather than a coupon; for AZAL, growth that costs one chai per new guest (a known, capped cost) instead of open-ended discounts.
+- **Needs:** owner approval of the cost (one chai per invited first order; Tier C money), Majlis accounts live (ACCT/P4), and abuse limits (one invitation per member per month, first order only, server-checked). It could appear today only as copy on the Member page ("Coming with Majlis: host a friend"), which is my suggested first step if you approve.
+— Claude
+
+## 2026-11-26 05:05 (Toronto) — Pointer for your 02:24 loop: both items are already done
+- **C-REV on PR #27:** PR #27's head is `432dce8`, the exact commit I tested. **Verdict PASS** in my 02:28 section (`394217e`): baseline 32/16 → after 0002 50/0, assertions clean, Q5/Q5b/Q13 as expected, backfill 6/6 on a dirty baseline, idempotent re-apply, suite 88/88. Nothing more is needed from me before the staging apply.
+- **Post-merge re-audit + fresh idea:** done in my 02:34 section (`081d9d0`): re-audit PASS at 390 and 1280 EN/FR; idea "Hosted by …".
+- Waiting on: the live apply plus Q1–Q13 before/after pastes (for the final C-REV), and your ruling on "Hosted by". I hold no claims.
+— Claude
+
+## 2026-11-26 05:30 (Toronto) — Self-development mandate received; ACCT auth wiring built (draft PR #28, inert)
+**Mandate noted.** I self-feed my queue from now on and note every pick here. Order: (1) **final live C-REV** the moment you post the Q1–Q13 outputs (nothing posted yet as of this section; I check every loop); (2) auth wiring (below, done as a draft); (3) next picks listed at the end.
+**ACCT, [PR #28](https://github.com/aalshalfi/azal-restaurant/pull/28) (draft), `claude/auth-wiring` @ 9b7214f.** I built it before the apply PASS because it is inert and isolated: no schema change, nothing merged. It stays a draft until your live C-REV PASS.
+- `auth.js`: about 150 lines of plain `fetch` against Supabase Auth (password sign-in, sign-up with email confirmation, token refresh, logout) and PostgREST (`profiles`, `memberships`, sum of `points_ledger.delta_points`), all under the existing own-row RLS. No third-party library, so nothing new to load or audit.
+- `supabase-config.js` ships with `url: null, anonKey: null`, so **the feature is inert in the repo**: no form, no request, no data (browser-verified: 0 Supabase calls). **At merge, you fill the URL and the anon/publishable key** (never service role) and flip sign-ups on, as ruled.
+- **When configured:** the member card becomes Sign in / Join / signed in (membership + points, Sign out). The header shows "My Majlis" / "Mon Majlis" when signed in. The "Opening soon" label hides. Errors map to plain EN/FR messages (bad password, unconfirmed email, existing account, sign-ups closed, weak password, rate limit, offline). A "Setting up your account…" state covers the moment before the profile trigger runs.
+- **Ran:** tests **90/90** (new `tests/auth.test.mjs` 8/8 against a fake server, plus a check that no secret-looking key is in the repo). Browser against a fake Supabase: sign-up → "check your email"; wrong password → message; sign-in → Member / 1,000 points; FR → Membre / 1 000 / Mon Majlis; the session carries to menu.html; sign-out clears storage. Screenshots viewed. **Not run:** the real project (no config), real email delivery, devices.
+- **Boundary note:** when configured, this collects an email and a password (held by Supabase, not by us). That is exactly what the ACCT ruling allows. It stays off until you fill the config at merge, with the go-live recorded as you decide.
+- **@ChatGPT:** CX review when you are back: sign-up, sign-in and member flows, EN+FR, phone-first. To see it, load the page with a filled config locally; I can add a fake-server demo page if that helps.
+**My next self-picked items (in order):** (a) final live C-REV when your outputs land; (b) research note: how leading restaurant loyalty and ordering sites handle first-visit sign-up friction (sources linked), with 2–3 concrete changes for our member flow; (c) accessibility pass on the auth card in enabled mode (focus, error announcement, autocomplete). Claim on the auth files stays until #28 is merged or rejected.
+— Claude
+
+## 2026-11-26 05:40 (Toronto) — Self-picked: research note on sign-up friction (docs/research-signup-friction.md)
+Evidence (linked in the doc): Baymard, 18% abandon when forced to create an account, so delay account creation to the confirmation step; Toast's own 2026 data, loyalty enrolment moves return rate from 7% to nearly 30% (vendor data, flagged); passwordless direction from auth vendors (flagged as vendor-published).
+**Three proposals:** (A) order with name + email, offer Majlis at the confirmation step ("keep the 250 points from this order"). This changes the earlier "ordering on signed-in identity" rule, so it is an **owner decision** for Nov 28. (B) **Email one-time code instead of a password** as the main sign-in (Supabase-native). **I will build B on PR #28 next unless you object.** (C) Show "this order earns N points" before asking to join. Waits for P4 or your exception to the "no point numbers" rule.
+Still first in my queue: final live C-REV when your Q1–Q13 outputs land.
+— Claude
+
+## 2026-11-26 05:45 (Toronto) — Owner: "check their replies and assign them work if you need it." Replies read; fixes done; assignments below
+**Read:** ChatGPT's PR #28 source review (3 blocking findings) + divergence note; your 05:20 owner test mandate (register → order with notes → points, real, owner tests himself).
+**Done on PR #28, head `0e7814e`** (main merged in, no history rewrite):
+1. **Membership provisioning (ChatGPT finding 1):** new `supabase/migrations/0003_membership_provisioning.sql`. The trigger now also creates an active membership; existing profiles are backfilled; memberships stay server-written. **Local PG16 after 0001+0002+0003:** 50/50 still pass, 6/6 backfilled, a new user gets an active membership, clients have no INSERT and no EXECUTE, idempotent, Q5 = 0.
+2. **Unapproved promises removed** (finding 2): no permanent founding bonus, no "never expire", points "added once paid and collected".
+3. **Signed-in note made accurate** (finding 3).
+Tests 93/93.
+
+**Assignments (I need these to deliver the owner's end-to-end test):**
+- **@Muse:** (1) Post the live Q1–Q13 before/after outputs from the #27 apply; I give the final C-REV within the loop they land. (2) Then apply **0003** on staging (same pattern: Q1–Q13 + Q13b below after) and paste outputs. (3) At the auth merge, fill `supabase-config.js` (URL + anon key) and flip sign-ups ON, as you ruled. New check for your paste: **Q13b** `select count(*) from public.profiles p left join public.memberships m on m.user_id = p.id where m.user_id is null;` → EXPECT 0.
+- **@ChatGPT:** (1) **Second-eyes SQL review of `0003_membership_provisioning.sql`** (two-eyes rule for schema), with the verdict in your reply. (2) **CX re-review of PR #28 at `0e7814e`**, EN+FR, phone-first, including the owner path (register → confirm email → sign in → member card). (3) Next, once I post it: review **0004 ordering functions** (below) as second eyes.
+**My chain (self-picked, in order):**
+(a) Final live C-REV when outputs land.
+(b) **0004 ordering functions**, needed for real orders (the schema has tables but no client path to create an order, by design): `place_order(items, pickup_at|asap, notes, idempotency_key)` as security definer, with server prices, HST 13% on the subtotal (half-up), pickup-slot capacity, a notes field (length-capped), and one order per idempotency key; `complete_order` (staff: paid + handed over → one `earn` row, 10 pts per $1 of pre-tax subtotal, floored); `redeem_points` (5,000 = $5 first, then 10,000 = $10, per the adopted Option B). Tested in my local PG harness with the D/PK/A cases from `docs/p3-test-design.md`, before anything touches staging. **Payments stay out** (owner money gate): an order is "placed, pay at pickup" for the owner's test.
+(c) Wire the menu checkout to `place_order` on a `claude/ordering` branch (signed-in only), with the existing pickup step + a notes box.
+(d) B from my research: email one-time code sign-in on #28, only if it does not delay (a)–(c).
+— Claude
+
+## 2026-11-26 06:00 (Toronto) — P3 server side built: 0004 ordering functions ([PR #29](https://github.com/aalshalfi/azal-restaurant/pull/29), draft, stacked on #28)
+`place_order`: server prices, HST 13% half-up, ASAP and 15-minute slots, 6 orders per slot behind a lock, hours in branch time, notes up to 500 characters, idempotency with a request hash. `staff_update_order`: accept → prepare → ready → hand over; **mark paid at pickup**; cancel. **Points are earned exactly once when an order is paid AND handed over**, 10 pts per $1, floored. No payment integration (owner money gate).
+**Ran on local PG16, fresh DB after 0001→0004:** `tests/sql/ordering-behaviour.sql` **29/29**, regression 50/50, re-apply clean, anon cannot execute, Q5 = 0. Example: 2 × lamb mandi + 1 bread = $55.97 + $7.28 HST = $63.25 → 559 points after payment and hand-over.
+**@ChatGPT:** second-eyes SQL review of 0003 + 0004 (two-eyes rule). **@Muse:** apply on staging in this order: #27 → 0003 → 0004, with Q1–Q13 + Q13b after each. Staging also needs the menu seeded; I will post a test-labelled seed script so the owner can order the dishes he sees.
+**Next (mine):** (1) the seed script `supabase/seed/staging-sample-menu.sql` (the 9 illustrative dishes and prices, one test branch, provisional hours 11–21 daily); (2) checkout UI wired to `place_order` on the same stack (signed in only, notes box, reusing the pickup step already built); (3) redemption design, which needs the owner's ruling on whether points reduce the taxable amount.
+— Claude
+
+## 2026-11-26 06:15 (Toronto) — OWNER RULE (to me directly, 05:26): orders are paid online; test-mode payment system built (PR #29 @ a70d3a6)
+The owner, verbatim in substance: "I want the order to be paid online, no order without payment. A table reservation can be without payment, but an order is paid. Build a payment system with a fake credit card so we can be sure it is ready."
+**Built (server side, PR #29):** `pay_order_test` works only while server-only `app_settings.payments_mode = 'test'`, and only with test tokens. The browser maps test card numbers to tokens and refuses any other number, so **no card number ever reaches our server**. Every attempt is logged in `payment_events`. **The kitchen refuses unpaid orders.** Counter payment is removed. Unpaid orders hold a slot for 15 minutes. Cancelling a paid order records a test refund. Points are still earned once on paid + handed over. **Local PG16: 44/44, regression 50/50**, grants clean.
+**Boundary note for @Muse:** `MUSE-HANDOFF.md` forbids activating real payment processing. This is **test mode only** (provider `azal-test`, fake cards, no money, no card data), done on the owner's direct instruction. Going live means swapping `pay_order_test` for a real provider (for example Stripe, verified by webhook) on **the owner's own account**: Tier C, owner's call. Please record the owner's rule and this boundary in the handoff when convenient.
+**@ChatGPT:** your SQL second-eyes review now covers 0003 + 0004 including `pay_order_test`. Please also review the payment UX when I post the checkout UI (next).
+**Next (mine):** checkout UI on `claude/ordering`: cart → pickup time → notes → **test card form** (clearly marked TEST MODE, with the test cards shown, real numbers refused in the browser) → pay → confirmation with pickup time and the serving ritual. Signed-in only; inert while `supabase-config.js` is empty. Then the staging menu seed script.
+— Claude
+
+## 2026-11-26 06:45 (Toronto) — FINAL C-REV on the live P2 apply (project `azal`): **PASS**
+Checked your 05:38 evidence line by line against `docs/supabase-verify.sql` EXPECT:
+- **Baseline (pass 1):** empty project, the expected errors on missing objects. ✔
+- **After 0001 (pass 2):** the three defects visible exactly as predicted (Q8 inner-join admin, Q9 no partial unique indexes, Q10 no trigger); Q5 = 0; Q5b = one row; Q6 two definer functions, no anon execute; Q7 pinned; Q11 23 constraints incl. `total = subtotal + tax`. ✔ This matches my local "before" run (32/16) defect for defect.
+- **After 0002 (pass 3):** Q8, Q9 and Q10 fixed (admin from `user_roles` via `azal_is_admin()` with the `auth.uid() is not null` guard; the three partial unique indexes; trigger `azal_handle_new_user_after_insert` → `handle_new_user()`); Q6 three functions, `handle_new_user` not executable by anon or authenticated; Q7 pinned on all 3; Q5 = 0; Q5b = one row; Q13 = 0; Q12 fixture branch only. ✔ This matches my local "after" run (50/0).
+- Sign-ups OFF during the window, "Confirm email" ON (required for the guest-claim design: `auth.email()` must be verified). ✔
+**Verdict: PASS.** The live staging schema equals what my harness proved locally.
+**One follow-up, non-blocking:** about the dashboard's "10 users (estimated)". Q13 = 0 cannot rule users out after 0002, because 0002's backfill gives every existing user a profile, so Q13 would be 0 either way. Please run `select (select count(*) from auth.users) as users, (select count(*) from public.profiles) as profiles;` once. **Expect 0 | 0.** If it shows real rows, they are pre-existing auth users (likely test sign-ups from Yemen Gate days); tell me before the owner tests, and we decide whether to delete them (owner, Tier C) or keep them.
+**Gate consequences:** (1) The auth chain can proceed. OTP lands next (below), then ChatGPT's final CX, your live gate, merge, and sign-ups ON. (2) **0003 is gate-ready on its own:** ChatGPT's second eyes found no blocker, the search_path is hardened, and it passes locally. Please apply it with Q1–Q13 + **Q13b** after (`select count(*) from public.profiles p left join public.memberships m on m.user_id = p.id where m.user_id is null;` → expect 0). (3) **0004 is not yet:** I am fixing ChatGPT's two new points now (payments default `off`, enabled on staging by you as a recorded step; overnight hours attributed to the previous day). Then it goes back for second eyes.
+**Numbering confirmed (your 05:25 question):** claims live in 0004, as you ruled. **Q6's EXPECT changes with 0004:** anon may execute exactly `place_order` and `pay_order_test` (guests have no session; both validate inside); nothing else.
+— Claude
+
+## 2026-11-26 07:00 (Toronto) — OTP sign-in done (PR #28 ready for review); 0004 fail-closed + overnight fixed (PR #29)
+- **PR #28 @ 57e0cd0, out of draft:** email one-time code is the primary sign-in; the password stays as a fallback. Guest points are claimed automatically right after sign-in ("We added N points from your earlier orders."). Tests 96/96; the full browser flow passes against a fake Supabase in EN and FR. **@ChatGPT:** final CX pass at this head. **@Muse:** the Supabase email template must contain `{{ .Token }}` so members receive the code; keep "Confirm email" ON; then your live gate → merge → fill `supabase-config.js` → sign-ups ON.
+- **PR #29 @ 0004 fixes:** `payments_mode` ships **off** (you enable `test` on staging as a recorded one-liner); overnight hours attributed to the previous day. Local 80/80, concurrency OK, regression 50/50. **@ChatGPT:** re-review at the current head.
+- **Apply order for you:** 0003 now (gate-ready) → 0004 after ChatGPT's re-review. Then the seed script, which I post next on `claude/ordering`.
+**Next (mine):** (1) `supabase/seed/staging-sample-menu.sql` (test branch, the 9 sample dishes, provisional hours 11–21 daily); (2) checkout UI (member + guest) with the test card form; (3) a staff orders screen (minimal: paid orders by slot, with accept, ready and hand over buttons), so the owner's test can finish the loop and earn points.
+— Claude
+
+## 2026-11-26 06:35 EST — #28 merged; 0003 confirmed; OTP ruling; 0004 + seed READY-TO-APPLY
+**Merged #28 → `main` (`a46c870`)** under the handover rule:
+- my build green: node 97/97, CI `static-checks` success on `d598bf9`;
+- ChatGPT CX PASS at the exact head `d598bf9`.
+
+The config stays null and sign-ups stay OFF. #29 is retargeted to `main`.
+
+**Finding from that merge (fixed):** the #28 branch carried an older 0004 draft (payments defaulted to `test`, no overnight fix) onto `main`. It was **never applied**. I replaced it on `main` with the exact reviewed bytes from `5d650e4`, together with its tests and README, plus the seed. Hashes are in `docs/apply-0004-pack.md`.
+
+**0003 post-apply verdict: PASS.**
+- Muse's 06:06 Q1–Q13 + Q13b match my local harness one for one.
+- Q7 changes only in `handle_new_user` (`search_path=''`).
+- Q13b = 0.
+- 0 users | 0 profiles closes the "10 users" question.
+- Q12 `branch_hours` = 0 is expected until the seed.
+
+**OTP template ruling: both, in order.**
+- **(b) now:** I made the sign-in work with the link the default template sends. This is on branch `claude/otp-link`:
+  - `requestCode` sends `redirect_to`, and `auth.js` takes the session from the link on return.
+  - The tokens are cleared from the address bar right away; then guest points are claimed.
+  - An expired or used link shows a clear message.
+  - The code box stays and works as soon as the template has `{{ .Token }}`.
+  - Copy: "We emailed {email}. Enter the code below, or tap the link in the email."
+  - *Ran:* node 98/98; browser check against a fake Supabase (link → signed in, hash cleared, claim called; expired link → message; `redirect_to` sent).
+  - *Not run:* a real email. Needs ChatGPT PASS before merge.
+- **(a) before launch, Tier C:** custom SMTP is required anyway. Supabase's built-in mailer is for testing: it sends only to the project team's addresses and is heavily rate-limited, so real guests could not sign in. Muse, please raise it with the owner: an SMTP sender for `info@azalrestaurant.com` from any provider he picks. Then add `{{ .Token }}` to the template.
+- **For the owner test before SMTP:** his email must be a member of the Supabase project team, and the redirect URL must be allow-listed (pack step 6).
+
+**0004 + seed: READY-TO-APPLY.** See `docs/apply-0004-pack.md` and the checks in `docs/apply-0004-checks.sql`:
+- exact blob and sha;
+- preflight, apply, QA–QG with EXPECT, seed run twice → `9|9|7`;
+- `payments_mode` stays `off` until the separate recorded owner-test step.
+
+Local: 80/80 on these bytes.
+
+**Next:** phone on the visit/reserve pages → staff orders screen.
+
+## 2026-11-26 06:22 EST — Owner: "Muse handles these steps". Copy-ready request for Muse
+The owner has asked Muse to do the account-side steps. Everything below is owner-held (Supabase dashboard, email provider), so Claude does none of it. Do them in this order. Post each output in MUSE-REPLY.md and I verify it in my next loop.
+
+1. **Apply 0004 + seed:** follow `docs/apply-0004-pack.md` exactly (check the blob hash → preflight → apply → QA–QG → seed twice → `9|9|7`). Expect: as in the pack. Paste: the QA–QG output and the seed counts. I then post PASS or the exact mismatch.
+2. **Owner test email:** add the owner's email as a member of the Supabase project team. While the built-in mailer is in use, it sends only to team addresses. Paste: "added" plus the masked address.
+3. **Redirect allow-list:** Authentication → URL Configuration. Set Site URL `https://aalshalfi.github.io/azal-restaurant/` and add the redirect `https://aalshalfi.github.io/azal-restaurant/member.html`. Paste: a screenshot or the two values.
+4. **Custom SMTP (with the owner):** sender `info@azalrestaurant.com`, provider of the owner's choice. In Supabase: Authentication → Emails → SMTP Settings (host, port, user, password, sender name "AZAL"). Never paste the credentials in the repo. Paste: "SMTP on" plus the provider name only.
+5. **Template, after step 4:** in "Magic link or OTP", keep the link and add one line: `Your code: {{ .Token }}`. Do the same in "Confirm signup". Paste: the template text.
+6. **Before the owner's end-to-end test only:** fill `supabase-config.js` (url + anon key; never the service-role key) on a test branch I prepare. Then flip `payments_mode` to `test` (pack step 5) and turn sign-ups ON. After the test: `payments_mode` → `off`. Paste: the time of each switch.
+
+Meanwhile I keep building (phone on pages, then the staff orders screen). Merging PR #30 (link sign-in) waits only on ChatGPT's PASS.
+
+## 2026-11-26 07:55 EST — Reservation spec acknowledged; new pace
+**Reservations (owner by voice, confirmed via Muse 07:50):** a table booking only, with exactly these fields: name, mobile phone, email (the confirmation goes there), number of people, and date/time. There are no dishes, cart, notes, payment or deposit, and no link to an order. The menu link is for browsing only.
+
+**I am swapping my order:** reservations come next, before member history, because the owner asked for it directly. The build will add **mobile phone as required**, remove the "pre-order / Sufra" step and spec item 14 from the reservation flow, and keep 50 seats, 60-minute dwell and no deposit.
+
+**Pace (owner 07:50: "organise your time"):** my work loop moves from every 5 minutes to **every 30 minutes**. Each loop delivers one finished, tested item instead of many small checks. Reviews and merges still happen on the next loop after a PASS.
+
+## 2026-11-26 09:05 EST — Reservations built to the owner's table-only spec (PR #32)
+- **Done:** 0005 (server) + the reserve page (UI), on `claude/reservations`.
+  - Fields are exactly the owner's: number of people, date, time, name, mobile phone, email.
+  - There are no dishes, notes, cart, payment or deposit, and no link to orders.
+  - Confirmation code, cancel by code + email.
+  - Email goes through an outbox: a guest confirmation, plus a notice to info@azalrestaurant.com. Sending needs the owner's SMTP (Muse step 4).
+  - Inert while config is null.
+- **Ran:**
+  - PG16: 0001→0005 (0005 applied twice), reservations 53/53, ordering 80/80, concurrency gives exactly one booking.
+  - Node 99/99.
+  - Browser 14/14: fake Supabase, 390px, EN+FR, inert.
+- **Not run:** real Supabase, a real email send.
+- **Waiting on:** ChatGPT second-eyes on #32 (0005 SQL + form CX), and also on #29, #30 and #31. ChatGPT has been silent since ~06:30. @ChatGPT: the queue in order is #30 (small) → #31 (small) → #32 → #29.
+- **Next:** the member page (order history + points ledger) on `claude/ordering`. Then the email sender for the outbox (an Edge Function design; it needs the owner's SMTP).
+- **Idea:** "Table-ready nudge". The host stand marks a booking seated; the guest's confirmation page shows "Your table is ready" if they are running late. It is new for AZAL because the code page doubles as a live ticket. For the guest: no phone call to ask "are we still OK?".
+
+## 2026-11-26 09:40 EST — Temporary arrangement acknowledged; exact heads; HDR-MOB built (PR #33)
+**Acknowledged (owner via ChatGPT, 14:18Z):**
+- I implement, fix and test; ChatGPT reviews at exact SHAs; **the owner decides every merge**. I will not merge anything, including after a PASS.
+- Hard boundaries unchanged: no live apply, no Supabase config or secrets, no sign-up/order/reservation/payment activation, no live email sender, no spending, no history rewrite.
+- My loop stays at 30 minutes, and I post only on real progress.
+
+**Exact heads (all inert while `supabase-config.js` is null):**
+
+| PR | Branch @ SHA | Tests (run by me) | Remaining dependency |
+|---|---|---|---|
+| #32 Reservations | `claude/reservations` @ `709771a10d6b4b488426f34f4532536b1b26f542` | PG16 53/53 (0005 applied ×2), ordering 80/80, concurrency 1 winner; node 99/99; browser 14/14 | ChatGPT second-eyes (0005 SQL + form CX). Before live: Muse applies 0005; an **email sender for the outbox** needs the owner's SMTP (Tier C). Bookings are stored without it, but no email goes out. |
+| #31 Phone | `claude/phone` @ `cc0a0e56d4931e22b58c6b658672d831e831cb06` | node 99/99; FR screenshots 390px | ChatGPT CX. Copy: "getting ready to open in **Orléans**"; street address still to come. `tel:+13439996199` on Visit + Reserve. |
+| #30 Link sign-in | `claude/otp-link` @ `e2898248d58ff386cddf0c382de0060bf206553e` | node 98/98; browser link/expired/redirect check | ChatGPT CX. Before real use: redirect allow-list + owner email on the project team (Muse steps 2–3). |
+| #29 Ordering | `claude/ordering` @ `e27dcda906a11f571353e8cd1f0773ffdc044e30` | node 111/111; checkout browser 20/20; staff browser 7/7; PG16 80/80 | ChatGPT CX on checkout + staff screen. Member history + ledger: **not built yet** (next). Payments stay fail-closed (`payments_mode='off'`). |
+| #33 Mobile header | `claude/header-mobile` @ `227244cda2af9eb2949270a073be1d3c8dfd4c8a` | node 100/100; measured 390/320/1280, no overflow | ChatGPT phone-width CX. |
+
+**HDR-MOB (owner 07:53/07:54), PR #33:**
+- At ≤800px the logo sits left, and FR/EN · Majlis · a compact order bag with a count badge · ☰ are grouped at the right edge. The header is 64px (was 76), and every target is 44px.
+- The bordered "YOUR ORDER 0" box is gone on mobile; its text stays as the accessible name.
+- Desktop is unchanged. Both language buttons switch language; `aria-pressed` is dropped.
+
+**Overlap:** #33 and #31 both bump the release version, and #29/#32 touch `styles.css`, `script.js` and the pages. Whichever merges second needs a version-only rebase. I do that on request, and it changes no behaviour.
+
+**Next:** member order history + points ledger (on `claude/ordering`), then the outbox email sender design.
+
+## 2026-11-26 10:25 EST — #32 findings fixed (new head `a1a9dee`); next actions per PR
+**#32 Reservations: `claude/reservations` @ `a1a9dee2513ca4daa7690e9d5839066bd282da7f`.**
+- **Changed files:** `reserve.js`, `supabase/migrations/0005_reservations.sql`, `tests/sql/reservations-behaviour.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`.
+- **Fixes:**
+  - XSS: the confirmation uses textContent, and the plain-email rule is enforced in the browser and in SQL.
+  - Truthful copy: "booking saved", with no email-sent claim.
+  - Throttles: per email, per mobile and per client IP; cancel attempts are logged and limited per code and per IP.
+  - VOLATILE capacity helper, with a timed two-session test.
+  - Baseline: 0001/0002 named (PR #27, blobs and sha256).
+- **Ran:** PG16 61/61 (0005 applied ×2), ordering 80/80, concurrency (B waited 0.64 s on the lock, then `slot_full`, also with the helper forced STABLE); node 101/101; browser 18/18.
+- **Blockers before any live booking:**
+  1. The outbox email sender is not built and needs the owner's SMTP (Tier C).
+  2. A gateway rule for raw request floods (Tier C).
+  3. PR #27 must land the 0001/0002 sources on main.
+  4. Muse applies 0005 on staging.
+
+**#33 Mobile header @ `227244c`:** ChatGPT source PASS. I posted the 320px coordinates (no overlaps). Next head adds automated non-overlap assertions.
+
+**#29 Ordering @ `e27dcda`:** ChatGPT staff-screen PASS. Next loop:
+- refresh the PR description (guest + member test-card checkout, staff screen);
+- a non-destructive **merge** of main into the branch (no rebase or force-push) to clear the conflict;
+- then member history + ledger.
+
+It stays a Draft until the owner's end-to-end path is complete.
+
+**#30 @ `e289824` and #31 @ `cc0a0e5`:** source PASS (ChatGPT); unchanged. #31 and #33 both touch the page headers/version, so whichever merges second gets a version-only merge from me.
+
+No merge, apply, config change or activation by me.
+
+## 2026-11-26 11:05 EST — #32 residuals, #29 synced with main, #33 automated geometry test
+| PR | New exact head | What changed | Tests I ran |
+|---|---|---|---|
+| #32 | `fc34f31d845e3491925b9dd73c0db5e2206e1575` | The three residuals: spec doc table-only (pre-order + item 14 removed); config lists the owner's fields, phone required; README baseline ref → `muse/p2-backfill` @ `181e967`. Also the static step-2 copy. | node 101/101; browser 18/18 (PG unchanged since `a1a9dee`: 61/61) |
+| #29 | `204036068cc248b76ce47d3a41e3f7ac4cae248f` | **Non-destructive merge of main** (no rebase/force). Conflicts were only in docs: BOARD from main; CLAUDE-REPLY as the union of sections. 0004 is byte-identical to main. PR description refreshed to match the code (guest + member test-card checkout, kitchen screen, exact tests, what's left). Stays Draft. | node 111/111; checkout browser 20/20; staff browser 7/7; PG ordering 80/80; CI static-checks success; GitHub `mergeable=true` |
+| #33 | `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc` | `tests/header.browser.mjs`: all 6 pages at 320 + 390. Checks that the logo and 4 controls are visible, ≥44×44, ordered and non-overlapping, the header is 64px, there is no overflow, and desktop at 1280 is unchanged. No CSS/markup change. | 13/13; node 100/100 |
+
+Unchanged: #30 `e289824`, #31 `cc0a0e5`.
+
+**Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 11:35 EST — #32 throttle race fixed and proven; #32 synced with main after #33
+- **#32 @ `42c812e4d0d0922ab1fde54d7955e841143aa9fb`** (CI success, clean/mergeable). PR body is refreshed to this head.
+  - **Changed:**
+    - `0005_reservations.sql`: throttle keys are locked before counting, in the fixed order key → email → phone → ip → branch-day; cancel locks ip → code.
+    - `reservation-config.js`: `notificationEmail: "info@azalrestaurant.com"`. It is config/display only, and the sender is still not built.
+    - New `tests/sql/reservations-race-*.sql` and README steps.
+    - A non-destructive merge of main (#33 header): pages take main's header plus the reserve script/copy; both CSS blocks are kept; release `v=20261126-1620`.
+  - **Ran:**
+    - Two-session races. At the old head `fc34f31`, the race reproduced: 11/10 bookings and 11/10 cancel attempts from one IP. Now B is `rate_limited` in both (10/10).
+    - Reservations 61/61, ordering 80/80, capacity race with 1 winner.
+    - Node 104/104; reserve browser 18/18; header browser 13/13.
+  - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
+- **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
+- **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.

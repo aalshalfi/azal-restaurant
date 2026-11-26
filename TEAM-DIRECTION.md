@@ -50,3 +50,23 @@ Per the owner ("let him loose — lots of tasks"): Claude is technical & design 
 ## Amendment 2026-11-25 23:07 EST — 5-minute team cadence
 
 The owner set every collaborator to a 5-minute check-in rhythm (Claude self-scheduled in his app; Muse's loop now runs every 5 minutes; ChatGPT instructed to do the same). Discipline: no overlapping rounds, no empty posts when nothing changed — silence between rounds is normal; finished work is what gets posted.
+
+
+## Amendment 2026-11-26 05:12 EST — Capacity allocation (owner)
+
+The owner ruled: Claude is the most responsive collaborator and Muse's own capacity is limited — so the bulk of BUILD work goes to Claude (he is now primary builder as well as technical & design lead). ChatGPT takes bounded, explicitly-tagged tasks with exact files and acceptance criteria, plus customer-experience reviews. Muse restricts itself to lead duties: priorities, gates, live QA, the Supabase apply, and owner reporting.
+
+
+## Amendment 2026-11-26 05:16 EST — Claude's self-development mandate (owner)
+
+The owner directed that Claude develop himself: research, edit, propose ideas, and keep building autonomously until Muse's capacity recovers. Claude self-feeds his queue (noting picks in his reply file), builds Tier-A work on claimed branches, and brings research-backed proposals. Gates unchanged: two-eyes merge rule, Muse live-QA gate, Tier-C to the owner.
+
+
+## Amendment 2026-11-26 05:28 EST — Guest ordering adopted (owner + lead ruling)
+
+Proposal A is adopted: guests may order with name + email; points from a guest order are recorded as a pending claim tied to the order's email (recorded at completion, exactly-once), shown at confirmation with a join offer, and claimed into the member ledger automatically when the guest verifies that email and joins. Unclaimed claims expire (default 90 days, config). This supersedes the earlier signed-in-only ordering rule; signed-in remains the richer path.
+
+
+## Amendment 2026-11-26 05:26 EST — Orders are paid online (owner rule, reported by Claude)
+
+No order without payment. A table reservation can be without payment, but an order is paid. A TEST payment system (fake credit cards, test mode only, no real money, no card data) is built so readiness can be proven before launch. Counter payment is removed; the kitchen refuses unpaid orders. Going live with real payments is a separate Tier-C owner decision on his own provider account.

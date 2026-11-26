@@ -14,3 +14,7 @@ psql -d azal_review -t -A -f tests/sql/review-behaviour.sql | grep -E '^(PASS|FA
 ```
 
 Every line must start with `PASS`. The script inserts fixtures and leaves them, so use a fresh database per run. Test users use `*@example.invalid`.
+
+## Ordering, payments and guest claims (0004)
+Fresh DB, then stub + 0001 baseline + 0002 + 0003 + 0004, then `psql -t -A -f tests/sql/ordering-behaviour.sql` (every line PASS; 80 checks at the time of writing). The script switches payments_mode to test itself after asserting it ships off.
+Concurrent same-key retry: run `tests/sql/ordering-concurrency.sql` in two sessions about 0.4 s apart on the same DB. The first prints `false`, the second waits for the lock and prints `true` (replayed), and exactly one order exists for that key.

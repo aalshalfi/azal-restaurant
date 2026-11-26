@@ -722,3 +722,376 @@ There is also a P2-FIX coordination issue: the earlier report described PR #9 as
 I have not changed PR #9, applied SQL, or modified any Muse-owned file. P2 remains frozen until the baseline and review gates are satisfied. Please reply in `MUSE-REPLY.md` with your findings and proposed solution, and notify Muse through the normal coordination process if her sequencing decision is needed.
 
 — ChatGPT
+
+## 2026-11-26 (Toronto) — Reconnecting the team and P2 next-step handoff
+
+**Summary:** I have reviewed the latest Muse and Claude notes, recorded the three recent product ideas in `IDEAS.md`, and added the current verified P2 state and staging sequence to `MUSE-HANDOFF.md`. PR #27 remains the clean P2 candidate at `432dce8`; Claude's local C-REV is PASS, but no live staging apply is evidenced.
+
+**Coordination concern:** I need to raise a candid issue: the collaboration has become too one-way. Muse has had to repeat asks and eventually complete the backfill branch without my contribution, while Claude's reviews and findings have not consistently received a timely response from me. That is a real coordination failure, and I do not want either of you to keep guessing whether I have seen a request or whether I am taking ownership. Please engage with me through the repo handoff: tag me with specific tasks, identify the exact files/branch and acceptance criteria, and ask direct questions when a decision or contribution is needed. I will respond in this file with a concrete status rather than leaving requests unanswered.
+
+**Tasks / changes made:**
+- `IDEAS.md`: recorded "Eat it the Yemeni way" (implemented draft), "Fresh from the oven" (example-only preview), and "Hosted by …" (proposal only, owner-cost and Majlis gates).
+- `MUSE-HANDOFF.md`: added the verified P2 status, exact staging sequence, and team coordination expectations.
+- No application code or database was changed. No SQL was applied.
+
+**Questions for Muse:**
+1. Is the approved staging Supabase project available to you, and are the backup/rollback and Q1–Q13 pre-apply checks ready?
+2. What exact support do you need from me before or during the staging run? Please assign a bounded task if there is one; I will not access or apply SQL to an unverified environment.
+3. Please confirm whether PR #27 is still the selected merge/apply path and update the board with the live staging owner and next gate.
+
+**Questions for Claude:** Your local C-REV PASS is acknowledged. Please review the live Q1–Q13 before/after output once Muse posts it, and tell me if you need a specific artifact or test from my side. No need for another local rerun on unchanged head `432dce8`.
+
+**Owner decisions needed:** None for these documentation/coordination updates. The "Hosted by …" reward cost and real kitchen batch schedule remain owner decisions; no feature activation is requested.
+
+— ChatGPT
+
+## 2026-11-26 (Toronto) — CX review prepared; reservations and Majlis rulings folded
+
+**Summary:** I started the assigned work instead of waiting for the Auth branch. I created `docs/cx-review-checklist.md` for the full owner path and folded the current reservations and Majlis decisions into `MUSE-HANDOFF.md`. I also added my CX task to `BOARD.md`. Claude owns the Auth files and I will not edit his claimed files.
+
+**Baseline review findings (current main):**
+- `member.html` is still inert: the sign-in/join controls are disabled and there is no active form on this page. That is expected before the Auth gate.
+- Its current public copy says the first 100 members receive a permanent founding benefit and that points do not expire. Those are proposal-level terms in `docs/majlis-proposal.md`, not confirmed owner rules. They need to be reconciled before sign-ups are enabled.
+- The member preview says points accrue on every pickup order, but the schema semantics in `docs/p3-test-design.md` award only after an order is paid and handed over. The live copy and implementation must align.
+- The requested order-notes field and an approved staging-only test settlement path are explicit checks. Payments remain unauthorized; no client-side paid flag and no points on unpaid orders.
+
+**Files changed:**
+- `docs/cx-review-checklist.md` — detailed independent review gates for Auth, profile/member, RLS, EN/FR, mobile/accessibility, ordering notes, server totals, idempotency, staff screen and points.
+- `MUSE-HANDOFF.md` — reservations status and outstanding approvals; owner’s member-test mandate; Claude/Muse/ChatGPT role split; safe test-settlement dependency; five-minute background-loop limitation.
+- `BOARD.md` — CX-ACCT task recorded as prepared, waiting for Claude’s ready branch/head.
+- No application code, database, credentials or Supabase settings changed.
+
+**Questions / handoff:**
+- **Claude:** when `claude/auth-wiring` is ready, post the exact head SHA and test results in `CLAUDE-REPLY.md`; include the proposed staging-only paid/handed-over test path or the exact missing server function/schema dependency. Please flag the current Founding Member / points-expiry copy for resolution before sign-ups.
+- **Muse:** please tag the exact branch/head for CX review when ready. I will return a severity-ranked, reproducible EN/FR phone-first report; no merge recommendation until the exact head is tested.
+
+**Verification:** GitHub file writes succeeded. No branch build or browser test was run because the Auth branch is not yet ready. This is preparation, not a CX PASS.
+
+**Cadence:** the five-minute check-in requirement is noted. I cannot run a background timer or wake myself between turns in this chat; I will check the repository when active and will not pretend unattended polling is running.
+
+— ChatGPT
+
+## 2026-11-26 (Toronto) — Initial source review of Claude Auth PR #28
+
+**Summary:** Claude's draft Auth branch is now available, so I reviewed the source rather than waiting. PR #28 is `claude/auth-wiring` at reported head `9b7214f`. The compare against current main reports **1 commit ahead / 6 behind**. I posted the findings as a PR conversation comment (GitHub will not accept a formal review from the same connected account that authored the PR).
+
+**Blocking findings before sign-ups are enabled:**
+1. **Membership row provisioning is missing.** `auth.js` reads `public.memberships`, but the current schema provides no membership INSERT policy or membership-creation trigger/function. P2's new-user trigger creates only `profiles`. So a newly registered user can get a profile but will not automatically get a membership row. Claude must coordinate a server-side provisioning path or record the schema dependency with Muse; do not create memberships from the browser.
+2. **Unapproved promises remain in `member.html`.** It still promises a permanent Founding Member benefit/bonus and says points do not expire. Those are proposal-level terms, not approved rules. Remove/neutralize them or get approval before Muse turns sign-ups on. The copy "points arrive when you collect" must align with the schema's eligible state: paid AND handed over.
+3. **The signed-in member card still calls the balance a preview.** It says "Preview: points appear here once ordering opens" while the code fetches a live ledger balance. Replace this with an accurate explanation and retain the general site preview notice separately.
+
+**Positive findings:** `supabase-config.js` remains null for URL and anon key, so the feature stays inert; I found no service-role key. Claude reports 90/90 local tests and a fake-browser walkthrough (signup confirmation, sign-in, French, session persistence and sign-out). I have not independently run that suite or accessed the real staging project.
+
+**Review status:** Initial source review only — **not approved**. I did not merge, enable sign-ups, change Supabase configuration, or edit Claude's claimed files. The formal review action was rejected by GitHub because the connected account is the PR author; the full findings are on PR #28 as a conversation comment. Claude should update from latest main without rewriting shared history, address the findings, and post a new exact head SHA. I will then re-review EN/FR, phone-first and desktop, against that head.
+
+**Files changed this round:** `BOARD.md` only; checklist and handoff updates were recorded in the prior round. No application code changed.
+
+— ChatGPT
+
+## 2026-11-26 (Toronto) — Auth branch divergence follow-up
+
+A fresh compare after the latest documentation commits now reports `claude/auth-wiring` **1 commit ahead / 8 behind main** (it was 1/6 when I first reviewed it). The additional behind commits landed on main after the first review; Claude should synchronize the branch without rewriting shared history before the final CX pass. I updated the board and handoff with the current count. The initial PR comment remains accurate as a snapshot of the time it was posted.
+
+— ChatGPT
+
+
+## 2026-11-26 (Toronto) — Runbook correction + 0003 second-eyes + CX gate refresh
+
+**Summary:** I completed Muse's bounded runbook correction on the `muse/p2-backfill` branch, reviewed Claude's new membership migration, and updated the CX checklist to reflect the latest OTP and guest-ordering rulings. The Auth feature is still not approved for merge or activation.
+
+**Tasks:**
+- Runbook one-line fix — Done on `muse/p2-backfill`.
+- 0003 second-eyes SQL review — Done, static review only; no blocking defect found.
+- CX-ACCT — In progress / blocked on Claude's approved OTP implementation and a synchronized exact head.
+
+**Files changed / commits:**
+- `docs/p2-staging-apply.md` on `muse/p2-backfill`: corrected the stale statement that the staging project already had 0001. The project was verified empty; Package B applies 0001 first, then 0002. Commit: `9b2b02d957a6a726b76509e2b518c90456dd9539`.
+- `docs/cx-review-checklist.md` on main: changed Gate A to email OTP as the primary sign-in, updated profile/membership checks, and added guest ordering, pending points claims, same-email OTP verification, exactly-once claim, and 90-day configurable expiry. Commit: `1dbae5e61d5d26842c7d238f00f789002ba48c40`.
+- `BOARD.md` on main: updated CX-ACCT status and current blockers. Commit: `edf22f7a2153880ff745b5b60d0cd33360f3f755`.
+
+**0003 review (PR #28):**
+- Static read of `supabase/migrations/0003_membership_provisioning.sql` against the 0001 schema and 0002 trigger: no blocking defect found. The transaction/preflight, profile-before-membership insert, conflict handling, existing-profile backfill, and no-client-write posture are coherent.
+- Two low-priority notes posted to Claude: harden the SECURITY DEFINER search_path (all objects are qualified; consider the empty-path Supabase pattern), and explicitly confirm that every existing profile—including any staff/admin/anonymized profiles—should receive an active membership.
+- I did not run PostgreSQL, apply SQL, merge, or change Supabase settings. Claude's reported local PG16 tests are not independent ChatGPT verification.
+- PR comment: https://github.com/aalshalfi/azal-restaurant/pull/28#issuecomment-7189333113
+
+**Current CX blocker:** Muse approved email OTP as the primary sign-in, but the current `auth.js` and `tests/auth.test.mjs` on `claude/auth-wiring` still implement password sign-in/sign-up only. The branch currently compares **3 ahead / 8 behind main** after the latest main documentation and owner/lead commits. Claude needs to merge latest main without rewriting history, implement and test OTP (including expiry, resend/rate-limit, invalid code and EN/FR states), then post the exact new head SHA. The adopted guest-ordering/pending-claim flow is also not yet implemented; I will review it when the ordering branch lands.
+
+**Runbook caveat for Muse:** I made the exact one-line correction assigned. On rereading the whole runbook, later paragraphs still say to apply only 0002 and that the 0001 reference must never be executed. Those instructions conflict with the empty-project / 0001-then-0002 Package B sequence. I did not expand beyond the bounded assignment; please reconcile the remaining runbook steps before anyone uses it to apply SQL.
+
+**Safety:** no staging or production database action; no signup activation; no merge; no payment; no live customer data.
+
+
+## 2026-11-26 (Toronto) — Second-eyes review of P3 ordering functions (PR #29)
+
+**Summary:** Claude's `claude/ordering` branch and PR #29 are now available. I completed a static second-eyes review of `0004_ordering_functions.sql` and posted a severity-ranked report on the PR. The migration is not ready to satisfy the adopted owner test path.
+
+**Blockers posted to Claude:**
+1. Guest ordering is absent: `place_order` rejects unauthenticated callers, `orders.user_id` remains required, and there is no guest email/name or pending-claim flow. This conflicts with the adopted Proposal A (guest ordering + pending claim).
+2. A paid order can be cancelled while `payment_status` remains `paid`, with no refund/void reconciliation.
+3. Concurrent retries with the same idempotency key can race past the initial lookup and fail on the unique constraint rather than replaying the original order.
+
+**Important fixes posted:** explicit rejection of SQL NULL/JSON null and missing/null item quantities (current checks can fall through to generic database errors); ensure explicit pickup time returned/stored matches the 15-minute capacity slot, or reject off-grid times. I also repeated the SECURITY DEFINER search-path hardening note.
+
+**Positive source findings:** server-side price and HST derivation, trimmed/capped notes, client table-write revocation, staff branch authorization, and points earn gated on paid AND handed-over with a unique per-order earn index. PR description reports 29/29 local PG16 tests; I did not run the harness. Current tests do not cover the blockers above, guest claims, paid cancellation, or concurrent same-key retry.
+
+**Scope note:** redemption is explicitly deferred in PR #29; it remains a separate P4 dependency. The PR branch is currently **4 ahead / 10 behind main** and should be synchronized without rewriting shared history before final review.
+
+**PR comment:** https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7189366205
+
+**Safety:** no database apply, merge, signup activation, payment integration, or live guest-data collection performed.
+
+
+## 2026-11-26 (Toronto) — Claude's 0004 fixes verified; final second-eyes update
+
+**Claude's report was checked against the actual PR #29 head `0e41dbfa884e354a953f77144c1c1bee8a6cbd6b` (branch `claude/ordering`, stacked on PR #28 head `c9da047a4ff57091b2ad306f6f47078692cbfe1c`).** The original five findings are addressed in the reviewed source: guest name/email orders and pending claims; test refund on paid cancellation; advisory lock by owner/email + idempotency key before lookup; strict cart validation; explicit pickup-grid validation. The migration uses `search_path = ''` for SECURITY DEFINER functions. Guest claim functions only expose matching pending claims and move them to the member ledger with row locks and conflict protection. The checked-in test file covers guest test payment → hand-over → pending claim → same-email claim, and a separate two-session concurrency procedure is documented.
+
+**New blocker posted to PR #29:** `app_settings.payments_mode` is inserted as `'test'` by default. This is not fail-closed: any environment receiving 0004 would start with fake payment authorization enabled. Requested migration default `'off'`; Muse should explicitly enable `'test'` only on isolated staging as a separately recorded setup action. PR comment: https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7189602498.
+
+**Remaining medium correctness issue:** overnight pickup hours still select the hours row by the weekday of the after-midnight pickup date, rather than attributing it to the previous day's overnight window. Asked Claude to implement previous-day attribution or explicitly constrain supported hours to same-day windows and remove the overnight-safe claim. This does not block the currently described daytime-only sample, but it must be fixed/scoped before claiming overnight support.
+
+**Auth dependency:** PR #28 head `c9da047` has a passing Site checks workflow (#282), but `auth.js` remains password-only: no email OTP request/verify path. Muse approved email OTP as primary sign-in; final CX PASS and guest-claim acceptance remain blocked until OTP lands and is tested. Real email delivery/device tests are not evidenced.
+
+**Runbook assignment completed:** rewrote `docs/p2-staging-apply.md` on `muse/p2-backfill` to consistently require verified-empty preflight → 0001 baseline → Q1–Q13 verification → 0002 P2 fixes → Q1–Q13 + Q5b verification. Removed the contradictory 'apply only 0002' and 'never execute 0001' instructions. Commit `181e967b9f02eada67ab0d8103f41aa887078167`. Documentation only; Muse remains the sole SQL operator.
+
+**Board updated:** commit `a69f5657080ac9a836e1c16037c1e87d87727642` records the current 0004 review and OTP/payment-mode gates.
+
+**Verification boundary:** Claude reports PG16 74/74 plus concurrency test and regression 50/50. I inspected source and test design only; I did not independently execute PostgreSQL, apply migrations, merge PRs, enable signup, or enable test payments on staging. No real payment provider or card data is connected.
+
+
+## 2026-11-26 (Toronto) — Muse's latest handover: OTP + 0004 re-review
+
+Read Muse's latest `MUSE-REPLY.md` section (05:44–06:10). She confirms Claude fixed the two 0004 findings (payment mode default off; previous-day attribution for overnight hours), OTP landed, and assigns ChatGPT final CX review on OTP plus second-eyes review of the fixed 0004. She also reports the 0003 apply task is running; the reply tail contains no completed Q1–Q13 + Q13b evidence for that apply yet, so I do not mark 0003 live.
+
+**Auth / OTP review at PR #28 head `57e0cd05f9df7cbe861d1dd02d735988392624e8`:** source contains `/auth/v1/otp` request with `create_user:true`, `/auth/v1/verify` with `type:'email'`, primary code UI, one-time-code autocomplete, resend delay, change-email, EN/FR copy, and password fallback. Fake-server tests cover OTP request, invalid/valid verification, rate limit and guest-claim RPC. Config remains null/inert in repository. **Blocker:** `claimGuestPoints()` catches every RPC error and returns 0, so a failed claim is indistinguishable from no pending claims. Asked Claude to surface an error/retry state and test it; email field validity should also be checked before request. PR comment: https://github.com/aalshalfi/azal-restaurant/pull/28#issuecomment-7190147379. No final CX PASS yet; no configured browser, real email delivery or staging verification performed.
+
+**0004 / ordering re-review:** current PR #29 head `c194f051aa27ed8bc7154897a848fa0733107678` includes the fail-closed `payments_mode='off'` default and previous-day overnight-window check; the seed script and `checkout.js` are present. The original five SQL findings and the two follow-up findings are addressed in the current source. Claude reports PG16 80/80, concurrency false/true with one order, regression 50/50, and clean reapply; these are Claude-reported local results, not independently executed by ChatGPT. **Checkout CX blocker:** the cart drawer still displays “Preview only: nothing is sent or charged” when configured live test checkout is active. Requested accurate TEST MODE / no-real-money copy or hiding the stale disclaimer in EN/FR. PR comment: https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7190148064.
+
+**Branch status:** PR #28 is open and no longer draft at head `57e0cd0`; PR #29 remains draft at `c194f05`, based on #28. `claude/ordering` currently compares to main as 14 ahead / 6 behind; sync main without rewriting history before final merge review. The menu's checkout path is being built, but staff orders screen and reservation wiring remain future queue items; the owner's full “everything works” acceptance path is not complete.
+
+**Board updated:** `BOARD.md` commit `d94d51ca45ccc14d52563e491058bb0ad2dd9fb2` records the current status and blockers. No DB apply, merge, signup activation, test payment activation, or live customer-data collection performed.
+
+
+## 2026-11-26 (Toronto) — Latest checkpoint: PR #28 / #29 and menu wording
+
+### PR #28 — OTP final CX re-check at exact head `57e0cd05f9df7cbe861d1dd02d735988392624e8`
+- The PR remains open, non-draft, based on `main`. The head has not changed since the prior review.
+- OTP request/verify endpoints and primary code UI are present; the checked-in Supabase config remains null/inert.
+- **Still BLOCKED for final CX PASS:** `claimGuestPoints()` catches every RPC error and returns `0`. A real zero-claim result is therefore indistinguishable from a failed claim (e.g. migration missing/network/server error). The current auth tests cover success and zero/missing-session behavior but do not prove a visible failure/retry state. Email input is also in a `novalidate` form and requestCode does not validate its format before sending.
+- No configured Supabase browser run, real email delivery test, merge, or signup activation performed.
+
+### PR #29 — 0004 second-eyes source re-review at current PR head `d9e9d6755ef024f4ab4cec70210c4c352fcb98a0`
+- PR remains **Draft**, open, based on `claude/auth-wiring`; its current head includes the checkout work and subsequent documentation update.
+- **0004 SQL re-review: PASS for the previously identified blockers in source.** The migration inserts `payments_mode='off'`; the payment RPC fails closed unless staging is separately set to `test`; overnight lookup checks the previous day's window before today's and handles close times crossing midnight. Guest claim/paid hand-over logic, idempotency lock, validation and empty `search_path` hardening remain present from the prior review.
+- Claude reports PG16 80/80, concurrency replay, regression 50/50 and clean re-apply. These are Claude-reported results; ChatGPT did not independently execute PostgreSQL. This is not approval to apply SQL or enable test payments.
+- **Checkout CX remains BLOCKED:** `menu.html` still renders the cart drawer disclaimer “Preview only: nothing is sent or charged.” `checkout.js` can create an order and call test payment when configured, so the disclaimer is false in that state. Replace it with explicit TEST MODE / no real money wording or conditionally hide it, in EN and FR. The checkout modal itself already has test-mode wording.
+- Staff orders screen, reservation wiring and full owner end-to-end path are not yet evidenced as complete.
+
+### Menu intro wording review (Claude's 06:05 proposal)
+- Stage 1 preview wording is clear and appropriately honest.
+- Stage 2 EN is clear. FR is understandable; prefer **« aucun paiement réel n’est effectué »** over **« aucun argent réel n’est débité »** for a more natural, precise guest-facing statement.
+- Stage 3 EN currently says “Pay online, and it’s ready when you arrive.” This promises readiness on arrival without a demonstrated ready-time guarantee. Recommended: **“Pay online and pick up your order at the restaurant.”** FR: **« Payez en ligne et récupérez votre commande au restaurant. »** This is direct, mobile-friendly and does not promise a preparation time.
+
+### Staging apply status
+- Muse's latest report says 0003 apply was launched, but the current reply file still contains no completed 0003 post-apply Q1–Q13 + Q13b result set. Treat 0003 as **pending verification**, not live/complete. Do not re-run it; Muse explicitly owns the apply and said not to re-apply.
+
+No merge, SQL apply, config activation, signup activation, test-payment activation or live customer-data collection performed.
+
+
+## 2026-11-26 (Toronto) — Re-review after Claude's 06:20 fixes
+
+### PR #28 — CX source review at exact head d598bf9c91aabca504e7e8f554b6d5a6ec41d6b5
+**Verdict: PASS (source-level CX gate).** The two previous blockers are addressed in the current source:
+- claimGuestPoints() returns separate added and failed fields. A genuine zero result remains normal; RPC/network failure is surfaced in the member card with an accessible alert and a Try again action. The retry invokes the claim again.
+- Email format is checked in the request handler and in requestCode() before the OTP endpoint is called; tests assert malformed addresses generate zero requests.
+- EN/FR strings exist for the claim-failure message, retry action and invalid-email message. The auth unit suite includes separate assertions for success, genuine zero, failure and malformed email.
+- GitHub's Site checks workflow for this exact PR head completed successfully. Claude reports 97/97 Node tests and a fake-Supabase browser check (bad email sends no request; claim 500 shows retry; retry adds 249). I inspected the source/tests but did not independently run that browser session.
+
+**Boundary:** PASS is for source-level CX and the reported fake-service tests only. No real Supabase staging session, OTP email delivery, or production-like sign-in was tested. Keep the Supabase config inert and sign-ups OFF until Muse's live gate. No merge performed by ChatGPT.
+
+### PR #29 — ordering + checkout CX at exact head 5d650e49ad5349fec8e761660bf55989218a979f
+**Verdict: PASS for the previously raised source-level SQL and checkout CX blockers.** The prior 0004 SQL review remains valid at the new head: payments default off, the test-payment RPC requires an explicit test setting, overnight windows check yesterday before today, and the earlier claim/idempotency/validation/search_path safeguards remain present. The checkout script now changes both cart disclaimer and menu intro translation keys to their EN/FR TEST MODE versions when configured; the FR copy uses « aucun paiement réel n’est effectué ».
+- The browser test now asserts that no “nothing is sent” disclaimer survives in live TEST MODE, and checks French TEST MODE wording. Claude reports 106/106 Node tests and 20/20 Playwright checks; I inspected the test assertions but did not execute them independently.
+- PR #29 remains Draft and no GitHub workflow run is attached to this exact head. Remaining product work: staff orders screen, reservations wiring/confirmation email, member order history/ledger, and full owner end-to-end test.
+
+**Boundary:** These are source-level passes only. Muse must still apply 0004 and the seed on isolated staging through her apply process; no SQL apply, payment-mode change, config activation, merge, or public launch was performed by ChatGPT.
+
+### Muse's latest 0003 evidence
+Muse's 06:06 report now includes 0003 apply success, Q1–Q13 and Q13b matching EXPECT (Q13b = 0), and sign-ups OFF. I accept 0003 as applied and verified on project azal per Muse's reported live evidence. I did not independently access the Supabase project.
+
+### New technical gate discovered by Muse: OTP email template
+Muse reports that the active Supabase Magic Link or OTP template contains {{ .ConfirmationURL }} but not {{ .Token }}, and the dashboard editor is unavailable without custom SMTP. Therefore the approved 6-digit code UX is not yet proven deliverable through the configured email template. Claude must decide whether to adapt the UX to the default confirmation link or request owner-provided SMTP credentials and update the template. Until resolved and tested, do not call real OTP email delivery ready or enable sign-ups.
+
+No merge, SQL apply, Supabase setting change, sign-up activation, payment activation, or live customer-data collection performed.
+
+
+## 2026-11-26 — Owner clarification: table reservation is NOT food ordering
+
+**Product requirement — apply to Claude's reservations wiring (Lane A):** A reservation is only to reserve a table inside the restaurant. It must be a short, separate booking flow, not a food-order or pre-order flow.
+
+Collect only the reservation details needed:
+1. Guest name
+2. Mobile phone number
+3. Email address (send the booking confirmation here)
+4. Number of people
+5. Reservation date and time (the guest must choose when they want the table)
+
+Then submit the table reservation and send an email confirmation to the guest's supplied email. The restaurant's configured notification address remains info@azalrestaurant.com. Phone can be used as contact detail; do not require SMS unless the owner separately asks for it.
+
+**Explicitly out of scope:** choosing dishes from the menu, selecting quantities, cart, kitchen notes, food pre-order, payment/card details, deposit, or linking a reservation to a food order. The menu may be linked separately for browsing, but it must not be part of the reservation form or a required step.
+
+Keep reservation booking distinct from the ordering/checkout flow in navigation, UI, data model, confirmation and tests. Do not infer any additional required personal fields. Date/time and party size are booking details; contact fields are name, mobile and email. This is the owner's clarified product direction and supersedes any interpretation that reservation wiring should reuse the food checkout flow.
+
+
+## 2026-11-26 (Toronto) — Coordination ping to Claude: review queue #29–#32
+
+The owner reports no response from Claude since approximately 06:30 and four pending review items (#29–#32). I posted a coordination comment on PR #32 asking Claude to resume the continuous work cycle and reply in `CLAUDE-REPLY.md` with timestamp, exact heads, tests, status and next action for all four PRs.
+
+Priority: #32 table-only reservations; then #31 Visit/Reserve phone CX, #30 email-link sign-in, and #29 ordering functions / remaining staff and member UI. The comment restates the exact owner reservation boundary and explicitly prohibits merge, SQL apply, Supabase config changes, signup/payment/reservation activation, or live customer-data collection. Muse retains QA and staging authority. ChatGPT will review each synchronized exact SHA; no review verdict or merge approval is implied by the ping.
+
+GitHub comment: https://github.com/aalshalfi/azal-restaurant/pull/32#issuecomment-7194531272
+
+
+## 2026-11-26 (Toronto) — Temporary owner-authorized operating arrangement while Muse is away
+
+The owner explicitly approved the temporary arrangement through Muse's return tomorrow. I posted the authorization to Claude on PR #32 (comment 7194617044): Claude continues implementation and tests across #29–#32; ChatGPT performs independent second-eyes review at exact SHAs; the owner retains the final decision to merge reviewed code. A ChatGPT PASS is not itself a merge command.
+
+Priority: #32 table-only reservations, #31 phone/Visit CX, #30 email-link sign-in, #29 ordering and remaining member/staff UI, adjusted for dependencies. Claude must report exact SHAs, files changed, tests actually run/results and blockers in CLAUDE-REPLY.md.
+
+Hard boundaries remain: no production/live Supabase migration apply; no Supabase config/secrets changes; no real sign-up, order, reservation, payment or customer-data activation; no live email sender activation; no spending or destructive Git history changes. Such actions remain inert pending a separate explicit owner decision and environment verification. Muse resumes QA/staging duties on return. The table-only reservation scope is unchanged.
+
+## 2026-11-26 (Toronto) — Scheduled AZAL review checkpoint: exact heads #29–#32
+
+### Current PR state and synchronized SHAs
+- **#32 Reservations:** open, non-draft, branch claude/reservations, head 709771a10d6b4b488426f34f4532536b1b26f542, mergeable.
+- **#31 Visit + Reserve phone:** open, non-draft, branch claude/phone, head cc0a0e56d4931e22b58c6b658672d831e831cb06, mergeable. The owner's new mobile-header feedback is posted; no implementation commit yet.
+- **#30 Email-link sign-in:** open, non-draft, branch claude/otp-link, head e2898248d58ff386cddf0c382de0060bf206553e, mergeable.
+- **#29 Ordering + staff screen:** open, Draft, branch claude/ordering, head e27dcda906a11f571353e8cd1f0773ffdc044e30, GitHub reports not mergeable. The new staff screen is in this head.
+- Current PR comments and reply files show no Claude acknowledgement/update after the 09:05 EST reservation report. I re-pinged Claude about his own 30-minute loop and posted the mobile-header request on #31.
+
+### #32 — source review at exact head 709771a10d6b4b488426f34f4532536b1b26f542
+**Status: CHANGES REQUIRED before source-level PASS.** I inspected 0005_reservations.sql, reserve.js, reserve.html, the Node/browser tests and SQL behavior test source. I did not execute PostgreSQL or the browser suite. Findings posted in a PR comment:
+1. **DOM XSS:** reserve.js inserts booked.email into done.innerHTML at line 138. The client regex at line 7 accepts <svg/onload=alert(1)>@example.com; the SQL email constraint uses the same permissive pattern. Render untrusted values with text nodes / textContent or rigorously escape them; add a regression test.
+2. **False email-delivery claim:** the guest confirmation copy says the email “is sent”, but 0005 only queues reservation_outbox rows. The sender Edge Function/webhook and owner SMTP are not included or tested. Make copy truthful and keep booking inert until sending/retries are implemented and verified.
+3. **Abuse protection:** the anonymous reserve_table RPC is throttled only by email; cancel_reservation has no throttle, despite the reservations spec calling for contact/IP throttling and cancellation rate limiting. Add server-side limits that cannot be bypassed by changing email, or keep public endpoints gated.
+4. **Migration reproducibility:** the current main tree contains only 0003 and 0004 under supabase/migrations; 0001/0002 are absent although 0005 requires them. This also prevents independent verification of the core branch_hours constraints. Record/restore the exact baseline migration sources and hashes before any fresh-database deployment.
+
+The table-only field scope itself is correct: name, mobile, email, party size, date and time only. Claude reports PG16 53/53, ordering regression 80/80, one-winner concurrency, Node 99/99 and fake-Supabase browser 14/14; these are Claude-reported, not independently run by ChatGPT. No real Supabase/email test. The combined status endpoint returned no checks for this SHA.
+
+### #31 — phone CX at exact head cc0a0e56d4931e22b58c6b658672d831e831cb06
+**Phone-scope source review: PASS.** Both pages use tel:+13439996199; EN/FR Visit copy says opening preparation is underway in Orléans without inventing an address. Claude reports Node 99/99; the checked-in phone test covers the phone target and French copy. No independent execution or CI status. The separate owner mobile-header request remains open: menu control is still centered and the outlined YOUR ORDER block remains oversized. #31 and #32 touch overlapping page/style files, so Claude must coordinate before editing and provide responsive screenshots and touch-target checks.
+
+### #30 — email-link sign-in at exact head e2898248d58ff386cddf0c382de0060bf206553e
+**Source-level PASS for link adoption.** requestCode sets redirect_to; adoptLink verifies the returned access token, stores the session and the page removes the fragment after processing. Tests cover redirect construction, link adoption, invalid links and malformed email. No real email or redirect-allow-list verification. Keep config null and sign-ups OFF until Muse/owner gates and a real delivery test.
+
+### #29 — staff screen at exact head e27dcda906a11f571353e8cd1f0773ffdc044e30
+**Source-level PASS for the new staff orders screen.** It requires a session, checks branch staff access, queries only paid/open branch orders, escapes order data, and sends only accept/ready/hand_over through staff_update_order. The page is noindex, unlinked from public navigation and inert with null config. Claude reports Node 111/111 and fake-Supabase browser 7/7; not independently executed. Still outstanding: member order history/points ledger and owner end-to-end test. PR description is stale (signed-in/pay-at-pickup wording versus current guest/test-card code); Claude should update it and the reply file. PR remains Draft and GitHub reports not mergeable.
+
+### Actions / safety
+- Posted source-level review comments on #29–#31 and a blocker comment on #32. These are not merge approvals.
+- Asked Claude to continue his 30-minute cadence and record exact heads/tests/blockers in CLAUDE-REPLY.md; asked him to implement the mobile header refinement only after checking overlap with #32.
+- No PR merged, no SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spending and no destructive Git operation.
+
+## 2026-11-26 (Toronto) — PR #33 mobile-header review
+
+Claude acknowledged the temporary owner arrangement in CLAUDE-REPLY.md and created PR #33, HDR-MOB, at exact head 227244cda2af9eb2949270a073be1d3c8dfd4c8a on branch claude/header-mobile. Raw GitHub PR metadata reports mergeable_state=clean and mergeable=true; compare shows one commit ahead of its main base and no commits behind.
+
+**Source-level CX verdict: PASS for the requested 390px mobile layout.** I inspected the shared header markup across index, menu, member, reserve, story and 404, plus styles.css, script.js and tests/header-mobile.test.mjs:
+- At widths <=800px, the logo is first; EN/FR, Majlis, compact bag/count and menu are grouped on the right.
+- Header height is 64px, with 44px controls.
+- The old bordered YOUR ORDER block is replaced by a bag icon and count; the accessible text label remains in the button.
+- Desktop quick controls and bag icon are hidden, leaving the existing navigation and text cart.
+- Both language controls are wired; script.js updates their accessible labels and removes aria-pressed.
+- The new Node test checks all six page headers, mobile-only CSS and language wiring.
+
+Claude reports Node 100/100 and Playwright measurements at 390px (control positions, EN/FR switch, bag opens with count 3), 320px (no horizontal overflow) and 1280px (desktop unchanged). I inspected the source/test but did not independently execute the browser run. The combined status endpoint returned no checks; no real-phone or live QA evidence.
+
+**Small follow-up:** I asked Claude to record element positions/visibility at 320px and provide a screenshot or automated assertion that the logo and all four controls remain visible and non-overlapping. Review comment posted on PR #33 (review id 6075979020). No merge approval implied; the owner decides.
+
+### Current raw mergeability snapshot
+- #32: raw GitHub API says clean / mergeable at 709771a10d6b4b488426f34f4532536b1b26f542, but the four source/security/deployment findings above remain unresolved.
+- #33: clean / mergeable at 227244cda2af9eb2949270a073be1d3c8dfd4c8a.
+- #29: dirty / not mergeable at e27dcda906a11f571353e8cd1f0773ffdc044e30; remains Draft.
+
+
+## 2026-11-26 09:54 EST — Scheduled review checkpoint (PRs #29–#33)
+
+### Current exact PR snapshot
+- **#32 table-only reservations:** open, non-draft, clean/mergeable; head `709771a10d6b4b488426f34f4532536b1b26f542`. No new commit since the prior review. The four blockers already posted remain unresolved: confirmation DOM XSS, false “email sent” copy while only an outbox exists, anonymous abuse controls (email-only booking limit and no cancellation throttle), and missing versioned 0001/0002 migration sources in the current main migration tree. Real Supabase and real email are not tested; no CI status checks are attached.
+- **#33 mobile header:** open, non-draft, clean/mergeable; head `227244cda2af9eb2949270a073be1d3c8dfd4c8a`. Source-level PASS remains for the requested 390px layout and the mobile-only changes across six pages. Claude reports Node 100/100 and Playwright checks, but I did not independently execute them and the combined status endpoint is empty. The prior review comment asks for actual element visibility/coordinates or an automated assertion plus screenshot at 320px; the PR description currently shows “—” for every element at 320px, so “no overflow” alone does not establish that the controls are visible.
+- **#31 phone:** unchanged at `cc0a0e56d4931e22b58c6b658672d831e831cb06`; previous phone-scope source PASS stands.
+- **#30 email-link sign-in:** unchanged at `e2898248d58ff386cddf0c382de0060bf206553e`; previous source-level PASS stands. Real email and redirect allow-list remain gated.
+- **#29 ordering/staff:** unchanged at `e27dcda906a11f571353e8cd1f0773ffdc044e30`; open Draft and GitHub reports not mergeable. Staff-screen source review remains PASS for paid/open branch filtering, staff gate, escaped dynamic order content, and accept → ready → hand_over calls. Claude's Node 111/111 and fake-Supabase browser 7/7 are reported, not independently run. Member order history/points ledger and the real owner end-to-end test remain incomplete. The PR description is stale: it still describes signed-in/pay-at-pickup/server-only work, while the branch now contains guest checkout/test-card flow and staff UI.
+
+### New #32 SQL concurrency concern
+The reviewed `0005_reservations.sql` declares `azal_reservation_fits` as `STABLE`, then calls it from `reserve_table` after taking the branch/day advisory transaction lock. I posted a follow-up on #32 asking Claude to verify PostgreSQL snapshot behaviour when a second RPC statement begins before the first booking commits, waits on the lock, and then performs the capacity check. A STABLE helper may retain the calling-query snapshot; this is a potential stale-snapshot/overbooking issue pending a deterministic two-session READ COMMITTED test, not a claim that I ran PostgreSQL. If confirmed, the locked check needs a fresh snapshot (for example, a VOLATILE helper or inline query) and a regression test.
+
+### Coordination and boundaries
+- Claude's latest `CLAUDE-REPLY.md` update is 09:40 EST: it acknowledges the temporary owner arrangement, lists exact heads and says his 30-minute cycle continues. No response to the later #32 review findings is present yet.
+- #31, #32 and #33 overlap on page/style assets; #29 also touches shared pages, `script.js` and `styles.css`. Claude must synchronize the affected branch after the owner chooses merge order; no branch rewrite or merge by ChatGPT.
+- I posted the additional concurrency-verification comment on #32 (comment 7195560689). The existing #33 review comment still requests 320px proof.
+- No merge, SQL apply, Supabase configuration/secrets change, sign-up/order/reservation/payment activation, customer-data collection, live email sender activation, spending or destructive Git operation was performed. Owner retains every merge decision; Muse resumes QA/staging authority on return.
+
+
+### 09:57 EST — branch divergence and coordination update
+Fresh compare against the current `main` (now at `bf040afd21f6e0fd587bd54b65dcf56121e90a3c`) shows:
+- `claude/reservations` (#32): 2 ahead / 24 behind.
+- `claude/header-mobile` (#33): 1 ahead / 7 behind.
+- `claude/phone` (#31): 2 ahead / 54 behind.
+- `claude/otp-link` (#30): 1 ahead / 58 behind.
+- `claude/ordering` (#29): 11 ahead / 54 behind; compare status diverged and GitHub currently reports the PR not mergeable.
+
+I posted the additional #32 concurrency/snapshot verification request (comment 7195560689) and a non-destructive synchronization/overlap coordination note (comment 7195578032). I also asked on #29 (comment 7195570059) for an accurate PR description, Draft status until member history/ledger and the owner test are complete, and a safe resolution of its current divergence/conflicts. No branch was changed by ChatGPT.
+
+The AZAL follow-up automation prompt was updated successfully to include PR #33, branch-divergence checks, the requested priority order (#32 → #33 → #31 → #30 → #29), and the existing safety/owner-merge boundaries. Claude's 30-minute cycle remains requested; this automation's own platform cadence remains hourly.
+
+
+### 09:59 EST — #27 baseline dependency identified
+The 0001/0002 sources are not wholly absent from the repository's open work: PR #27 (`muse/p2-backfill`) contains `docs/schema-reference/0001_azal_staging_baseline.sql` and `supabase/migrations/0002_p2_fixes.sql`. They are not yet on `main`. Fresh compare: PR #27 is 3 commits ahead / 140 behind current main, so it is an unresolved synchronization and lead-review dependency for #32's required chain 0001→0002→0003→0004→0005. I corrected the earlier wording and posted this dependency clarification on #32 (comment 7195596953). No SQL was applied.
+
+I also inspected #27's 0002 definition of `azal_staff_can_access(p_branch_slug text)`; this confirms the RPC argument name used by the #29 staff screen. The staff-screen source-level PASS is unchanged, subject to real staging/RLS verification.
+
+
+### 10:40 EST — AZAL re-review at current heads; #32 hardening and branch coordination
+
+Current `main` observed at `00e389bb7b75cc723df58f0331b847163da96ff8`. Latest `CLAUDE-REPLY.md` section is still 10:25 EST (Claude's stated cadence is 30 minutes); Muse has resumed active lead/QA updates through 10:35 EST.
+
+**PR #32 — table-only reservations, exact head `a1a9dee2513ca4daa7690e9d5839066bd282da7f`:** re-inspected `reserve.js`, `0005_reservations.sql`, reservation SQL/Node/browser tests and concurrency scripts. The previous findings are resolved in source: dynamic confirmation/time values use text nodes rather than dynamic HTML; confirmation copy says the booking is saved and does not claim email delivery; capacity helper is VOLATILE and runs after the branch/day advisory lock, with two-session READ COMMITTED test scripts. Booking/cancellation throttles now cover email, mobile, IP and code/IP as appropriate. The exact-head Site checks workflow completed successfully (run 379). Claude reports PG16 reservations 61/61, ordering 80/80, Node 101/101 and fake-Supabase browser 18/18; I inspected the source/test definitions but did not independently run PG16 or Playwright.
+
+**New rate-limit race requiring a fix before the throttle control can pass:** `reserve_table` performs count-then-insert checks before acquiring the branch/day lock; concurrent calls with different emails/phones but the same IP can all see a below-limit count before any insert commits. `cancel_reservation` likewise checks per-code/per-IP counts and inserts attempts before acquiring the per-code lock, so parallel guesses can pass the sequential threshold. Existing tests at `reservations-behaviour.sql` lines 82–88 are sequential. Requested serialization of throttle keys (with deterministic lock ordering) and two-session concurrent regression tests. Comment posted: #32 comment 7196637949.
+
+**#32 remaining gates/cleanup:** outbox sender and a real email-delivery test are absent; gateway/edge flood protection is absent; 0001/0002 remain on open PR #27 rather than main, and 0005 requires the full 0001→0004 chain. PR #27 is 3 ahead / 152 behind current main. Muse's 10:35 lead note also identifies stale pre-order wording in `docs/reservations-spec.md` and a nonexistent `origin/p2bf` reference in `tests/sql/README.md`; the latter is confirmed at line 23. `reservation-config.js` has no phone property, although the guest form and SQL do require mobile; asked Claude to clarify its purpose with Muse rather than invent a setting. The #32 PR body is stale (old head 709771a and old 53/99/14 counts); requested refresh to exact head and current test evidence. Keep live booking blocked. No SQL applied.
+
+**PR #33 — mobile header, exact head `227244cda2af9eb2949270a073be1d3c8dfd4c8a`:** source-level CX remains PASS. Claude posted 320px positions (brand 14–60, FR 114–158, Majlis 160–204, bag 210–254, menu 262–306); these establish visible, non-overlapping controls for that run. However `tests/header-mobile.test.mjs` contains no 320px assertion, and the PR body still shows dashes for those measurements. Requested a checked-in browser assertion and PR-body update (comment 7196638843). CI Site checks run 366 succeeded. No real-phone/live QA.
+
+**PR #29 — ordering, exact head `e27dcda906a11f571353e8cd1f0773ffdc044e30`:** 11 ahead / 67 behind current main; GitHub reports dirty. Muse's 10:35 dry-run says code merges clean and only append-only `BOARD.md` and `CLAUDE-REPLY.md` conflict. Asked Claude to merge current main into the branch non-destructively (no rebase/force-push), preserve both append-only sections, verify resulting SHA, refresh stale PR description and keep Draft until member history/ledger and owner E2E are complete (comment 7196639649). No branch synchronization performed by ChatGPT.
+
+**Other PRs unchanged:** #30 @ `e2898248d58ff386cddf0c382de0060bf206553e` is 1 ahead / 71 behind and GitHub reports clean; prior source-level sign-in PASS stands, with real email/redirect allow-list still gated. #31 @ `cc0a0e56d4931e22b58c6b658672d831e831cb06` is 2 ahead / 67 behind and clean; prior phone/EN-FR CX PASS stands. #32 is 3 ahead / 37 behind and GitHub reports clean; #33 is 1 ahead / 20 behind and clean. All comparisons are against main @ `00e389b`.
+
+**Coordination/safety:** Muse is actively posting lead checks again (latest read 10:35 EST); coordinate remaining cleanup/QA with her rather than bypassing her role. Claude's 30-minute loop remains requested; no newer CLAUDE-REPLY section than 10:25 was present at this check. No PR merged, no SQL applied, no Supabase config/secrets changed, no real signup/order/reservation/payment/customer-data/email activation, no spending, and no destructive Git/history operation.
+
+
+## 2026-11-26 — Owner authorization and first merge
+
+The owner explicitly authorized ChatGPT to merge reviewed PRs, apply database migrations, and activate live features. This supersedes the earlier owner-level prohibition, but does not remove the need for exact-SHA review, tests, backup/rollback planning, secret protection, and staged validation.
+
+**PR #33 merged:** exact head `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc`; GitHub Site checks workflow run 391 completed successfully. The checked-in Playwright browser test reports 13/13 across all six pages at 320px and 390px, with desktop 1280px regression coverage; Claude reports Node 100/100. Squash merge succeeded; merge commit `23490141978451717cca5a578cd43faa5ec6b42d`. This was the first merge under the new authorization.
+
+**PR #32 remains blocked:** exact head `fc34f31d845e3491925b9dd73c0db5e2206e1575`. Muse's latest source check on main @ `a7b052b13be540b099511c187dc498416101c068` reconfirmed that booking throttle counts run before the branch/day lock and cancellation counts/attempt insertion run before the cancellation lock. Concurrent calls can race the count-then-insert checks. Asked Claude to serialize throttle keys with deterministic lock ordering and add two-session concurrent regressions for same-IP bookings with varying contacts and same-IP cancellation guesses with varying codes. #32 is not merged until these tests pass and the updated exact head is reviewed.
+
+**Coordination:** posted the owner's updated authorization and execution order on #32, asked Claude to maintain his 30-minute loop, update CLAUDE-REPLY.md, and synchronize overlapping branches non-destructively with the new main. Muse remains active and should coordinate migration/operational gates. The GitHub connector exposes no Supabase, SMTP, hosting or payment-provider action in this session; therefore no database migration, live config change, signup/order/reservation/payment/email activation has been performed here. Do not claim these have been activated.
+
+
+## 2026-11-26 — Re-review #32 throttle fix; new booking-gate blocker; #27 CI failure
+
+**Main at this review:** `1b7727b87ed2241d390f968ed5686815b3098629` (Muse's 11:40 loop note; latest preceding full-suite result reported by Muse: 100/100 at `c100269`).
+
+**PR #32 — exact head `42c812e4d0d0922ab1fde54d7955e841143aa9fb`:** GitHub Site checks run 403 succeeded. Source review confirms the new advisory-lock order is consistent: booking idempotency key → email → phone → IP → branch/day, and cancellation IP → code; the count checks occur after those locks. The two-session race scripts use distinct emails/phones and codes under shared IPs. Claude reports the old head reproduced 11/10 and the new head returns the second request as `rate_limited` at 10/10. Claude reports PG16 reservations 61/61, ordering 80/80, Node 104/104, reserve browser 18/18 and header browser 13/13. I inspected the SQL, JS and test definitions and the GitHub Actions run, but did not independently execute PostgreSQL or Playwright.
+
+**New merge/apply blocker — reservation feature flags are not enforced:** `reservation-config.js` declares `bookingEnabled: false` and `goLiveAuthorized: false`, but `reserve.js` enables the reservation API solely when shared `AZAL_SUPABASE.url`, `anonKey` and `fetch` exist. It never checks either reservation flag. Since `supabase-config.js` is shared with account features, populating it for sign-in/ordering would reveal the booking form while the reservation flags remain false. Additionally, 0005 grants anon EXECUTE on `reserve_table` and has no server-side booking-enabled flag in `reservation_settings`; direct RPC calls could create bookings even if the UI is hidden. Requested defence in depth: DB `booking_enabled NOT NULL DEFAULT false`, server-side rejection of new bookings while false (keep cancellation available), availability closed while false, and client gating on both explicit flags plus regression tests for shared Supabase config with flags false. Also requested confirmation of the trusted IP header on the real Supabase gateway because `azal_request_ip()` falls back to `x-forwarded-for` and returns NULL if headers are absent/malformed; gateway flood protection remains a separate live gate. Comment: #32 issuecomment 7198109344.
+
+**Dependency PR #27 — exact head `181e967b9f02eada67ab0d8103f41aa887078167`:** required 0001/0002 baseline sources remain outside main. GitHub reports mergeable=true but compare is 3 ahead / 170 behind main. Site checks run 285 failed: the job log pinpoints one failing Node test, `P2 apply runbook preserves the C-REV/Muse gate and exact staging target`; assertion `runbook.includes("Claude static C-REV PASS")` fails at `tests/p2-schema-static.test.mjs:60`. The other visible P2 assertions passed. Asked Muse to reconcile the runbook/test wording without weakening the DO NOT APPLY YET, exact-project, and Muse-only apply gates; merge current main non-destructively; rerun CI and the full PostgreSQL 16 0001→0002 harness; and refresh exact evidence. Comment: #27 issuecomment 7198110049. #32 must not merge until this dependency is reconciled and CI-green.
+
+**Other open PRs:** #29 @ `204036068cc248b76ce47d3a41e3f7ac4cae248f` remains Draft; branch compare 12 ahead / 19 behind main and GitHub reports non-mergeable. It still lacks member order history/points ledger and owner staging E2E. #30 @ `e2898248d58ff386cddf0c382de0060bf206553e` is 1 ahead / 89 behind; #31 @ `cc0a0e56d4931e22b58c6b658672d831e831cb06` is 2 ahead / 85 behind. Muse's latest dry-run (main @ `c100269`) found conflicts in shared page/style files for #29/#30/#31; Claude has been asked to sync them with non-destructive merges, preserving #33's mobile header and release cache-busting. #33 remains merged at `23490141978451717cca5a578cd43faa5ec6b42d`.
+
+**Coordination and safety:** asked Claude on #32 to implement the server/client booking gates, verify trusted gateway IP handling, update exact-head test evidence, and keep his 30-minute cadence; asked Muse to resolve #27's CI gate and dependency. No PR merged this run. No SQL applied; no Supabase config/secrets changed; no real signup/order/reservation/payment/email activation; no spending or destructive Git operation. The GitHub connector provides repository access only, not a Supabase project action, so staging DB apply/verification cannot be performed from this session.
