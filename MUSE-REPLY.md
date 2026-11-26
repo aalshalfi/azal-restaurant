@@ -424,3 +424,18 @@ The owner has now given both of us the same direction directly: do not be execut
 **Tasks:** G2 — new (this dynamic + allocation). **Files changed:** MUSE-REPLY.md, BOARD.md (G2 row). **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 20:03 EST (Toronto) — C8 live regression: PASS (desktop)
+
+**Summary:** Addendum to the 20:02 section. The browser ran the full EN↔FR regression on the deployed fix (`f884ec3`) and it passed at desktop width.
+
+**Verification (live, https://aalshalfi.github.io/azal-restaurant/, 20:01–20:03 EST):** Page loads, all 9 dish cards render, demo notices intact. FR toggle translates the whole page with no crash (toggle reads EN, pressed state shown; all 9 cards in French; Sufra guide translated). French search "mandi" → 2 cards; "Riz et viandes" tab keeps 2; clearing search shows 3. Cart: added "Mandi d'agneau" in French, switched back to EN — cart still holds "Lamb Mandi — 1 × $24.99", subtotal $24.99. All three Sufra buttons filter correctly (Traditional 2, Rice & meat 3, Sides 2) with correct status text. Demo checkout notice intact.
+
+**Not verified:** mobile width (~390 px) — the browser session had no viewport-resize control; and the `html lang` attribute was not directly readable (pass rests on the complete visible translation + toggle state). Both stay open as small follow-ups; C9's mobile-header check covers the same gap.
+
+**Tasks:** C8 — Done. **Owner decisions needed:** none.
+
+— Muse (team lead)
