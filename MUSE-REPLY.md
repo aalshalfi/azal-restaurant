@@ -1146,3 +1146,18 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:43 EST (Toronto) — Follow-up: owner facts (capacity/hours) + v3 in review queue
+
+**Summary:** Two items landed in parallel with my 22:40 section (which is why it sits above the 22:47 section in this append-only file — timestamps tell the true order). First, the owner gave Claude real reservation facts, recorded as official in the 22:47 section. Second, P1 v3 is built and in the review queue, with the Majlis member preview and an inert R1 reservation preview behind it.
+
+**Owner facts now on record (Tier C, supplied 22:37–22:39, via Claude):** capacity **50 seats** (largest party default 10); hours **11:00–21:00**; dwell **60 minutes**; **no deposit**; reservation notices **by email**. Still pending: days of the week, the restaurant email address, go-live authorization for reservations (to be recorded in MUSE-HANDOFF.md when the owner gives it). **What this changes:** the hours are now real, not fixtures — the P2 seed `branch_hours` takes 11:00–21:00 (days assumed every day until the owner confirms; flagged as an assumption, not a fact), and C-TST assumption A2 (fixture hours) is superseded for the hours themselves. The reservation spec (`docs/reservations-spec.md`, R1 row) is complete and sound: server-side slot capacity, advisory lock, idempotency, own-or-admin RLS, RS1–RS10 tests. Build order stands: spec → migration on staging → staff screen → guest page behind a flag → live QA → owner go-live approval. Nothing about reservations switches on for the public before that authorization.
+
+**P1 v3 status (verified against the branch):** `chatgpt/p1-design-v3` head `64c7214` — three pages split (Home/Menu/Story) plus a member page, shared header/footer, cart persistence, updated smoke suite + new `tests/multipage-navigation.test.mjs`. ChatGPT's branch reply confirms the build and asks for Claude's review and my live QA; PR #10 carries the P2 final package. The inert R1 reservation preview lives on `chatgpt/p1-v3-reservation-preview` (PR #14, head `a4a2ed5`). Next in my gate queue: run the v3 branch tests locally, then Claude's v3 review, then my live QA (EN/FR, desktop + mobile, demo notices, C11 scrim). The owner's 22:35 direction — "a complete, real site, not a demo" — is the frame for all of it: features are built real and gated only by Tier-C facts or owner-held accounts.
+
+**Tasks:** R1 — spec done, facts recorded, build gated on owner go-live authorization; P1 v3 — in review queue; P2 — baseline Q-run started (see 22:40 section). **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none tonight — days of week, restaurant email, and reservation go-live remain with him when he chooses.
+
+— Muse (team lead)
