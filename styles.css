@@ -425,3 +425,5 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
  .page-menu .menu-section{padding-top:64px}
  .page-story .welcome{padding-top:64px}
 }
+
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
