@@ -47,11 +47,23 @@ const applyReservationSettings = () => {
       ? "Groupe maximal : " + maxParty + " personnes; capacité totale : " + seats + " places."
       : "Largest party: " + maxParty + " guests; total dining capacity: " + seats + " seats."
   );
+  const notificationMethod = reservationConfig.notificationMethod === "email"
+    ? (locale === "fr" ? "courriel" : "email")
+    : String(reservationConfig.notificationMethod || "");
   setText(
     "reservation-email-note",
     locale === "fr"
-      ? "Les avis de réservation seront envoyés par courriel; l’adresse de réception sera configurée au lancement."
-      : "Reservation notices will be sent by email; the receiving address will be configured at launch."
+      ? "Les avis de réservation seront envoyés par " + notificationMethod + "; l’adresse de réception sera configurée au lancement."
+      : "Reservation notices will be sent by " + notificationMethod + "; the receiving address will be configured at launch."
+  );
+  const timezoneLabel = reservationConfig.timezone === "America/Toronto"
+    ? (locale === "fr" ? "heure locale de Toronto" : "Toronto local time")
+    : String(reservationConfig.timezone || "local time");
+  setText(
+    "reservation-timezone-note",
+    locale === "fr"
+      ? "Toutes les heures sont affichées selon l’" + timezoneLabel + "."
+      : "All times are shown in " + timezoneLabel + "."
   );
   setText(
     "reservation-go-live-note",
