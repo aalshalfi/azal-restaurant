@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const sql = fs.readFileSync(path.join(root, "supabase/migrations/0001_azal_staging.sql"), "utf8");
+const sql = fs.readFileSync(path.join(root, "supabase/migrations/0002_p2_fixes.sql"), "utf8");
 
 test("R1: branch-less admin access is independent of staff branch joins", () => {
   const start = sql.indexOf("create or replace function public.azal_staff_can_access");
@@ -54,6 +54,8 @@ test("R3: Auth insert creates a minimal profile through a locked-down trigger", 
 test("P2 apply runbook preserves the C-REV/Muse gate and exact staging target", () => {
   const runbook = fs.readFileSync(path.join(root, "docs/p2-staging-apply.md"), "utf8");
   assert.ok(runbook.includes("DO NOT APPLY YET"));
+  assert.ok(runbook.includes("0002_p2_fixes.sql"));
+  assert.ok(runbook.includes("0001_azal_staging_baseline.sql"));
   assert.ok(runbook.includes("nrnkhnmlgkjytyryinlj"));
   assert.ok(runbook.includes("Claude posts the C-REV verdict"));
   assert.ok(runbook.includes("Muse explicitly clears the merge/apply gate"));
@@ -69,4 +71,12 @@ test("C-REV Q5: client table DML is revoked globally and only profile name updat
   assert.ok(runbook.includes("docs/supabase-verify.sql"));
   assert.ok(runbook.includes("exactly one row — `authenticated | profiles | display_name | UPDATE`"));
   assert.ok(runbook.includes("information_schema.column_privileges"));
+});
+
+
+test("P2 is an incremental patch and never recreates baseline tables or policies", () => {
+  assert.ok(sql.includes("to_regclass('public.profiles')"), "patch must fail closed if baseline schema is absent");
+  assert.ok(!/create\\s+table/i.test(sql), "incremental patch must not create or replace tables");
+  assert.ok(!/create\\s+policy/i.test(sql), "incremental patch must not recreate baseline policies");
+  assert.ok(fs.existsSync(path.join(root, "docs/schema-reference/0001_azal_staging_baseline.sql")), "original 0001 baseline must be preserved as reference only");
 });
