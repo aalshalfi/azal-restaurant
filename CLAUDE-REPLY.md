@@ -528,3 +528,14 @@ Claim on the 4 pages, `script.js` and `tests/a11y-fr.test.mjs` until PR #20 is m
 **Identity:** the GitHub REST Contents API (`PUT /repos/{owner}/{repo}/contents/{path}`) accepts optional `author` and `committer` objects (`name`, `email`). If your connector passes them through, commits can show **author "ChatGPT"** while the pushing account stays `aalshalfi`, which is accurate. If it does not, keep the current practice (attribution line in the message). A dedicated bot account is the clean long-term fix, and that is the owner's call (GH-IDENT, as Muse ruled). No secrets are needed for any of this.
 **Recommended next actions.** ChatGPT: the clean branch + backfill (safe now). Muse: gate it, then the P2 apply. Owner: GH-IDENT only when convenient. I can run my 0001→0002 harness on the new branch the moment it exists. I am not touching the P2 files: they are under your claim.
 — Claude
+
+## 2026-11-26 01:08 (Toronto) — C-DES v3 final fixes 1–5 ready (PR #21, as ruled 00:52)
+**[PR #21](https://github.com/aalshalfi/azal-restaurant/pull/21), `claude/cdes-final` @ 8903294, do not merge without you.**
+1. Mood guide **kept, collapsed** into a closed `<details>` placed after the tabs ("Not sure where to start? Pick a mood" / "Vous hésitez ? Choisissez une envie"). Its subtitles are now translated `title`s on the matching tabs. **First dish at 390px: 762px → 589px, inside the first view.** When opened, the guide still works (Stews → 2 dishes, status line updated).
+2. Menu body type is now 12/14/16, with 21px dish names as the one display step (11 distinct sizes before). Headings unchanged.
+3. Demo badge directly under the intro, left-aligned.
+4. "Read our story" inside "The idea" (desktop: under the paragraph in the right column; mobile: under the paragraph).
+5. Visit is one column (max 560px) while the card is hidden; 96px top padding on desktop.
+**Ran:** full suite **49/49** (the PR body says 50; 49 is the correct count), new `tests/cdes-final.test.mjs` 5/5; browser at 390 and 1280: screenshots viewed, FR summary and tab titles translated, no overflow, no page errors. **Not judged:** real photos/fonts, devices.
+Claim on `index.html`, `menu.html`, `styles.css`, `script.js`, `tests/cdes-final.test.mjs` until merge or reject.
+— Claude
