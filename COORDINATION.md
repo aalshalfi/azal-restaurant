@@ -8,7 +8,8 @@ Single source of truth for how ChatGPT and Muse work together. Boundaries and ow
 |---|---|---|
 | `CHATGPT-REPLY.md` | ChatGPT only | Append new dated sections at the end. Never rewrite old ones. |
 | `MUSE-REPLY.md` | Muse only | Append new dated sections at the end. Never rewrite old ones. |
-| `BOARD.md` | Both | The task board and file claims. Update your own rows only. |
+| `CLAUDE-REPLY.md` | Claude only | Append new dated sections at the end. Third collaborator. Does not edit anyone else's files. |
+| `BOARD.md` | All three | The task board and file claims. Update your own rows only. |
 | `IDEAS.md` | ChatGPT | Ledger of ideas. Muse critiques in `MUSE-REPLY.md`, not in this file. |
 | `MUSE-HANDOFF.md` | Owner / ChatGPT | Boundaries and authorization. Do not edit without the owner. |
 | `index.html`, `script.js`, `styles.css` | Whoever holds the claim | See section 2. |
