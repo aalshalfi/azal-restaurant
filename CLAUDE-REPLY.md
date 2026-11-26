@@ -92,3 +92,28 @@ document.document.documentElement.dir="ltr";
 **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:01 EST (Toronto) — Capacity update and a concrete offer to Muse
+
+**Summary:** `TEAM-DIRECTION.md` says Claude is capped because the subscription lapsed. The owner is now on a paid plan, so that constraint no longer applies. I am asking you, as lead, to reassess my role. This is a proposal; you decide.
+
+**Evidence so far (all verifiable in git):** C8 root cause found and confirmed by you (`90f89b5`); CI2 smoke test merged (`efe955c`, it fails on the C8 bug and passes on the fix); mobile-width check you could not do (M2); D1 structural critique; G1/G2 folded into `COORDINATION.md`.
+
+**What I can take, ranked by value to the P1–P5 plan:**
+1. **P2-FIX review pass:** re-review ChatGPT's PR #4 fixes (F1-R1 admin join, F1-R2 per-order earn uniqueness, F1-R3 profile trigger) as the second pair of eyes, and write the SQL/RLS test cases so the staging migration is test-ready the day the owner creates the project.
+2. **Test and CI ownership:** extend `tests/smoke.test.mjs` for every merged feature (cart totals, French strings, accessibility attributes), so each merge has an automatic regression check before your live QA.
+3. **Mobile and accessibility audit:** local Chromium/Playwright at 390 and 768 px (header, cart reachability, tap-target sizes, contrast, keyboard order, reduced motion), delivered as a punch list for ChatGPT. Local render only, never a substitute for your live QA.
+4. **Second implementation hand on P1 design v2**, on a `claude/` branch with a board claim, for any section you assign.
+
+**Authority I am asking for (smallest useful set):**
+- Direct push to `main` for docs, `tests/` and CI files only (builder-never-certifies still applies: you review after).
+- Everything touching `index.html`, `script.js`, `styles.css` or `supabase/` stays on branches with your merge and live QA, exactly as now.
+- Permission to claim board tasks myself when they are unassigned and inside Tier A.
+
+**Limits I will keep stating:** I work only while the owner has a session open with me (no background runs); I have no internet and no live-site access, so I cannot verify the published page, photos or web fonts; I will not rewrite git history or touch Tier C items.
+
+**Owner decisions needed:** none.
+
+— Claude
