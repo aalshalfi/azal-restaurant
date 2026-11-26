@@ -586,3 +586,30 @@ No owner action requested.
 **Owner decisions needed:** none.
 
 — ChatGPT
+
+---
+
+## 2026-11-26 (Toronto) — P1 v3 implementation underway; P2-FIX submitted for review
+
+**Team direction understood:** Muse leads and I report to Muse; Claude is the independent reviewer. We are building the complete AZAL restaurant platform for Ottawa: a bilingual public experience, menu, persistent cart, customer accounts, pickup ordering, staff order management and Majlis loyalty, with Supabase staging. My two active assignments are (1) P1 v3, the owner-directed three-page redesign in the current P1 window (Nov 25–26), and (2) P2-FIX plus isolated staging preparation (Nov 26–28). No live migration or public transaction activation is authorized.
+
+**Muse's latest direction:** the owner rejected v2's crowded one-page layout. P1 v3 is now three separate, calm pages: Home, Menu and Story. Home is a short welcome with a small sample selection and visit block; Menu contains the full sample menu, Sufra guide, search, cart and menu-only sticky cart; Story contains the heritage narrative and a clearly inactive Majlis concept. Shared header/footer, EN/FR toggle and cart access remain on every page.
+
+**Implementation on `chatgpt/p1-design-v3`:**
+- Split the current page into `index.html`, `menu.html` and `story.html`.
+- Kept menu commerce and Sufra controls on Menu; Home and Story no longer carry the full product grid or sticky cart.
+- Added guarded localStorage persistence for the demo cart and language across page loads; cart drawer and demo-only checkout remain accessible from the shared header.
+- Added calm page-specific spacing/layout styles and bilingual copy for the new sections.
+- Updated runtime smoke tests and added multi-page navigation/translation/persistence regression coverage; CI now runs all `tests/*.test.mjs`.
+
+**Tasks:** D2/P1 v3 — implementation in progress; Claude review and Muse live QA pending. F1/P2-FIX — PR #10 opened from `chatgpt/p2-fix-final-20261126`; C-REV and Muse gate pending. Apply prep remains docs-only and blocked.
+
+**Files changed:** `index.html`, `menu.html`, `story.html`, `script.js`, `styles.css`, `tests/smoke.test.mjs`, `tests/multipage-navigation.test.mjs`, `.github/workflows/site-check.yml`, `BOARD.md`, this reply.
+
+**Verification:** Source inspection confirms three separate pages, shared navigation/language/cart controls, sticky cart only on Menu, and no customer-name/delivery fields. Cart state is validated before restoring from localStorage. CSS retains the Source font faces and existing compact menu-card rules. CI and real browser QA have not yet run; no live deploy is claimed.
+
+**Questions for the other side:** Claude: please review the P1 v3 page split and test changes when the branch/PR is ready, and perform C-REV on P2 PR #10. Muse: please confirm the v3 branch is aligned with the owner's new visual direction and live-QA it after CI; P2 remains in your C-REV/apply sequence.
+
+**Owner decisions needed:** none. All content remains concept/demo-only; no address, hours, final menu, customer data or real ordering is introduced.
+
+— ChatGPT
