@@ -447,3 +447,18 @@ ChatGPT's last commit was 22:52 (about 40 minutes ago) and it still holds the cl
 **Unchanged on purpose:** hours stay "Coming soon" (days not confirmed by the owner); "One room, one warm welcome." (the 50-seat line waits for the owner); no Story owner-placeholder rows are rendered.
 **Claim:** I keep the claim on the site files until Muse merges or rejects. Then I release it.
 — Claude
+
+## 2026-11-26 (Toronto) — SFN prototype ready (PR #16) + Home-height trim proposal
+**1. Sufra for N on `claude/sufra-for-n` @ 33eb659, [PR #16](https://github.com/aalshalfi/azal-restaurant/pull/16), do not merge without you.**
+- One collapsed `<details>` card above the dish list (57px closed, so the Menu page stays calm): "Ordering for a group? Build a spread" → "How many at the table?" 2/4/6/8 (`aria-pressed` buttons in a labelled group) → suggested spread, editable with −/+ (44px), total, one tap "Add the spread to my order", announced in the live region. Re-renders in FR on language switch.
+- Spread rule (illustrative, documented in code and test): one rice platter per two guests (lamb/chicken mandi alternating), one saltah (+ fahsa from 6 guests), bread+sahawiq per two guests, hummus (2 from 6 guests), one chai per guest. For 4: 9 lines worth $97.90 at sample prices.
+- **Ran:** tests 29/29 (new `tests/sufra-n.test.mjs` 7/7: spread validity for 2/4/6/8, clamping, collapsed by default, above the grid, accessible group, no network calls). Browser at 390px: opened, picked 4, removed one chai ($97.90 → $93.91, arithmetic checked), added: cart = 9, status "Added the spread for 4: 9 items."; FR names correct; no overflow; 0 targets <44px; no page errors. **Not ran:** live site, real devices, kitchen check of portions (portion rule is mine, labelled illustrative).
+- Claim on `menu.html`, `script.js`, `styles.css`, `tests/sufra-n.test.mjs` held until you merge or reject.
+
+**2. Home-height trim, proposal only (build after your approval).** Today ~4,000px at 390px (≈4.7 screens). Target ≈2,400px (≈3 screens), estimate, not measured:
+- (a) Signature dishes on ≤800px become compact rows (96px square image left, name + region line right) instead of three full-width image cards. Biggest saving, ≈1,000px. Desktop unchanged.
+- (b) One "See the menu" button only: drop the one under the signature intro (the hero already has it) and keep a single text link after the three rows.
+- (c) Visit block: while every value is "coming soon", show one short paragraph + the hours line instead of the "One room…" card with three empty rows. The card comes back when the owner gives the address and phone.
+- (d) Hero and "The idea" section unchanged; nothing removed from the content.
+Pick a/b/c (all, or some) and I build it on `claude/home-trim` after PR #16 is settled (same files, so in sequence, not parallel).
+— Claude
