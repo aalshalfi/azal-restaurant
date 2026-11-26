@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#42220E">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="AZAL table reservations preview. Booking is not open and no personal information is collected.">
+<title>Reserve a Table | AZAL</title>
+<link rel="preload" href="assets/fonts/SourceSans3VF-Upright.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/SourceSerif4Variable-Roman.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css?v=20261126-v3">
+<link rel="stylesheet" href="reservations.css?v=20261125-preview">
+</head>
+<body class="reservation-preview">
+<header class="site-header">
+  <a class="brand" href="index.html" aria-label="AZAL home"><img class="brand-logo" style="height:78px;width:auto;display:block" src="assets/azal-logo.svg" alt="AZAL — Yemeni Kitchen"></a>
+  <button class="menu-toggle" aria-label="Open navigation" data-res-aria-en="Open navigation" data-res-aria-fr="Ouvrir la navigation" aria-controls="primary-navigation" aria-expanded="false">☰</button>
+  <nav class="nav" id="primary-navigation" aria-label="Main navigation">
+    <a href="index.html" data-i18n="navHome">Home</a>
+    <a href="menu.html" data-i18n="navMenu">Menu</a>
+    <a href="story.html" data-i18n="navStory">Our Story</a>
+    <a href="reservations.html" aria-current="page" data-res-en="Reservations" data-res-fr="Réservations">Reservations</a>
+    <a href="index.html#visit" data-i18n="navVisit">Find Us</a>
+    <button class="language-toggle" id="languageToggle" type="button" aria-label="Switch language" data-res-aria-en="Switch language" data-res-aria-fr="Changer de langue">FR</button>
+  </nav>
+  <a class="cart-open" href="menu.html#menu" aria-label="View sample order" data-res-aria-en="View sample order" data-res-aria-fr="Voir la commande démo"><span data-i18n="cartButton">Your order</span> <span id="cartCount">0</span></a>
+</header>
+
+<main class="reservation-page">
+  <section class="reservation-hero" aria-labelledby="reservation-title">
+    <p class="reservation-kicker" data-res-en="A TABLE AT AZAL" data-res-fr="UNE TABLE CHEZ AZAL">A TABLE AT AZAL</p>
+    <h1 id="reservation-title" data-res-en="Gather around." data-res-fr="Réunissons-nous.">Gather around.</h1>
+    <p class="reservation-intro" data-res-en="A place for family, friends and good conversation. Table reservations are being prepared; bookings are not open yet." data-res-fr="Une place pour la famille, les amis et les belles conversations. Les réservations se préparent; les demandes ne sont pas encore ouvertes.">A place for family, friends and good conversation. Table reservations are being prepared; bookings are not open yet.</p>
+    <div class="reservation-notice" role="status" data-res-en="Preview only — this page cannot create, send or confirm a reservation. No personal information is collected." data-res-fr="Aperçu seulement — cette page ne peut pas créer, envoyer ni confirmer une réservation. Aucun renseignement personnel n’est recueilli.">Preview only — this page cannot create, send or confirm a reservation. No personal information is collected.</div>
+  </section>
+
+  <section class="reservation-facts" aria-label="Confirmed reservation details">
+    <article class="reservation-fact"><span data-res-en="Reservation length" data-res-fr="Durée de réservation">Reservation length</span><strong data-res-en="60 minutes" data-res-fr="60 minutes">60 minutes</strong></article>
+    <article class="reservation-fact"><span data-res-en="Party size" data-res-fr="Taille du groupe">Party size</span><strong data-res-en="Up to 50 guests" data-res-fr="Jusqu’à 50 personnes">Up to 50 guests</strong></article>
+    <article class="reservation-fact"><span data-res-en="Deposit" data-res-fr="Dépôt">Deposit</span><strong data-res-en="No deposit required" data-res-fr="Aucun dépôt requis">No deposit required</strong></article>
+    <article class="reservation-fact"><span data-res-en="Opening window" data-res-fr="Plage d’ouverture">Opening window</span><strong>11:00–21:00</strong></article>
+  </section>
+
+  <section class="reservation-layout" aria-label="Reservation request preview">
+    <article class="reservation-card">
+      <div class="reservation-card-top"><span class="reservation-eyebrow" data-res-en="REQUEST A TABLE" data-res-fr="DEMANDER UNE TABLE">REQUEST A TABLE</span><span class="reservation-state" data-res-en="NOT OPEN" data-res-fr="NON OUVERT">NOT OPEN</span></div>
+      <h2 data-res-en="Plan your gathering." data-res-fr="Préparez votre rencontre.">Plan your gathering.</h2>
+      <p class="reservation-copy" data-res-en="The booking details below are shown as a layout preview only. They are disabled until operating days, capacity rules and the booking contact are approved." data-res-fr="Les champs ci-dessous illustrent uniquement la mise en page. Ils resteront désactivés jusqu’à l’approbation des jours d’ouverture, des règles de capacité et du contact de réservation.">The booking details below are shown as a layout preview only. They are disabled until operating days, capacity rules and the booking contact are approved.</p>
+      <fieldset class="reservation-fields" disabled aria-describedby="reservation-disabled-note">
+        <div class="reservation-field"><label for="guest-name" data-res-en="Your name" data-res-fr="Votre nom">Your name</label><input id="guest-name" type="text" autocomplete="off" placeholder="Name"></div>
+        <div class="reservation-field"><label for="guest-email" data-res-en="Email address" data-res-fr="Adresse courriel">Email address</label><input id="guest-email" type="email" autocomplete="off" placeholder="Email"></div>
+        <div class="reservation-field"><label for="guest-phone" data-res-en="Phone number" data-res-fr="Numéro de téléphone">Phone number</label><input id="guest-phone" type="tel" autocomplete="off" placeholder="Phone"></div>
+        <div class="reservation-field"><label for="booking-date" data-res-en="Date" data-res-fr="Date">Date</label><input id="booking-date" type="date"></div>
+        <div class="reservation-field"><label for="booking-time" data-res-en="Preferred time" data-res-fr="Heure souhaitée">Preferred time</label><select id="booking-time"><option data-res-en="Times will appear after approval" data-res-fr="Les heures seront affichées après approbation">Times will appear after approval</option></select></div>
+        <div class="reservation-field"><label for="party-size" data-res-en="Number of guests (maximum 50)" data-res-fr="Nombre de personnes (maximum 50)">Number of guests (maximum 50)</label><input id="party-size" type="number" min="1" max="50" placeholder="1–50"></div>
+        <div class="reservation-field reservation-field-wide"><label for="booking-note" data-res-en="Optional note" data-res-fr="Note facultative">Optional note</label><textarea id="booking-note" rows="3" placeholder=""></textarea></div>
+      </fieldset>
+      <p class="reservation-disabled-note" id="reservation-disabled-note" data-res-en="These fields are disabled and do not accept or store information." data-res-fr="Ces champs sont désactivés et n’acceptent ni n’enregistrent de renseignements.">These fields are disabled and do not accept or store information.</p>
+      <button class="reservation-submit" type="button" disabled aria-disabled="true" data-res-en="Reservations are not open yet" data-res-fr="Les réservations ne sont pas encore ouvertes">Reservations are not open yet</button>
+    </article>
+
+    <aside class="reservation-side">
+      <p class="reservation-kicker" data-res-en="BEFORE BOOKINGS OPEN" data-res-fr="AVANT L’OUVERTURE DES RÉSERVATIONS">BEFORE BOOKINGS OPEN</p>
+      <h2 data-res-en="A few details are still being confirmed." data-res-fr="Quelques détails restent à confirmer.">A few details are still being confirmed.</h2>
+      <ul>
+        <li data-res-en="Operating days are not yet confirmed." data-res-fr="Les jours d’ouverture ne sont pas encore confirmés.">Operating days are not yet confirmed.</li>
+        <li data-res-en="The reservation email address has not been provided." data-res-fr="L’adresse courriel de réservation n’a pas encore été fournie.">The reservation email address has not been provided.</li>
+        <li data-res-en="Online booking will open only after explicit approval." data-res-fr="La réservation en ligne ouvrira uniquement après approbation explicite.">Online booking will open only after explicit approval.</li>
+      </ul>
+      <p class="reservation-side-note" data-res-en="Until then, please explore the sample menu. No table can be reserved from this preview." data-res-fr="D’ici là, découvrez le menu illustratif. Aucune table ne peut être réservée depuis cet aperçu.">Until then, please explore the sample menu. No table can be reserved from this preview.</p>
+      <a class="reservation-menu-link" href="menu.html#menu" data-res-en="Explore the menu" data-res-fr="Découvrir le menu">Explore the menu</a>
+    </aside>
+  </section>
+</main>
+
+<footer class="footer">
+  <img class="footer-logo" style="height:118px;width:auto;display:block;margin:0 auto 12px" src="assets/azal-logo-white.svg" alt="AZAL Restaurant">
+  <p data-i18n="footerTagline">A Taste of Yemen, Like No Other.</p>
+  <p class="photo-credits"><span data-i18n="photoCreditsLabel">Illustrative photo credits — not AZAL food photography:</span> <a href="https://commons.wikimedia.org/wiki/File:HummusLebanese.jpg" target="_blank" rel="noopener noreferrer">Hummus · Dumarest</a> (CC BY-SA 3.0) · <a href="https://commons.wikimedia.org/wiki/File:%D8%AE%D8%A8%D8%B2_%D9%85%D9%84%D9%88%D8%AD.jpg" target="_blank" rel="noopener noreferrer">Fahsa · SharabSalam</a> (CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/wiki/File:Chai_In_Sakora.jpg" target="_blank" rel="noopener noreferrer">Chai · Dadhichbittu007</a> (CC BY-SA 4.0) · <a href="https://commons.wikimedia.org/wiki/File:Mango_juice.JPG" target="_blank" rel="noopener noreferrer">Mango juice · Vyom25</a> (CC BY-SA 4.0)</p>
+  <span>© <span id="year"></span> <span data-i18n="footerLegal">AZAL RESTAURANT · CONCEPT PREVIEW</span></span>
+</footer>
+
+<script src="script.js?v=20261126-v3" defer></script>
+<script src="reservations.js?v=20261125-preview" defer></script>
+</body>
+</html>
