@@ -24,12 +24,23 @@ async function at(iso, path, lang = "en") {
   await p.evaluate(() => document.getElementById("checkoutButton").click()); await p.waitForTimeout(200);
   const chosen = await p.evaluate(() => pickupState.choice);
   ok(chosen === "1050", `pickup pre-selected at 17:30, the last 15-min slot at or before iftar 17:39 (got ${chosen})`);
-  ok(/just before iftar/.test(await p.textContent("#cartStatus")), "screen-reader announcement of the iftar slot");
+  ok(/Pickup set to 5:30\sp\.m\.: the closest available time before sunset/.test(await p.textContent("#cartStatus")), "announcement states the actual slot, no overpromise");
   await p.close(); }
 { const p = await at("2027-02-21T00:30:00Z", "/index.html"); // 19:30 Toronto
   ok(/Iftar was at 5:\d\d\sp\.m\. Tomorrow: 5:\d\d\sp\.m\./.test(await p.textContent(".iftar-banner")) && await p.locator(".iftar-order").count() === 0, "after sunset: tomorrow's time, no order button"); await p.close(); }
 { const p = await at("2027-02-20T19:00:00Z", "/index.html", "fr"); const t = await p.textContent(".iftar-banner");
   ok(/Ramadan Moubarak/.test(t) && /Iftar dans 3 h/.test(t) && /Commander pour l’iftar/.test(t), "French"); await p.close(); }
+{ const p = await at("2027-02-20T19:00:00Z", "/menu.html");
+  await p.evaluate(() => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 1]])); }); await p.reload(); await p.waitForTimeout(250);
+  await p.click(".iftar-order"); await p.evaluate(() => { const plan = { day: "today", slots: [1080, 1095], asap: null, status: "open" }; const orig = renderPickup; window.renderPickup = function () { pickupState.plan = plan; return orig.apply(this, arguments); }; });
+  await p.evaluate(() => document.getElementById("checkoutButton").click()); await p.waitForTimeout(200);
+  const ch = await p.evaluate(() => pickupState.choice);
+  ok(/No pickup time before sunset/.test(await p.textContent("#cartStatus")) && !/closest available time before sunset/.test(await p.textContent("#cartStatus")), `no slot before sunset: iftar pre-selects nothing and says so (page default stays ${ch})`); await p.close(); }
+{ const p = await at("2027-02-20T19:00:00Z", "/index.html");
+  await p.click(".iftar-hide"); ok(await p.locator(".iftar-banner").count() === 0, "× hides the banner");
+  await p.reload(); await p.waitForTimeout(250); ok(await p.locator(".iftar-banner").count() === 0, "stays hidden for the rest of the day"); await p.close(); }
+{ const p = await at("2027-02-20T19:00:00Z", "/index.html", "ar"); await p.evaluate(() => { document.documentElement.lang = "ar"; }); await p.waitForTimeout(100);
+  ok(/رمضان مبارك/.test(await p.textContent(".iftar-banner")) && /أم القرى/.test(await p.textContent(".iftar-banner")), "Arabic strings when the page is Arabic"); await p.close(); }
 { const p = await at("2026-11-26T17:00:00Z", "/index.html?iftar=preview"); ok(/Preview/.test(await p.textContent(".iftar-banner")), "?iftar=preview shows it on any day, clearly tagged"); await p.close(); }
 for (const w of [320, 390]) { const p = await b.newPage({ viewport: { width: w, height: 700 } }); await p.clock.setFixedTime(new Date("2027-02-20T19:00:00Z")); await p.goto(base + "/index.html"); await p.waitForTimeout(200);
   ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `${w}px: no horizontal overflow`); await p.close(); }

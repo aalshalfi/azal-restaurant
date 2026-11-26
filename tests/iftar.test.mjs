@@ -25,9 +25,9 @@ test("Ramadan comes from the Umm al-Qura calendar, not hard-coded dates", () => 
   assert.doesNotMatch(readFileSync(new URL("../iftar.js", import.meta.url), "utf8"), /2027-0[23]/);
 });
 
-test("iftar slot = latest pickup at or before sunset; else the first after", () => {
+test("iftar slot = latest pickup at or before RAW sunset; none before sunset -> null (fail closed)", () => {
   assert.equal(I.iftarSlot([1020, 1035, 1050, 1065], 1053), 1050);
-  assert.equal(I.iftarSlot([1080, 1095], 1053), 1080);
+  assert.equal(I.iftarSlot([1080, 1095], 1053), null);
   assert.equal(I.iftarSlot([], 1053), null);
 });
 
@@ -48,3 +48,12 @@ test("every page loads iftar.js after script.js with the release version", () =>
     assert.ok(h.indexOf(`script.js?v=${v}`) < h.indexOf(`iftar.js?v=${v}`), p);
   }
 });
+
+test("slot choice uses raw sunset, not the 2-minute display margin", () => {
+  const st = I.state(Date.parse("2027-02-20T19:00:00Z"), false);
+  const t = Date.UTC(2027, 1, 20);
+  assert.equal(st.sunsetMin, I.torontoMinutes(I.sunsetMs(2027, 2, 20)));
+  assert.equal(st.sunset, I.iftarMs(2027, 2, 20));
+  assert.ok(st.sunset - I.sunsetMs(2027, 2, 20) === 2 * 60000);
+});
+

@@ -615,3 +615,4 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .iftar-note{grid-column:1/-1;margin:4px 0 0;font-size:12px;opacity:.78}
 @media(max-width:600px){.iftar-banner{grid-template-columns:1fr;padding:12px 16px}.iftar-banner::after{width:64px;height:64px;right:-14px;top:-20px;box-shadow:-9px 7px 0 0 #CD8E2D;opacity:.4}.iftar-line{padding-right:34px}.iftar-order{grid-column:1;grid-row:auto;justify-self:start;margin-top:6px}.iftar-line{font-size:17px}}
 .iftar-line,.iftar-head,.iftar-note{position:relative;z-index:1}
+.iftar-hide{margin-inline-start:auto;background:none;border:0;color:#F8F1E7;font-size:22px;line-height:1;min-width:44px;min-height:44px;cursor:pointer;opacity:.8}.iftar-hide:focus-visible{outline:3px solid #CD8E2D}

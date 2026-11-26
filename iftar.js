@@ -1,7 +1,8 @@
 /* AZAL Iftar Mode (Claude, creative sprint 2026-11-26). During Ramadan the site counts down to TODAY's sunset in
    Ottawa and offers "Order for iftar", which pre-selects the latest pickup slot at or before sunset.
    - Ramadan: the browser's built-in Umm al-Qura calendar (Intl, "islamic-umalqura"); no hard-coded dates.
-   - Sunset: NOAA solar-calculator equations for Ottawa, rounded UP to the minute; within 1 minute of published Ottawa tables (tested).
+   - Sunset: NOAA solar-calculator equations for Ottawa, rounded UP to the minute; within 2 minutes of published Ottawa
+     tables (tested). The iftar time SHOWN adds a 2-minute safety margin; pickup slots are chosen against raw sunset.
    - Honest note shown with it: local moon-sighting announcements can differ by a day.
    Inert outside Ramadan. Preview any day with ?iftar=preview. No data is collected or sent. */
 (function (root) {
@@ -51,18 +52,19 @@
   const MARGIN_MIN = 2; // safety margin added to the calculated sunset: the iftar time we show is never early
   const iftarMs = (y, m, d) => { const ss = sunsetMs(y, m, d); return ss == null ? null : ss + MARGIN_MIN * 60000; };
   const torontoMinutes = (ms) => { const p = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ms)); return Number(p.find((x) => x.type === "hour").value) * 60 + Number(p.find((x) => x.type === "minute").value); };
-  // Latest pickup slot (minutes after midnight) at or before sunset; falls back to the earliest slot after it.
+  // Latest pickup slot (minutes after midnight) at or before RAW sunset. No slot before sunset -> null (fail closed:
+  // we never offer a post-sunset pickup as an iftar slot).
   function iftarSlot(slots, sunsetMin) {
     const before = slots.filter((s) => s <= sunsetMin);
-    return before.length ? before[before.length - 1] : (slots.find((s) => s > sunsetMin) ?? null);
+    return before.length ? before[before.length - 1] : null;
   }
   function state(nowMs, preview) {
     const rd = ramadanDay(nowMs);
     if (!rd && !preview) return { active: false };
-    const t = ymdIn(nowMs), ss = iftarMs(t.y, t.m, t.d);
+    const t = ymdIn(nowMs), ss = iftarMs(t.y, t.m, t.d), raw = sunsetMs(t.y, t.m, t.d);
     let next = ss;
     if (nowMs > ss) { const tm = ymdIn(nowMs + 864e5); next = iftarMs(tm.y, tm.m, tm.d); }
-    return { active: true, preview: !rd, ramadanDay: rd, sunset: ss, nextSunset: next, before: nowMs <= ss, minutesLeft: Math.max(0, Math.round((ss - nowMs) / 60000)), sunsetMin: torontoMinutes(ss) };
+    return { active: true, preview: !rd, ramadanDay: rd, sunset: ss, nextSunset: next, before: nowMs <= ss, minutesLeft: Math.max(0, Math.round((ss - nowMs) / 60000)), sunsetMin: torontoMinutes(raw) };
   }
   const api = { ramadanDay, sunsetMs, iftarMs, MARGIN_MIN, iftarSlot, state, torontoMinutes };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
@@ -71,15 +73,24 @@
   let preview = false;
   try { preview = new URLSearchParams(root.location.search).get("iftar") === "preview"; } catch {}
   if (!state(Date.now(), preview).active) return;
+  const HIDE = "azal-iftar-hidden";
+  const todayKey = () => new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
+  try { if (localStorage.getItem(HIDE) === todayKey() && !preview) return; } catch {}
   const S = {
     en: { mubarak: "Ramadan Mubarak", before: "Iftar in {h} h {m} min · {time} in Ottawa", soon: "Iftar in {m} min · {time} in Ottawa", after: "Iftar was at {time}. Tomorrow: {next}.",
-      order: "Order for iftar", note: "Iftar time = calculated Ottawa sunset plus a 2-minute safety margin. Ramadan dates follow the Umm al-Qura calendar; please follow your mosque’s announcement, which may differ by a day.", previewTag: "Preview", picked: "Pickup set to {time}, just before iftar. You can change it." },
-    fr: { mubarak: "Ramadan Moubarak", before: "Iftar dans {h} h {m} min · {time} à Ottawa", soon: "Iftar dans {m} min · {time} à Ottawa", after: "L’iftar était à {time}. Demain : {next}.",
-      order: "Commander pour l’iftar", note: "Le coucher du soleil est calculé pour Ottawa. Les dates du Ramadan suivent le calendrier Umm al-Qura ; les annonces locales peuvent différer d’un jour.", previewTag: "Aperçu", picked: "Retrait fixé à {time}, juste avant l’iftar. Vous pouvez le changer." }
+      order: "Order for iftar", note: "Iftar time = calculated Ottawa sunset plus a 2-minute safety margin. Ramadan dates follow the Umm al-Qura calendar; please follow your mosque’s announcement, which may differ by a day.", previewTag: "Preview",
+      picked: "Pickup set to {time}: the closest available time before sunset. You can change it.", none: "No pickup time before sunset is left today. Choose any time that suits you.", hide: "Hide for today" },
+    fr: { mubarak: "Ramadan Moubarak", before: "Iftar dans {h} h {m} min · {time} à Ottawa", soon: "Iftar dans {m} min · {time} à Ottawa", after: "L’iftar était à {time}. Demain\u00a0: {next}.",
+      order: "Commander pour l’iftar", note: "Heure de l’iftar = coucher du soleil calculé pour Ottawa plus une marge de sécurité de 2 minutes. Les dates du Ramadan suivent le calendrier Umm al-Qura\u00a0; suivez l’annonce de votre mosquée, qui peut différer d’un jour.", previewTag: "Aperçu",
+      picked: "Retrait fixé à {time}\u00a0: l’heure disponible la plus proche avant le coucher du soleil. Vous pouvez la changer.", none: "Il ne reste plus d’heure de retrait avant le coucher du soleil aujourd’hui. Choisissez l’heure qui vous convient.", hide: "Masquer pour aujourd’hui" },
+    ar: { mubarak: "رمضان مبارك", before: "الإفطار بعد {h} ساعة و{m} دقيقة · {time} في أوتاوا", soon: "الإفطار بعد {m} دقيقة · {time} في أوتاوا", after: "كان الإفطار الساعة {time}. غداً: {next}.",
+      order: "اطلب للإفطار", note: "وقت الإفطار = غروب الشمس المحسوب لأوتاوا مع هامش أمان دقيقتين. تواريخ رمضان حسب تقويم أم القرى؛ يُرجى اتباع إعلان مسجدك، فقد يختلف بيوم.", previewTag: "معاينة",
+      picked: "حُدّد الاستلام الساعة {time}: أقرب وقت متاح قبل الغروب. يمكنك تغييره.", none: "لم يعد هناك وقت استلام قبل الغروب اليوم. اختر الوقت الذي يناسبك.", hide: "إخفاء لليوم" }
   };
-  const lang = () => (document.documentElement.lang === "fr" ? "fr" : "en");
+
+  const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
-  const fmt = (ms) => new Intl.DateTimeFormat(lang() === "fr" ? "fr-CA" : "en-CA", { hour: "numeric", minute: "2-digit", timeZone: TZ }).format(new Date(ms)).replace(/\s/g, "\u00a0"); // keep "5:34 p.m." on one line
+  const fmt = (ms) => new Intl.DateTimeFormat({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" }[lang()], { hour: "numeric", minute: "2-digit", timeZone: TZ }).format(new Date(ms)).replace(/\s/g, "\u00a0"); // keep "5:34 p.m." on one line
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
   document.documentElement.classList.add("iftar-mode");
@@ -100,6 +111,9 @@
       if (hasCart && typeof openCart === "function") openCart();
       else root.location.href = "menu.html" + (preview ? "?iftar=preview" : "") + "#menu";
     });
+    const hide = el("button", "iftar-hide", "×"); hide.type = "button"; hide.setAttribute("aria-label", L("hide")); hide.title = L("hide");
+    hide.addEventListener("click", () => { try { localStorage.setItem(HIDE, todayKey()); } catch {} bar.remove(); document.documentElement.classList.remove("iftar-mode"); });
+    head.append(hide);
     bar.replaceChildren(head, el("p", "iftar-line", line), st.before ? btn : el("span"), el("p", "iftar-note", L("note")));
   }
   // When the pickup step opens, pre-select the iftar slot (once per click on "Order for iftar").
@@ -107,12 +121,13 @@
     let want = false; try { want = sessionStorage.getItem(KEY) === "1"; } catch {}
     if (!want || typeof pickupState === "undefined" || !pickupState.plan || pickupState.plan.day !== "today") return;
     const st = state(Date.now(), preview), slot = iftarSlot(pickupState.plan.slots, st.sunsetMin);
-    if (slot == null) return;
+    const live = document.getElementById("cartStatus");
+    try { sessionStorage.removeItem(KEY); } catch {}
+    if (slot == null) { if (live) live.textContent = L("none"); return; } // fail closed: nothing pre-selected
     pickupState.choice = String(slot);
     if (typeof renderPickup === "function") renderPickup();
-    const live = document.getElementById("cartStatus");
-    if (live) live.textContent = L("picked", { time: fmt(st.sunset - (st.sunsetMin - slot) * 60000) });
-    try { sessionStorage.removeItem(KEY); } catch {}
+    const hm = new Date(Date.UTC(2026, 0, 1, Math.floor(slot / 60), slot % 60));
+    if (live) live.textContent = L("picked", { time: new Intl.DateTimeFormat({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" }[lang()], { hour: "numeric", minute: "2-digit", timeZone: "UTC" }).format(hm).replace(/\s/g, "\u00a0") });
   });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   paint(); setInterval(paint, 30000);
