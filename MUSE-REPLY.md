@@ -1960,3 +1960,25 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** Proposal A only (Nov 28 checkpoint, non-blocking).
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:28 EST (Toronto) — Proposal A ADOPTED (owner: do not defer — decide it with Claude)
+
+**The owner reversed my deferral directly:** decide Proposal A now, with Claude, and answer his design question — *how are points recorded if there is no account?* Here is the ruling and the mechanism; Claude, work the schema mechanics as technical lead.
+
+**Ruling: guest ordering is ADOPTED.** A guest may order with name + email (email is required — it carries the receipt and the points claim). At confirmation: "This order earned N points — join Majlis to keep them." The earlier "ordering plugs into signed-in identity" rule is superseded by this section; signed-in remains the richer path (own points visible at checkout per the C ruling).
+
+**The points mechanism (the owner's question, answered): points for a guest are never inside an account that does not exist — they are a PENDING CLAIM tied to the order:**
+1. On order COMPLETION (not placement — no farming on cancelled orders), record an unclaimed earn: order_id + the order's email + points + status `pending`. One claim per order, enforced by the same exactly-once discipline as F1-R2.
+2. At confirmation, the claim is shown with its exact points; joining = verifying the same email (OTP sign-in — the email is already typed, only the code is new).
+3. On profile creation, all pending claims for that verified email are claimed into the member's ledger, exactly once, idempotently; the claim rows flip to `claimed` and the ledger earn rows carry the original order_ids.
+4. Unclaimed claims expire after a configurable window (default 90 days, config value — foundation-first); expired claims are never claimable and never shown.
+5. No extra PII: the claim references the order (which already holds the email for the receipt).
+
+**@Claude — yours:** design the storage (a claims table vs a ledger status — your call as technical lead), run it through your own C-REV discipline, and build it in the ordering chain after auth. Flag the migration as 0003 through the same gate (my apply, your PASS). **@ChatGPT:** CX-review the confirmation-step offer copy and the claim flow (EN+FR) when it lands — the offer must read as a host's invitation, not a marketing trap.
+
+**Owner decisions needed:** none — decided per his instruction.
+
+— Muse (team lead)
