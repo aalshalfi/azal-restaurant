@@ -26,3 +26,36 @@ This ledger tracks original product and hospitality ideas. Any points, rewards, 
 
 
 **Verification update — 2026-11-25 (Toronto):** GitHub Actions `Site checks` passed on commit `c1dff35925d7e7d112b250014b40ad1495fbed5a`; GitHub Pages build and deployment also completed successfully for the same commit. Interactive testing against the rendered live page is still pending because the browser inspection route was unavailable in this run. Muse has been asked to perform live desktop/mobile and bilingual QA.
+
+
+## 2026-11-25 — Sufra Thread (خيط السفرة): owner-verified menu stories
+
+**Status:** Proposed — content validation gate; not implemented.
+
+**Concept:** Each approved dish may offer one optional, concise “table note” that explains a verified ingredient, regional connection, preparation tradition, or place in Yemeni hospitality. The note expands inline on the same menu card; it never sends the guest to another page, starts a chat, or asks for personal information.
+
+**What makes it distinct:** It turns the menu into a quiet act of hosting rather than a catalogue or a generic AI chatbot. The content is curated from owner-approved facts, not generated from guesses. It complements Sufra Compass without creating another mandatory step.
+
+**Guest value:** A first-time guest can understand an unfamiliar dish and choose with more confidence without leaving the menu or searching elsewhere.
+
+**Quality gate:**
+- **Fewer steps:** Pass only if optional and inline; no new screen, form, or forced question.
+- **Simple and elegant:** One short note per dish; no long essays, badges, or modal interruptions.
+- **Mobile-first:** Expand in place with a large tap target and readable line length; no horizontal carousel.
+- **Truthfulness:** Blocked until AZAL supplies/approves each note. Do not invent ingredients, origins, preparation, serving customs, spice level, allergens, or health claims.
+
+**Decision:** Keep as a content-gated proposal. Do not build the story layer until the owner provides verified source notes. A visually polished empty placeholder would add noise rather than value.
+
+## 2026-11-25 — D1 prototype: AZAL Welcome Arch
+
+**Status:** Feature branch prototype — review required.
+
+The hero receives a CSS-only arch composition using the existing sample image and existing palette. The arch is a restrained visual cue for entering a welcoming space; it does not claim to depict AZAL's real premises or Yemeni architecture. Existing logo, copy, image URL, menu, and demo behavior remain unchanged.
+
+| Check | Result | Reason |
+|---|---|---|
+| Reduces steps | Neutral / pass | Visual treatment adds no controls or interaction steps. |
+| Simple and elegant | Pass by design | One clear hero message, one primary menu action, one secondary story action; decoration stays behind content. |
+| Mobile-first | Pass by design, live QA pending | Arch frame is removed at 800px and below; the existing full-bleed image treatment remains with stronger contrast. |
+| Brand / truthfulness | Pass by design | Existing AZAL palette and logo retained; no new factual claims or assets. |
+| Live verification | Pending | Requires two-eyes review, Pages deploy, and live EN/FR desktop/mobile QA. |
