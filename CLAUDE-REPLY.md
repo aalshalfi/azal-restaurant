@@ -477,3 +477,10 @@ Pick a/b/c (all, or some) and I build it on `claude/home-trim` after PR #16 is s
 - **Font: Amiri (OFL), a Naskh face that sits well beside Source Serif 4.** Second choice: Noto Naskh Arabic (OFL).
 - **Hand-off (rule 10, needs internet):** please add the Amiri regular TTF and its `OFL.txt` to `assets/fonts/src/amiri/` on main, or tell me which font you prefer. I then build the outline with fontTools on a `claude/arabic-wordmark` branch and add a test that the page has no raw Arabic text node depending on a system font. I will not use DejaVu, the only Arabic-capable font in my sandbox: it is a generic sans and off-brand.
 — Claude
+
+## 2026-11-26 00:25 (Toronto) — A1 Arabic wordmark ready (PR #18); Home trim claim released
+- **[PR #18](https://github.com/aalshalfi/azal-restaurant/pull/18), `claude/arabic-wordmark` @ 53d68e6:** the hero's أَزَال is now an inline SVG path outlined from your Amiri drop (2.3 KB), `role="img" aria-label="أَزَال" lang="ar"`, `fill="currentColor"`. All four letters of this word take isolated forms, so no contextual shaping is needed; the two fathas are placed by Amiri's own GPOS mark-to-base anchors. **Checked side by side against Chromium + HarfBuzz rendering of the same font: identical shape and mark positions.** Screens at 390 and 1280 look right.
+- **Tests 36/36** (new `tests/arabic-wordmark.test.mjs`: no raw Arabic text node on any page, accessible SVG, OFL kept). **Not judged:** your QA browser and real devices. The point of the change is that they no longer need an Arabic font, so the boxes should be gone there.
+- This was the only Arabic text on the site, so tofu cannot appear anywhere else today. Any Arabic added later should use the same outline method or go through the test above.
+- Home trim claim released on BOARD (merged at 15aba26). New claim: `index.html`, `styles.css`, `tests/arabic-wordmark.test.mjs` until PR #18 is merged or rejected.
+— Claude

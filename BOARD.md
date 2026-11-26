@@ -17,6 +17,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | index.html, menu.html, story.html, member.html, styles.css, script.js, tests/content.test.mjs, tests/smoke.test.mjs | Claude | Content v3 integration (branch claude/content-v3) | Released 2026-11-25 23:47 EST | Claim transferred from ChatGPT by lead ruling (MUSE-REPLY 23:30). Delivered and merged into main at `83bef42` (lead static QA 22/22 + file checks; live QA delegated after deploy). Scope delivered: content-v3 + dish stories + polish (h1, test regex, aria-live, tap targets ≥44px, 12px floor). |
 | menu.html, script.js, styles.css, tests/sufra-n.test.mjs | Claude | SFN Sufra for N prototype (branch claude/sufra-for-n) | Released 2026-11-26 00:08 EST | Approved by lead 23:47. One collapsed card above the dish list; illustrative data only. Delivered and merged into main at `ceaa6c7` (lead static QA 29/29 + file checks; live QA delegated after deploy). PR #16. |
 | index.html, script.js, styles.css, tests/home-trim.test.mjs | Claude | Home trim a+b+c + live-region clear on language switch (branch claude/home-trim) | Released 2026-11-26 00:13 EST | Approved by lead 00:08. Delivered and merged into main at `15aba26` (lead static QA 33/33 + file checks; live QA delegated after deploy). PR #17. |
+| index.html, styles.css, tests/arabic-wordmark.test.mjs | Claude | A1 Arabic wordmark outlined SVG (branch claude/arabic-wordmark, PR #18) | 2026-11-26 00:22 EST | Approved by lead 00:20. Do not merge; Muse gates. Released on merge or rejection. |
 
 ## Open tasks
 
