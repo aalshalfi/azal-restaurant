@@ -1,19 +1,19 @@
 const translations = {
  en: {
-  navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",
+  navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",stickyCartLabel:"View order",
   heroEyebrow:"YEMENI HOSPITALITY · ROOTED IN HERITAGE",heroTitle:"A Taste of Yemen,",heroTitleEm:"Like No Other.",
   heroText:"Slow-cooked tradition, generous tables and the warmth of Yemeni hospitality.",heroMenu:"Explore the menu",heroStory:"Discover our story",sampleNote:"CONCEPT PREVIEW · SAMPLE DISHES AND PRICES",
   storyKicker:"THE AZAL EXPERIENCE",storyTitle:"Gather around",storyTitleEm:"something special.",
   storyText:"Inspired by Yemen’s rich culinary traditions, AZAL celebrates food made for sharing — fragrant rice, tender meats, warm spices and heartfelt hospitality.",
-  menuKicker:"FROM OUR KITCHEN",menuTitle:"Explore our",menuTitleEm:"menu.",menuIntro:"A first taste of what AZAL could serve. Browse the sample dishes below; all items and prices are illustrative and not available to order.",
+  menuKicker:"FROM OUR KITCHEN",menuTitle:"Explore our",menuTitleEm:"menu.",menuIntro:"Sample menu and prices — not available to order.",
   demoLabel:"CONCEPT MENU · SAMPLE PRICES",searchLabel:"Find a dish",searchPlaceholder:"Search dishes or ingredients…",
   catAll:"All dishes",catRice:"Rice & meat",catTraditional:"Traditional",catSides:"Sides",catDrinks:"Drinks",
   sufraKicker:"A SMALL GUIDE TO THE MENU",sufraTitle:"Find your way",sufraTitleEm:"to the table.",
-  sufraIntro:"Start with what sounds good. One tap takes you straight to that part of our illustrative menu.",
+  sufraIntro:"Choose a starting point.",
   sufraDemo:"DEMO GUIDE · SAMPLE MENU",sufraGroup:"Choose a menu starting point",
-  sufraWarm:"Something warming",sufraWarmCopy:"Browse traditional dishes",
-  sufraRice:"Fragrant rice",sufraRiceCopy:"Browse rice & meat dishes",
-  sufraSides:"Start with sides",sufraSidesCopy:"Browse sides and accompaniments",
+  sufraWarm:"Something warming",sufraWarmCopy:"Traditional dishes",
+  sufraRice:"Fragrant rice",sufraRiceCopy:"Rice & meat dishes",
+  sufraSides:"Start with sides",sufraSidesCopy:"Sides & accompaniments",
   sufraStatusInitial:"Choose a path to jump to that part of the sample menu.",
   sufraStatusTraditional:"Showing the sample traditional dishes.",
   sufraStatusRice:"Showing the sample rice and meat dishes.",
@@ -25,26 +25,26 @@ const translations = {
   cartKicker:"YOUR SELECTION",cartTitle:"Your order",subtotal:"Subtotal",cartDisclaimer:"Demo checkout only. No payment or restaurant order will be submitted.",
   checkoutButton:"Continue to demo checkout",demoOnly:"DEMO ONLY",checkoutTitle:"Almost there.",
   checkoutText:"This is a website preview. Your order will not be sent to AZAL and no payment will be taken.",
-  nameLabel:"Your name",namePlaceholder:"Name",orderType:"Order type",pickup:"Pickup (demo)",delivery:"Delivery (demo)",placeDemo:"Preview demo order",
+  demoPickupOnly:"Pickup preview only. No customer details, date, or payment are collected.",placeDemo:"Preview demo order",
   add:"Add +",added:"Added ✓",noResults:"No dishes match that search. Try another name or category.",
   emptyCart:"Your basket is waiting for something delicious.",each:"each",removeOne:"Remove one",addOne:"Add one",
-  nameRequired:"Please enter your name to preview the demo.",thankYou:"Thank you",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
+  thankYou:"Demo preview",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
  },
  fr: {
-  navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",
+  navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",stickyCartLabel:"Voir la commande",
   heroEyebrow:"HOSPITALITÉ YÉMÉNITE · UN HÉRITAGE VIVANT",heroTitle:"Le goût du Yémen,",heroTitleEm:"comme nulle part ailleurs.",
   heroText:"Des recettes mijotées avec patience, des tables généreuses et toute la chaleur de l’hospitalité yéménite.",heroMenu:"Découvrir le menu",heroStory:"Notre histoire",sampleNote:"APERÇU DU CONCEPT · PLATS ET PRIX À TITRE INDICATIF",
   storyKicker:"L’EXPÉRIENCE AZAL",storyTitle:"Réunissons-nous",storyTitleEm:"autour de quelque chose d’exceptionnel.",
   storyText:"Inspiré par la richesse des traditions culinaires du Yémen, AZAL célèbre les repas à partager : riz parfumé, viandes tendres, épices chaleureuses et hospitalité sincère.",
-  menuKicker:"DE NOTRE CUISINE",menuTitle:"Découvrez notre",menuTitleEm:"menu.",menuIntro:"Un premier aperçu de ce qu’AZAL pourrait proposer. Parcourez les plats présentés ci-dessous; tous les articles et les prix sont illustratifs et ne sont pas disponibles à la commande.",
+  menuKicker:"DE NOTRE CUISINE",menuTitle:"Découvrez notre",menuTitleEm:"menu.",menuIntro:"Menu démo et prix — aucune commande réelle.",
   demoLabel:"MENU CONCEPT · PRIX INDICATIFS",searchLabel:"Rechercher un plat",searchPlaceholder:"Rechercher des plats ou des ingrédients…",
   catAll:"Tous les plats",catRice:"Riz et viandes",catTraditional:"Plats traditionnels",catSides:"Accompagnements",catDrinks:"Boissons",
   sufraKicker:"UN PETIT GUIDE DU MENU",sufraTitle:"Trouvez votre chemin",sufraTitleEm:"vers la table.",
-  sufraIntro:"Commencez par ce qui vous fait envie. Un seul geste vous mène directement à cette partie de notre menu illustratif.",
+  sufraIntro:"Choisissez un point de départ.",
   sufraDemo:"GUIDE DÉMO · MENU INDICATIF",sufraGroup:"Choisissez un point de départ dans le menu",
-  sufraWarm:"Quelque chose de réconfortant",sufraWarmCopy:"Voir les plats traditionnels",
-  sufraRice:"Du riz parfumé",sufraRiceCopy:"Voir les plats de riz et de viande",
-  sufraSides:"Commencer par les accompagnements",sufraSidesCopy:"Voir les accompagnements",
+  sufraWarm:"Quelque chose de réconfortant",sufraWarmCopy:"Plats traditionnels",
+  sufraRice:"Du riz parfumé",sufraRiceCopy:"Riz et viandes",
+  sufraSides:"Commencer par les accompagnements",sufraSidesCopy:"Accompagnements",
   sufraStatusInitial:"Choisissez un parcours pour accéder directement à cette partie du menu indicatif.",
   sufraStatusTraditional:"Affichage des plats traditionnels de démonstration.",
   sufraStatusRice:"Affichage des plats de riz et de viande de démonstration.",
@@ -56,10 +56,10 @@ const translations = {
   cartKicker:"VOTRE SÉLECTION",cartTitle:"Votre commande",subtotal:"Sous-total",cartDisclaimer:"Paiement de démonstration uniquement. Aucune commande ne sera transmise au restaurant et aucun paiement ne sera effectué.",
   checkoutButton:"Continuer vers le paiement démo",demoOnly:"DÉMONSTRATION UNIQUEMENT",checkoutTitle:"Presque terminé.",
   checkoutText:"Ceci est un aperçu du site. Votre commande ne sera pas transmise à AZAL et aucun paiement ne sera prélevé.",
-  nameLabel:"Votre nom",namePlaceholder:"Nom",orderType:"Type de commande",pickup:"À emporter (démo)",delivery:"Livraison (démo)",placeDemo:"Prévisualiser la commande démo",
+  demoPickupOnly:"Aperçu du ramassage uniquement. Aucune coordonnée, date ou donnée de paiement n’est recueillie.",placeDemo:"Prévisualiser la commande démo",
   add:"Ajouter +",added:"Ajouté ✓",noResults:"Aucun plat ne correspond à votre recherche. Essayez un autre nom ou une autre catégorie.",
   emptyCart:"Votre panier attend quelque chose de délicieux.",each:"l’unité",removeOne:"En retirer un",addOne:"En ajouter un",
-  nameRequired:"Veuillez saisir votre nom pour prévisualiser la démo.",thankYou:"Merci",demoContains:"Votre commande démo contient",items:"article(s)",notSent:"Cette commande n’a pas été transmise au restaurant."
+  thankYou:"Aperçu démo",demoContains:"Votre commande démo contient",items:"article(s)",notSent:"Cette commande n’a pas été transmise au restaurant."
  }
 };
 const productTranslations = {
@@ -104,7 +104,8 @@ const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat(language==="fr"?"fr-CA":"en-CA",{style:"currency",currency:"CAD"}).format(n);
 const productGrid=$("productGrid"), cartDrawer=$("cartDrawer"), backdrop=$("cartBackdrop"), cartItems=$("cartItems");
 const cartCount=$("cartCount"), cartTotal=$("cartTotal"), checkoutButton=$("checkoutButton");
-const checkoutModal=$("checkoutModal"), customerName=$("customerName"), checkoutMessage=$("checkoutMessage");
+const stickyCartBar=$("stickyCartBar"),stickyCartCount=$("stickyCartCount"),stickyCartTotal=$("stickyCartTotal");
+const checkoutModal=$("checkoutModal"), checkoutMessage=$("checkoutMessage");
 const nav=document.querySelector(".nav"), toggle=document.querySelector(".menu-toggle");
 const search=$("menuSearch"), tabs=$("categoryTabs");
 const sufraCompass=$("sufraCompass"), sufraStatus=$("sufraStatus");
@@ -121,6 +122,9 @@ function renderCart(){
  const total=entries.reduce((sum,[id,qty])=>sum+products.find(p=>p.id===id).price*qty,0);
  if(cartCount)cartCount.textContent=count;
  if(cartTotal)cartTotal.textContent=money(total);
+ if(stickyCartBar)stickyCartBar.hidden=count===0;
+ if(stickyCartCount)stickyCartCount.textContent=count;
+ if(stickyCartTotal)stickyCartTotal.textContent=money(total);
  if(checkoutButton)checkoutButton.disabled=count===0;
  if(cartItems)cartItems.innerHTML=entries.length?entries.map(([id,qty])=>{const p=products.find(x=>x.id===id);const v=localizedProduct(p);return `<div class="cart-row"><div><strong>${v.name}</strong><small>${money(p.price)} ${t("each")} · ${money(p.price*qty)}</small></div><div class="quantity-controls"><button data-change="${id}" data-delta="-1" aria-label="${t("removeOne")}">−</button><span>${qty}</span><button data-change="${id}" data-delta="1" aria-label="${t("addOne")}">+</button></div></div>`}).join(""):`<p class="empty-cart">${t("emptyCart")}</p>`;
 }
@@ -151,11 +155,12 @@ sufraCompass?.addEventListener("click",e=>{
 });
 
 $("cartOpen")?.addEventListener("click",openCart);
+ stickyCartBar?.addEventListener("click",openCart);
 $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
 checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
 $("modalClose")?.addEventListener("click",closeModal);
-$("placeDemoOrder")?.addEventListener("click",()=>{const name=customerName?.value.trim();if(!name){if(checkoutMessage)checkoutMessage.textContent=t("nameRequired");return}const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}, ${name}. ${t("demoContains")} ${count} ${t("items")}. ${t("notSent")}`;cart.clear();renderCart()});
+$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${t("notSent")}`;cart.clear();renderCart()});
 checkoutModal?.addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeModal()});
 toggle?.addEventListener("click",()=>{const open=nav?.classList.toggle("open")||false;toggle.setAttribute("aria-expanded",String(open))});
 nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}));

@@ -227,3 +227,61 @@ test("every sample dish has a French translation", () => {
   const translated = Object.keys(clone(evalIn("productTranslations"))).map(Number);
   assert.deepEqual(ids.filter((id) => !translated.includes(id)), []);
 });
+
+
+test("sticky demo cart stays reachable and mirrors cart count and total", () => {
+  const { evalIn } = boot();
+  const grid = byId.get("productGrid");
+  const sticky = byId.get("stickyCartBar");
+  assert.ok(sticky, "sticky cart control is missing");
+  assert.ok(html.indexOf('id="cartOpen"') > html.indexOf("</nav>"), "header cart must remain outside the mobile hamburger menu");
+  assert.equal(sticky.hidden, true, "empty cart should start hidden");
+
+  fire(grid, "click", {
+    target: { closest: (sel) => (sel === "[data-add]" ? { dataset: { add: "1" } } : null) },
+  });
+  assert.equal(sticky.hidden, false, "sticky cart should appear after adding a sample item");
+  assert.equal(byId.get("stickyCartCount").textContent, "1");
+  assert.equal(byId.get("stickyCartTotal").textContent, "$24.99");
+
+  fire(sticky, "click");
+  assert.ok(byId.get("cartDrawer").classList.contains("open"), "sticky cart should open the demo drawer");
+});
+
+test("P1 page order puts the menu before story and uses compact mobile cart/menu hooks", () => {
+  const sufra = html.indexOf('id="sufra-guide"');
+  const menu = html.indexOf('id="menu"');
+  const story = html.indexOf('id="story"');
+  assert.ok(menu >= 0 && sufra > menu && story > menu, "expected Menu (with Sufra shortcuts) → Story order");
+
+  assert.ok(!html.includes('id="customerName"') && !html.includes('id="orderType"'), "demo checkout must not collect customer details or offer delivery");
+  const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  assert.ok(css.includes(".sticky-cart{position:fixed"), "sticky cart should remain fixed at all scroll depths");
+  assert.ok(css.includes(".product-card{display:grid;grid-template-columns:96px"), "mobile cards should use compact horizontal rows");
+});
+
+
+test("Source font families are self-hosted and licensed in the repository", () => {
+  assert.ok(!html.includes("fonts.googleapis.com") && !html.includes("fonts.gstatic.com"), "site should not request Google Fonts at runtime");
+  const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  assert.ok(css.includes("@font-face{font-family:'Source Sans 3'"), "Source Sans 3 @font-face is missing");
+  assert.ok(css.includes("@font-face{font-family:'Source Serif 4'"), "Source Serif 4 @font-face is missing");
+  for (const file of [
+    "assets/fonts/SourceSans3VF-Upright.woff2",
+    "assets/fonts/SourceSerif4Variable-Roman.woff2",
+    "assets/fonts/SourceSerif4Variable-Italic.woff2",
+    "assets/fonts/OFL-Source-Sans-3.txt",
+    "assets/fonts/OFL-Source-Serif-4.txt",
+  ]) assert.ok(fs.existsSync(path.join(root, file)), `missing self-hosted font asset: ${file}`);
+});
+
+
+test("P1 mobile CSS closes the interim C-DES size and tap-target gaps", () => {
+  const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  assert.ok(css.includes(".hero-bottom,.hero-bottom span{font-size:12px!important"), "hero meta spans must meet the 12px floor");
+  assert.ok(css.includes(".product-category{font-size:12px!important"), "product category labels must meet the 12px floor");
+  assert.ok(css.includes(".product-tag{font-size:12px!important"), "product tags must meet the 12px floor");
+  assert.ok(css.includes(".add-button{min-height:44px;height:44px"), "add buttons must be at least 44px tall");
+  assert.ok(css.includes(".section-kicker{white-space:normal"), "long French section kickers must wrap");
+  assert.ok(css.includes("-webkit-line-clamp:2"), "mobile dish descriptions must be clamped to two lines");
+});
