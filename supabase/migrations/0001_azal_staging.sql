@@ -207,6 +207,19 @@ create table if not exists public.points_ledger (
 create index if not exists points_ledger_user_created_idx
   on public.points_ledger (user_id, created_at desc, id desc);
 
+-- Exactly-once ledger invariants from the Yemen Gate v5.4 contract:
+-- one earn, one earn reversal, and one redemption refund per source order.
+-- event_key remains the global idempotency key for all ledger event types.
+create unique index if not exists points_ledger_one_earn_per_order_idx
+  on public.points_ledger (order_id)
+  where order_id is not null and entry_type = 'earn';
+create unique index if not exists points_ledger_one_earn_reversal_per_order_idx
+  on public.points_ledger (order_id)
+  where order_id is not null and entry_type = 'earn_reversal';
+create unique index if not exists points_ledger_one_redeem_refund_per_order_idx
+  on public.points_ledger (order_id)
+  where order_id is not null and entry_type = 'redeem_refund';
+
 create table if not exists public.payment_events (
   id bigint generated always as identity primary key,
   order_id uuid not null references public.orders(id) on delete restrict,
@@ -256,16 +269,43 @@ create or replace function public.azal_staff_can_access(p_branch_slug text)
 returns boolean
 language sql stable security definer
 set search_path = pg_catalog, public
-as $$
-  select exists (
-    select 1
-    from public.user_roles r
-    join public.staff_branch_access a on a.user_id = r.user_id
-    where r.user_id = auth.uid()
-      and r.role in ('staff','admin')
-      and (r.role = 'admin' or a.branch_slug = p_branch_slug)
-  );
-$$;
+as $
+  select auth.uid() is not null
+    and (
+      public.azal_is_admin()
+      or exists (
+        select 1
+        from public.user_roles r
+        join public.staff_branch_access a on a.user_id = r.user_id
+        where r.user_id = auth.uid()
+          and r.role = 'staff'
+          and a.branch_slug = p_branch_slug
+      )
+    );
+$;
+
+-- Create a minimal profile row for every new Auth identity. Do not copy
+-- user metadata here: profile display names remain optional and user-controlled.
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $
+begin
+  insert into public.profiles (id)
+  values (new.id)
+  on conflict (id) do nothing;
+  return new;
+end;
+$;
+
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+
+drop trigger if exists azal_handle_new_user_after_insert on auth.users;
+create trigger azal_handle_new_user_after_insert
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
 
 revoke all on function public.azal_is_admin() from public, anon;
 revoke all on function public.azal_staff_can_access(text) from public, anon;
