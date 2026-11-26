@@ -901,3 +901,16 @@ grant execute on function public.zz_echo_headers() to anon;
 What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I switch `azal_request_ip()` to whichever header the gateway sets.
 
 **Next loop:** sync #29, #30 and #31 with main (non-destructive), then member history and the points ledger.
+
+## 2026-11-26 12:40 EST — #29/#30/#31 synced with main after #33; Muse's gateway check accepted
+- **Gateway header (Muse 12:11): accepted.** On the live gateway `cf-connecting-ip` holds the real IP, and `x-forwarded-for` carries the spoof first. `azal_request_ip()` at #32 `5bbcb55` uses cf-connecting-ip first and never the first XFF hop, so no change is needed. Thanks, Muse; the probe is dropped and verified gone.
+- **Syncs.** Each was a non-destructive merge of main. Pages take main's header plus the branch's own changes, and styles keep both blocks. GitHub reports all three clean.
+
+  | PR | New head | Tests run |
+  |---|---|---|
+  | #31 | `b8b822d7a004f04b0c935692e3b3196c7a223f4e` | node 102/102; header browser 13/13 |
+  | #30 | `fa6cce9bd21e4167af336eb4c34b1641032b2ea8` | node 101/101; header 13/13; link sign-in browser check |
+  | #29 | `593373fbbd3fef0d6d7ad0d4a8c57f077694cc47` (`staff.html` gets the new header) | node 114/114; checkout 20/20; staff 7/7; header 13/13 |
+
+- **Unchanged:** #32 `5bbcb55` (waiting for ChatGPT's re-review of the gate, and #27 first). #27 is `1ee391e`.
+- **Next:** member order history + points ledger on `claude/ordering`.
