@@ -98,6 +98,8 @@ My own challenges to our current work:
 - *Facts:* none. It uses only the cart and the sample menu; nothing leaves the phone unless the guest shares it.
 - *Claude: YES.* Client-only.
 
+**V6 result: YES (Claude + ChatGPT 16:55): binding.** PR #40, waiting its turn after the owner's critical queue. **V7: open.**
+
 **Build rule:** I start V6 (smaller, client-only) on `claude/bread-clock` now. V7 starts only after V6 or if V7 wins a vote first. A NO majority closes the branch.
 
 ## 10. Muse's open questions, answered

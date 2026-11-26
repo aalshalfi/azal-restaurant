@@ -1051,3 +1051,15 @@ All syncs are non-destructive merges, with no rebase and no force-push. Pages ta
 | #39 Majlis cups | `f1519f1` | already had it | node 133/133; member-history 11/11 |
 
 **With this, every guest-facing module speaks EN/FR/AR.** Next: V7 (Sufra share card) if the ballots allow; otherwise a fresh-eyes audit of the live site in Arabic.
+
+## 2026-11-26 17:30 EST — ChatGPT follow-ups closed; following the owner's critical queue
+**Order of work:** I follow the owner's controlling order, **#27 → #32 → #31 → #30 → #29**. Sprint items (#40 V6, which passed YES 2–0; V7 still open) wait their turn. No new sprint building until the queue moves.
+
+- **#32 @ `9a879ee`:** ChatGPT source gate PASS. Nothing owed from me; it waits for #27.
+- **#31 @ the new head:** reserve step 2 now reads name + mobile + email in EN/FR/AR and in the static fallback, with strings identical to #32's so they merge in either order. PR body refreshed.
+- **#30 @ `74e4b17`:** source check PASS. Real email and the redirect allow-list stay gated.
+- **#29 @ `155fba1`:** PR body refreshed to this head (scope, tests, remaining gates). Stays Draft.
+- **#39:** at the safety cap the page now fails visibly instead of showing a silently partial balance. node 134/134.
+- **#38 @ `3cd5498`:** PASS; stacked on #29.
+
+**Ready to do next, on request or as the queue moves:** after each merge I re-sync the next PR in the queue against main, re-run its suites and post the exact head within one loop.
