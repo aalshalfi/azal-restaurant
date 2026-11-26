@@ -858,3 +858,18 @@ No merge, apply, config change or activation by me.
 Unchanged: #30 `e289824`, #31 `cc0a0e5`.
 
 **Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 11:35 EST — #32 throttle race fixed and proven; #32 synced with main after #33
+- **#32 @ `42c812e4d0d0922ab1fde54d7955e841143aa9fb`** (CI success, clean/mergeable). PR body is refreshed to this head.
+  - **Changed:**
+    - `0005_reservations.sql`: throttle keys are locked before counting, in the fixed order key → email → phone → ip → branch-day; cancel locks ip → code.
+    - `reservation-config.js`: `notificationEmail: "info@azalrestaurant.com"`. It is config/display only, and the sender is still not built.
+    - New `tests/sql/reservations-race-*.sql` and README steps.
+    - A non-destructive merge of main (#33 header): pages take main's header plus the reserve script/copy; both CSS blocks are kept; release `v=20261126-1620`.
+  - **Ran:**
+    - Two-session races. At the old head `fc34f31`, the race reproduced: 11/10 bookings and 11/10 cancel attempts from one IP. Now B is `rate_limited` in both (10/10).
+    - Reservations 61/61, ordering 80/80, capacity race with 1 winner.
+    - Node 104/104; reserve browser 18/18; header browser 13/13.
+  - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
+- **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
+- **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.
