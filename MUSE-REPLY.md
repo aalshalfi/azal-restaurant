@@ -1900,3 +1900,44 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:20 EST (Toronto) — Owner's test mandate: the full member loop must WORK for him personally
+
+**The owner, just now:** the membership must be activated and clear, because HE wants to test it himself — register, place an order, write notes, and use points. And again: the biggest share of the work goes to Claude.
+
+**What this sets as the acceptance bar (Claude, your chain, in order):**
+1. **Auth wiring** (already yours): real sign-up/sign-in on the azal project; profile on first sign-in; member page live.
+2. **Ordering wired for real** (P3 pulled forward into your chain, right after auth): a signed-in member can place a REAL order into the schema (pickup, HST 13%, the guarded functions when they land — flag any missing server function as a schema follow-up for the C-REV path, do not fake it client-side). Include a **customer order-notes field** at checkout.
+3. **Points live in the member page:** the order earns points per the adopted working draft (10 pts/$1; redemption at the adopted thresholds) and the member can SEE earn/redeem reflected in the ledger-backed balance. Guest-facing copy may show the member their own numbers once signed in (the "no numbers" rule was for public marketing copy, not the member's own account view).
+4. **Sign-ups flip ON at the auth merge** (I do it at the gate) so the owner can register himself the moment it is live. Demo labelling stays until launch; functionality is real for testing.
+
+**Order of gates unchanged:** apply PASS → auth branch → CX review (ChatGPT) + my live gate → merge + sign-ups on → ordering branch → same gates → owner tests end-to-end and sends his notes through me.
+
+@ChatGPT: your CX review scope now explicitly includes the owner-test path: register → order → points, phone-first, EN+FR. Flag every confusing step; the owner is the test user.
+
+**Owner decisions needed:** none — his notes come after his test.
+
+— Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:15 EST (Toronto) — Loop check: ChatGPT 05:07 verified; Claude claimed auth wiring; both queues named
+
+**Summary:** Quiet loop — no new commits or replies from either collaborator since the 05:10 loop except Claude's ACCT claim (05:11). Verified ChatGPT's 05:07 work against the files: all three ideas are recorded in `IDEAS.md` and the P2 state/sequence is in `MUSE-HANDOFF.md`. Claude's auth-wiring claim is on the board; his branch is not yet pushed and no auth files exist on main yet, as expected two minutes in. Both collaborators leave this run with a named, unblocked next task.
+**Tasks:** ChatGPT 05:07 verification — Done. Claude ACCT claim — verified, in progress. ChatGPT next task — assigned below (runbook fix). Apply — announced running 05:12; no Q1–Q13 outputs in-repo yet, completion unverified (lead item, not re-attempted this run). ORD-REAL board row — added (owner test mandate 05:20).
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** `ab29651` (Claude, ACCT claim), plus this loop's board/reply commit (SHA on push).
+**Verification (lead, repo state at 05:13–05:15):** (1) ChatGPT 05:07 claims: `IDEAS.md` holds "Eat it the Yemeni way" (serving ritual, draft preview, merged PR #25), "Fresh from the oven" (example-only, merged `f9eeeea`), "Hosted by …" (proposed only, owner-cost + Majlis gates) — all with guardrails; `MUSE-HANDOFF.md` carries the verified P2 state (PR #27 @ `432dce8`, C-REV PASS local, PR #9 superseded, no staging apply evidenced) and the 4-step next sequence. His reply section is committed as `4cd0236`. (2) Claude claim: BOARD row exists via `ab29651` (1 insertion); `git branch -a` after a clean pull shows no `claude/auth-wiring` remote branch yet and no `auth.js`/`supabase-config.js` on main — build not yet landed, which is normal minutes after the claim. (3) CHATGPT-REPLY.md unchanged since the loop baseline (empty diff) — no new reply to answer. (4) `docs/p2-staging-apply.md` does not exist on main — it lives on `muse/p2-backfill` (PR #27), so the flagged one-line correction belongs on that branch, not main.
+**Findings / bugs:** One nit, corrected on the board: Claude's ACCT claim row said 05:20 EST but the claim commit `ab29651` is timestamped 05:11:52 EST — row time corrected to 05:11. Two remote reads (`git ls-remote`) failed with a proxy connection reset during this run; the earlier `git pull --ff-only` succeeded ("Already up to date"), so local state is current and the failures are transport noise, not repo state.
+**Questions for the other side:**
+- **@ChatGPT — your next bounded task (unblocked, do it now):** fix the one stale line in `docs/p2-staging-apply.md` **on the `muse/p2-backfill` branch** (docs only — do not touch any SQL): it still says the project already has the 0001 schema ("Do not rerun the full 0001 baseline"), but the project was verified EMPTY at 23:01 and Package B applies 0001 first. One commit, then one line here confirming. After that, your standing task is the CX review of Claude's auth flows when his branch lands (owner-test path: register → order → notes → points, phone-first, EN+FR). Your 5-minute loop confirmation is still outstanding — one line.
+- **@Claude:** auth wiring is yours (claimed 05:11) — build, then post; ChatGPT reviews experience, I gate live. After auth, your chain is ORD-REAL (real ordering + notes + points live, new board row) — no separate assignment needed; pick it up when auth is gated. Final live C-REV stays queued on my Q1–Q13 outputs.
+**Owner decisions needed:** none.
+
+**Addendum (same loop, before push): push blocked — remote main moved under me.** While this loop's commit was being prepared, ChatGPT pushed 5 commits on top of `a5ce9b2` (remote now `e72845f`, "docs: report AZAL CX review preparation and baseline findings"; the set includes a handoff fold, a CX-review gate record, and a note of an "ACCT auth wiring draft PR #28"). My local main is ahead 1 (`fe962d5`, this loop) and behind 5; a merge is required before any push, and this run does not merge it — the new commits arrived after my verification above, so their claims (including PR #28) are **not verified in this run** and my assignments above (runbook fix, CX review on landing) must be re-checked against them next loop. This commit stays local and unpushed until the merge is done.
+
+— Muse (team lead)
