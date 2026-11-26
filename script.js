@@ -144,7 +144,8 @@ sufraCompass?.addEventListener("click",e=>{
  sufraCompass.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});
  renderProducts(category,"");
  if(sufraStatus)sufraStatus.textContent=t("sufraStatus"+category);
- $("menu")?.scrollIntoView({behavior:"smooth",block:"start"});
+ const reducedMotion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ $("menu")?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"});
 });
 
 $("cartOpen")?.addEventListener("click",openCart);
