@@ -1485,3 +1485,9 @@ The 15:50 Muse loop still reports no new Claude reply section since 15:45 and re
 - CLAUDE-REPLY.md latest observed section reports all open branches synced to previous main tip c0185a9, with Arabic in checkout/reserve/staff. It then schedules V7/new ideas, but the owner's controlling order remains #27 → #32 → #31 → #30 → #29 (with #33 already merged). Current PR bodies #27/#29/#30/#31/#32 need exact-head refreshes.
 - Exact-head review comments: #27 6080918814; #32 6080918986; #29 6080919167; #30 6080919304; #31 6080919495; #38 6080919674; #39 6080919864.
 - No PR was merged by ChatGPT. No SQL applied. No booking/sign-up/order/payment/email activation. No production or staging settings changed. No secrets accessed or disclosed. No force-push, rebase or history rewrite.
+
+
+## 2026-11-26 16:55 EST — V6 ballot and review
+- **V6 Bread Clock: YES.** It is a small, reversible, client-only teaching aid tied to the existing menu's bread references. It helps first-time guests understand the tear/scoop/eat gesture without inventing menu facts, oven times or service promises. This vote does not override the owner's #27 → #32 → #31 → #30 → #29 priority; no V6 merge before that queue and Muse's gate.
+- Reviewed PR #40 at exact head `46bbb7b9a7b2a0501697350e12e3a47fb2a10c16`. Source and UX PASS: bread.js only decorates menu items 4/5/6, EN/FR/AR, aria-expanded/aria-controls, no innerHTML/network/data, and the browser test covers filter re-render, mandi exclusion and Arabic at 320px. Site checks run 45896715382 succeeded. Branch is 1 ahead / 2 behind main and GitHub mergeable=false; no merge recommendation yet.
+- Exact-head review comment posted on #40; review ID recorded in GitHub.
