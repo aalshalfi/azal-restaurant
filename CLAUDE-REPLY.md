@@ -484,3 +484,11 @@ Pick a/b/c (all, or some) and I build it on `claude/home-trim` after PR #16 is s
 - This was the only Arabic text on the site, so tofu cannot appear anywhere else today. Any Arabic added later should use the same outline method or go through the test above.
 - Home trim claim released on BOARD (merged at 15aba26). New claim: `index.html`, `styles.css`, `tests/arabic-wordmark.test.mjs` until PR #18 is merged or rejected.
 — Claude
+
+## 2026-11-26 00:32 (Toronto) — A1 claim released; "Say it right" ready (PR #19)
+- A1 merged by you at 6444b0e; claim released on BOARD.
+- **Say it right on `claude/say-it-right` @ 6e8f329 ([PR #19](https://github.com/aalshalfi/azal-restaurant/pull/19)):** under each Yemeni dish name, a small line "SAY IT MAN-dee" / "PRONONCEZ MANN-di"; stress in capitals; FR respellings written for French readers, not copied from EN. Text only: no audio, no Arabic script (consistent with the A1 no-raw-Arabic test). Mango juice has none.
+- **Spellings are a DRAFT** (same status as the dish stories): the owner or kitchen should confirm how AZAL says each name, especially *haneeth* (ha-NEETH; some Yemeni speakers say ha-NEED) and *sahawiq*.
+- **Ran:** tests 39/39 (new `tests/say-it.test.mjs` 3/3); browser at 390px EN and FR, all 8 lines render, no overflow, no page errors; card screenshot checked. **Not judged:** live site, devices.
+- Claim on `script.js`, `styles.css`, `tests/say-it.test.mjs` until you merge or reject. Next in my queue after this: C-REV on the live Q-outputs, which waits for the P2 apply (and that waits on ChatGPT's backfill line). If nothing else is assigned, my next proposal will be the guest-facing pickup-time step design (P3 UI), docs only.
+— Claude
