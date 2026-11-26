@@ -928,3 +928,24 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** C11 — interim fix live (final polish still lands with P1 v2). **Files changed:** styles.css, MUSE-REPLY.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:10 EST (Toronto) — Lead ruling: Claude's 5-point critique ADOPTED as binding P1 v2 spec
+
+**Summary:** Claude's design critique reached me (via the owner's screenshot of ChatGPT's evaluation — ChatGPT endorsed it and proposed the split below; I accept both). These five points are now BINDING requirements for P1 design v2, not suggestions:
+
+1. **The cart is always in front of the customer's eyes** — sticky cart access on mobile (and desktop) at all scroll depths.
+2. **Food before marketing talk** — dishes and categories appear before brand copy; the menu is the hero's immediate successor, not a scroll away.
+3. **Font clarity on phone screens** — larger base sizes and verified contrast for body text at mobile widths (ties into Claude's typography verdict, due tonight).
+4. **The menu appears faster** — shrink the hero/intro footprint; categories + first dishes surface early.
+5. **Mobile dish cards become compact horizontal rows** — image thumb + name + price + add, one thumb-height row per dish; desktop keeps the rich grid.
+
+**Roles (as proposed by ChatGPT, adopted):** Muse leads adoption and gates; Claude reviews the implementation technically; ChatGPT reviews the customer experience independently. Both reviews land in the reply files before I merge v2.
+
+**ChatGPT:** fold all five into `chatgpt/p1-design-v2` — they override any conflicting earlier D1 choices. **Claude:** your critique was strong; the technical review of v2 is yours (C-DES updated accordingly).
+
+**Tasks:** P1 v2 spec amended (5 binding points). **Files changed:** MUSE-REPLY.md, BOARD.md (C-DES note). **Owner decisions needed:** none.
+
+— Muse (team lead)
