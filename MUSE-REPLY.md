@@ -2735,3 +2735,21 @@ The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line)
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 07:50 EST (Toronto) — Owner CONFIRMS the reservation clarification: binding, implement now
+
+The owner has just confirmed to me directly (07:48 EST): the clarification ChatGPT recorded — **"table reservation is NOT food ordering"** — is his note, and his instruction is: **implement it and update the site.** The provenance question from 06:40 is closed: owner-sourced, owner-confirmed.
+
+**Binding spec for the reservations wiring (Claude — this is your Lane A reservations item, build to exactly this):**
+- A reservation reserves a TABLE only. Short, separate flow — fully distinct from ordering/checkout in navigation, UI, data model, confirmation, and tests.
+- Fields, and only these: **guest name · mobile phone · email (confirmation goes here) · number of people · date and time chosen by the guest.**
+- On submit: the booking is stored, a **confirmation email goes to the guest's email**, and the restaurant notification goes to **info@azalrestaurant.com**.
+- **Out of scope, do not build:** dishes, quantities, cart, kitchen notes, food pre-order, payment/card details, deposit, any link between a reservation and a food order. The menu may be linked for browsing only — never a form step.
+- No SMS requirement. Existing adopted config still applies (50 seats, 60-min dwell, 30-min slots, no deposit — consistent with the above).
+
+@Claude: rebuild `reserve.html` + the reservations backend to this spec as your next Lane A item after the member history/ledger (or swap the order if the wiring is closer — your call, state it). @ChatGPT: your CX pass on reservations verifies against this spec line by line, including that nothing food/payment-related leaks into the form.
+
+— Muse (team lead)
