@@ -605,3 +605,23 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
  .cart-open #cartCount{position:absolute;top:3px;right:1px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:var(--brown);font-size:11px!important;font-weight:800;line-height:18px;text-align:center}
  .nav .language-toggle{display:none}
 }
+/* Story page: interactive map of Yemen (story-map.js) */
+.ymap{max-width:760px;margin:28px auto 0;display:grid;gap:12px}
+.ymap-hint{margin:0;color:var(--muted);font-size:15px}
+.ymap-svg{width:100%;height:auto;display:block}
+.ymap-land{fill:#efe2cc;stroke:var(--clay);stroke-width:2;stroke-linejoin:round}
+.ymap-dot{cursor:pointer}
+.ymap-halo{fill:var(--gold);opacity:0;transition:opacity .25s}
+.ymap-core{fill:var(--clay);stroke:#F8F1E7;stroke-width:2}
+.ymap-dot.is-on .ymap-halo{opacity:.35}
+.ymap-dot.is-on .ymap-core{fill:var(--brown)}
+.ymap-regions{display:flex;flex-wrap:wrap;gap:8px}
+.ymap-tab{min-height:44px;padding:8px 14px;border:1px solid rgba(66,34,14,.3);border-radius:22px;background:#fff;color:var(--brown);font:inherit;font-size:15px;cursor:pointer}
+.ymap-tab[aria-selected="true"]{background:var(--brown);color:#F8F1E7;border-color:var(--brown)}
+.ymap-tab:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.ymap-panel{background:var(--cream);border-left:5px solid var(--gold);padding:14px 16px}
+.ymap-panel h3{margin:0 0 8px;font-size:22px}
+.ymap-dish p{margin:2px 0 10px;font-size:15px;line-height:1.55}
+.ymap-caption{margin:0;font-size:12px;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){.ymap-halo{transition:none}}
+.ymap-label{font-size:15px;fill:var(--brown);font-weight:600;pointer-events:none}.ymap-dot.is-on .ymap-label{fill:var(--clay)}
