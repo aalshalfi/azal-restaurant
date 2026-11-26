@@ -272,3 +272,7 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
  .close-cart,.quantity-controls button{width:44px;height:44px;min-width:44px;min-height:44px}
 }
 @media(min-width:900px){body{font-size:17px}.hero{min-height:480px}.product-info h3{font-size:24px}}
+
+
+.language-toggle{font-size:12px!important;min-width:44px;min-height:44px}
+@media(max-width:480px){.language-toggle{width:44px;height:44px}.sufra-choice{min-width:0}.sufra-choice-title{font-size:14px}.sufra-choice-copy{font-size:12px}}
