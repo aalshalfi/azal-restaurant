@@ -481,3 +481,6 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
  .signature-card p{margin:0 12px 12px 0;font-size:14px;line-height:1.4;align-self:start}
  .visit{gap:0}
 }
+
+/* Arabic wordmark as outlined Amiri (OFL) glyphs: renders without any Arabic font on the device (A1) */
+.wordmark-ar{display:inline-block;height:1.9em;width:auto;vertical-align:-.6em;margin-inline-start:.2em}
