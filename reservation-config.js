@@ -12,6 +12,8 @@ window.AZAL_RESERVATION_CONFIG = Object.freeze({
   totalSeats: 50,
   maxPartySize: 10,
   depositRequired: false,
+  guestFields: Object.freeze(["name", "mobilePhone", "email", "partySize", "dateTime"]), // owner rule 07:48: table only, these and nothing else
+  phoneRequired: true,
   notificationMethod: "email",
   notificationEmail: null, // owner-held address is entered only at go-live
   bookingEnabled: false,

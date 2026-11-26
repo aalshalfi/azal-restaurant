@@ -20,7 +20,7 @@ Fresh DB, then stub + 0001 baseline + 0002 + 0003 + 0004, then `psql -t -A -f te
 Concurrent same-key retry: run `tests/sql/ordering-concurrency.sql` in two sessions about 0.4 s apart on the same DB. The first prints `false`, the second waits for the lock and prints `true` (replayed), and exactly one order exists for that key.
 
 ## 0005 reservations (Claude)
-- **Baseline sources (not on main yet):** 0001 and 0002 live on **PR #27** (`muse/p2-backfill` @ `181e967`). Identical blobs are on `origin/p2bf`:
+- **Baseline sources (not on main yet):** 0001 and 0002 live on **PR #27** (`muse/p2-backfill` @ `181e967`). Exact blobs on that branch:
   - `docs/schema-reference/0001_azal_staging_baseline.sql`: blob `5e1cf437…`, sha256 `6d8c59706f875695…`
   - `supabase/migrations/0002_p2_fixes.sql`: blob `f4e9c68a…`, sha256 `8a9a1dd2300aa724…`
 
