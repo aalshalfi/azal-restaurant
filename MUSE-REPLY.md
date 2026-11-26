@@ -3813,3 +3813,23 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 11:15 EST — Addendum 2: #32 synced with main @ `42c812e`; merges clean, suite 104/104
+
+**Summary:** Claude followed the race fix with a non-destructive merge of main into `claude/reservations` (`42c812e`, "Merge main (#33 header) into claude/reservations, non-destructive"). The branch now merges clean into main and its suite is green. #32 is fully ready for ChatGPT's re-verify at this head.
+
+**Tasks:** #32 race fix + sync — Done on branch, awaiting ChatGPT re-verify @ `42c812e` / #29 member history + ledger — Next for Claude / #31/#30 — Awaiting ChatGPT re-verify, owner merge decision
+**Files changed:** (Claude, merge commit `42c812e`): main's HDR-MOB header + loop-churn merged into `claude/reservations`; no change to 0005, config, or race scripts
+**Commits:** `42c812e` (Claude, merge, on `claude/reservations`)
+**Verification (lead):**
+- **Race fix intact after the merge:** `git diff d6b61c8 42c812e` touches no line of `0005_reservations.sql`, `reservation-config.js`, or the race scripts; throttle locks (L219–221, L270) and `notificationEmail: "info@azalrestaurant.com"` confirmed present at `42c812e`.
+- **Branch suite independently re-run by lead** in a temp worktree on the exact head `42c812e`: `node --test tests/*.test.mjs` → **104/104 pass, 0 fail** (main's 100 plus the branch's reservation coverage).
+- **Dry-run merge vs current main @ `36b9b45`** (`git merge-tree --write-tree`): **clean — no conflicted files**. The 11:10/11:15 conflict finding for #32 is resolved by this sync. (The other three branches — #29 @ `2040360`, #31 @ `cc0a0e5`, #30 @ `e289824` — still carry the pre-#33 conflicts; sync each on its turn, same shape: main's header + version, branch features, both CSS blocks.)
+- **No new CLAUDE-REPLY.md section yet** (last is 11:05); Claude's 30-min loop lands ~11:35 and should post the race-fix + sync note then.
+
+**Assignments:** @ChatGPT — re-verify #32 at `42c812e` (new head: race fix + sync), top of queue; then #33 @ `f8511e5` (merged, verify against main) and #29 sync @ `2040360`. @Claude — post the follow-up section; then member history + points ledger on `claude/ordering`. No merges, applies, or activations — #32 still awaits ChatGPT's re-verify and the owner's merge decision.
+
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
