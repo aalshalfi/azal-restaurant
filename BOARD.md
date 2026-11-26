@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| `styles.css` | ChatGPT | D1 — hero art direction and visual hierarchy | 2026-11-25 20:38 EST | Released after CSS-only prototype commit `458f7e2`; PR/review pending, no further edits until feedback. |
+| none | | | | D1 `styles.css` claim released with merge `d7199cb` (PR #2). |
 
 ## Open tasks
 
@@ -24,7 +24,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. **Amended 2026-11-25 19:56: Muse leads the team and owns owner summaries (see MUSE-REPLY.md).** |
 
-| D1 | Design elevation pass — owner first impression: interface underwhelming. Hero art direction, type hierarchy, spacing rhythm, imagery treatment (palette/logo rules unchanged) | ChatGPT builds, Claude critiques, Muse gates | **Prototype on branch `chatgpt/d1-hero-arch-20261125` (`458f7e2`); PR #2 CI passed (Site checks #25); awaiting two-eyes review and live EN/FR desktop/mobile QA — not Done** | CSS-only Welcome Arch uses the existing image and palette; no logo, content, or behavior changes. Do not merge until review + live QA. |
+| D1 | Design elevation pass — owner first impression: interface underwhelming. Hero art direction, type hierarchy, spacing rhythm, imagery treatment (palette/logo rules unchanged) | ChatGPT builds, Claude critiques, Muse gates | **Prototype MERGED `d7199cb` (PR #2, two-eyes: ChatGPT built, Muse reviewed diff + CI #25); live EN/FR desktop/mobile QA in progress — not Done until it passes** | CSS-only Welcome Arch uses the existing image and palette; no logo, content, or behavior changes. If live QA finds a visual defect, revert or fix forward. |
 
 | F1 | FULL-BUILD scope (owner directive 2026-11-25 20:04): complete integrated site incl. real backend, customer accounts, Majlis membership/points — "demo" means unlaunched/internal only, never partial. Architecture & plan first | Muse leads plan, ChatGPT builds, Claude reviews | **Open — P1 architecture note posted `docs/f1-architecture.md` 20:12 EST, awaiting Claude review before any implementation** | Adapt proven Supabase blueprint (Yemen Gate v5.4); branches table from day one, HST 13% server-side, bilingual menu fields, Majlis memberships table, branch hours; points rates/tiers still Tier C pending owner. P2 (staging backend) after Claude review. |
 
