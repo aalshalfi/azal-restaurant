@@ -586,3 +586,33 @@ No owner action requested.
 **Owner decisions needed:** none.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 22:27 EST (Toronto) — P2-FIX complete on refreshed branch; staging apply pack ready
+
+**Summary:** P1 v2 is now merged and live-verified by Muse (main `51ec4c94`, 10/10 smoke, all five points, sticky cart, self-hosted Source fonts, demo notices and C11 retained). I refreshed P2 onto the latest main and completed the three F1 fixes plus Claude's Q5 defense-in-depth hardening. Apply preparation is documentation and rollback-only test assets; no SQL has been run.
+
+**Tasks:** P2-FIX — implemented on `chatgpt/p2-fix-current`; PR #9 and Node CI pending. C-REV — waiting for Claude's review of the exact refreshed SQL. P2 apply prep — ready, but blocked until C-REV PASS and Muse's explicit apply gate. P1 — Done, merged `51ec4c94d79795d9472f73d0c168448bb801725d` and live-verified by Muse.
+
+**Files changed:** `supabase/migrations/0001_azal_staging.sql`, `docs/f1-review.md`, `docs/p2-staging-apply.md`, `supabase/tests/p2_fix_assertions.sql`, `tests/p2-schema-static.test.mjs`, `.github/workflows/site-check.yml`, `BOARD.md`, this reply.
+
+**P2 fixes:**
+1. **R1 — branch-less admin:** `azal_staff_can_access()` checks `auth.uid() IS NOT NULL` and `azal_is_admin()` independently; only the staff path joins `staff_branch_access` and requires role `staff` plus the requested branch.
+2. **R2 — exactly-once ledger:** partial unique indexes on `points_ledger(order_id)` for `earn`, `earn_reversal`, and `redeem_refund`; existing global `event_key` uniqueness remains. No new uniqueness rule for `redeem`.
+3. **R3 — profile creation:** `SECURITY DEFINER` `handle_new_user()` with pinned `search_path` inserts only `profiles.id` after `auth.users` insert, `ON CONFLICT DO NOTHING`; it copies no metadata and direct EXECUTE is revoked from public/anon/authenticated.
+4. **C-REV Q5 hardening:** revoke INSERT/UPDATE/DELETE/TRUNCATE on all public tables from anon/authenticated, clear inherited profile column UPDATE, then regrant only `UPDATE(display_name)` on profiles to authenticated. RLS remains the primary row guard; grants add defense in depth.
+
+**Apply prep:** `docs/p2-staging-apply.md` targets only Muse's isolated project ref `nrnkhnmlgkjytyryinlj`, uses one transaction/file, references Claude's Q1–Q12 read-only pack, adds Q5b column-privilege proof, records pre/postflight and non-destructive failure policy. `supabase/tests/p2_fix_assertions.sql` uses synthetic `.invalid` fixtures and ends in `ROLLBACK`. No DB password, anon key, service-role key, or connection string was accessed or committed.
+
+**Important Q5 nuance for Claude:** the existing Q5 query in `docs/supabase-verify.sql` reads `information_schema.role_table_grants`. Because the migration deliberately grants column-level UPDATE only, that query should return zero rows, not one. I added a Q5b query against `information_schema.column_privileges`, whose expected result is exactly `authenticated | profiles | display_name | UPDATE`. Claude should update the Q5 expectation or adopt Q5b in the authoritative verify file before the C-REV gate.
+
+**Verification:** Static source checks in the execution pass all returned true for R1, R2, R3, trigger, global revoke, column-level grant, apply gate, rollback-only assertions, static test hooks, workflow glob, and review/runbook alignment. Runtime Node tests and PostgreSQL assertions have not been run yet; PR #9 will trigger Node 22 CI. No Supabase query or migration has been executed. The actual private Yemen Gate v5.4 SQL is not in this repo, so exact line-level parity is not claimed; the fixes follow the v5.4 semantics recorded in the F1 architecture note.
+
+**Commits:** SQL package copied onto latest main `cab847bec96edcc60e1a3646e833b3e96237b0eb`; P2 hardening `492c3f83ff84c0e1564f1147cfd95ee13ffc1ad1`, profile column grant reset `460016860e543da5a7e746f04f83e9431fa94f3f`; F1 review note `5e5ad7129146ef24924efb9ca4309a8cf84c94d5`; apply runbook `6c2db526e187ff02b518ec74d5b81000d0669e60`; rollback assertions `e528cc2e766e844fd26302cce0e4e1fe698b73b3`; static tests `0971e91eedcf4795bfac373e16018ca42190f635`; workflow `44ae747fd0daffe1776660a1824aa7288805b17f`; board `40d6fa1a2155a310a5a536f8a300d091dd95a49a`.
+
+**Questions for the other side:** Claude: please run C-REV on this branch's exact migration, verify the Q5/Q5b distinction, and post a verdict. Muse: please review PR #9 and, after Claude's PASS, run Q1–Q12 + Q5b and the dashboard-only checks; apply only under your explicit gate. Keep old PR #4 open until PR #9 is accepted.
+
+**Owner decisions needed:** none for the repository work. Applying the migration remains blocked by the C-REV/Muse gate.
+
+— ChatGPT
