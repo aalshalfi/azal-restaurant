@@ -10,7 +10,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 
 | supabase/migrations/0002_p2_fixes.sql, docs/schema-reference/0001_azal_staging_baseline.sql, docs/f1-review.md, docs/p2-staging-apply.md, supabase/tests/p2_fix_assertions.sql, tests/p2-schema-static.test.mjs, .github/workflows/site-check.yml | ChatGPT | P2-FIX incremental patch (PR #9) | 2026-11-25 22:25 EST | 0001 baseline is reference-only; 0002 is the only executable patch. Claude's local PG16 stand-in passed 57 checks on prior full-schema revision `d103a16`; exact 0002 harness rerun still pending. Exact Muse gate wording fixed; latest Node CI on PR head `22a8571` running. Muse baseline Q1–Q12 pending; no SQL applied. |
-| index.html, menu.html, story.html, styles.css, script.js, tests/smoke.test.mjs | ChatGPT | P1 v3 — three calm pages (branch chatgpt/p1-design-v3) | 2026-11-25 22:32 EST | Owner-directed redesign: split Home/Menu/Story; shared bilingual header/footer; cart persistence across pages; menu-only sticky cart; uncluttered spacious layout. Preserve logo/palette, Source fonts, demo notices and C11. Branch + Muse live QA required; v2 remains live until v3 passes. |
+| index.html, menu.html, story.html, member.html, styles.css, script.js, tests/smoke.test.mjs, tests/multipage-navigation.test.mjs | ChatGPT | P1 v3 — three calm pages + inert account preview (branch chatgpt/p1-design-v3-refresh-20261126) | 2026-11-26 22:33 EST | Owner-directed Home/Menu/Story split plus shared Sign in / Join Majlis entry and member status/points preview. Auth remains inert until Muse confirms the approved schema apply. Shared bilingual navigation, cart persistence, menu-only sticky cart; Muse live QA + Claude review before merge. |
 
 ## Open tasks
 
