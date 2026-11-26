@@ -1,5 +1,16 @@
 const translations = {
  en: {
+  pickupSlotsLabel:"Pickup times",
+  pickupChosen:"Pickup preview: {time}.",
+  pickupBeforeOpen:"We open at {time}.",
+  pickupClosedToday:"We’ve closed for orders today. Order now for pickup {day} from {time}.",
+  pickupTomorrow:"tomorrow",
+  pickupTz:"Times are Toronto time.",
+  pickupMore:"Show more times",
+  pickupLaterTomorrow:"Choose another time",
+  pickupLater:"Later today",
+  pickupAsap:"As soon as possible · ready about {time}",
+  pickupTitle:"Pickup time",
   sufraSummary:"Not sure where to start? Pick a mood",
   skipLink:"Skip to content",
   ariaHome:"AZAL home",
@@ -130,7 +141,7 @@ const translations = {
   demoOnly:"PREVIEW",
   checkoutTitle:"Almost there.",
   checkoutText:"This preview does not send your order to the kitchen or take payment.",
-  demoPickupOnly:"No name, time or payment details are collected here.",
+  demoPickupOnly:"Nothing you choose here is sent, stored or charged.",
   placeDemo:"See the preview",
   add:"Add",
   added:"Added",
@@ -154,6 +165,17 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  pickupSlotsLabel:"Horaires de retrait",
+  pickupChosen:"Retrait (aperçu) : {time}.",
+  pickupBeforeOpen:"Nous ouvrons à {time}.",
+  pickupClosedToday:"Les commandes sont fermées pour aujourd’hui. Commandez maintenant pour un retrait {day} dès {time}.",
+  pickupTomorrow:"demain",
+  pickupTz:"Heures de Toronto.",
+  pickupMore:"Plus d’horaires",
+  pickupLaterTomorrow:"Choisir une autre heure",
+  pickupLater:"Plus tard aujourd’hui",
+  pickupAsap:"Dès que possible · prêt vers {time}",
+  pickupTitle:"Heure de retrait",
   sufraSummary:"Vous hésitez ? Choisissez une envie",
   skipLink:"Aller au contenu",
   ariaHome:"Accueil AZAL",
@@ -284,7 +306,7 @@ const translations = {
   demoOnly:"APERÇU",
   checkoutTitle:"Presque prêt.",
   checkoutText:"Cet aperçu n’envoie pas votre commande en cuisine et ne prélève aucun paiement.",
-  demoPickupOnly:"Aucun nom, horaire ni paiement n’est recueilli ici.",
+  demoPickupOnly:"Rien de ce que vous choisissez ici n’est envoyé, enregistré ni facturé.",
   placeDemo:"Voir l’aperçu",
   add:"Ajouter",
   added:"Ajouté",
@@ -333,6 +355,7 @@ function applyLanguage(){
  document.querySelectorAll("[data-i18n-title]").forEach(el=>{el.setAttribute("title",t(el.dataset.i18nTitle))});
  const switcher=$("languageToggle");
  if(typeof renderSufraN==="function")renderSufraN();
+ if(typeof renderPickup==="function"&&typeof pickupState!=="undefined"&&pickupState.plan)renderPickup();
  const liveRegion=document.getElementById("cartStatus");if(liveRegion)liveRegion.textContent="";
  if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
  const active=tabs?.querySelector("button.active");
@@ -414,9 +437,9 @@ $("cartOpen")?.addEventListener("click",openCart);
  stickyCartBar?.addEventListener("click",openCart);
 $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
-checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
+checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();pickupState.plan=null;pickupState.choice=null;pickupState.showAll=false;renderPickup();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
 $("modalClose")?.addEventListener("click",closeModal);
-$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${t("notSent")}`;cart.clear();renderCart()});
+$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${typeof pickupLabel==="function"?pickupLabel()+" ":""}${t("notSent")}`.replace(/\.\./g,".");cart.clear();renderCart()});
 checkoutModal?.addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeModal()});
 toggle?.addEventListener("click",()=>{const open=nav?.classList.toggle("open")||false;toggle.setAttribute("aria-expanded",String(open))});
 nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}));
@@ -451,3 +474,34 @@ sufraN?.addEventListener("click",e=>{
  if(ch){const l=sfnLines.find(x=>x.id===Number(ch.dataset.sfnChange));if(l)l.qty=Math.max(0,Math.min(20,l.qty+Number(ch.dataset.delta)));renderSufraN();return}
  if(e.target.closest("#sfnAdd")){const live=sfnLines.filter(l=>l.qty>0);if(!live.length)return;live.forEach(l=>cart.set(l.id,(cart.get(l.id)||0)+l.qty));renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"");announce(t("sfnAdded").replace("{n}",sfnSize).replace("{count}",live.reduce((a,l)=>a+l.qty,0)));}
 });
+
+/* P3 pickup-time step, INERT PREVIEW (Claude). Rules = docs/p3-pickup-ui.md defaults; no backend, nothing sent or stored. */
+const PICKUP={open:660,close:1260,prep:20,step:15,last:1245,tz:"America/Toronto"};
+function pickupPlan(nowMin,c){
+ const first=c.open+c.prep,up=(m,s)=>Math.ceil(m/s)*s,range=(a)=>{const out=[];for(let m=a;m<=c.last;m+=c.step)out.push(m);return out};
+ if(nowMin<c.open)return {status:"before_open",day:"today",asap:null,slots:range(up(first,c.step))};
+ if(up(nowMin+c.prep,5)>c.last)return {status:"closed_today",day:"tomorrow",asap:null,slots:range(up(first,c.step))};
+ const asap=Math.max(up(nowMin+c.prep,5),first);
+ return {status:"open",day:"today",asap,slots:range(up(asap+1,c.step))};
+}
+function torontoMinutes(d){try{const p=new Intl.DateTimeFormat("en-CA",{timeZone:PICKUP.tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d);return Number(p.find(x=>x.type==="hour").value)*60+Number(p.find(x=>x.type==="minute").value)}catch{return d.getHours()*60+d.getMinutes()}}
+const oneDot=x=>x.replace(/\.\./g,".");
+function fmtMin(m){return new Intl.DateTimeFormat(language==="fr"?"fr-CA":"en-CA",{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(new Date(Date.UTC(2026,0,1,Math.floor(m/60),m%60)))}
+var pickupState={choice:null,showAll:false,plan:null};
+function renderPickup(){
+ const box=document.getElementById("pickupOptions");if(!box)return;
+ const plan=pickupState.plan||(pickupState.plan=pickupPlan(torontoMinutes(new Date()),PICKUP));
+ if(pickupState.choice===null)pickupState.choice=plan.asap!==null?"asap":String(plan.slots[0]);
+ const note=document.getElementById("pickupNote");
+ if(note)note.textContent=oneDot(plan.status==="before_open"?t("pickupBeforeOpen").replace("{time}",fmtMin(PICKUP.open)):plan.status==="closed_today"?t("pickupClosedToday").replace("{day}",t("pickupTomorrow")).replace("{time}",fmtMin(plan.slots[0])):"");
+ const radio=(val,label,cls)=>`<label class="${cls}"><input type="radio" name="pickup" value="${val}"${pickupState.choice===val?" checked":""}><span>${label}</span></label>`;
+ const shown=pickupState.showAll?plan.slots:plan.slots.slice(0,8);
+ box.innerHTML=(plan.asap!==null?radio("asap",t("pickupAsap").replace("{time}",fmtMin(plan.asap)),"pickup-asap"):"")+
+  `<p class="pickup-later" id="pickupLaterLabel">${plan.asap!==null?t("pickupLater"):t("pickupLaterTomorrow")}</p><div class="pickup-slots" role="group" aria-labelledby="pickupLaterLabel">`+shown.map(m=>radio(String(m),fmtMin(m),"pickup-slot")).join("")+`</div>`+
+  (!pickupState.showAll&&plan.slots.length>8?`<button type="button" class="text-link dark-link pickup-more" id="pickupMore">${t("pickupMore")}</button>`:"");
+ const tz=document.getElementById("pickupTz");
+ if(tz){let local="";try{local=Intl.DateTimeFormat().resolvedOptions().timeZone}catch{}tz.hidden=local===PICKUP.tz}
+}
+function pickupLabel(){const plan=pickupState.plan;if(!plan)return "";const v=pickupState.choice;const time=v==="asap"?fmtMin(plan.asap):fmtMin(Number(v));return t("pickupChosen").replace("{time}",(plan.day==="tomorrow"?t("pickupTomorrow")+" ":"")+time)}
+document.addEventListener("change",e=>{if(e.target&&e.target.name==="pickup"){pickupState.choice=e.target.value}});
+document.addEventListener("click",e=>{if(e.target&&e.target.id==="pickupMore"){pickupState.showAll=true;renderPickup();document.querySelector('.pickup-slots input[type="radio"]:not(:checked)')?.focus()}});
