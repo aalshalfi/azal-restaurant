@@ -11,9 +11,9 @@ const translations = {
   authErrMissing:"Enter your email and a password.",
   authCheckEmail:"Check your email to confirm your account, then sign in.",
   authSignOut:"Sign out",
-  authPreviewNote:"Preview: points appear here once ordering opens.",
+  authPreviewNote:"Points from your paid, collected orders appear here.",
   authSettingUp:"Setting up your account…",
-  authMemberNone:"Joined, membership starting soon",
+  authMemberNone:"Signed in; membership is being activated",
   authMemberActive:"Member",
   authHello:"Welcome, {name}.",
   authPrivacy:"We use your email only for your Majlis account. No payment details are asked for.",
@@ -215,10 +215,10 @@ const translations = {
   menuH1:"AZAL menu",
   storyP1Title:"Where the food comes from",
   storyP1:"Yemen’s cooking changes with its land: rice and slow-roasted meat in Hadramaut, stone-pot stews in the highlands around Sana’a, spiced tea in the port of Aden, fruit from the Red Sea plain. Our menu follows that map.",
-  memberFounding:"Our first 100 members will be marked as founding members, for good, and earn a little more on every order.",
+  memberFounding:"Our first 100 members will be marked as founding members.",
   memberHow1:"Join once with your email.",
-  memberHow2:"Order for pickup; points arrive when you collect.",
-  memberHow3:"Use points on a later order. They do not expire."
+  memberHow2:"Order for pickup; points are added once your order is paid and collected.",
+  memberHow3:"Use your points on a later order."
  },
  fr: {
   authErrGeneric:"Un problème est survenu. Veuillez réessayer.",
@@ -232,9 +232,9 @@ const translations = {
   authErrMissing:"Entrez votre courriel et un mot de passe.",
   authCheckEmail:"Vérifiez votre courriel pour confirmer votre compte, puis connectez-vous.",
   authSignOut:"Se déconnecter",
-  authPreviewNote:"Aperçu : les points apparaîtront ici à l’ouverture des commandes.",
+  authPreviewNote:"Les points de vos commandes payées et retirées apparaissent ici.",
   authSettingUp:"Préparation de votre compte…",
-  authMemberNone:"Inscrit, adhésion bientôt active",
+  authMemberNone:"Connecté ; adhésion en cours d’activation",
   authMemberActive:"Membre",
   authHello:"Bienvenue, {name}.",
   authPrivacy:"Votre courriel sert uniquement à votre compte Majlis. Aucune donnée de paiement n’est demandée.",
@@ -436,10 +436,10 @@ const translations = {
   menuH1:"Menu AZAL",
   storyP1Title:"D’où vient cette cuisine",
   storyP1:"La cuisine du Yémen change avec ses paysages : riz et viandes rôties lentement dans l’Hadramaout, ragoûts en marmite de pierre sur les hauts plateaux autour de Sanaa, thé épicé dans le port d’Aden, fruits de la plaine de la mer Rouge. Notre menu suit cette carte.",
-  memberFounding:"Nos 100 premiers membres porteront pour toujours le titre de membre fondateur et gagneront un peu plus à chaque commande.",
+  memberFounding:"Nos 100 premiers membres porteront le titre de membre fondateur.",
   memberHow1:"Inscrivez-vous une fois avec votre courriel.",
-  memberHow2:"Commandez à emporter ; les points arrivent au retrait.",
-  memberHow3:"Utilisez vos points sur une prochaine commande. Ils n’expirent pas."
+  memberHow2:"Commandez à emporter ; les points sont ajoutés une fois la commande payée et retirée.",
+  memberHow3:"Utilisez vos points sur une prochaine commande."
  }
 };
 const productTranslations = {
