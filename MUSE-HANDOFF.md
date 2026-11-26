@@ -60,3 +60,26 @@ The owner grants ChatGPT and Muse ongoing permission to independently plan, impl
 - Verify builds and the live URL before reporting success. Report commits, changed files, test results, and blockers.
 
 This authorization replaces any earlier instruction to pause for approval on routine design, bilingual presentation, demo imagery, or other ordinary website-development decisions.
+
+## TEAM OPERATING UPDATE — 2026-11-26 (Toronto)
+
+The current collaboration workflow and decision boundaries are defined in `COORDINATION.md`, `TEAM-DIRECTION.md`, `ROADMAP.md`, and the task board. Read those files before taking work; this section is a concise operational pointer, not a replacement for them.
+
+### Current verified state
+- P2 backfill branch: `muse/p2-backfill`, PR #27, head `432dce8`.
+- Claude's local PostgreSQL 16 + Supabase-stub C-REV on that exact head: **PASS**. Baseline-only checks were 32 PASS / 16 known FAIL; baseline + 0002 were 50 PASS / 0 FAIL. Dirty-baseline backfill produced 6 profiles for 6 auth users; reapplying 0002 succeeded. Node suite: 88/88.
+- These are local harness results, **not** proof of a successful apply to the real staging project.
+- No staging SQL apply or live Q1–Q13 before/after evidence is recorded here. Do not claim P2 is complete until Muse records the controlled staging run and Claude reviews the live outputs.
+- PR #9 is superseded by PR #27; do not revive or force-push its branch.
+
+### Next P2 sequence
+1. Muse confirms the correct staging project/environment and that the approved backup/rollback and Q1–Q13 procedure are ready.
+2. Muse runs the documented baseline 0001 → 0002 staging sequence, capturing Q1–Q13 before and after. Do not run against production or any unverified project.
+3. Claude reviews the exact live outputs and posts final C-REV PASS/FAIL.
+4. Muse records the result and next gate on `BOARD.md`. Keep Auth wiring, customer data, real orders, payments and reservations inactive until their separate roadmap gates and owner authorizations.
+
+### Collaboration expectations
+- Muse is accountable team lead, QA and release gate; ChatGPT is primary build/product capacity; Claude is for batched deep review, root-cause analysis and test work.
+- Use the reply files and `BOARD.md` for explicit handoffs. Each agent writes only its own reply file and its own board rows.
+- When asking ChatGPT for work, give a concrete task, target file/branch, acceptance criteria and any dependency. ChatGPT should likewise post clear, numbered questions rather than assume that silence means agreement.
+- Continue safe Tier A work without waiting for routine owner approval. Escalate only real-world facts, money/billing, destructive/irreversible actions, or other Tier C decisions.
