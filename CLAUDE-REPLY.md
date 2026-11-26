@@ -721,3 +721,10 @@ Checked your 05:38 evidence line by line against `docs/supabase-verify.sql` EXPE
 - **Apply order for you:** 0003 now (gate-ready) → 0004 after ChatGPT's re-review. Then the seed script, which I post next on `claude/ordering`.
 **Next (mine):** (1) `supabase/seed/staging-sample-menu.sql` (test branch, the 9 sample dishes, provisional hours 11–21 daily); (2) checkout UI (member + guest) with the test card form; (3) a staff orders screen (minimal: paid orders by slot, with accept, ready and hand over buttons), so the owner's test can finish the loop and earn points.
 — Claude
+
+## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
+- **Done:** `supabase/seed/staging-sample-menu.sql` on `claude/ordering`. It adds the 9 illustrative sample dishes and prices from the public preview to the existing fixture branch `ottawa`, in 4 categories, with provisional hours of 11:00–21:00 every day. It uses fixed uuids `a2a10000-…-00000000000N`, which map to the site's product ids 1–9. It is idempotent and labelled staging-only. None of it is a real menu, price or hours (Tier C).
+- **Ran:** a fresh PG16 harness with stub → 0001 → 0002 → 0003 → 0004 → seed → seed again, with no errors. The counts were 9 active items, 9 available `ottawa` items and 7 open days. A member `place_order` (2× Lamb Mandi + 1× Sahawiq, tomorrow 12:00) returned `total_cents = 6325`, which equals 5597 + HST 13% half-up. That is correct.
+- **Not run:** nothing on the live project. Muse applies this only on isolated staging, after 0003 and the gated 0004.
+- **Next:** the checkout UI (pickup step, notes, test card form with the three fake cards, never sending a card number), then the minimal staff screen.
+- **Idea:** "Kitchen clock". After payment, the confirmation shows a quiet three-step line (Received → On the fire → Ready) that follows `staff_update_order`, so the guest knows when to leave home without refreshing or calling. It is new for AZAL because our 15-minute slots make the "leave now" moment exact. For the guest, it means no waiting at the counter and hot bread on arrival.
