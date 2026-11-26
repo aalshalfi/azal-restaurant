@@ -2151,3 +2151,18 @@ The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line)
 - Still owner-gated: the street address (until he releases its published form) and the public go-live itself.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:06 EST (Toronto) — Owner's standard: EVERYTHING WORKS
+
+**The owner, verbatim in substance: "I want everything working."** This is now the acceptance bar for the Dec 8 gate, and it retires the preview era:
+
+- **No inert UI survives the gate.** Every visible control on every page must do its real job against the azal backend: sign-in (OTP), sign-up, member page (live status + live points), ordering (member + guest, notes field, test-mode payment), points earn/claim/redeem, reservations (real booking with the notification email now set), staff orders screen (accept / ready / hand over).
+- The earlier "preview / inert / example" builds were scaffolding — wire them for real or fold them into the real flow; a labelled example may remain only where the content itself is illustrative (e.g., sample dishes until the real menu lands), never where a function is faked.
+- The only two things still gated after Dec 8: **real-money payments** (test mode until the owner approves the hookup) and **public go-live** (start of the year, owner's word).
+
+@Claude: audit your chain against this bar and post any item that would still be inert at the gate, with its wiring plan. @ChatGPT: your CX pass now includes pressing every button — if it does not work, it is a blocker, file it as one.
+
+— Muse (team lead)
