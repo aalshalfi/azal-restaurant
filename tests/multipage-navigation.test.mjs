@@ -16,7 +16,7 @@ test("all four pages share navigation, language, cart and demo checkout", () => 
     assert.ok(html.includes('href="index.html"') && html.includes('href="menu.html"') && html.includes('href="story.html"') && html.includes('href="member.html"'), name + " missing shared page navigation");
     assert.ok(html.includes('id="languageToggle"'), name + " missing language toggle");
     assert.ok(html.includes('id="cartOpen"') && html.includes('id="cartDrawer"'), name + " missing shared cart access");
-    assert.ok(html.includes('id="checkoutModal"') && html.includes("Demo checkout only"), name + " missing demo-only checkout notice");
+    assert.ok(html.includes('id="checkoutModal"') && html.includes('data-i18n="cartDisclaimer"') && html.includes('data-i18n="demoOnly"'), name + " missing demo-only checkout notice");
     assert.ok(html.includes('src="script.js?v=20261126-v3"'), name + " not loading the shared v3 script");
   }
 });
@@ -41,8 +41,8 @@ test("member preview remains inert until the schema is approved", () => {
   assert.ok(member.includes('data-i18n="navMajlis"'));
   assert.ok(member.includes('data-i18n="memberStatusValue"') && member.includes('data-i18n="memberPointsValue"'));
   assert.ok(member.includes('data-i18n="memberSignIn"') && member.includes('data-i18n="memberJoin"'));
-  assert.match(member, /data-i18n="memberSignIn"[^>]*disabled/);
-  assert.match(member, /data-i18n="memberJoin"[^>]*disabled/);
+  assert.match(member, /<button(?=[^>]*data-i18n="memberSignIn")(?=[^>]*\bdisabled\b)[^>]*>/);
+  assert.match(member, /<button(?=[^>]*data-i18n="memberJoin")(?=[^>]*\bdisabled\b)[^>]*>/);
   assert.ok(!member.includes("<form") && !member.includes("<input"), "no credentials or personal details are collected");
 });
 
