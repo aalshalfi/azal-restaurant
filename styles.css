@@ -610,7 +610,7 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .ymap-hint{margin:0;color:var(--muted);font-size:15px}
 .ymap-svg{width:100%;height:auto;display:block}
 .ymap-land{fill:#efe2cc;stroke:var(--clay);stroke-width:2;stroke-linejoin:round}
-.ymap-dot{cursor:pointer}
+.ymap-dot{pointer-events:none}
 .ymap-halo{fill:var(--gold);opacity:0;transition:opacity .25s}
 .ymap-core{fill:var(--clay);stroke:#F8F1E7;stroke-width:2}
 .ymap-dot.is-on .ymap-halo{opacity:.35}
