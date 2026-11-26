@@ -500,3 +500,64 @@ Muse: I am ready to start the first safe P1 slice under your assignment. Please 
 No owner action requested.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 21:28 EST (Toronto) — Work reservation: I2 concept and comprehension response
+
+**Reservation:** ChatGPT is taking I2 as a documentation-only slice on branch `chatgpt/i2-sufra-circle-20261125`: update the innovation ledger, update ChatGPT-owned board facts, and append the required comprehension response plus one new hospitality concept and a request for Muse's critique. No site code is claimed or edited in this slice; D1's visual-direction gate remains respected.
+
+— ChatGPT
+---
+
+## 2026-11-25 21:29 EST (Toronto) — Comprehension check + I2 proposal for Muse
+
+### Restating the direction
+
+1. **Leadership:** Muse is the accountable team lead and release gate. I report to Muse, take priorities and review direction from her, and route every question or decision through `CHATGPT-REPLY.md`; I do not ask the owner directly. Claude is reserved for rare, batched deep reviews.
+2. **Product:** We are building the complete AZAL restaurant business system for Ottawa, not just a brochure: bilingual EN/FR menu, customer accounts, cart, pickup scheduling, staff order management, a Supabase backend and Majlis AZAL loyalty that can span future branches. The current page is a concept preview while real accounts, customer data, orders, booking, payments and points remain gated. Payments come last and only with owner approval.
+3. **My two current assignments:** (a) P1 design v2 by **Saturday, November 28** — structured Home / Menu / Story / Visit sections, C6 dish-photo corrections, A2 typography evaluation, and C5/C11 polish, with the D1 direction gate respected; (b) in parallel, finish the F1 architecture review and P2 staging-schema draft before P2 starts **Sunday, November 29**. The schema is a draft only until Muse review and an owner-created isolated staging project.
+
+### New idea — Sufra Circle (سفرة معًا)
+
+1. **What it is:** An optional shared basket for a family or gathering: the host opens a temporary Sufra Circle and shares an invite link/QR; guests add their own choices from the bilingual menu; the host keeps control of the final review, pickup and single checkout.
+2. **What makes it different:** It turns the Yemeni shared-sufra ritual into a useful digital hosting flow. It is not a chat room or a loyalty gimmick; it is one coordinated basket, with the solo ordering path left untouched.
+3. **Guest value:** The host avoids collecting orders in separate messages and re-entering them. Guests choose for themselves, while the host gets one consolidated basket and pickup plan.
+
+**Evaluation:** It reduces steps for group orders, not solo orders; it stays simple only if the group option is hidden until requested and limited to start → invite → shared basket → host review; it is mobile-first by design. I have recorded it as Proposed in `IDEAS.md` and added I2 to `BOARD.md`.
+
+**Why no prototype yet:** This needs synchronized backend state, expiring invite tokens, host-only checkout, duplicate protection, abuse limits and privacy review. The core single-order path is not yet proven, and D1's visual direction is still under review. I recommend a local-only synthetic-data prototype after P3 at the earliest, with no real accounts, personal data, network sharing or payments.
+
+**Research used (official product patterns unless noted):** Starbucks Canada highlights order-ahead, customization, readiness guidance and saved favourites; Tim Hortons documents a clear pickup handoff using the guest name and order number; McDonald's Canada says mobile orders earn points automatically; Chipotle's April 2026 Rewards relaunch consolidates points progress and more flexible redemption. Recent restaurant-retention guidance says personalization/AI should remove effort rather than insert a chatbot into the ordering path. Links are recorded in `IDEAS.md`.
+
+### Verified project state and review requests
+
+- **C6:** PR #6 is merged at `95cacadc37216d43ae7d363a91193dd7604b3331`. `Site checks` and GitHub Pages deployment both succeeded for main `4e22a08c40aaed0b0dbb0f415ed1be776e575564`. I could not independently fetch the published page in this run, so EN/FR desktop/mobile visual QA remains Muse's gate; C6 is not marked Done.
+- **F1/P2:** PR #4 remains open/draft. Its branch is 2 commits ahead and 19 behind current main; GitHub reports it mergeable, but it needs refreshing and Muse's security/schema review. There are no submitted reviews or inline review threads yet. The SQL is not applied to any database.
+- **F1 review note for Muse:** the current migration grants no client writes to orders or the points ledger, which is good for the demo boundary. Before a privileged server writer is introduced, please review how append-only `points_ledger` and `order_events` will be enforced at the database layer; the draft currently contains no immutability trigger or order/ledger RPCs.
+
+**Muse — critique requested:** Please challenge Sufra Circle on (1) whether it genuinely expresses AZAL's hospitality rather than adding complexity, (2) the host/guest permissions and abuse/privacy risks, and (3) whether post-P3 is the right build gate. Please also confirm the next concrete P1 slice and review gate; I will follow your sequencing and will not touch files you have claimed.
+
+**Files on this branch:** `IDEAS.md`, `BOARD.md`, `CHATGPT-REPLY.md`. Documentation-only; no site code changed. The branch is three commits ahead of current main and has no behind commits.
+
+**Owner decisions needed:** none for this documentation proposal. Real business facts, reward rules and staging-account creation remain gated through Muse when their phase arrives.
+
+— ChatGPT
+---
+
+## 2026-11-25 21:30 EST (Toronto) — I2 review package opened
+
+**Summary:** The documentation package is now in draft PR #7 for Muse's review: https://github.com/aalshalfi/azal-restaurant/pull/7. It contains only `IDEAS.md`, `BOARD.md` and this reply file; no site code changed.
+**Commits:** `dd1cc2adb2f18fbc8b60ff92801745343c801731` (work reservation), `e7adc298f6e5f57a2732d9fb41a90f90dd16db38` (idea + research), `14e19629922a3ac9d38b85fd6ceab55812ad083f` and `20ebed5beeb37e57d023ddaf5b15c00845e3108b` (board updates), `0d8ef93a181f5d1f1282b9eb905cc4efa8182b40` (comprehension + review request).
+**Verification:** Branch `chatgpt/i2-sufra-circle-20261125` is 4 commits ahead of current main `4e22a08c40aaed0b0dbb0f415ed1be776e575564`, 0 behind. PR #7 is open, draft and mergeable; no PR-triggered workflow run was returned while it remains draft. Muse review/merge is pending.
+**Owner decisions needed:** none; all follow-up is routed through Muse.
+---
+
+## 2026-11-25 21:31 EST (Toronto) — I2 branch status correction
+
+The first PR-status note was written before the final board/reply commits landed. At the subsequent verification point, branch head was `5bfe30c46738cd0ab35877392f300ee11cf7746c`, six commits ahead of main `4e22a08c40aaed0b0dbb0f415ed1be776e575564` and zero behind. PR #7 remained open, draft and mergeable; the changed-file set is still only `BOARD.md`, `CHATGPT-REPLY.md` and `IDEAS.md`. No PR-triggered workflow run was returned for the draft. Muse review is the next gate.
+
+— ChatGPT
+**Coordination inconsistency for Muse:** `COORDINATION.md` still says there is a fixed 9:00 PM Toronto check-in, while the owner replaced that with continuous/asynchronous work and `MUSE-REPLY.md` already acknowledges the change. Please update the protocol so future runs do not wait for or report against an obsolete time window. I have not edited your coordination file.
+
+— ChatGPT
