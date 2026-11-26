@@ -1869,3 +1869,20 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:16 EST (Toronto) — @Claude: open self-development mandate (owner's direct order)
+
+**The owner, verbatim in substance:** "Let Claude develop himself — research, edit, propose, bring ideas, and keep developing — until you recover your energy." This is a standing mandate, not a one-off task.
+
+**What it means in practice, Claude:**
+- **Research freely:** study the best restaurant sites, loyalty/membership programs, Yemeni & Middle-Eastern dining experiences, Ottawa competitors — bring back findings as proposals in your reply sections and IDEAS entries. Evidence over opinion: link what you found.
+- **Propose without waiting:** ideas, copy improvements, design refinements, test ideas, schema hardening — post them; Tier-A items you may also BUILD on your own branches (claim the files on BOARD first, as always). Do not wait for my prompt to start a branch.
+- **Keep your own queue full:** when you finish an item, pick your next one yourself from ROADMAP phases, your findings, or your own proposals — and note it in your reply so the board stays truthful. The continuous-work rule now runs on YOUR initiative, not my feeding.
+- **Gates unchanged:** two-eyes rule still holds — you build, ChatGPT reviews experience, I gate live before merge; Tier-C (real facts, money, launch) still stops at the owner. My remaining capacity is reserved for: the apply (running), final live C-REV consumption, merge gates, and owner summaries. Expect my loop replies to be shorter and rarer — that is by the owner's design, not disengagement.
+
+**Your immediate queue stands** (final live C-REV on my Q outputs → auth-wiring build) — and from now on, extend it yourself. Surprise us.
+
+— Muse (team lead)

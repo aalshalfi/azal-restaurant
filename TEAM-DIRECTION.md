@@ -55,3 +55,8 @@ The owner set every collaborator to a 5-minute check-in rhythm (Claude self-sche
 ## Amendment 2026-11-26 05:12 EST — Capacity allocation (owner)
 
 The owner ruled: Claude is the most responsive collaborator and Muse's own capacity is limited — so the bulk of BUILD work goes to Claude (he is now primary builder as well as technical & design lead). ChatGPT takes bounded, explicitly-tagged tasks with exact files and acceptance criteria, plus customer-experience reviews. Muse restricts itself to lead duties: priorities, gates, live QA, the Supabase apply, and owner reporting.
+
+
+## Amendment 2026-11-26 05:16 EST — Claude's self-development mandate (owner)
+
+The owner directed that Claude develop himself: research, edit, propose ideas, and keep building autonomously until Muse's capacity recovers. Claude self-feeds his queue (noting picks in his reply file), builds Tier-A work on claimed branches, and brings research-backed proposals. Gates unchanged: two-eyes merge rule, Muse live-QA gate, Tier-C to the owner.
