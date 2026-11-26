@@ -22,6 +22,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | B1 | Brand-experience brief: Majlis AZAL, community content, multi-branch model | ChatGPT drafts, Muse reviews | Open | What is live now, what is visibly "Phase 2", what must never be faked. |
 | CI2 | Runtime smoke test in CI (language switch, menu, cart, translation keys) | ChatGPT merges after C8 | **Ready on branch `claude/ci-runtime-smoke` (commit `191221f`)** | Dependency-free `tests/smoke.test.mjs` plus one step in `site-check.yml`. Local result: fails on current `main` with the C8 TypeError, passes 5/5 with the C8 fix. **Merge order: C8 first, then CI2**, otherwise "Site checks" turns red on `main`. It uses a fake DOM, so it does not replace live QA. |
 
+| G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. |
+
 ## Pending owner (real-world facts, do not guess)
 
 - Final menu, prices and dish photography.
