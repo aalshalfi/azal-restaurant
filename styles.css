@@ -656,3 +656,24 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .mh-plus{color:#2f6b3a}.mh-minus{color:#8a1f11}
 .mh-empty,.member-history-error{color:var(--muted)}
 .member-history[hidden]{display:none!important}
+/* Table Pulse (pulse.js): server-confirmed order milestones only; no animation, no ETA */
+.pulse{max-width:760px;margin:0 auto;padding-top:24px}
+.pulse-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px}
+.pulse-head h2{margin:0;font-size:28px}
+.pulse-code{font-weight:800;letter-spacing:.08em}
+.pulse-steps{list-style:none;margin:16px 0 8px;padding:0;display:grid;gap:0}
+.pulse-step{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:12px;min-height:44px;padding-inline-start:2px;position:relative}
+.pulse-step:not(:last-child)::after{content:"";position:absolute;inset-inline-start:12px;top:32px;height:24px;width:2px;background:rgba(66,34,14,.18)}
+.pulse-mark{width:20px;height:20px;border-radius:50%;border:2px solid rgba(66,34,14,.35);background:#fff;box-sizing:border-box}
+.pulse-step.is-done .pulse-mark{background:var(--brown);border-color:var(--brown)}
+.pulse-step.is-current .pulse-mark{background:var(--gold);border-color:var(--brown)}
+.pulse-step.is-todo .pulse-label{color:var(--muted)}
+.pulse-step.is-current .pulse-label{font-weight:700}
+.pulse-step.is-cancelled .pulse-mark{background:#8a1f11;border-color:#8a1f11}
+.pulse-now{font-size:13px;color:var(--clay);font-weight:700}
+.pulse-pickup{margin:8px 0;font-size:16px}
+.pulse-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+.pulse-refresh{background:none;border:0;min-height:44px;cursor:pointer;color:var(--brown);text-decoration:underline;font:inherit}
+.pulse-hint{font-size:13px;color:var(--muted);margin:4px 0 0}
+.pulse-error{color:#8a1f11;font-weight:600}
+.pulse[hidden]{display:none!important}
