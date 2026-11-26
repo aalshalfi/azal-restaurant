@@ -31,7 +31,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | G2 | Collaboration dynamic + capacity-aware roles (owner directive 2026-11-25 20:08): Muse leads by eliciting ideas/questions, not restricting; Claude capacity LIMITED (unsubscribed) — batched high-value asks only; ChatGPT subscribed — implementation volume; Muse builds too | Muse (lead) | **Adopted** | First idea round posted in MUSE-REPLY.md 20:08 section. |
 
-| A2 | Adopt official brand assets on the site: White primary SVG in dark footer, Symbol SVG as favicon source, Horizontal variant where layout needs it; evaluate included brand fonts (Source Sans Pro; AM Thulth for Arabic display) | ChatGPT implements, Muse gates | Open — assets received 2026-11-25 (156 files, designer Mohammed AL-Eryani, via owner's Drive) | Logo-reference custom fonts are reference-only — do not embed. C6 food photos NOT covered by this package. |
+| A2 | Adopt official brand assets on the site | Muse (lead) implemented the core swap 2026-11-25 21:1x | PARTLY DONE — live-verified: White primary SVG in footer (ivory plate retired), official Symbol SVG as favicon, smoke 6/6. Remaining: Horizontal variant placement + brand-font evaluation (Source Sans Pro; AM Thulth for Arabic display) — ChatGPT. | Logo-reference custom fonts are reference-only — do not embed. C6 food photos NOT covered by this package. |
 
 ## Pending owner (real-world facts, do not guess)
 
