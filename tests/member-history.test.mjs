@@ -62,3 +62,8 @@ test("balance and cups use the WHOLE ledger (paged), even past the 50 rows shown
   assert.equal(d.ledger.length, 50, "only 50 rows listed");
   assert.equal(urls.filter((u) => u.includes("points_ledger")).length, 3, "3 pages of 25 read to exhaustion");
 });
+
+test("ledger beyond the safety cap fails visibly instead of showing a partial balance", async () => {
+  const h = H.createHistory({ config: CFG, pageSize: 50000, getSession: async () => S, fetch: async (u) => ({ ok: true, json: async () => (u.includes("/orders") ? [] : Array.from({ length: 50000 }, () => ({ entry_type: "earn", delta_points: 1 }))) }) });
+  await assert.rejects(h.load(), { code: "error" });
+});

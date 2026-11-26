@@ -7,7 +7,8 @@
 
   const cupsFrom = (ledger) => Math.max(0, (ledger || []).filter((r) => r.entry_type === "earn").length - (ledger || []).filter((r) => r.entry_type === "earn_reversal").length);
   function createHistory({ config, fetch: fetchFn, getSession, pageSize }) {
-    const PAGE = pageSize || 500;
+    const PAGE = pageSize || 500;   // below Supabase's default PostgREST max-rows (1000), so pages are never truncated
+    const MAX_ROWS = 100000;
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
     async function get(path, token) {
@@ -31,7 +32,9 @@
           for (let offset = 0; ; offset += PAGE) {
             const page = await get("/rest/v1/points_ledger?select=id,entry_type,delta_points,created_at,order_id&user_id=eq." + u + "&order=created_at.desc,id.desc&limit=" + PAGE + "&offset=" + offset, s.access_token);
             rows.push(...page);
-            if (page.length < PAGE || offset > 100000) return rows;
+            if (page.length < PAGE) return rows;
+            // Safety cap: never present a partial ledger as complete. 200 pages x 500 rows = 100,000 entries.
+            if (offset + PAGE >= MAX_ROWS) throw Object.assign(new Error("ledger_too_large"), { code: "error" });
           }
         }
         const [orders, ledgerAll] = await Promise.all([
