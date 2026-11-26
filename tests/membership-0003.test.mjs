@@ -11,7 +11,7 @@ test("trigger creates profile AND membership, idempotently", () => {
   assert.match(sql, /insert into public\.memberships \(user_id\)\s+values \(new\.id\)\s+on conflict \(user_id\) do nothing;/);
 });
 test("security definer with pinned search_path; not executable by clients", () => {
-  assert.match(sql, /security definer\s+set search_path = pg_catalog, public/);
+  assert.match(sql, /security definer\s+set search_path = ''/);
   assert.match(sql, /revoke all on function public\.handle_new_user\(\) from public, anon, authenticated;/);
 });
 test("backfill for existing profiles; no client write grant on memberships", () => {

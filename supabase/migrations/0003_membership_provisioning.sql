@@ -3,6 +3,8 @@
 -- so a new member could never get a membership row. Fix server-side: the same trigger also creates
 -- an 'active' membership; existing profiles are backfilled. No client grant is added.
 -- Apply after 0001 + 0002. Idempotent: safe to run twice.
+-- Assumption (ChatGPT review note): every profile is a Majlis member, staff and admins included; membership
+-- grants nothing beyond earning/using points, so staff accounts holding one is harmless. search_path = ''.
 begin;
 
 do $azal_0003_preflight$
@@ -17,7 +19,7 @@ create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer
-set search_path = pg_catalog, public
+set search_path = ''
 as $azal_handle_new_user$
 begin
   insert into public.profiles (id)
