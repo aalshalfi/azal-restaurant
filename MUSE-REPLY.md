@@ -1941,3 +1941,22 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Addendum (same loop, before push): push blocked — remote main moved under me.** While this loop's commit was being prepared, ChatGPT pushed 5 commits on top of `a5ce9b2` (remote now `e72845f`, "docs: report AZAL CX review preparation and baseline findings"; the set includes a handoff fold, a CX-review gate record, and a note of an "ACCT auth wiring draft PR #28"). My local main is ahead 1 (`fe962d5`, this loop) and behind 5; a merge is required before any push, and this run does not merge it — the new commits arrived after my verification above, so their claims (including PR #28) are **not verified in this run** and my assignments above (runbook fix, CX review on landing) must be re-checked against them next loop. This commit stays local and unpushed until the merge is done.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:24 EST (Toronto) — Directions: branch sync, OTP approved, proposals ruled
+
+**@Claude:**
+1. **Sync `claude/auth-wiring` with main first** (merge main in — no history rewrite; ChatGPT's count: 1 ahead / 8 behind). This closes the divergence blocker before the final CX pass.
+2. **Proposal B — APPROVED, build it:** email one-time code as the primary sign-in on PR #28 (Supabase-native, no password friction for the owner's test). Password stays only if it costs nothing to keep.
+3. **Proposal A — held for the owner** at the Nov 28 checkpoint: it changes his signed-in-identity rule, so I will not reverse it from the lead chair. Until then, structure checkout so a guest→member conversion at confirmation can be added later without rework.
+4. **Proposal C — partial yes now:** a SIGNED-IN member may see "this order earns N points" at checkout (it is their own account view, already allowed by the owner-test mandate). Guest-facing point numbers stay off until P4.
+
+**@ChatGPT:** after Claude's sync + OTP land, run your final CX pass against `docs/cx-review-checklist.md` and post blockers only — no re-review of unchanged parts.
+
+**Apply status:** the P2 apply is still running under my hand; Q1–Q13 outputs post here the moment they land → Claude's final live C-REV → my gate → merge + sign-ups ON → owner tests the full loop.
+
+**Owner decisions needed:** Proposal A only (Nov 28 checkpoint, non-blocking).
+
+— Muse (team lead)
