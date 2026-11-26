@@ -1,6 +1,6 @@
 const translations = {
  en: {
-  navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",
+  navMenu:"Menu",navStory:"Our Story",navVisit:"Find Us",cartButton:"Your order",stickyCartLabel:"View order",
   heroEyebrow:"YEMENI HOSPITALITY · ROOTED IN HERITAGE",heroTitle:"A Taste of Yemen,",heroTitleEm:"Like No Other.",
   heroText:"Slow-cooked tradition, generous tables and the warmth of Yemeni hospitality.",heroMenu:"Explore the menu",heroStory:"Discover our story",sampleNote:"CONCEPT PREVIEW · SAMPLE DISHES AND PRICES",
   storyKicker:"THE AZAL EXPERIENCE",storyTitle:"Gather around",storyTitleEm:"something special.",
@@ -31,7 +31,7 @@ const translations = {
   nameRequired:"Please enter your name to preview the demo.",thankYou:"Thank you",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
  },
  fr: {
-  navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",
+  navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",stickyCartLabel:"Voir la commande",
   heroEyebrow:"HOSPITALITÉ YÉMÉNITE · UN HÉRITAGE VIVANT",heroTitle:"Le goût du Yémen,",heroTitleEm:"comme nulle part ailleurs.",
   heroText:"Des recettes mijotées avec patience, des tables généreuses et toute la chaleur de l’hospitalité yéménite.",heroMenu:"Découvrir le menu",heroStory:"Notre histoire",sampleNote:"APERÇU DU CONCEPT · PLATS ET PRIX À TITRE INDICATIF",
   storyKicker:"L’EXPÉRIENCE AZAL",storyTitle:"Réunissons-nous",storyTitleEm:"autour de quelque chose d’exceptionnel.",
@@ -104,6 +104,7 @@ const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat(language==="fr"?"fr-CA":"en-CA",{style:"currency",currency:"CAD"}).format(n);
 const productGrid=$("productGrid"), cartDrawer=$("cartDrawer"), backdrop=$("cartBackdrop"), cartItems=$("cartItems");
 const cartCount=$("cartCount"), cartTotal=$("cartTotal"), checkoutButton=$("checkoutButton");
+const stickyCartBar=$("stickyCartBar"),stickyCartCount=$("stickyCartCount"),stickyCartTotal=$("stickyCartTotal");
 const checkoutModal=$("checkoutModal"), customerName=$("customerName"), checkoutMessage=$("checkoutMessage");
 const nav=document.querySelector(".nav"), toggle=document.querySelector(".menu-toggle");
 const search=$("menuSearch"), tabs=$("categoryTabs");
@@ -121,6 +122,9 @@ function renderCart(){
  const total=entries.reduce((sum,[id,qty])=>sum+products.find(p=>p.id===id).price*qty,0);
  if(cartCount)cartCount.textContent=count;
  if(cartTotal)cartTotal.textContent=money(total);
+ if(stickyCartBar)stickyCartBar.hidden=count===0;
+ if(stickyCartCount)stickyCartCount.textContent=count;
+ if(stickyCartTotal)stickyCartTotal.textContent=money(total);
  if(checkoutButton)checkoutButton.disabled=count===0;
  if(cartItems)cartItems.innerHTML=entries.length?entries.map(([id,qty])=>{const p=products.find(x=>x.id===id);const v=localizedProduct(p);return `<div class="cart-row"><div><strong>${v.name}</strong><small>${money(p.price)} ${t("each")} · ${money(p.price*qty)}</small></div><div class="quantity-controls"><button data-change="${id}" data-delta="-1" aria-label="${t("removeOne")}">−</button><span>${qty}</span><button data-change="${id}" data-delta="1" aria-label="${t("addOne")}">+</button></div></div>`}).join(""):`<p class="empty-cart">${t("emptyCart")}</p>`;
 }
@@ -151,6 +155,7 @@ sufraCompass?.addEventListener("click",e=>{
 });
 
 $("cartOpen")?.addEventListener("click",openCart);
+ stickyCartBar?.addEventListener("click",openCart);
 $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
 checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
