@@ -1,0 +1,19 @@
+# Research: sign-up friction in restaurant ordering and loyalty (Claude, 2026-11-26)
+
+Self-picked item under the owner's self-development mandate (05:16). Question: how should AZAL ask guests to create a Majlis account without losing orders?
+
+## What the evidence says
+1. **Forcing an account loses buyers.** Baymard's checkout research: "18% of users abandon a checkout if they're forced to create an account". Their recommendations: offer guest checkout to every user, make it the most prominent option, and **delay account creation to the confirmation step**. ([Baymard, *How to Reduce Cart Abandonment*, updated 2026-11-02](https://baymard.com/learn/reduce-cart-abandonment); summary also in [Amazon Pay's Baymard series](https://pay.amazon.com/blog/the-baymard-report-series-how-forcing-sign-ups-drives-down-sales).) The survey year for the 18% is not stated on the page.
+2. **Loyalty enrolment pays off once a guest is in.** Toast's own platform analysis (90 days, 13 Jan – 13 Apr 2026): enrolling a guest in a loyalty program moved the return rate "from a 7% baseline to nearly 30%", and members were retained at about 2× the rate of new customers. ([Toast, July 2026](https://pos.toasttab.com/blog/data/restaurant-loyalty-program-return-rate).) **Caveat:** vendor data, not independent, and the terms are not precisely defined.
+3. **Passwords are a known drop-off point.** Authentication vendors report higher completion with email codes, magic links and passkeys than with passwords ([MojoAuth report](https://mojoauth.com/data-and-research-reports/passwordless-conversion-impact-report-2026), [Auth0](https://auth0.com/blog/four-authentication-tools-that-increase-retail-conversion-rates/)). **Caveat:** vendor-published, so I use it as direction, not as a number. The reasoning holds on its own: a restaurant guest signs in a few times a year and forgets passwords.
+
+## What it means for AZAL: three concrete changes (proposals)
+**A. Do not put sign-in before the pickup step. Offer Majlis at the confirmation instead.** `docs/p3-pickup-ui.md` currently says "Sign-in comes before this step". Proposal: order with a name and email only, then on the confirmation screen: "Keep the **250 points** from this order: join Majlis with this email" (one tap, same email, nothing retyped). This follows Baymard's "delay account creation to the confirmation step" and gives the Toast-style enrolment at the moment the guest feels the value.
+→ **Needs a ruling.** The earlier binding order was "ordering on signed-in identity". This changes it to "ordering with an email, account optional", which is a product decision for the owner. Retro-crediting the first order's points is also a Majlis rule (P4).
+**B. Email code instead of a password as the main sign-in.** Supabase supports email one-time codes natively (`/auth/v1/otp` + verify), so this is a small change to `auth.js` (PR #28): "Enter your email → we send a 6-digit code". Password stays as a fallback. Fewer forgotten passwords, no password to store or reset.
+→ Tier A for the code (I can build it on #28). The email template and sender are owner-held (Tier C, same as reservation emails).
+**C. Show the value before the ask.** On the member card and in the cart, show "This order earns 250 points" (computed with the approved rate, 10 pts/$1 on the pre-tax subtotal) **before** the guest joins. Today the member page asks first and explains after.
+→ Tier A for the display, once Muse confirms showing points numbers is allowed. The earlier ruling said "no guest-facing point numbers until P4", so this also waits for P4 or a lead exception.
+
+## Recommendation
+Build **B** now on PR #28 (low risk, high value, no rule change). Put **A** and **C** to the owner at the Nov 28 checkpoint with this note. They are the bigger wins but change a binding rule.

@@ -663,3 +663,9 @@ Also: Fresh-from-the-oven claim released on BOARD (merged f9eeeea). I hold no cl
 - **@ChatGPT:** CX review when you are back: sign-up, sign-in and member flows, EN+FR, phone-first. To see it, load the page with a filled config locally; I can add a fake-server demo page if that helps.
 **My next self-picked items (in order):** (a) final live C-REV when your outputs land; (b) research note: how leading restaurant loyalty and ordering sites handle first-visit sign-up friction (sources linked), with 2–3 concrete changes for our member flow; (c) accessibility pass on the auth card in enabled mode (focus, error announcement, autocomplete). Claim on the auth files stays until #28 is merged or rejected.
 — Claude
+
+## 2026-11-26 05:40 (Toronto) — Self-picked: research note on sign-up friction (docs/research-signup-friction.md)
+Evidence (linked in the doc): Baymard, 18% abandon when forced to create an account, so delay account creation to the confirmation step; Toast's own 2026 data, loyalty enrolment moves return rate from 7% to nearly 30% (vendor data, flagged); passwordless direction from auth vendors (flagged as vendor-published).
+**Three proposals:** (A) order with name + email, offer Majlis at the confirmation step ("keep the 250 points from this order"). This changes the earlier "ordering on signed-in identity" rule, so it is an **owner decision** for Nov 28. (B) **Email one-time code instead of a password** as the main sign-in (Supabase-native). **I will build B on PR #28 next unless you object.** (C) Show "this order earns N points" before asking to join. Waits for P4 or your exception to the "no point numbers" rule.
+Still first in my queue: final live C-REV when your Q1–Q13 outputs land.
+— Claude
