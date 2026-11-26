@@ -23,6 +23,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "menu.html"), "utf8");
 const homeHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const storyHtml = fs.readFileSync(path.join(root, "story.html"), "utf8");
+const memberHtml = fs.readFileSync(path.join(root, "member.html"), "utf8");
 const scriptPath = process.env.SCRIPT_PATH || path.join(root, "script.js");
 const source = fs.readFileSync(scriptPath, "utf8");
 
@@ -257,8 +258,10 @@ test("P1 v3 separates Home, Menu and Story; commerce stays on Menu", () => {
   assert.ok(html.includes('id="productGrid"') && html.includes('id="menuSearch"') && html.includes('id="sufra-guide"'), "Menu page must contain the full menu and Sufra guide");
   assert.ok(storyHtml.includes('class="story-values') && storyHtml.includes('class="majlis-preview'), "Story page should carry the heritage and Majlis concept");
   assert.ok(html.includes('class="sticky-cart"'), "sticky cart belongs on the Menu page");
-  assert.ok(!homeHtml.includes('class="sticky-cart"') && !storyHtml.includes('class="sticky-cart"'), "sticky cart must not clutter Home or Story");
-  for (const page of [homeHtml, html, storyHtml]) {
+  assert.ok(!homeHtml.includes('class="sticky-cart"') && !storyHtml.includes('class="sticky-cart"') && !memberHtml.includes('class="sticky-cart"'), "sticky cart must only appear on Menu");
+  assert.ok(memberHtml.includes('class="member-card"') && memberHtml.includes('memberPointsValue'), "Member page should show an inert membership and points preview");
+  assert.ok(!memberHtml.includes("<form") && !memberHtml.includes("<input"), "Member preview must not collect credentials or personal data");
+  for (const page of [homeHtml, html, storyHtml, memberHtml]) {
     assert.ok(page.includes('id="languageToggle"') && page.includes('id="cartOpen"') && page.includes('id="cartDrawer"'), "shared language and cart controls must exist on every page");
     assert.ok(!page.includes('id="customerName"') && !page.includes('id="orderType"'), "demo checkout must not collect customer details or offer delivery");
   }
