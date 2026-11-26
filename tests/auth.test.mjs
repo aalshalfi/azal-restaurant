@@ -123,9 +123,20 @@ test("guest points claim: calls the RPC with the session, returns points; 0 when
   const st = mem(); st.setItem(KEY, JSON.stringify({ access_token: "A1", refresh_token: "R1", expires_at: 2e12, user: { id: "u-1" } }));
   const s = server([[/rpc\/claim_guest_points/, () => json(200, { points_added: 249 })]]);
   const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
-  assert.equal(await a.claimGuestPoints(), 249);
+  assert.deepEqual(await a.claimGuestPoints(), { added: 249, failed: false });
   assert.equal(s.calls[0].init.method, "POST");
   assert.equal(s.calls[0].init.headers.Authorization, "Bearer A1");
   const b = createAuth({ config: CFG, fetch: server([]).fetch, storage: st, now: () => 1e12 });
-  assert.equal(await b.claimGuestPoints(), 0);
+  assert.deepEqual(await b.claimGuestPoints(), { added: 0, failed: true }, "a failed call is reported, not shown as zero");
+  const z = createAuth({ config: CFG, fetch: server([[/rpc\/claim_guest_points/, () => json(200, { points_added: 0 })]]).fetch, storage: st, now: () => 1e12 });
+  assert.deepEqual(await z.claimGuestPoints(), { added: 0, failed: false }, "a real zero is not a failure");
+  const n = createAuth({ config: CFG, fetch: server([]).fetch, storage: mem(), now: () => 1e12 });
+  assert.deepEqual(await n.claimGuestPoints(), { added: 0, failed: false });
+});
+
+test("requestCode refuses a malformed email before sending anything", async () => {
+  const s = server([[/otp/, () => json(200, {})]]);
+  const a = createAuth({ config: CFG, fetch: s.fetch, storage: mem(), now: () => 1e12 });
+  for (const bad of ["", "nobody", "a@b", "a b@c.de"]) await assert.rejects(a.requestCode(bad), { code: "invalid_email" });
+  assert.equal(s.calls.length, 0);
 });

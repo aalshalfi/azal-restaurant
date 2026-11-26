@@ -77,6 +77,7 @@
       // Email one-time code (primary sign-in, lead ruling): one flow for new and returning members.
       async requestCode(email) {
         if (!enabled) throw Object.assign(new Error("disabled"), { code: "disabled" });
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(email || "").trim())) throw Object.assign(new Error("invalid_email"), { code: "invalid_email" }); // nothing sent
         await call("/auth/v1/otp", { method: "POST", body: { email, create_user: true } });
         return true;
       },
@@ -87,14 +88,15 @@
         write(s);
         return s;
       },
-      // Guest points (0004): move pending claims for this verified email into the ledger. 0 if none or not deployed.
+      // Guest points (0004): move pending claims for this verified email into the ledger.
+      // { added: N, failed: false } on success (N may be 0); { added: 0, failed: true } when the call fails, so the UI can say so.
       async claimGuestPoints() {
         const s = await session();
-        if (!s) return 0;
+        if (!s) return { added: 0, failed: false };
         try {
           const r = await call("/rest/v1/rpc/claim_guest_points", { method: "POST", token: s.access_token, body: {} });
-          return Number((r && r.points_added) || 0);
-        } catch { return 0; }
+          return { added: Number((r && r.points_added) || 0), failed: false };
+        } catch { return { added: 0, failed: true }; }
       },
       async signOut() {
         const s = read();
@@ -163,6 +165,7 @@
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
         `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${pending ? "—" : fmtPoints(st.points)}</strong></div></div>` +
         (st.claimed ? `<p class="auth-claimed" role="status">${esc(tr("authClaimed").replace("{points}", fmtPoints(st.claimed)))}</p>` : "") +
+        (st.claimFailed ? `<p class="auth-claimed auth-claim-failed" role="alert">${esc(tr("authClaimFailed"))} <button type="button" class="text-link dark-link" id="authClaimRetry">${esc(tr("authClaimRetry"))}</button></p>` : "") +
         `<p class="auth-note">${tr("authPreviewNote")}</p>` +
         `<div class="member-actions"><button class="button member-join" type="button" id="authSignOut">${tr("authSignOut")}</button></div>`;
       return;
@@ -206,10 +209,11 @@
   }
 
   async function refresh(afterSignIn) {
-    let claimed = 0;
-    if (afterSignIn) claimed = await auth.claimGuestPoints();
+    let claim = { added: 0, failed: false };
+    if (afterSignIn) claim = await auth.claimGuestPoints();
     last = await auth.state();
-    if (claimed > 0) last.claimed = claimed;
+    if (claim.added > 0) last.claimed = claim.added;
+    if (claim.failed) last.claimFailed = true;
     headerState(last);
     renderCard(last);
   }
@@ -217,6 +221,7 @@
   document.addEventListener("click", async (e) => {
     if (e.target && e.target.id === "authSwitch") { mode = mode === "signin" ? "signup" : "signin"; message = ""; renderCard(last); }
     if (e.target && e.target.id === "authSignOut") { await auth.signOut(); message = ""; mode = "code"; codeSentTo = ""; refresh(); }
+    if (e.target && e.target.id === "authClaimRetry") { e.target.disabled = true; message = ""; refresh(true); return; }
     if (e.target && e.target.id === "authUsePassword") { mode = "signin"; message = ""; renderCard(last); }
     if (e.target && e.target.id === "authUseCode") { mode = "code"; codeSentTo = ""; message = ""; renderCard(last); }
     if (e.target && e.target.id === "authChangeEmail") { codeSentTo = ""; message = ""; renderCard(last); }
@@ -232,6 +237,7 @@
       const email = e.target.email.value.trim();
       const btn = document.getElementById("authSubmit");
       if (!email) { message = tr("authErrMissingEmail"); document.getElementById("authMessage").textContent = message; return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { message = tr("authErrInvalidEmail"); document.getElementById("authMessage").textContent = message; e.target.email.focus(); return; }
       btn.disabled = true;
       try { await auth.requestCode(email); codeSentTo = email; lastSentAt = Date.now(); message = ""; renderCard(last); document.getElementById("authCode")?.focus(); }
       catch (err) { message = tr(errorKey(err)); const m = document.getElementById("authMessage"); if (m) m.textContent = message; btn.disabled = false; }

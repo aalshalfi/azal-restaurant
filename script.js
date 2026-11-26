@@ -1,6 +1,9 @@
 const translations = {
  en: {
   authClaimed:"We added {points} points from your earlier orders.",
+  authClaimFailed:"We couldn’t collect points from your earlier orders just now. They are kept for you.",
+  authClaimRetry:"Try again",
+  authErrInvalidEmail:"Please check your email address.",
   authErrMissingEmail:"Enter your email.",
   authErrCode:"That code didn’t work or has expired. Try again or send a new one.",
   authUseCode:"Use an email code instead",
@@ -237,6 +240,9 @@ const translations = {
  },
  fr: {
   authClaimed:"Nous avons ajouté {points} points de vos commandes précédentes.",
+  authClaimFailed:"Nous n’avons pas pu récupérer les points de vos commandes précédentes pour l’instant. Ils vous sont gardés.",
+  authClaimRetry:"Réessayer",
+  authErrInvalidEmail:"Veuillez vérifier votre adresse courriel.",
   authErrMissingEmail:"Entrez votre courriel.",
   authErrCode:"Ce code ne fonctionne pas ou a expiré. Réessayez ou demandez-en un nouveau.",
   authUseCode:"Utiliser un code par courriel",
