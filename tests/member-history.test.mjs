@@ -33,3 +33,13 @@ test("history renders with textContent only; member page loads it after checkout
   const v = h.match(/script\.js\?v=([\w-]+)"/)[1];
   assert.ok(h.indexOf(`checkout.js?v=${v}`) < h.indexOf(`member-history.js?v=${v}`));
 });
+
+test("V3 cups = collected paid orders (earn rows minus reversals), never negative; number shown separately", () => {
+  assert.equal(H.cupsFrom([]), 0);
+  assert.equal(H.cupsFrom([{ entry_type: "earn" }, { entry_type: "earn" }, { entry_type: "redeem" }]), 2);
+  assert.equal(H.cupsFrom([{ entry_type: "earn" }, { entry_type: "earn_reversal" }]), 0);
+  assert.equal(H.cupsFrom([{ entry_type: "earn_reversal" }]), 0);
+  const src = readFileSync(new URL("../member-history.js", import.meta.url), "utf8");
+  assert.match(src, /"mh-balance", L\("total"/, "the exact balance line is still rendered");
+});
+

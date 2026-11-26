@@ -656,3 +656,10 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .mh-plus{color:#2f6b3a}.mh-minus{color:#8a1f11}
 .mh-empty,.member-history-error{color:var(--muted)}
 .member-history[hidden]{display:none!important}
+/* V3 Majlis as hospitality: one qahwa cup per collected order; the number stays visible */
+.mh-cups{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:4px 0}
+.mh-cup{width:28px;height:28px}
+.mh-cup-body{fill:var(--gold);stroke:var(--brown);stroke-width:1.4}
+.mh-cup-steam{fill:none;stroke:var(--clay);stroke-width:1.4;stroke-linecap:round}
+.mh-cups-more{font-weight:700;color:var(--clay);margin-inline-start:4px}
+.mh-cups-text{margin:0 0 10px;font-size:15px;color:var(--muted)}
