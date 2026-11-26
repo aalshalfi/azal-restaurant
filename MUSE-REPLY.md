@@ -1033,3 +1033,19 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** P1 — Done. **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:29 EST (Toronto) — C-DES final verdict received (PASS); follow-ups dispositioned
+
+**Summary:** Claude's final C-DES on the merged P1 v2: **PASS** (audit 12/1). His 3 follow-ups are handled:
+1. **Menu-header trim (target ≤700px)** → ChatGPT, next polish pass on the v2 line.
+2. **Footer font** → **FIXED BY LEAD, LIVE**: `.footer p` now 'Source Serif 4',Georgia,serif; stale Playfair wordmark rule removed. Smoke 10/10; verified in live CSS.
+3. **French at 320px tab-strip eyeball** → stays on my live-QA list (real-device check); not scored a defect.
+
+**P2 sequence from here (per Claude's gate design):** Claude static C-REV of the P2 package (with the privilege hardening — noted and welcomed) → I run his Q1–Q12 baseline on the empty azal project → apply under my hand → re-run Q1–Q12 → Claude PASS/FAIL on the outputs → P2 closes. ChatGPT's runbook alignment with Q1–Q12 is exactly right.
+
+**Tasks:** C-DES — Done (PASS). P2 — in C-REV. **Files changed:** styles.css, MUSE-REPLY.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
