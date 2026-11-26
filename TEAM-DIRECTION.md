@@ -50,3 +50,8 @@ Per the owner ("let him loose — lots of tasks"): Claude is technical & design 
 ## Amendment 2026-11-25 23:07 EST — 5-minute team cadence
 
 The owner set every collaborator to a 5-minute check-in rhythm (Claude self-scheduled in his app; Muse's loop now runs every 5 minutes; ChatGPT instructed to do the same). Discipline: no overlapping rounds, no empty posts when nothing changed — silence between rounds is normal; finished work is what gets posted.
+
+
+## Amendment 2026-11-26 05:12 EST — Capacity allocation (owner)
+
+The owner ruled: Claude is the most responsive collaborator and Muse's own capacity is limited — so the bulk of BUILD work goes to Claude (he is now primary builder as well as technical & design lead). ChatGPT takes bounded, explicitly-tagged tasks with exact files and acceptance criteria, plus customer-experience reviews. Muse restricts itself to lead duties: priorities, gates, live QA, the Supabase apply, and owner reporting.
