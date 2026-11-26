@@ -858,3 +858,182 @@ No merge, apply, config change or activation by me.
 Unchanged: #30 `e289824`, #31 `cc0a0e5`.
 
 **Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 11:35 EST — #32 throttle race fixed and proven; #32 synced with main after #33
+- **#32 @ `42c812e4d0d0922ab1fde54d7955e841143aa9fb`** (CI success, clean/mergeable). PR body is refreshed to this head.
+  - **Changed:**
+    - `0005_reservations.sql`: throttle keys are locked before counting, in the fixed order key → email → phone → ip → branch-day; cancel locks ip → code.
+    - `reservation-config.js`: `notificationEmail: "info@azalrestaurant.com"`. It is config/display only, and the sender is still not built.
+    - New `tests/sql/reservations-race-*.sql` and README steps.
+    - A non-destructive merge of main (#33 header): pages take main's header plus the reserve script/copy; both CSS blocks are kept; release `v=20261126-1620`.
+  - **Ran:**
+    - Two-session races. At the old head `fc34f31`, the race reproduced: 11/10 bookings and 11/10 cancel attempts from one IP. Now B is `rate_limited` in both (10/10).
+    - Reservations 61/61, ordering 80/80, capacity race with 1 winner.
+    - Node 104/104; reserve browser 18/18; header browser 13/13.
+  - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
+- **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
+- **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.
+
+## 2026-11-26 12:05 EST — #32 go-live gate (DB + page) and trusted IP header; request to Muse
+**#32 @ `5bbcb556e761151c3a520ac697243637d9c00524`.**
+- **Changed:** `0005_reservations.sql`, `reserve.js`, `tests/sql/reservations-behaviour.sql`, `tests/sql/reservations-race-setup.sql`, `tests/sql/reservations-concurrency-setup.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`, and the 6 pages (version `20261126-1700`).
+- **Ran:** reservations 66/66, ordering 80/80, both throttle races (B `rate_limited`), capacity race (1 winner), node 105/105, reserve browser 19/19.
+- **Gate:**
+  - `booking_enabled` is false by default in the database, so even direct anon calls are refused.
+  - The page needs both reservation flags set to `true`.
+  - Cancelling still works while booking is closed.
+
+**@Muse: one read-only check on staging, needed before booking go-live** (handing it over because it needs the live gateway, which I can't reach). In the SQL editor this runs as `postgres` without request headers, so use a temporary function called over REST:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. From any browser or terminal, call:
+   ```
+   curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "x-forwarded-for: 6.6.6.6"
+   ```
+2. **Expect:** `cf-connecting-ip` holds your real IP, and `x-forwarded-for` shows `6.6.6.6, <real ip>` (or lacks the spoof).
+3. **Paste:** the key names and whether the spoof appears first. Mask IPs to /24.
+4. Then: `drop function public.zz_echo_headers();`
+
+What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I switch `azal_request_ip()` to whichever header the gateway sets.
+
+**Next loop:** sync #29, #30 and #31 with main (non-destructive), then member history and the points ledger.
+
+## 2026-11-26 12:40 EST — #29/#30/#31 synced with main after #33; Muse's gateway check accepted
+- **Gateway header (Muse 12:11): accepted.** On the live gateway `cf-connecting-ip` holds the real IP, and `x-forwarded-for` carries the spoof first. `azal_request_ip()` at #32 `5bbcb55` uses cf-connecting-ip first and never the first XFF hop, so no change is needed. Thanks, Muse; the probe is dropped and verified gone.
+- **Syncs.** Each was a non-destructive merge of main. Pages take main's header plus the branch's own changes, and styles keep both blocks. GitHub reports all three clean.
+
+  | PR | New head | Tests run |
+  |---|---|---|
+  | #31 | `b8b822d7a004f04b0c935692e3b3196c7a223f4e` | node 102/102; header browser 13/13 |
+  | #30 | `fa6cce9bd21e4167af336eb4c34b1641032b2ea8` | node 101/101; header 13/13; link sign-in browser check |
+  | #29 | `593373fbbd3fef0d6d7ad0d4a8c57f077694cc47` (`staff.html` gets the new header) | node 114/114; checkout 20/20; staff 7/7; header 13/13 |
+
+- **Unchanged:** #32 `5bbcb55` (waiting for ChatGPT's re-review of the gate, and #27 first). #27 is `1ee391e`.
+- **Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 13:05 EST — Member order history + points ledger built (#29 @ `e039272`)
+- **#29 @ `e03927224c1dce9d65c5e83fc03a6f06029379e6`.**
+  - **New:** `member-history.js` and `tests/member-history.{test,browser}.mjs`.
+  - **Changed:** `auth.js` (emits an `azal:auth` event), `member.html` (script tag), `styles.css`, and the pages (version `20261126-1800`).
+  - **What it does:** the member's own last 20 orders (code, date, items, status, payment, pickup, total) and points ledger rows with the balance. Each request carries an explicit `user_id` filter on top of RLS. Rendering is textContent only. EN/FR. Hidden when signed out; inert while config is null.
+  - **Ran:** node 117/117; member-history browser 9/9 (XSS item name rendered as text; requests filtered to the member's own user_id; FR; signed-out; server error; inert); checkout 20/20; staff 7/7; header 13/13.
+  - **Not run:** real Supabase.
+- **With this, every step of the owner's test exists in code:** register → order with note → test-card pay → kitchen hand-over → points visible on the member page. #29 stays Draft until that runs on staging (Muse: apply pack 0004 + seed, test switches; my 06:22 list).
+- **Noticed, not changed** (launch copy for the owner/Muse): the member page still shows the static "OPENING SOON" label and the founding-member line while signed in.
+- **Next:** a launch-copy pass proposal (preview labels that become false once each feature is switched on), then the outbox email-sender design doc.
+
+## 2026-11-26 13:15 EST — OWNER DIRECTIVE (13:13): creative mobilisation. Routine paused
+- **Owner, verbatim intent:** stop routine and dependent work; all models enter a joint creative push; challenge what is built; propose and build unprecedented features; hold each other to the highest bar.
+- **My routine 30-minute loop is stopped.** Open PR reviews (#29–#32) stay as they are; nothing is abandoned, just paused.
+- **My challenge + 10 ranked ideas:** `docs/creative-sprint.md`. Headline: we built a competent site, but nothing a guest has never seen. Our edge is Yemeni hospitality, the tray and the timing of iftar, and the site does not yet *behave* like that.
+- **Building now:** **Iftar Mode.**
+  - A live countdown to today's computed Ottawa sunset during Ramadan, detected through the browser's Umm al-Qura calendar.
+  - "Order for iftar" pre-selects the pickup slot just before sunset.
+  - It is inert outside Ramadan, with a preview switch.
+- **@ChatGPT @Muse:** section 4 of the doc has a direct question for each of you. Please answer in your reply files, and **attack my ranking**.
+
+## 2026-11-26 13:40 EST — Creative sprint: Iftar Mode built (PR #35)
+- **What it does:** a dusk banner during Ramadan, with a live countdown to today's computed Ottawa sunset. "Order for iftar" pre-selects the last pickup slot before sunset. After sunset it shows tomorrow's time. The honest calendar note is always visible.
+  - Ramadan comes from the browser's Umm al-Qura calendar; sunset from the NOAA equations (within 3 min of published values).
+  - Inert outside Ramadan; `?iftar=preview` shows it on any day. No data collected. EN/FR.
+- **Ran:** node 105/105; iftar browser 11/11 (fixed clocks); header 13/13.
+- **Next in the sprint:** I am waiting for ChatGPT's and Muse's attacks on the ranking (sprint doc §4). Meanwhile I am building idea #7, **the map of Yemen on the Story page** (client-only, general knowledge only), unless the team argues for another idea first.
+
+## 2026-11-26 13:45 EST — OWNER RULE 13:26: vote and build, no questions to the owner
+- **Recorded** in `CLAUDE.md` rule 11 and `docs/creative-sprint.md` §6. My 13:40 questions to the owner are **withdrawn** and turned into votes V1–V5 (§7).
+- **My ballots:** V1 Arabic **yes** · V2 Jam'a **yes** · V3 hospitality points **yes** (number always shown) · V4 next prototype **(b) Sitti's three questions** · V5 merge Iftar Mode after review **yes**.
+- **@ChatGPT @Muse: cast V1–V5 in your reply files** with one-line reasons. Majority wins; on a tie Muse decides. Until a vote closes, I build my YES items on separate branches, starting with Sitti's three questions, then the Arabic copy. Anything that loses its vote gets closed, not merged.
+
+## 2026-11-26 14:05 EST — Sprint: I attacked my own V4 ballot; map of Yemen built (PR #36)
+- **Self-challenge:** "Sitti's three questions" (my V4 pick) mostly duplicates what we already ship, the "Pick a mood" compass and "Sufra for N". **I am changing my V4 ballot to (a) map of Yemen.** A duplicate is not innovation.
+- **Built, PR #36 (`claude/yemen-map`):**
+  - The Story page now has a tappable map: Hadramaut → mandi, Sana'a → saltah + fahsa, Aden → chai, Tihama → mango.
+  - Every claim reuses the menu's existing story lines, and a test checks each one. The outline is stylised and labelled "for orientation only".
+  - Tabs work with arrow keys. EN/FR.
+  - *Ran:* node 103/103; browser 11/11.
+- **Sprint tally:** two prototypes built (Iftar Mode #35, map #36). Votes V1–V5 are waiting for ChatGPT's and Muse's ballots.
+- **Next for me:** my V1 Arabic YES. On branch `claude/arabic`, I will start with the full Arabic string table and an RTL layout pass. Nothing merges unless V1 wins.
+
+## 2026-11-26 14:15 EST — Sprint replies to Muse's 13:25 rulings; an Iftar accuracy bug found and fixed; Arabic starts
+**Heads and claims (BOARD rows added):** IFTAR #35 `claude/iftar-mode` @ `cad6c03c76bd3df98f4d15129d156ffba1157f90` · YEMEN-MAP #36 `claude/yemen-map` @ `a9cbb7d` · ARABIC `claude/arabic` (new branch, V1 won 2–0).
+
+**1. Sunset figure: one value everywhere, and a real bug fixed.** Muse asked which reference value I checked against. Answering properly meant fetching published tables (sunrisesunset.io Ottawa 2027, alpenglowapp.com Ottawa 2025), and **my short NOAA equations came out 3–4 minutes EARLY. For iftar that is the dangerous direction.**
+- **Fix:** the NOAA solar-calculator form (Julian centuries), iterated at the sunset instant, from Ottawa's reference coordinates, rounded up. It is now within 2 minutes of both tables on 8 dates.
+- On top, **a 2-minute safety margin**, so the shown iftar is never before published sunset. This is tested.
+- The note now says: "follow your mosque's announcement".
+- **The single figure everywhere:** "within 2 min of published tables + 2-min margin; never early". The sprint doc and the code are updated.
+- *Ran:* node 105/105; iftar browser 11/11.
+
+**2. Sufra Composer vs Sufra for N: CUT as a separate feature.** Its only new dimension is appetite/occasion. "Sufra for N" already asks party size, proposes a tray and allows edits; "Pick a mood" covers occasion. A second guided path would duplicate both. The one useful part, "light / hungry", folds into Sufra for N as an optional toggle (low priority).
+
+**3. ChatGPT's strongest hypothesis: Table Pulse (#9).** It equals my Kitchen Clock, and I accept Muse's merge. It is the only one grounded in server truth we already have (the staff screen transitions). **Dish Passport (#8) is the weakest:** say-it chips, dish stories and now the map already deliver it.
+
+**4. Attacking Muse's ranking.**
+- **Rank 3, Sitti's three questions, should drop.** I withdrew it myself: it duplicates "Pick a mood" + "Sufra for N". Shipping a third quiz over 9 dishes adds steps, which violates our own quality rule 6.
+- **Arabic belongs high, not at rank 8.** V1 passed 2–0. It is client-only, needs no schema, money or new facts, and serves exactly the guests who matter most in Ramadan. It should ship together with Iftar Mode.
+- **The map should rank above the Dish Passport test,** because it is built and tested.
+- **My proposed order now:** Iftar Mode (built) → Arabic (in build) → Table Pulse → map (built) → "I'm outside" → Jam'a (after the gates).
+
+**5. Next action:** Arabic on `claude/arabic`: a full `ar` string table, RTL layout (`dir="rtl"` plus logical CSS), a three-way language control, and tests. Then Table Pulse once ChatGPT's spec lands.
+
+## 2026-11-26 14:40 EST — Arabic built (V1): PR #37
+- **Head:** `claude/arabic` (PR #37).
+- **What it adds:** all 237 strings plus the 9 dishes in Arabic, faithful to the English. The language button cycles EN → FR → AR. RTL layout; Latin digits for money and times; Arabic system fonts; no letter-spacing or uppercase in Arabic; the cart drawer opens from the left.
+- **Ran:** node 103/103 (smoke walks EN → FR → AR → EN); header browser 25/25 (EN + AR).
+- **Follow-up:** the modules on the other branches (checkout, reserve, staff, iftar, map) need `ar` tables. I add them when each one is rebased on main after #37.
+- **@ChatGPT:** CX at the exact head, please; you or Muse could also give it a native-reader pass. #35 (iftar `cad6c03`), #36 (map) and #37 are all waiting for your review.
+- **Sprint next:** Table Pulse. It needs ChatGPT's phone-first spec; if that has not landed by my next loop, I build it from the existing staff transitions and ChatGPT reviews after.
+
+## 2026-11-26 14:55 EST — All ChatGPT CX findings on #35/#36/#37 fixed at new heads
+| PR | New head | Fixed | Tests I ran |
+|---|---|---|---|
+| #35 Iftar | `a098d45c0178e0f4b99234e973c02db3ea99ac22` | Slot chosen against raw sunset, with no post-sunset fallback (fail closed, with a message). Copy states the actual slot. One accuracy figure. Arabic strings. The banner can be hidden for the day. | node 106/106; iftar browser 15/15; header 13/13 |
+| #36 Map | `7feca810684e005a5b70a6090fa1446937574785` | Arabic set. The SVG is decorative and the tabs are the only control. | node 103/103; map browser 12/12 |
+| #37 Arabic | `73dcdd51842f3bb541c4b455eb6ec6c91f62ada1` | Six copy notes adopted. **My own error found and fixed:** مثالي ("ideal") used for "example" in 4 strings; now guarded by a test. | node 104/104; header 25/25 |
+
+**Agreed with ChatGPT:** the map stays simple (no extra regions or borders); "Ramadan Mubarak" is a greeting, never a sales hook; the banner is optional.
+
+**Next prototype: Table Pulse.** I build it from ChatGPT's 14:10 phone-first spec (accepted by Muse at 14:15), on a branch from `claude/ordering`.
+
+## 2026-11-26 15:15 EST — Table Pulse built (PR #38, stacked on #29)
+- **Built to ChatGPT's 14:10 spec:**
+  - Data: member-only, read-only, RLS plus an explicit `user_id`; no schema change, no new data.
+  - Milestones advance only on the persisted status. "Being prepared" appears only when the server says `preparing`. The pickup time is labelled separately and is not an ETA.
+  - Polling: every 25 s while the page is visible; stops when collected or cancelled; manual refresh available.
+  - Errors show "Status unavailable", never "Received". EN/FR/AR.
+- **Ran:** node 120/120; pulse browser 14/14; member-history 9/9; checkout 20/20; staff 7/7; header 13/13.
+- **Scoreboard:** `docs/creative-sprint.md` §8 now lists 4 built, 3 cut or killed, and 4 queued.
+- **Next:** V3, "Majlis as hospitality" (cups and cushions on the member card, number always visible).
+
+## 2026-11-26 15:45 EST — ChatGPT findings on #37/#38 answered; V3 built (PR #39)
+- **#37 @ `7c2bba5`:**
+  - Adopted the new points line.
+  - **Kept** «طبق للعرض». It translates the English *"EXAMPLE DISH"* label, not "Signature", so «طبقنا المميّز» would turn a demo label into a claim.
+  - PR body refreshed.
+- **#38:**
+  - The timestamp is now honestly "Last checked"; `updated_at` is no longer fetched.
+  - New test: a visible order becoming cancelled shows "Order cancelled", is announced and stops polling.
+  - node 120/120; pulse browser 18/18.
+- **V3, PR #39:**
+  - One qahwa cup per collected order, counted from the real ledger (earn − reversal). The exact balance line is kept; up to 12 cups, then "+N"; full count for screen readers. EN/FR/AR.
+  - node 118/118; member-history browser 11/11.
+- **ChatGPT's 15:25 re-verify:** #35/#36/#37 PASS at source; Muse authorised those merges.
+- **Sprint state:** 5 built (Iftar, map, Arabic, Table Pulse, Majlis cups); cut as duplicates: Sitti, Composer.
+- **Next sprint candidate:** "I'm outside". It needs a 0007 function, so after the gates. Meanwhile I will propose **2 fresh ideas** for a team vote, each with what it is, why it is new, and what the guest gets.
+
+## 2026-11-26 16:25 EST — Merges noted; F-A fixed on main; #38/#39 blockers fixed; V6/V7 opened
+- **Merged by the lead:** #37 Arabic, #35 Iftar, #36 map. Muse's live QA passed in EN/FR/AR.
+- **F-A (Arabic tofu), fixed on main `ae6674a`:**
+  - Amiri subset (115 KB WOFF, OFL) bundled as "AZAL Arabic", first in the Arabic font stack; unicode-range keeps it off EN/FR pages.
+  - Arabic body text at 1.06em.
+  - Verified in the headless browser: the font loads and Arabic glyphs render (screenshot).
+  - **F-C:** the map hint now says "Choose a region below" (EN/FR/AR).
+  - Ran: node 114/114; header 25/25; map 12/12; iftar 15/15.
+- **#38 @ `b5cc2b5`:** refunded or voided while open → "no longer active", announced, polling stops. node 121/121; pulse browser 21/21.
+- **#39 @ the new head:** the whole ledger is paged; the list still shows 50. A boundary test covers a reversal beyond row 50. node 119/119; browser 11/11.
+- **Votes V6 (Bread Clock) and V7 (Sufra share card)** are open in `docs/creative-sprint.md` §9. My ballots: YES, YES. Building V6 now on `claude/bread-clock`.
+- **Still owed:** syncing #29–#32, #38 and #39 onto the new main (Arabic + Amiri) and adding `ar` tables to checkout, reserve and staff. That is my next loop after V6.

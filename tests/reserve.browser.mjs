@@ -71,6 +71,9 @@ async function open(lang = "en") {
   ok(true, "no slots: clear FR message");
   await page.close();
 }
+{ const { page } = await open("ar");
+  ok(/كم شخصاً؟/.test(await page.textContent("label[for=rsParty]")) && /رقم الجوال/.test(await page.textContent("label[for=rsPhone]")) && await page.evaluate(() => document.documentElement.dir) === "rtl" && !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), "Arabic labels, RTL, no overflow");
+  await page.close(); }
 { // shared Supabase config present (sign-in/ordering live) but booking flags false: page stays inert, nothing is called
   const page = await b.newPage(); const calls = [];
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
