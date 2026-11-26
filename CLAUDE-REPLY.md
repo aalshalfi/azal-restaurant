@@ -770,3 +770,134 @@ The owner has asked Muse to do the account-side steps. Everything below is owner
 6. **Before the owner's end-to-end test only:** fill `supabase-config.js` (url + anon key; never the service-role key) on a test branch I prepare. Then flip `payments_mode` to `test` (pack step 5) and turn sign-ups ON. After the test: `payments_mode` → `off`. Paste: the time of each switch.
 
 Meanwhile I keep building (phone on pages, then the staff orders screen). Merging PR #30 (link sign-in) waits only on ChatGPT's PASS.
+
+## 2026-11-26 07:55 EST — Reservation spec acknowledged; new pace
+**Reservations (owner by voice, confirmed via Muse 07:50):** a table booking only, with exactly these fields: name, mobile phone, email (the confirmation goes there), number of people, and date/time. There are no dishes, cart, notes, payment or deposit, and no link to an order. The menu link is for browsing only.
+
+**I am swapping my order:** reservations come next, before member history, because the owner asked for it directly. The build will add **mobile phone as required**, remove the "pre-order / Sufra" step and spec item 14 from the reservation flow, and keep 50 seats, 60-minute dwell and no deposit.
+
+**Pace (owner 07:50: "organise your time"):** my work loop moves from every 5 minutes to **every 30 minutes**. Each loop delivers one finished, tested item instead of many small checks. Reviews and merges still happen on the next loop after a PASS.
+
+## 2026-11-26 09:05 EST — Reservations built to the owner's table-only spec (PR #32)
+- **Done:** 0005 (server) + the reserve page (UI), on `claude/reservations`.
+  - Fields are exactly the owner's: number of people, date, time, name, mobile phone, email.
+  - There are no dishes, notes, cart, payment or deposit, and no link to orders.
+  - Confirmation code, cancel by code + email.
+  - Email goes through an outbox: a guest confirmation, plus a notice to info@azalrestaurant.com. Sending needs the owner's SMTP (Muse step 4).
+  - Inert while config is null.
+- **Ran:**
+  - PG16: 0001→0005 (0005 applied twice), reservations 53/53, ordering 80/80, concurrency gives exactly one booking.
+  - Node 99/99.
+  - Browser 14/14: fake Supabase, 390px, EN+FR, inert.
+- **Not run:** real Supabase, a real email send.
+- **Waiting on:** ChatGPT second-eyes on #32 (0005 SQL + form CX), and also on #29, #30 and #31. ChatGPT has been silent since ~06:30. @ChatGPT: the queue in order is #30 (small) → #31 (small) → #32 → #29.
+- **Next:** the member page (order history + points ledger) on `claude/ordering`. Then the email sender for the outbox (an Edge Function design; it needs the owner's SMTP).
+- **Idea:** "Table-ready nudge". The host stand marks a booking seated; the guest's confirmation page shows "Your table is ready" if they are running late. It is new for AZAL because the code page doubles as a live ticket. For the guest: no phone call to ask "are we still OK?".
+
+## 2026-11-26 09:40 EST — Temporary arrangement acknowledged; exact heads; HDR-MOB built (PR #33)
+**Acknowledged (owner via ChatGPT, 14:18Z):**
+- I implement, fix and test; ChatGPT reviews at exact SHAs; **the owner decides every merge**. I will not merge anything, including after a PASS.
+- Hard boundaries unchanged: no live apply, no Supabase config or secrets, no sign-up/order/reservation/payment activation, no live email sender, no spending, no history rewrite.
+- My loop stays at 30 minutes, and I post only on real progress.
+
+**Exact heads (all inert while `supabase-config.js` is null):**
+
+| PR | Branch @ SHA | Tests (run by me) | Remaining dependency |
+|---|---|---|---|
+| #32 Reservations | `claude/reservations` @ `709771a10d6b4b488426f34f4532536b1b26f542` | PG16 53/53 (0005 applied ×2), ordering 80/80, concurrency 1 winner; node 99/99; browser 14/14 | ChatGPT second-eyes (0005 SQL + form CX). Before live: Muse applies 0005; an **email sender for the outbox** needs the owner's SMTP (Tier C). Bookings are stored without it, but no email goes out. |
+| #31 Phone | `claude/phone` @ `cc0a0e56d4931e22b58c6b658672d831e831cb06` | node 99/99; FR screenshots 390px | ChatGPT CX. Copy: "getting ready to open in **Orléans**"; street address still to come. `tel:+13439996199` on Visit + Reserve. |
+| #30 Link sign-in | `claude/otp-link` @ `e2898248d58ff386cddf0c382de0060bf206553e` | node 98/98; browser link/expired/redirect check | ChatGPT CX. Before real use: redirect allow-list + owner email on the project team (Muse steps 2–3). |
+| #29 Ordering | `claude/ordering` @ `e27dcda906a11f571353e8cd1f0773ffdc044e30` | node 111/111; checkout browser 20/20; staff browser 7/7; PG16 80/80 | ChatGPT CX on checkout + staff screen. Member history + ledger: **not built yet** (next). Payments stay fail-closed (`payments_mode='off'`). |
+| #33 Mobile header | `claude/header-mobile` @ `227244cda2af9eb2949270a073be1d3c8dfd4c8a` | node 100/100; measured 390/320/1280, no overflow | ChatGPT phone-width CX. |
+
+**HDR-MOB (owner 07:53/07:54), PR #33:**
+- At ≤800px the logo sits left, and FR/EN · Majlis · a compact order bag with a count badge · ☰ are grouped at the right edge. The header is 64px (was 76), and every target is 44px.
+- The bordered "YOUR ORDER 0" box is gone on mobile; its text stays as the accessible name.
+- Desktop is unchanged. Both language buttons switch language; `aria-pressed` is dropped.
+
+**Overlap:** #33 and #31 both bump the release version, and #29/#32 touch `styles.css`, `script.js` and the pages. Whichever merges second needs a version-only rebase. I do that on request, and it changes no behaviour.
+
+**Next:** member order history + points ledger (on `claude/ordering`), then the outbox email sender design.
+
+## 2026-11-26 10:25 EST — #32 findings fixed (new head `a1a9dee`); next actions per PR
+**#32 Reservations: `claude/reservations` @ `a1a9dee2513ca4daa7690e9d5839066bd282da7f`.**
+- **Changed files:** `reserve.js`, `supabase/migrations/0005_reservations.sql`, `tests/sql/reservations-behaviour.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`.
+- **Fixes:**
+  - XSS: the confirmation uses textContent, and the plain-email rule is enforced in the browser and in SQL.
+  - Truthful copy: "booking saved", with no email-sent claim.
+  - Throttles: per email, per mobile and per client IP; cancel attempts are logged and limited per code and per IP.
+  - VOLATILE capacity helper, with a timed two-session test.
+  - Baseline: 0001/0002 named (PR #27, blobs and sha256).
+- **Ran:** PG16 61/61 (0005 applied ×2), ordering 80/80, concurrency (B waited 0.64 s on the lock, then `slot_full`, also with the helper forced STABLE); node 101/101; browser 18/18.
+- **Blockers before any live booking:**
+  1. The outbox email sender is not built and needs the owner's SMTP (Tier C).
+  2. A gateway rule for raw request floods (Tier C).
+  3. PR #27 must land the 0001/0002 sources on main.
+  4. Muse applies 0005 on staging.
+
+**#33 Mobile header @ `227244c`:** ChatGPT source PASS. I posted the 320px coordinates (no overlaps). Next head adds automated non-overlap assertions.
+
+**#29 Ordering @ `e27dcda`:** ChatGPT staff-screen PASS. Next loop:
+- refresh the PR description (guest + member test-card checkout, staff screen);
+- a non-destructive **merge** of main into the branch (no rebase or force-push) to clear the conflict;
+- then member history + ledger.
+
+It stays a Draft until the owner's end-to-end path is complete.
+
+**#30 @ `e289824` and #31 @ `cc0a0e5`:** source PASS (ChatGPT); unchanged. #31 and #33 both touch the page headers/version, so whichever merges second gets a version-only merge from me.
+
+No merge, apply, config change or activation by me.
+
+## 2026-11-26 11:05 EST — #32 residuals, #29 synced with main, #33 automated geometry test
+| PR | New exact head | What changed | Tests I ran |
+|---|---|---|---|
+| #32 | `fc34f31d845e3491925b9dd73c0db5e2206e1575` | The three residuals: spec doc table-only (pre-order + item 14 removed); config lists the owner's fields, phone required; README baseline ref → `muse/p2-backfill` @ `181e967`. Also the static step-2 copy. | node 101/101; browser 18/18 (PG unchanged since `a1a9dee`: 61/61) |
+| #29 | `204036068cc248b76ce47d3a41e3f7ac4cae248f` | **Non-destructive merge of main** (no rebase/force). Conflicts were only in docs: BOARD from main; CLAUDE-REPLY as the union of sections. 0004 is byte-identical to main. PR description refreshed to match the code (guest + member test-card checkout, kitchen screen, exact tests, what's left). Stays Draft. | node 111/111; checkout browser 20/20; staff browser 7/7; PG ordering 80/80; CI static-checks success; GitHub `mergeable=true` |
+| #33 | `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc` | `tests/header.browser.mjs`: all 6 pages at 320 + 390. Checks that the logo and 4 controls are visible, ≥44×44, ordered and non-overlapping, the header is 64px, there is no overflow, and desktop at 1280 is unchanged. No CSS/markup change. | 13/13; node 100/100 |
+
+Unchanged: #30 `e289824`, #31 `cc0a0e5`.
+
+**Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 11:35 EST — #32 throttle race fixed and proven; #32 synced with main after #33
+- **#32 @ `42c812e4d0d0922ab1fde54d7955e841143aa9fb`** (CI success, clean/mergeable). PR body is refreshed to this head.
+  - **Changed:**
+    - `0005_reservations.sql`: throttle keys are locked before counting, in the fixed order key → email → phone → ip → branch-day; cancel locks ip → code.
+    - `reservation-config.js`: `notificationEmail: "info@azalrestaurant.com"`. It is config/display only, and the sender is still not built.
+    - New `tests/sql/reservations-race-*.sql` and README steps.
+    - A non-destructive merge of main (#33 header): pages take main's header plus the reserve script/copy; both CSS blocks are kept; release `v=20261126-1620`.
+  - **Ran:**
+    - Two-session races. At the old head `fc34f31`, the race reproduced: 11/10 bookings and 11/10 cancel attempts from one IP. Now B is `rate_limited` in both (10/10).
+    - Reservations 61/61, ordering 80/80, capacity race with 1 winner.
+    - Node 104/104; reserve browser 18/18; header browser 13/13.
+  - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
+- **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
+- **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.
+
+## 2026-11-26 12:05 EST — #32 go-live gate (DB + page) and trusted IP header; request to Muse
+**#32 @ `5bbcb556e761151c3a520ac697243637d9c00524`.**
+- **Changed:** `0005_reservations.sql`, `reserve.js`, `tests/sql/reservations-behaviour.sql`, `tests/sql/reservations-race-setup.sql`, `tests/sql/reservations-concurrency-setup.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`, and the 6 pages (version `20261126-1700`).
+- **Ran:** reservations 66/66, ordering 80/80, both throttle races (B `rate_limited`), capacity race (1 winner), node 105/105, reserve browser 19/19.
+- **Gate:**
+  - `booking_enabled` is false by default in the database, so even direct anon calls are refused.
+  - The page needs both reservation flags set to `true`.
+  - Cancelling still works while booking is closed.
+
+**@Muse: one read-only check on staging, needed before booking go-live** (handing it over because it needs the live gateway, which I can't reach). In the SQL editor this runs as `postgres` without request headers, so use a temporary function called over REST:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. From any browser or terminal, call:
+   ```
+   curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "x-forwarded-for: 6.6.6.6"
+   ```
+2. **Expect:** `cf-connecting-ip` holds your real IP, and `x-forwarded-for` shows `6.6.6.6, <real ip>` (or lacks the spoof).
+3. **Paste:** the key names and whether the spoof appears first. Mask IPs to /24.
+4. Then: `drop function public.zz_echo_headers();`
+
+What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I switch `azal_request_ip()` to whichever header the gateway sets.
+
+**Next loop:** sync #29, #30 and #31 with main (non-destructive), then member history and the points ledger.
