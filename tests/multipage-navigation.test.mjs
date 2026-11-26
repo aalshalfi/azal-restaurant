@@ -5,15 +5,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const pages = ["index.html", "menu.html", "story.html"].map((name) => ({
+const pages = ["index.html", "menu.html", "story.html", "member.html"].map((name) => ({
   name,
   html: fs.readFileSync(path.join(root, name), "utf8"),
 }));
 const script = fs.readFileSync(path.join(root, "script.js"), "utf8");
 
-test("all three pages share navigation, language, cart and demo checkout", () => {
+test("all four pages share navigation, language, cart and demo checkout", () => {
   for (const { name, html } of pages) {
-    assert.ok(html.includes('href="index.html"') && html.includes('href="menu.html"') && html.includes('href="story.html"'), name + " missing shared page navigation");
+    assert.ok(html.includes('href="index.html"') && html.includes('href="menu.html"') && html.includes('href="story.html"') && html.includes('href="member.html"'), name + " missing shared page navigation");
     assert.ok(html.includes('id="languageToggle"'), name + " missing language toggle");
     assert.ok(html.includes('id="cartOpen"') && html.includes('id="cartDrawer"'), name + " missing shared cart access");
     assert.ok(html.includes('id="checkoutModal"') && html.includes("Demo checkout only"), name + " missing demo-only checkout notice");
@@ -34,6 +34,16 @@ test("all page copy has EN and FR translations", () => {
       assert.ok(new RegExp("\\b" + key + ":").test(fr), name + " missing FR translation for " + key);
     }
   }
+});
+
+test("member preview remains inert until the schema is approved", () => {
+  const member = pages.find((page) => page.name === "member.html").html;
+  assert.ok(member.includes('data-i18n="navMajlis"'));
+  assert.ok(member.includes('data-i18n="memberStatusValue"') && member.includes('data-i18n="memberPointsValue"'));
+  assert.ok(member.includes('data-i18n="memberSignIn"') && member.includes('data-i18n="memberJoin"'));
+  assert.match(member, /data-i18n="memberSignIn"[^>]*disabled/);
+  assert.match(member, /data-i18n="memberJoin"[^>]*disabled/);
+  assert.ok(!member.includes("<form") && !member.includes("<input"), "no credentials or personal details are collected");
 });
 
 test("cart and language state are persisted safely between pages", () => {
