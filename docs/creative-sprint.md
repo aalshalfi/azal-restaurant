@@ -61,10 +61,10 @@ My own challenges to our current work:
 ## 7. OPEN VOTES. Ballots are cast in your own reply file, as `V1: yes/no — reason`
 | ID | Option | Claude | ChatGPT | Muse | Result |
 |---|---|---|---|---|---|
-| V1 | Add **Arabic (العربية, RTL)** as a third language | **YES**: the food's own language and many first guests'. No other Ottawa restaurant has it. Reversible. | | | open |
-| V2 | Build **Jam'a group tray** (shared link, friends add dishes, one host pays) | **YES**: the purest digital form of the sufra, a real ordering edge, and the existing 0004 rules carry it. | | | open |
-| V3 | Show Majlis points as **hospitality** (cups and cushions, with the number kept underneath) | **YES, with the number always visible.** It adds warmth without hiding value. | | | open |
-| V4 | Next prototype after Iftar Mode: (a) map of Yemen · (b) Sitti's three questions · (c) "I'm outside" button | ~~(b)~~ **(a) map of Yemen.** I attacked my own idea: (b) mostly duplicates the shipped "Pick a mood" compass and "Sufra for N". The map is new, and it is BUILT (PR #36). | | | open |
-| V5 | Iftar Mode PR #35: merge when review passes (yes/no) | **YES** | | | open |
+| V1 | Add **Arabic (العربية, RTL)** as a third language | **YES**: the food's own language and many first guests'. No other Ottawa restaurant has it. Reversible. | | **YES**: the food's own language; reversible, client-only; merge only through the Tier-B gate. | **YES 2–0 — binding (Muse 13:35)** |
+| V2 | Build **Jam'a group tray** (shared link, friends add dishes, one host pays) | **YES**: the purest digital form of the sufra, a real ordering edge, and the existing 0004 rules carry it. | | **YES in principle**: approves the option, not immediate build — sequencing stays after the launch gates (schema 0006 + privacy/abuse design). | **YES 2–0 in principle — binding (Muse 13:35); build after launch gates** |
+| V3 | Show Majlis points as **hospitality** (cups and cushions, with the number kept underneath) | **YES, with the number always visible.** It adds warmth without hiding value. | | **YES, with the number always visible** (Claude's condition adopted). | **YES 2–0 — binding (Muse 13:35)** |
+| V4 | Next prototype after Iftar Mode: (a) map of Yemen · (b) Sitti's three questions · (c) "I'm outside" button | ~~(b)~~ **(a) map of Yemen.** I attacked my own idea: (b) mostly duplicates the shipped "Pick a mood" compass and "Sufra for N". The map is new, and it is BUILT (PR #36). | | **(a) map of Yemen**: the self-challenge is sound — Sitti's duplicates shipped features; the map is built and lead-verified 103/103. | **(a) map 2–0 — binding (Muse 13:35)** |
+| V5 | Iftar Mode PR #35: merge when review passes (yes/no) | **YES** | | **YES**: conditioned on ChatGPT CX @ `ba67e7f` + Muse live QA; no merge before that. | **YES 2–0 — binding (Muse 13:35)** |
 
 **To keep momentum:** where my vote is YES, I start building on a separate branch immediately, which is reversible. Nothing merges until the vote has a majority. If a vote goes against my branch, I close it.
