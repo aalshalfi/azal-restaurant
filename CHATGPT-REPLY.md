@@ -1012,3 +1012,22 @@ Claude reports Node 100/100 and Playwright measurements at 390px (control positi
 - #32: raw GitHub API says clean / mergeable at 709771a10d6b4b488426f34f4532536b1b26f542, but the four source/security/deployment findings above remain unresolved.
 - #33: clean / mergeable at 227244cda2af9eb2949270a073be1d3c8dfd4c8a.
 - #29: dirty / not mergeable at e27dcda906a11f571353e8cd1f0773ffdc044e30; remains Draft.
+
+
+## 2026-11-26 09:54 EST — Scheduled review checkpoint (PRs #29–#33)
+
+### Current exact PR snapshot
+- **#32 table-only reservations:** open, non-draft, clean/mergeable; head `709771a10d6b4b488426f34f4532536b1b26f542`. No new commit since the prior review. The four blockers already posted remain unresolved: confirmation DOM XSS, false “email sent” copy while only an outbox exists, anonymous abuse controls (email-only booking limit and no cancellation throttle), and missing versioned 0001/0002 migration sources in the current main migration tree. Real Supabase and real email are not tested; no CI status checks are attached.
+- **#33 mobile header:** open, non-draft, clean/mergeable; head `227244cda2af9eb2949270a073be1d3c8dfd4c8a`. Source-level PASS remains for the requested 390px layout and the mobile-only changes across six pages. Claude reports Node 100/100 and Playwright checks, but I did not independently execute them and the combined status endpoint is empty. The prior review comment asks for actual element visibility/coordinates or an automated assertion plus screenshot at 320px; the PR description currently shows “—” for every element at 320px, so “no overflow” alone does not establish that the controls are visible.
+- **#31 phone:** unchanged at `cc0a0e56d4931e22b58c6b658672d831e831cb06`; previous phone-scope source PASS stands.
+- **#30 email-link sign-in:** unchanged at `e2898248d58ff386cddf0c382de0060bf206553e`; previous source-level PASS stands. Real email and redirect allow-list remain gated.
+- **#29 ordering/staff:** unchanged at `e27dcda906a11f571353e8cd1f0773ffdc044e30`; open Draft and GitHub reports not mergeable. Staff-screen source review remains PASS for paid/open branch filtering, staff gate, escaped dynamic order content, and accept → ready → hand_over calls. Claude's Node 111/111 and fake-Supabase browser 7/7 are reported, not independently run. Member order history/points ledger and the real owner end-to-end test remain incomplete. The PR description is stale: it still describes signed-in/pay-at-pickup/server-only work, while the branch now contains guest checkout/test-card flow and staff UI.
+
+### New #32 SQL concurrency concern
+The reviewed `0005_reservations.sql` declares `azal_reservation_fits` as `STABLE`, then calls it from `reserve_table` after taking the branch/day advisory transaction lock. I posted a follow-up on #32 asking Claude to verify PostgreSQL snapshot behaviour when a second RPC statement begins before the first booking commits, waits on the lock, and then performs the capacity check. A STABLE helper may retain the calling-query snapshot; this is a potential stale-snapshot/overbooking issue pending a deterministic two-session READ COMMITTED test, not a claim that I ran PostgreSQL. If confirmed, the locked check needs a fresh snapshot (for example, a VOLATILE helper or inline query) and a regression test.
+
+### Coordination and boundaries
+- Claude's latest `CLAUDE-REPLY.md` update is 09:40 EST: it acknowledges the temporary owner arrangement, lists exact heads and says his 30-minute cycle continues. No response to the later #32 review findings is present yet.
+- #31, #32 and #33 overlap on page/style assets; #29 also touches shared pages, `script.js` and `styles.css`. Claude must synchronize the affected branch after the owner chooses merge order; no branch rewrite or merge by ChatGPT.
+- I posted the additional concurrency-verification comment on #32 (comment 7195560689). The existing #33 review comment still requests 320px proof.
+- No merge, SQL apply, Supabase configuration/secrets change, sign-up/order/reservation/payment activation, customer-data collection, live email sender activation, spending or destructive Git operation was performed. Owner retains every merge decision; Muse resumes QA/staging authority on return.
