@@ -605,3 +605,22 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .reserve-cancel{margin:22px 0;max-width:520px}
 .reserve-cancel summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
 .reserve-how [hidden],.reserve-done[hidden],.reserve-form[hidden]{display:none!important}
+/* HDR-MOB: balanced mobile header (owner 07:53). Desktop (>800px) unchanged: quick controls and the bag icon are hidden there. */
+.header-quick,.cart-open .cart-icon{display:none}
+.hq-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:800px){
+ .site-header{height:64px;min-height:64px;padding:6px 14px;gap:6px;justify-content:flex-start}
+ .brand{order:0;margin-right:auto}
+ .brand-logo{height:50px!important}
+ .header-quick{order:1;display:flex;align-items:center;gap:2px}
+ .cart-open{order:2}
+ .menu-toggle{order:3;margin-left:2px}
+ .nav{order:4;top:100%}
+ .language-quick,.majlis-quick{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;color:var(--brown);background:transparent;border:0;border-radius:22px;font:inherit;font-size:12px!important;font-weight:700;letter-spacing:.08em;cursor:pointer;text-decoration:none}
+ .language-quick:focus-visible,.majlis-quick:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+ .cart-open{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0!important;border:0;background:transparent;color:var(--brown)}
+ .cart-open .cart-icon{display:block}
+ .cart-open .cart-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+ .cart-open #cartCount{position:absolute;top:3px;right:1px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:var(--brown);font-size:11px!important;font-weight:800;line-height:18px;text-align:center}
+ .nav .language-toggle{display:none}
+}

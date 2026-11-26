@@ -507,7 +507,7 @@ function applyLanguage(){
  if(typeof renderPickup==="function"&&typeof pickupState!=="undefined"&&pickupState.plan)renderPickup();
  const liveRegion=document.getElementById("cartStatus");if(liveRegion)liveRegion.textContent="";
  if(checkoutMessage)checkoutMessage.textContent="";if(typeof clearRitual==="function")clearRitual();
- if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
+ [switcher,...document.querySelectorAll("[data-lang-quick]")].forEach(b=>{if(!b)return;b.textContent=language==="en"?"FR":"EN";b.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");b.removeAttribute("aria-pressed")})
  const active=tabs?.querySelector("button.active");
  renderProducts(active?.dataset.category||"All",search?.value||"");
  renderCart();
@@ -596,7 +596,7 @@ nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classL
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeCart();closeModal();nav?.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}});
 if($("year"))$("year").textContent=new Date().getFullYear();
 
-$("languageToggle")?.addEventListener("click",()=>{language=language==="en"?"fr":"en";applyLanguage()});
+[$("languageToggle"),...document.querySelectorAll("[data-lang-quick]")].forEach(b=>b?.addEventListener("click",()=>{language=language==="en"?"fr":"en";applyLanguage()}));
 applyLanguage();
 
 /* Sufra for N (Claude, prototype): suggest a shared spread for a table size. Illustrative only. */
