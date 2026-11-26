@@ -37,3 +37,9 @@ Concurrent same-key retry: run `tests/sql/ordering-concurrency.sql` in two sessi
   - Steps: run `reservations-concurrency-setup.sql`, then `-a.sql` in the background (it books 8 of 10 seats and holds its transaction 1 s), then `-b.sql` 0.4 s later (8 seats).
   - Result: B **waited ≈0.64 s on the branch-day lock**, then got `slot_full` — exactly 1 booking.
   - The same result holds with the helper forced to STABLE: the locked check is a new statement inside a VOLATILE function and takes a fresh snapshot. The helper is now VOLATILE anyway (belt and braces).
+- **Throttle races (two sessions, READ COMMITTED; Muse/ChatGPT finding at `fc34f31`):**
+  - Steps: run `reservations-race-setup.sql`. It leaves 9 bookings from IP `203.0.113.50` and 9 cancel guesses from IP `198.51.100.60`, each one below its limit. Then run `-book-a.sql` in the background and `-book-b.sql` 0.4 s later (likewise `-cancel-a/-b`). Each session holds its transaction for 1 s.
+  - **Before the fix** (`fc34f31`): both bookings `confirmed` (11 from one IP, limit 10); both cancel guesses logged (11, limit 10). Race confirmed.
+  - **After the fix:** A `confirmed` / B `rate_limited` (10 from the IP); cancel A `not_found` / B `rate_limited` (10 attempts).
+  - The fix takes advisory locks on every throttle key **before** counting, in a fixed order: key → email → phone → ip → branch-day for booking, and ip → code for cancel. This avoids deadlock cycles.
+

@@ -214,6 +214,11 @@ begin
   end if;
 
   -- Throttles: per email, per mobile number, and per client IP (an attacker can vary the email but not cheaply all three).
+  -- Each throttle key is serialised with a transaction lock BEFORE counting, so two concurrent calls cannot both see
+  -- "one below the limit". Fixed lock order everywhere: key -> email -> phone -> ip -> branch-day (no deadlock cycles).
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-thr-email|' || v_email));
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-thr-phone|' || v_phone));
+  if v_ip is not null then perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-thr-ip|' || v_ip)); end if;
   if (select count(*) from public.reservations where guest_email = v_email and created_at > now() - interval '10 minutes') >= 5
      or (select count(*) from public.reservations where guest_phone = v_phone and created_at > now() - interval '1 hour') >= 5
      or (v_ip is not null and (select count(*) from public.reservations where created_ip = v_ip and created_at > now() - interval '1 hour') >= 10)
@@ -261,11 +266,13 @@ declare v_r public.reservations; v_ip text := public.azal_request_ip();
   v_code text := pg_catalog.upper(pg_catalog.btrim(coalesce(p_code, ''))); v_email text := pg_catalog.lower(pg_catalog.btrim(coalesce(p_email, '')));
 begin
   -- Throttle guessing: per client IP and per code. A miss is RETURNED (not raised) so the attempt row is kept.
+  -- Locks first (fixed order ip -> code), then count + log, so concurrent guesses cannot all pass the count.
+  if v_ip is not null then perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-cancel-ip|' || v_ip)); end if;
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-cancel|' || v_code));
   if (v_ip is not null and (select count(*) from public.reservation_attempts where kind = 'cancel' and ip = v_ip and at > now() - interval '15 minutes') >= 10)
      or (select count(*) from public.reservation_attempts where kind = 'cancel' and subject = v_code and at > now() - interval '15 minutes') >= 5
   then raise exception 'rate_limited'; end if;
   insert into public.reservation_attempts (kind, ip, subject) values ('cancel', v_ip, pg_catalog.left(v_code, 16));
-  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-cancel|' || v_code));
   select * into v_r from public.reservations where code = v_code and guest_email = v_email for update;
   if v_r.id is null then return pg_catalog.jsonb_build_object('status', 'not_found'); end if;  -- same answer for wrong code or wrong email
   if v_r.status = 'cancelled' then return pg_catalog.jsonb_build_object('code', v_r.code, 'status', 'cancelled', 'replayed', true); end if;
