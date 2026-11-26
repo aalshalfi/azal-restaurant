@@ -728,3 +728,43 @@ Checked your 05:38 evidence line by line against `docs/supabase-verify.sql` EXPE
 - **Not run:** nothing on the live project. Muse applies this only on isolated staging, after 0003 and the gated 0004.
 - **Next:** the checkout UI (pickup step, notes, test card form with the three fake cards, never sending a card number), then the minimal staff screen.
 - **Idea:** "Kitchen clock". After payment, the confirmation shows a quiet three-step line (Received → On the fire → Ready) that follows `staff_update_order`, so the guest knows when to leave home without refreshing or calling. It is new for AZAL because our 15-minute slots make the "leave now" moment exact. For the guest, it means no waiting at the counter and hot bread on arrival.
+
+## 2026-11-26 07:20 EST — Checkout with test-card payment (ORD-REAL step 2) + queue against Dec 8
+**Built on `claude/ordering`:** `checkout.js`. It does nothing while `supabase-config.js` is null (the preview checkout ships unchanged). Once the config is filled in, the checkout modal becomes the real flow:
+- **Guest or member:** a guest enters name + email; a member sees "Ordering as …".
+- **Pickup:** the existing pickup step (ASAP or a slot) is sent as a Toronto time with DST handled.
+- **Note:** optional note for the kitchen, max 500 characters.
+- **Card:** the card number field accepts only the 3 test cards:
+
+  | Card | Result |
+  |---|---|
+  | 4242… | pays |
+  | 4000…0002 | declined |
+  | 4000…9995 | insufficient funds |
+
+  Any other number is refused in the browser and nothing is sent. The card number is never sent: only `tok_test_*`.
+- **Server calls:** `place_order` → `pay_order_test`. One idempotency key per attempt, so retries never duplicate. On a decline, the same order is kept and paid with the next card (15-minute window). The guest's email is locked once the order exists.
+- **Totals:** the pay button shows the server total. The payload carries no price, tax or total (U2).
+- **Paid:** the confirmation shows the time and a 6-character code; the cart clears. A guest sees "Join with {email} to collect the points".
+- **Wording:** EN/FR strings live in checkout.js.
+- **Fix:** the modal panel now scrolls on phones; before this, the bottom of the panel was cut off at 390×844.
+
+**Ran:**
+- Node suite 105/105, including the new `tests/checkout.test.mjs` (9 tests): only test cards map to tokens, the payload has no price, DST instants for Nov/Jul/spring-forward, retries keep the same key, inert while config is null, every page loads `checkout.js` after `auth.js`.
+- `node tests/checkout.browser.mjs`: Playwright at 390×844 with a FAKE Supabase and a fixed clock, 17/17. It covers the guest path decline → retry → paid with exactly one `place_order`, no card digits in any request, the note and guest email sent, the code shown, the cart cleared, the form hidden, and the inert case.
+
+**Not run:** the member path in a browser (it uses `AZALAuth.session()`, which is unit-tested on #28), and anything against a real Supabase. **Muse** should run the owner-path test on staging once 0003, 0004 and the seed are applied, with `payments_mode='test'`.
+
+**Known gaps (on my list):**
+- The menu banner "Ordering is not live yet" stays in live mode; this is launch copy for Muse/owner.
+- The points line for members on the confirmation comes with the staff screen.
+
+**Queue against Dec 8 (Lane A, in order):**
+1. Staff orders screen: paid orders by slot, with accept / ready / hand over. This is next.
+2. Member page: order history plus the points ledger after hand-over.
+3. Owner end-to-end script for Muse (register → order with note → pay with test card → staff hand-over → points), copy-ready.
+4. Booking-confirmation email path for reservations. It needs the email-template decision.
+
+Lane B holds only launch-relevant work, per Muse 05:56.
+
+**Idea:** "Kitchen clock" (from the 07:10 entry) attaches to the confirmation here once the staff screen exists.
