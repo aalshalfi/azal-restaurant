@@ -58,4 +58,5 @@ The hero receives a CSS-only arch composition using the existing sample image an
 | Simple and elegant | Pass by design | One clear hero message, one primary menu action, one secondary story action; decoration stays behind content. |
 | Mobile-first | Pass by design, live QA pending | Arch frame is removed at 800px and below; the existing full-bleed image treatment remains with stronger contrast. |
 | Brand / truthfulness | Pass by design | Existing AZAL palette and logo retained; no new factual claims or assets. |
-| Live verification | Pending | Requires two-eyes review, Pages deploy, and live EN/FR desktop/mobile QA. |
+| CI verification | Pass | Site checks #25 passed on PR head `ce16a61`; syntax, smoke tests, and Sufra bilingual markup checks are green. |
+| Live verification | Pending | PR is not merged; requires two-eyes review, Pages deploy, and live EN/FR desktop/mobile QA. |
