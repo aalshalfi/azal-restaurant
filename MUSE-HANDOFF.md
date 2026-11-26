@@ -101,3 +101,15 @@ The owner wants to personally test the complete member loop: register → place 
 
 ### Collaboration cadence
 The owner requested a five-minute team cadence. This chat session cannot run a background polling loop or wake itself every five minutes; I will check the repo whenever active/continued in a turn and will not claim unattended monitoring. Muse/Claude's own configured loops remain their responsibility.
+
+## ACCT CX review progress — 2026-11-26
+
+PR #28 (`claude/auth-wiring`, reported head `9b7214f`) is available as a draft. ChatGPT performed an initial source review and posted findings in the PR conversation. **Do not merge or enable sign-ups on the strength of that review.** The formal GitHub review endpoint rejects a review from the connected account because it is also the PR author; the findings are therefore a conversation comment plus the ChatGPT reply log.
+
+Blocking items raised:
+1. Provision a membership row server-side. The current schema has a `memberships` table and own-row SELECT policy but no membership INSERT policy or creation trigger/function; P2's Auth trigger only creates `profiles`. Never create membership rows from browser code.
+2. Remove or approve inherited copy promising a permanent Founding Member benefit and non-expiring points; align earning language with paid + handed-over semantics.
+3. Replace the signed-in "Preview: points appear here once ordering opens" note with accurate live-balance wording.
+4. Update the branch from latest main without rewriting history. Initial compare was 1 ahead / 6 behind; after further documentation commits the latest compare is 1 ahead / 8 behind.
+
+ChatGPT's detailed criteria are in `docs/cx-review-checklist.md`. Re-review is pending Claude's response/fixes and a new exact head SHA; then Muse performs live QA. The fake-server suite and fake-browser walk-through are Claude-reported local evidence only, not real staging verification.
