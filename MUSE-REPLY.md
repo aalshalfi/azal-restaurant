@@ -1512,3 +1512,22 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 00:21 EST (Toronto) — Home-trim live QA PASS; A1 wordmark merged
+
+**Summary:** The Home-trim live QA (00:15–00:20, desktop, EN→FR→EN) is a **PASS on the settled deploy**, after a deploy-lag transient that is explained below and is not a site defect. Claude's A1 outlined wordmark (PR #18) was verified and merged at `6444b0e`. ChatGPT is still silent (now 1.5 hours); the backfill remains his queue head.
+**Tasks:** Home-trim live QA — Done (PASS). A1 wordmark — Done (merged `6444b0e`). "Say it right" — next for Claude. Backfill line in 0002 — still outstanding (ChatGPT). P2 apply — still gated behind the backfill.
+**Files changed:** `index.html`, `styles.css`, `tests/arabic-wordmark.test.mjs` (merge `6444b0e`); `MUSE-REPLY.md`, `BOARD.md` (this loop).
+**Commits:** `53d68e6` (Claude, wordmark branch), `6444b0e` (lead merge), plus this loop's board/reply commit.
+**Verification (live QA, browser 00:15–00:20, desktop 1920px, Home + menu.html):** on the settled deploy, all five checks pass. Hero unchanged with the preview notice (EN + FR); exactly one "See the menu" button (hero) + one "See the full menu" text link after the three signature dishes; Visit shows the paragraph + single "Hours — Coming soon" line, no "One room" card, no "Address coming soon" row (FR: "Heures — À venir"); live-region re-test on the settled deploy: added Mango Juice ($5.99) in EN, switched to FR, and the English announcement was gone immediately (text search for "Added to your order" returned nothing). Demo notices intact in both languages; no page errors; no horizontal overflow. **Deploy-lag transient (00:15–00:17, explained, not a defect):** the first loads mixed old and new files while the Pages deploy propagated — the signature link rendered literally as "SIGNATUREMORE" (new HTML + old script.js missing the key, uppercased by CSS) and a later navigation showed the old Home entirely. One reload at 00:18 settled everything and it stayed correct. The first live-region test failed on that same pre-reload mix (old script.js had no clear fix); the re-test after the reload passed. Lesson recorded before (C12): briefs already tell the browser to reload once when the deploy hasn't landed; this run confirms that instruction works. **A1 static QA (lead, worktree):** `node --test` **36/36** on the branch and on merged main; diff contained (index.html, styles.css, tests/arabic-wordmark.test.mjs); the hero-bottom now holds `<svg class="wordmark-ar" ... role="img" aria-label="أَزَال" lang="ar">` with a 2,116-character path and `fill="currentColor"`; the test asserts no raw Arabic text node on any page, the accessible SVG, and the Amiri source + OFL kept. Note: the demo cart already showed the earlier QA's 10 items / $120.90 (same browser profile, localStorage persisting — a further incidental confirmation of C12's closure); the two test additions stayed in the local demo cart only, no order placed.
+**Findings / bugs:** none new. The mobile compact rows (≤800px) remain verified only by Claude's local 390px render — the QA browser works at desktop width; a real-phone check is still the open verification for them.
+**Questions for the other side:**
+- **@Claude:** (1) Your next item is **"Say it right" text chips** (your idea 4, text-only transliteration under dish names, no audio) on `claude/say-it-right` — Menu page, EN + FR strings, tests. (2) C-REV final PASS/FAIL on the live Q-outputs stays queued for after the P2 apply.
+- **@ChatGPT:** (1) Backfill line in 0002 — still queue head, still absent (branch `0b5ee0f` unmoved). Ninth ask. (2) Fold the 23:15 reservations ruling and the 23:20 Majlis ruling into `MUSE-HANDOFF.md`. (3) Confirm your 5-minute loop is set — ninth ask; one line closes this.
+
+**Owner decisions needed:** none.
+
+— Muse (team lead)
