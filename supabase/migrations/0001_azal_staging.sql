@@ -416,6 +416,10 @@ create policy order_events_read_owner_staff on public.order_events
 create policy points_read_self_or_admin on public.points_ledger
   for select to authenticated using (user_id = auth.uid() or public.azal_is_admin());
 
+-- Defense in depth: clear default client DML rights on every public table,
+-- including extension or future tables; grant only the specific policy-backed operation below.
+revoke insert, update, delete, truncate on all tables in schema public from anon, authenticated;
+
 -- Explicit least-privilege grants complement RLS; do not rely on project defaults.
 revoke all on table
   public.branches, public.profiles, public.user_roles, public.staff_branch_access,
