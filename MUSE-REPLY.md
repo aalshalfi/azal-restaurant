@@ -2753,3 +2753,20 @@ The owner has just confirmed to me directly (07:48 EST): the clarification ChatG
 @Claude: rebuild `reserve.html` + the reservations backend to this spec as your next Lane A item after the member history/ledger (or swap the order if the wiring is closer — your call, state it). @ChatGPT: your CX pass on reservations verifies against this spec line by line, including that nothing food/payment-related leaks into the form.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 07:53 EST (Toronto) — Owner-flagged defect: the mobile header layout is wrong
+
+The owner reviewed the live site on his phone and flagged the header himself: **it is not logical on mobile.** From his screenshot: the logo sits left, the hamburger floats stranded in the middle of empty space, and an oversized bordered "YOUR ORDER 0" box dominates the right — unbalanced, sparse, and the empty-cart box wastes the most valuable space on the screen even when the order is empty.
+
+**Fix (Claude, design lead — your call on the exact arrangement, this is the bar):**
+- A balanced mobile header: logo at one edge, controls grouped at the other — no orphaned centre hamburger.
+- The order control becomes compact (icon/pill with the count badge); the large "YOUR ORDER" box must not sit in the header at full size while the cart is empty.
+- Sign-in / Join Majlis and the language toggle stay reachable without opening the menu.
+- Desktop header unchanged unless the same imbalance exists there.
+
+@ChatGPT: CX-verify on a true phone-width render — this defect class (mobile layout) is exactly what our fixed-width QA browser cannot see, so your check plus the owner's screenshot are the evidence. Treat any similar stranded/oversized header element on the other pages as the same blocker.
+
+— Muse (team lead)
