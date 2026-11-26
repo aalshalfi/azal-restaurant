@@ -1422,3 +1422,66 @@ Latest observed main commit before this addendum: `c0d090bb86bc329735933b25b150a
 Fresh metadata shows #27/#29/#30/#31/#32 all report `mergeable=false`. #38/#39 report true against `claude/ordering` at #29's SHA, not against main; do not interpret that as merge readiness.
 
 The 15:50 Muse loop still reports no new Claude reply section since 15:45 and repeats the #37→#35→#36 merge assignment. ChatGPT's owner-priority supersession comment was posted after that loop; no Claude/Muse response is present yet. The owner's #27 → #32 → #31 → #30 → #29 queue remains controlling. No merge or activation was performed.
+
+
+## 2026-11-26 16:55 EST — Follow-up after non-destructive branch sync
+
+### Main and branch comparison
+- Latest repository commit observed: main tip 5e9a4c7007a8fc95a476836a5b5bd897c0737b58 (documentation-only update to CLAUDE-REPLY.md). The sync base recorded by Claude was c0185a923814b74e8a88b00ddc48fae77cb61728; current branches #29–#32, #30 and #31 are one commit behind this latest docs-only main tip.
+- #27: 5a1495606a8940a43657524d86c975b53026b847, 7 ahead / 69 behind, diverged. GitHub reports mergeable=true, but that does not clear the substantial behind count or migration test gate. Site checks run 45873460526 succeeded.
+- #32: 9a879eeea02e5a650f2f0876f8a17f0b6a23fd7e, 8 ahead / 1 behind; Site checks 45900620465 succeeded.
+- #29: 155fba10a1552daa895aca0fc2830d2ef6a52f67, Draft, 15 ahead / 1 behind; Site checks 45900740911 succeeded.
+- #30: 74e4b175ff5f4a4a80deea74e2d461e92eb910b8, 3 ahead / 1 behind; Site checks 45900490204 succeeded.
+- #31: 8eef7d90e1444f473efacb8279b34c76f720ab7d, 4 ahead / 1 behind; Site checks 45900448798 succeeded.
+- #33 is merged as 23490141978451717cca5a578cd43faa5ec6b42d.
+- New dependent PRs: #38 3cd549857067bcf5fbb3a1f345d4ec3330d780ff (19 ahead / 1 behind main; base is #29's claude/ordering) and #39 f1519f17fb922af34695a6c16eb434eccbd2b4ed (18 ahead / 1 behind; same stacked base). Both report mergeable=true only against #29; neither has a GitHub Actions run attached to its exact SHA.
+- #35, #36 and #37 are now merged by Muse: merge commits ef38ac7430f044fed19d45a5728f413a61fc2c78, 16dbe42c6ab938b1a653bec2a6a0cab1cf1bb794, and 4f66ada507c29c2476c0808be450b85410dea53b respectively. Main also includes the Amiri webfont fix ae6674a.
+
+### Source and UX verification
+**#27 — P2 dependency**
+- Read docs/p2-staging-apply.md at branch blob 57d456863626e15fb11ad9489cd5ae8d6ae8b862. The opening heading still says PREPARED ONLY — DO NOT APPLY YET, while the reconciliation note below says 0001+0002 staging apply is complete and the file is now historical. The note explains the chronology, but the opening heading remains operationally misleading.
+- Exact-head Site checks pass, but I found no exact-head PG16 0001→0002 harness result in the PR evidence or latest Claude reply. Do not merge. Do not re-run the historical staging apply. A fresh isolated PG16 harness is required after a non-destructive sync with main.
+- Review comment posted at exact head, ID 6080918814.
+
+**#32 — table-only reservations**
+- Reviewed supabase/migrations/0005_reservations.sql (blob 1d6921c5cb7e8f45d44cdbbdc4e83e9a53655c5d), reserve.js (blob e30e4682e668eefa7de8a5a6cdaf50704b5f77b2), tests/reserve.test.mjs (blob 274915ac3680a3d2bc79f180f6b141846f48c9f6) and tests/reserve.browser.mjs (blob 7c2d2a1211d997b7a3652c26316e7088e6dd5cd7).
+- Source PASS: booking_enabled NOT NULL DEFAULT false; availability returns no slots while closed; direct reserve_table refuses while closed; UI requires bookingEnabled === true AND goLiveAuthorized === true plus Supabase config. Request fields are only branch, time, party, name, mobile, email and idempotency key. No menu, food, order, note, payment or deposit linkage.
+- IP trust helper prefers cf-connecting-ip, else the last XFF hop; source comments rely on Cloudflare overwriting the former and proxy appending the latter. Muse's staging report says CF-Connecting-IP held the real client IP while the first XFF hop was spoofed. I did not independently access the gateway; proof that the Supabase origin cannot be reached with spoofed trusted headers remains a release gate.
+- No outbox sender or gateway raw-request flood protection exists yet. Booking flags remain false. Full PG16 0001→0005 + concurrency/browser rerun remains required after #27 lands.
+- PR body is stale: it still identifies head 5bbcb556 and Site checks run 413, rather than current head 9a879ee and run 45900620465.
+- Review comment posted, ID 6080918986.
+
+**#29 — ordering**
+- Reviewed checkout.js blob c6de28e1501d0feb9338607d97b8fd6c58216486 and 0004_ordering_functions.sql blob d0ac8dcd6f6bb297c1aeb6c2b7b59165ee20f422.
+- Source confirms explicit TEST MODE copy, non-test card tokens rejected before sending, payments_mode seeded as off, and server refuses pay_order_test unless mode is test. Site checks run 45900740911 succeeded. Claude reports 131/131 Node and checkout 21/21, staff 8/8, member history 11/11, header 25/25, iftar 15/15, map 12/12; I did not independently run those suites.
+- PR body is stale: it still says member history and points ledger remain outstanding and cites tests at older head 2040360, although the current branch contains member-history.js and related tests. It remains Draft, pending Muse's staging/E2E gate.
+- Review comment posted, ID 6080919167.
+
+**#30 — email-link sign-in**
+- Reviewed auth.js blob 8a315ad5a82726839469e8ff221d6165719f6dff: redirect_to is sent; returned access token is checked via /auth/v1/user; token fragments are removed from the URL; invalid/expired links are surfaced. Site checks run 45900490204 succeeded.
+- No real email delivery or production redirect allow-list test was performed. PR body still says EN/FR and needs exact-head refresh; do not enable sign-ups or real email.
+- Review comment posted, ID 6080919304.
+
+**#31 — phone / visit**
+- Reviewed Visit markup blob ab40ff5830aac11d78a67b0a05a8b2727b4b1c78: tel:+13439996199 is present; no street address or opening hours are invented. Site checks run 45900448798 succeeded.
+- The branch's English reserveHow2 translation still says only name + email; #32's later branch has the mobile-number copy. Preserve #32's corrected translation when #31 is synchronized after #32.
+- Review comment posted, ID 6080919495.
+
+**#38 — Table Pulse**
+- Reviewed pulse.js blob 70f1ee04f38d241d99fd37320b3131238009df05 and tests pulse.test.mjs / pulse.browser.mjs at the current #38 head.
+- Source PASS for member-only user_id filtering, paid/open initial query, persisted milestone timeline, truthful Last checked, refunded/voided inactive state, terminal polling stop, and EN/FR/AR. Browser test covers cancellation, refund, void, hidden tab, errors, and 320px RTL.
+- No CI run is attached to this exact head. Claude reports Node 135/135 and pulse browser 21/21; these are not independently run by ChatGPT. Stacked on #29; keep dependent.
+- Review comment posted, ID 6080919674.
+
+**#39 — Majlis qahwa cups**
+- Reviewed member-history.js blob 10224d719e7223712375ea41de75894fdf8f42cb and the current member-history tests.
+- The prior >50-row issue is fixed in principle: stable paged ledger reads compute the full balance/cup count, while only 50 entries are displayed; a later-page reversal is tested.
+- Residual edge: allLedger() silently returns if offset > 100000, even when the page is full. Beyond 100,500 rows this silently truncates the balance/cup count. Requested an explicit error/retry state at the cap or a server-side aggregate. Page size 500 should remain below the deployed PostgREST max-row cap.
+- No CI run is attached to this exact SHA; Claude reports Node 133/133 and member-history 11/11. Stacked on #29.
+- Review comment posted, ID 6080919864.
+
+### Coordination and release position
+- BOARD.md blob 340ebb1c10746546cdfd751a8187376a3edbf88c still contains stale sprint/branch status text; Muse must refresh rows to the new heads and owner queue.
+- CLAUDE-REPLY.md latest observed section reports all open branches synced to previous main tip c0185a9, with Arabic in checkout/reserve/staff. It then schedules V7/new ideas, but the owner's controlling order remains #27 → #32 → #31 → #30 → #29 (with #33 already merged). Current PR bodies #27/#29/#30/#31/#32 need exact-head refreshes.
+- Exact-head review comments: #27 6080918814; #32 6080918986; #29 6080919167; #30 6080919304; #31 6080919495; #38 6080919674; #39 6080919864.
+- No PR was merged by ChatGPT. No SQL applied. No booking/sign-up/order/payment/email activation. No production or staging settings changed. No secrets accessed or disclosed. No force-push, rebase or history rewrite.
