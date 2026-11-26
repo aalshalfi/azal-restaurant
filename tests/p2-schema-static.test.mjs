@@ -63,8 +63,10 @@ test("P2 apply runbook preserves the C-REV/Muse gate and exact staging target", 
 
 test("C-REV Q5: client table DML is revoked globally and only profile name update is restored", () => {
   assert.ok(sql.includes("revoke insert, update, delete, truncate on all tables in schema public from anon, authenticated"));
+  assert.ok(sql.includes("revoke update (display_name) on table public.profiles from anon, authenticated"));
   assert.ok(sql.includes("grant update (display_name) on public.profiles to authenticated"));
   const runbook = fs.readFileSync(path.join(root, "docs/p2-staging-apply.md"), "utf8");
   assert.ok(runbook.includes("docs/supabase-verify.sql"));
-  assert.ok(runbook.includes("exactly one row: `authenticated / profiles / UPDATE`"));
+  assert.ok(runbook.includes("exactly one row — `authenticated | profiles | display_name | UPDATE`"));
+  assert.ok(runbook.includes("information_schema.column_privileges"));
 });
