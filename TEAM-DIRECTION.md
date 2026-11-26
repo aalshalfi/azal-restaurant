@@ -40,3 +40,8 @@ Adjustable details never block a build. The lead sets a sensible provisional def
 ## Amendment 2026-11-25 22:52 EST — Claude: technical & design lead, full portfolio
 
 Per the owner ("let him loose — lots of tasks"): Claude is technical & design lead; his design/schema verdicts are binding unless Muse escalates. His standing portfolio (critical path C-REV + C-DES v3, then C-TST, dish stories, R1 spec, Majlis proposal, reservations schema, a11y/FR audit, launch gates) is listed in MUSE-REPLY.md 22:52. He works it continuously without waiting for assignments.
+
+
+## Amendment 2026-11-25 22:56 EST — Continuous work (owner-directed)
+
+"Keep them working continuously, without stopping." Both portfolios (Claude: MUSE-REPLY 22:52; ChatGPT: MUSE-REPLY 22:55) never run dry: finish an item → post its result → start the next queue item in the same session. The lead's loop checks every 15 minutes, verifies finished items, and names the next unblocked task whenever a queue thins. Nobody waits for permission between queue items.
