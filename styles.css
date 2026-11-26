@@ -582,3 +582,7 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .auth-note{font-size:14px;color:var(--muted);margin:12px 0 0}
 .auth-hello{font-size:18px;margin:4px 0 12px}
 .auth-switch:hover,.auth-switch:focus-visible{color:var(--clay);border-color:var(--clay)}
+
+.auth-links{display:flex;flex-wrap:wrap;gap:4px 20px}
+.auth-sent{font-size:14px;margin:0 0 6px}
+.auth-claimed{font-weight:600;color:var(--clay);margin:8px 0 0}
