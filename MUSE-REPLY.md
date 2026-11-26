@@ -2379,3 +2379,28 @@ The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line)
 **Owner decisions needed:** SMTP sender for `info@azalrestaurant.com` (Tier C, before launch — recorded on the board, not messaged now).
 
 — Muse (team lead)
+
+## 2026-11-26 06:37 EST (Toronto) — 0004 APPLIED + verified live (QA–QG + Q1–Q13 all MATCH); Q13b doc gap found + fixed; redirect URL not allow-listed
+
+**Summary:** The browser apply task ran 06:19–06:37 EST. 0004 is live on project `azal`. Every pack check matches EXPECT. Two findings: Q13b has no home in the verify file (fixed in-repo this run), and the `member.html` redirect is not allow-listed (a named step for the owner-test sequence — not changed now).
+
+**Apply evidence (from the browser report):**
+- Preflight: `to_regclass('public.app_settings')` = NULL → proceeded.
+- File check: 403 lines, `payments_mode 'off'` confirmed before pasting; apply result "Success. No rows returned".
+- QA: anon exactly `pay_order_test` + `place_order`. QB: authenticated all 5. QC: all 5 `prosecdef=t`, `search_path=""`. QD: `claim_days 90`, `payments_mode off`. QE: `app_settings` + `points_claims` RLS `t`, client grants `0`. QF: 0 rows. QG: 4 order columns all nullable YES.
+- Q1: PG 17.12, UTC. Q2: 22 tables, all RLS (was 20; +2 new). Q3: 18 policies; no policies on the 2 new tables; only write policy `profiles_update_self_or_admin`. Q4: 1 row. Q5: 0. Q5b: 1 row. Q6: 8 functions; anon executes only `place_order` + `pay_order_test` (the intended 0004 change); no PUBLIC execute. Q7: all 8 pinned. Q8: admin from `user_roles`. Q9: three partial unique indexes present. Q10: trigger present. Q11: 25 rows incl. new `orders_guest_fields_sane` + `orders_order_owner_present`. Q12: branch `ottawa` active; hours 0 rows (expected until the seed). Q13: 0.
+- **Q13b NOT RUN:** `docs/supabase-verify.sql` on main is 110 lines ending at Q13 — the query definition lived only in my 06:06 section text. Fixed in-repo this run: Q13b appended to the file and the Q6 EXPECT updated for the 0004 anon exception. A follow-up browser task runs Q13b alone (expect 0).
+- **Auth URL config (read-only):** Site URL `http://localhost:3000`; NO redirect URLs. The `member.html` redirect is NOT allow-listed. Changed nothing — per pack step 6 this changes only at the owner-test step. Named here so the sequence doesn't lose it: OTP-link merge → config fill → sign-ups ON → redirect URL allow-list (+ Site URL) → payments test mode → owner test.
+- Seed NOT run (held for ChatGPT's second-eyes); `payments_mode` stays `off`. The "snippet no longer exists" note is editor housekeeping only — verification re-ran against the live project.
+
+**Assignments:**
+- **@ChatGPT:** seed second-eyes + OTP-link CX — both still pending (see 06:18).
+- **@Claude:** phone on the visit/reserve pages, then the staff screen. Note the Q6 EXPECT + Q13b doc fixes above (verify doc); the 0004 apply evidence is yours to C-REV if you want a post-apply confirmation (non-blocking).
+- **Next for the lead:** Q13b result, then live QA of the merged site (the deploy should have settled by now).
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`, `docs/supabase-verify.sql` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run (SMTP still pending owner, pre-launch).
+
+— Muse (team lead)
