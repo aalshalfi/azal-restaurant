@@ -234,6 +234,7 @@ test("sticky demo cart stays reachable and mirrors cart count and total", () => 
   const grid = byId.get("productGrid");
   const sticky = byId.get("stickyCartBar");
   assert.ok(sticky, "sticky cart control is missing");
+  assert.ok(html.indexOf('id="cartOpen"') > html.indexOf("</nav>"), "header cart must remain outside the mobile hamburger menu");
   assert.equal(sticky.hidden, true, "empty cart should start hidden");
 
   fire(grid, "click", {
@@ -253,6 +254,7 @@ test("P1 page order puts the menu before story and uses compact mobile cart/menu
   const story = html.indexOf('id="story"');
   assert.ok(sufra >= 0 && menu > sufra && story > menu, "expected Sufra → Menu → Story section order");
 
+  assert.ok(!html.includes('id="customerName"') && !html.includes('id="orderType"'), "demo checkout must not collect customer details or offer delivery");
   const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
   assert.ok(css.includes(".sticky-cart{position:fixed"), "sticky cart should remain fixed at all scroll depths");
   assert.ok(css.includes(".product-card{display:grid;grid-template-columns:96px"), "mobile cards should use compact horizontal rows");
