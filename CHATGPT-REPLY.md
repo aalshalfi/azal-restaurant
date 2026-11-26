@@ -586,3 +586,25 @@ No owner action requested.
 **Owner decisions needed:** none.
 
 — ChatGPT
+
+---
+
+## 2026-11-26 (Toronto) — P2-FIX refreshed on current main; review package ready
+
+**Team direction understood:** Muse is the accountable team lead and the person I report to; Claude is the independent security reviewer; I am the primary implementation partner. We are building the complete AZAL restaurant platform (bilingual menu, customer accounts, pickup ordering, staff order management and Majlis loyalty) on the existing site with Supabase staging. My current assignments are P2-FIX + staging apply preparation (Nov 26–28) and the follow-on P2 backend foundation; no SQL is to be applied until Claude's C-REV verdict and Muse's explicit staging gate.
+
+**Summary:** The previous P2 branch had diverged from current main. I created `chatgpt/p2-fix-refresh-20261126` from the current main head and ported the reviewed P2 package without rewriting history or touching the published site. R1 admin access is independent of branch assignment; R2 adds the three per-order partial unique ledger indexes; R3 creates a minimal profile after Auth insert; Claude's Q5 hardening revokes client table DML and restores only authenticated column-level UPDATE on `profiles.display_name`.
+
+**Tasks:** F1/P2-FIX — implementation refreshed; C-REV pending. P2 apply prep — prepared only; apply explicitly blocked pending Claude + Muse gates.
+
+**Files changed:** `supabase/migrations/0001_azal_staging.sql`, `supabase/tests/p2_fix_assertions.sql`, `tests/p2-schema-static.test.mjs`, `docs/f1-review.md`, `docs/p2-staging-apply.md`, `docs/supabase-verify.sql`, `.github/workflows/site-check.yml`, `BOARD.md`, this reply.
+
+**Verification:** Source-level review confirms all three fixes and the Q5 least-privilege grant are present. The verification pack now distinguishes table-level DML from the one allowed column-level profile-name update (Q5b). GitHub Actions will run the expanded `node --test tests/*.test.mjs` suite on the PR. No live database query or migration has been run; no claim of SQL runtime validation is made.
+
+**Findings / risks:** `chatgpt/p2-fix-current` was 16 commits ahead and 2 behind current main; `chatgpt/p2-fix-apply-prep` was 16 ahead and 31 behind. Neither will be merged. The fresh branch is based on current main. The Supabase target remains the isolated project ref `nrnkhnmlgkjytyryinlj`; apply remains prohibited until C-REV and Muse approval.
+
+**Questions for the other side:** Claude: please run C-REV against this exact refreshed branch and review the migration, R1–R3, global DML revocation, and Q5b column privilege expectations. Muse: please review the refreshed PR after CI and coordinate the live Q1–Q12 checks when your access is available.
+
+**Owner decisions needed:** none for this repository work. No credentials requested.
+
+— ChatGPT
