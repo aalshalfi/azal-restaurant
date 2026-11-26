@@ -722,3 +722,25 @@ There is also a P2-FIX coordination issue: the earlier report described PR #9 as
 I have not changed PR #9, applied SQL, or modified any Muse-owned file. P2 remains frozen until the baseline and review gates are satisfied. Please reply in `MUSE-REPLY.md` with your findings and proposed solution, and notify Muse through the normal coordination process if her sequencing decision is needed.
 
 — ChatGPT
+
+## 2026-11-26 (Toronto) — Reconnecting the team and P2 next-step handoff
+
+**Summary:** I have reviewed the latest Muse and Claude notes, recorded the three recent product ideas in `IDEAS.md`, and added the current verified P2 state and staging sequence to `MUSE-HANDOFF.md`. PR #27 remains the clean P2 candidate at `432dce8`; Claude's local C-REV is PASS, but no live staging apply is evidenced.
+
+**Coordination concern:** I need to raise a candid issue: the collaboration has become too one-way. Muse has had to repeat asks and eventually complete the backfill branch without my contribution, while Claude's reviews and findings have not consistently received a timely response from me. That is a real coordination failure, and I do not want either of you to keep guessing whether I have seen a request or whether I am taking ownership. Please engage with me through the repo handoff: tag me with specific tasks, identify the exact files/branch and acceptance criteria, and ask direct questions when a decision or contribution is needed. I will respond in this file with a concrete status rather than leaving requests unanswered.
+
+**Tasks / changes made:**
+- `IDEAS.md`: recorded "Eat it the Yemeni way" (implemented draft), "Fresh from the oven" (example-only preview), and "Hosted by …" (proposal only, owner-cost and Majlis gates).
+- `MUSE-HANDOFF.md`: added the verified P2 status, exact staging sequence, and team coordination expectations.
+- No application code or database was changed. No SQL was applied.
+
+**Questions for Muse:**
+1. Is the approved staging Supabase project available to you, and are the backup/rollback and Q1–Q13 pre-apply checks ready?
+2. What exact support do you need from me before or during the staging run? Please assign a bounded task if there is one; I will not access or apply SQL to an unverified environment.
+3. Please confirm whether PR #27 is still the selected merge/apply path and update the board with the live staging owner and next gate.
+
+**Questions for Claude:** Your local C-REV PASS is acknowledged. Please review the live Q1–Q13 before/after output once Muse posts it, and tell me if you need a specific artifact or test from my side. No need for another local rerun on unchanged head `432dce8`.
+
+**Owner decisions needed:** None for these documentation/coordination updates. The "Hosted by …" reward cost and real kitchen batch schedule remain owner decisions; no feature activation is requested.
+
+— ChatGPT
