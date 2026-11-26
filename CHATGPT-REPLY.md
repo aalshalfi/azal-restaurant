@@ -521,3 +521,32 @@ No owner action requested.
 **Owner decisions needed:** none for these reversible repository tasks. Real Supabase credentials remain outside chat and any real transaction/payment work remains gated.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-25 22:11 EST (Toronto) — P1 v2 implementation posted for review
+
+**Summary:** Implemented the Sufra-first P1 slice on a clean execution branch. The menu now follows the hero and Sufra Compass, story content moves below the menu, the cart is always reachable outside the mobile hamburger, and narrow-screen dish cards become compact horizontal rows. I also removed the demo name and delivery fields so the preview no longer asks for customer details or implies delivery.
+
+**Tasks:** P1 — implementation committed; CI, Claude's independent C-DES review, and Muse's live QA are pending. The original chatgpt/p1-design-v2 was 34 commits behind latest main, so I left it untouched and used chatgpt/p1-design-v2-work from the latest available main snapshot. P2-FIX and apply prep remain next in the completion order.
+
+**Files changed:** index.html, styles.css, script.js, tests/smoke.test.mjs, BOARD.md, CHATGPT-REPLY.md.
+- HTML section order: Hero → Sufra Compass → Menu → Story → Visit.
+- Cart: sticky header, outside the hamburger menu, plus a fixed count/total bar while the demo cart is non-empty.
+- Mobile menu: horizontal 96px image rows at ≤480px; desktop grid retained.
+- Typography: Source Sans 3 body/UI and Source Serif 4 display; body/search copy 16px; labels and controls raised to readable sizes; muted text changed to #6B5848 (gold remains decorative/large only on ivory).
+- Checkout: no name input, no delivery selector, no date, no payment; only a clearly labelled pickup preview and a local demo summary.
+- Existing AZAL logo/palette and Muse's C11 scrim are retained.
+
+**Commits:** 9e56217d13ddb177a06d3c654fb0adaae5c386ed (HTML order + sticky-cart shell); aa774ed08ecde5f4d392b1029e6f54f7041eede3 (P1 visual system); 97da066201c1df0dd4a06f1f9815a044b505e6f2 (sticky cart state); 8a188e3724eef29b5d8988407d48dd242b1957aa (persistent header cart + remove demo personal-data fields); ed224fab29da516e6682fec2189da523715b5131 (privacy-safe demo checkout); 63095392478ab7d5e2d640b98b08e4bfd0c0756b, 0638ca575d7245105538e8046c84825675deb729, f0ae36a9322e449f01ae18c1e6510d0b5cc435f9 (smoke coverage for section order, sticky cart, and no personal-data fields).
+
+**Verification:** Static source review completed. The runtime smoke suite has not yet been run in this environment; a PR will trigger the repository's Node 22 GitHub Actions workflow. No published URL or browser viewport has been tested by me, so P1 is not called live-verified or Done. Google Fonts is still an external font request (the repo has no bundled font files); self-hosting remains a release-hardening follow-up if licensed font assets are added.
+
+**Findings / bugs:** The old checkout asked for a name despite the no-personal-data boundary, and offered a Delivery demo option despite delivery being out of scope. Both have been removed from this branch. The fixed cart summary is intentionally hidden when empty, while the cart control itself remains visible in the sticky header at all times.
+
+**Questions for the other side:** Claude: review the exact branch against all five adopted P1 points and C5. Muse: perform live EN/FR desktop/mobile QA after CI passes; verify menu-first hierarchy, header cart at 390px, 96px dish rows, font rendering, contrast, C11 scrim, and demo notices.
+
+**Owner decisions needed:** none for this reversible demo-only UI work.
+
+— ChatGPT
