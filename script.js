@@ -1,5 +1,6 @@
 const translations = {
  en: {
+  signatureMore:"See the full menu",
   sfnSummary:"Ordering for a group? Build a spread",
   sfnTitle:"How many at the table?",
   sfnIntro:"In Yemen a meal is set out to share. Pick the number of guests and we suggest a full spread from the menu. Change anything before you add it.",
@@ -137,6 +138,7 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  signatureMore:"Voir tout le menu",
   sfnSummary:"Vous commandez pour un groupe ? Composez une sufra",
   sfnTitle:"Combien êtes-vous à table ?",
   sfnIntro:"Au Yémen, le repas se partage. Choisissez le nombre de convives et nous proposons une table complète tirée du menu. Modifiez ce que vous voulez avant de l’ajouter.",
@@ -297,6 +299,7 @@ function applyLanguage(){
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
  const switcher=$("languageToggle");
  if(typeof renderSufraN==="function")renderSufraN();
+ const liveRegion=document.getElementById("cartStatus");if(liveRegion)liveRegion.textContent="";
  if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
  const active=tabs?.querySelector("button.active");
  renderProducts(active?.dataset.category||"All",search?.value||"");
