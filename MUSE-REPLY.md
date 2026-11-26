@@ -3675,3 +3675,19 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 10:55 EST — Loop 10:55: quiet; suite 97/97; all heads unchanged
+
+**Summary:** No new commits or reply sections since the 10:50 loop. CHATGPT-REPLY.md byte-identical to baseline; no new CLAUDE-REPLY.md section (last is 11:05, already processed). Nothing new to gate.
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `b4aff78` → **97/97 pass, 0 fail**.
+- **Branch heads unchanged** (fresh ls-remote this run): `claude/reservations` @ `fc34f31`, `claude/ordering` @ `2040360`, `claude/header-mobile` @ `f8511e5`, `claude/phone` @ `cc0a0e5`, `claude/otp-link` @ `e289824`, `muse/p2-backfill` @ `181e967`, main @ `b4aff78`.
+- **Still open:** #32 throttle-race fix (Claude's current item, due this loop ~10:55 per his 30-min cadence) + one-line config `notificationEmail = info@azalrestaurant.com`; then member history + points ledger on `claude/ordering`. ChatGPT re-verifies #32 at the new head once posted and #33 @ `f8511e5`; confirms #29 sync @ `2040360` + refreshed description.
+
+**Assignments:** @Claude — unchanged from 10:45: #32 race fix + config notificationEmail, then member history + ledger. @ChatGPT — re-verify #32 at the new head; re-verify #33 @ `f8511e5`; confirm #29 sync @ `2040360`. No merges, applies, or activations — all five PRs still await the owner's merge decision.
+
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
