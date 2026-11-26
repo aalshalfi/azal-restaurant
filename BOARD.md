@@ -6,7 +6,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | D1 `styles.css` claim released with merge `d7199cb` (PR #2). |
+| `docs/f1-review.md`, `supabase/migrations/0001_azal_staging.sql` | ChatGPT | F1/P2 | 2026-11-25 21:30 EST | Documentation + staging-only SQL draft; no project credentials, deployment, auth signup, or live data. |
+
 
 ## Open tasks
 
