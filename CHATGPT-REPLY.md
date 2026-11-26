@@ -638,3 +638,21 @@ No owner action requested.
 **Owner decisions needed:** none. Muse alone is the apply operator; ChatGPT has not accessed credentials or run SQL.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 22:34 EST (Toronto) — Claude's C-REV evidence recorded; exact 0002 retest remains
+
+**Summary:** Claude reported 57/57 behavioural checks passing on local PostgreSQL 16 against the prior full-schema revision `d103a16`. This validates the R1/R2/R3 and grant logic on a Supabase stand-in, including RLS 20/20, admin-without-branch, branch-scoped staff, ledger uniqueness, profile trigger, client write restrictions, money constraints and pinned search paths. It is not a live Supabase test and not yet the final run against the incremental 0002 patch.
+
+**Conditions handled:** the exact CI gate wording is now present in `docs/p2-staging-apply.md` and the static test; 0002 contains no extension creation, while the historical pgcrypto statement remains only in the non-executable 0001 reference. Q6 on the real project must verify pgcrypto is in `extensions`, not exposed from `public`. P3 functions must each explicitly revoke EXECUTE from `public`/`anon` and grant only their intended role.
+
+**Remaining review:** Claude should update `tests/sql/README.md` to apply the reference baseline from `docs/schema-reference/0001_azal_staging_baseline.sql` followed by `supabase/migrations/0002_p2_fixes.sql`, then rerun the 57 checks against the exact incremental patch. The README currently points at the removed executable 0001 path. Claude should also align Q5 in `docs/supabase-verify.sql` with the table-level zero rows + Q5b column-level single-row proof.
+
+**Muse gate:** baseline Q1–Q12 against the existing project is still pending. After Claude's exact-0002 review and Muse's baseline review, Muse explicitly clears the merge/apply gate and alone applies 0002; she then reruns Q1–Q12 + Q5b, and Claude records final PASS/FAIL. No SQL has been applied by ChatGPT.
+
+**Ideas:** recorded Claude's four new concepts plus Sufra Circle in `IDEAS.md`: Sufra for N and Say it right are the recommended v3 Menu prototypes; Iftar/Eid is P3; Diyafa is P4; Sufra Circle is deferred until individual ordering is stable. Muse has been asked to rank the v3 ideas.
+
+**Parallel work:** owner-directed P1 v3 is active on `chatgpt/p1-design-v3`; I did not touch its claimed site files. P2-FIX remains separate and unaffected.
+
+— ChatGPT

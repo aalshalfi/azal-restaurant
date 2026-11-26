@@ -264,3 +264,73 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 **Files changed:** this file, `BOARD.md`. **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:31 EST (Toronto) — C-REV VERDICT on P2-FIX (`chatgpt/p2-fix-apply-prep` at `d103a16`): PASS on the SQL, with conditions
+
+**Summary:** I did more than read the SQL: I started a local PostgreSQL 16, built a Supabase stand-in (roles `anon`/`authenticated`/`service_role`, `auth.users`, `auth.uid()`, Supabase's default privileges), applied the corrected migration, and ran ChatGPT's `supabase/tests/p2_fix_assertions.sql` plus 57 independent checks under the real client roles. **The migration applies cleanly (20 tables, exit 0), ChatGPT's assertions pass, and all 57 of my checks pass.** Not run against the live project (no access); that stays with Muse.
+
+**The three must-fixes, verified by execution:**
+- **F1-R1 (8 checks):** a branch-less admin can access every branch and sees all orders; staff reach only their own branch and see only its orders; a user with no role gets false and sees nothing.
+- **F1-R2 (9 checks):** a second `earn`, `earn_reversal` or `redeem_refund` for the same order is rejected by the partial unique indexes even with a different `event_key`; reuse of an `event_key` is rejected; sign check holds; a different order still earns.
+- **F1-R3 (5 checks):** inserting into `auth.users` creates the profile; it is idempotent if the profile already exists; `handle_new_user` is executable by neither `anon` nor `authenticated`.
+
+**Also verified:** RLS on 20 of 20 tables; the only write policy is `profiles_update_self_or_admin`; `authenticated` has no INSERT/DELETE/TRUNCATE anywhere and its only UPDATE right is the `profiles.display_name` column (it cannot touch `id` or `anonymized_at`); customers cannot read others' orders or profiles, cannot self-promote, cannot write orders or ledger; payment, settlement and order-event tables are closed to clients; `anon` can read the active catalogue only and cannot execute the helper functions; every security-definer function pins `search_path`; money constraints reject total != subtotal+tax, tax over 30%, duplicate `(user_id, idempotency_key)`, short keys and non-CAD currency. My earlier suggestion to revoke default table privileges is already in the migration: good.
+
+**Honest note on my own tests:** my first pass showed 4 FAILs that were mistakes in my harness (a blanket `GRANT EXECUTE` in my script re-opened the functions the migration closes; a display filter hid lines; a test used a generated column and a wrong column name). I fixed them and re-ran from a fresh database; none was a defect in the migration.
+
+**Conditions (none changes the access model):**
+1. **CI will go red as written.** `tests/p2-schema-static.test.mjs` test 4 requires the runbook to contain the exact string "Muse explicitly clears the merge/apply gate"; `docs/p2-staging-apply.md` says "Muse approves the PR/merge and explicitly clears the staging apply gate". I reproduced it: 3 pass, 1 fail, and the branch's CI runs `node --test tests/*.test.mjs`. ChatGPT: align the wording (either side). Fix before merge.
+2. **Recommended before apply (one-line SQL change):** remove `create extension if not exists pgcrypto;` (line 9). `gen_random_uuid()` is built in on PG13+ and Supabase already ships pgcrypto in the `extensions` schema. On plain Postgres it lands in `public` and exposes crypt/digest-style functions to `anon` (I saw this in my catalog listing; Q6 on the live project should show them under `extensions`, not `public`). If the SQL changes, I re-run the 57 checks and re-confirm within minutes.
+3. **For P3:** Supabase's default privileges grant EXECUTE on every new `public` function to `anon` and `authenticated`. Each P3 function (`place_order` and the rest) must carry its own `revoke all ... from public, anon` and an explicit grant, as the current helpers do. Added to the P3 test design as a standing check.
+
+**Apply-order runbook:** the sequence is sound: preflight inventory with a stop rule, one file in one transaction, no fragment retries, postflight read-only queries, secrets never pasted, Yemen Gate projects hands-off. Gate wording matches what Muse set.
+
+**Still with Muse (rule 10), after the apply:** run `docs/supabase-verify.sql` Q1–Q12 and paste the output; do the three dashboard-only checks (public signups off, no service key in any file or bundle, zero rows in order/ledger/payment tables). I will compare against these expectations: RLS 20/20, one write policy, three partial unique indexes, the trigger present, no `anon` execute on any `azal_*` function. **Limits of my evidence:** a stand-in is not Supabase; it does not cover PostgREST, GoTrue, JWT handling or project settings.
+
+**Files changed:** `tests/sql/supabase-stub.sql`, `tests/sql/review-behaviour.sql`, `tests/sql/README.md` (new), `BOARD.md`, this file. **Owner decisions needed:** none.
+
+— Claude
+
+---
+
+## 2026-11-25 22:33 EST (Toronto) — Ideas (owner asked "where are your ideas?"): four original proposals, ranked
+
+**Context:** I read `IDEAS.md` first so nothing below repeats it (Majlis AZAL, Sufra Compass, Sufra Thread, Welcome Arch, Welcome Note, Journal are already there; streaks and spin-to-win were rejected, and I agree). The owner's v3 verdict is "calm, uncluttered, separated": every idea below lives on the **Menu page** or in the **Majlis layer**; none adds anything to Home. All are prototypes with illustrative data. None invents a fact, collects personal data, or needs a real payment. ChatGPT: please record them in `IDEAS.md` (it is your ledger); Muse: please rank.
+
+**1. Sufra for N — "order by table, not by dish" (سفرة لـ N). Recommended first.**
+- *What:* one question at the top of the Menu page: "How many at the table?" (2 / 4 / 6 / 8). One tap proposes a complete shared spread (a main platter, sides, bread, drinks) that the guest can edit, then add to the cart in one step.
+- *Why new:* every competitor makes you assemble a basket dish by dish. Yemeni meals are shared, so ordering by group size matches how people actually eat. It is different from Sufra Compass (mood filter on single dishes): this composes the whole table.
+- *What it adds:* 1 decision instead of 5–8 adds; a bigger, better-balanced order; a natural fit for families and gatherings. No personal data.
+- *Needs from the owner (Tier C):* real portion sizes and combinations. Until then the prototype uses clearly labelled illustrative spreads built from the sample dishes.
+- *Fit:* Menu page of v3, above the dish list, one calm card.
+
+**2. Iftar & Eid window — pickup slots anchored to sunset (وقت الإفطار).**
+- *What:* during Ramadan the pickup picker offers slots keyed to that day's sunset ("15 min before iftar", "at iftar") computed locally from Ottawa's public coordinates; before Eid and Fridays it offers a group-order mode for large pickups.
+- *Why new:* generic ordering apps treat 6:00 PM like any other time; for this community the minutes around Maghrib are the busiest and most meaningful of the year. It shows the team understands the guest.
+- *What it adds:* no more guessing arrival time; the kitchen sees demand per slot; trust with the core community. No personal data.
+- *Needs from the owner:* kitchen capacity per slot and whether the restaurant opens for iftar (Tier C). The slot picker UI can be prototyped now with fixture capacities. I would not state any Ramadan or Eid dates in the UI; compute them or leave them out.
+- *Fit:* P3 pickup-time step; adds a test case set to `docs/p3-test-design.md` (sunset computation at DST changes, slot capacity, closed days).
+
+**3. Diyafa — a loyalty program you give away (ضيافة), inside Majlis AZAL.**
+- *What:* instead of only collecting points for yourself, a member earns "guest invitations": after a set number of completed orders they can gift a tea or dessert to a friend, redeemed with a one-time code at pickup.
+- *Why new:* it replaces self-reward with generosity, which is the point of Yemeni hospitality; it grows the community without ads, streaks or pressure; it is consistent with the team's decision against engagement tricks.
+- *What it adds:* a reason to come back that feels like hosting, plus new guests who arrive as invited, not advertised-to. The code carries no friend data.
+- *Needs:* reward rules and costs (Tier C), P4 ledger. In the ledger it is one more `entry_type`, so the exactly-once indexes protect it; design that before P4 starts.
+- *Fit:* P4; concept only until the owner sets the rules.
+
+**4. Say it right — tap-to-read dish names (quick win).**
+- *What:* each dish name gets a small "say it" chip showing the Latin-letter pronunciation and, later, a short audio clip recorded by the owner's own staff.
+- *Why new/useful:* many guests hesitate to order a dish they cannot pronounce; the chip removes that, and a staff voice is an authentic, un-copyable detail.
+- *What it adds:* more confident first orders, fewer "what is that?" abandons, cultural pride. Text-only version needs no recording.
+- *Needs:* owner-approved spellings (Tier C for audio). Text transliteration can start now on the sample dishes.
+- *Fit:* one line under the dish name on the Menu page; add the strings to EN and FR.
+
+**Quality gate (per `IDEAS.md`):** each reduces or keeps the guest's steps, adds no visual noise to Home, and works at 390px. **My recommendation:** build (1) and (4) into v3's Menu page; prototype (2)'s slot picker with P3; keep (3) as a P4 concept.
+
+**Offer:** once `chatgpt/p1-design-v3` lands, I can build the Sufra for N prototype on a `claude/sufra-for-n` branch against the v3 Menu page, with tests, for Muse's gate. I will not touch site files while ChatGPT holds the P1 claim.
+
+**Files changed:** this file. **Owner decisions needed:** none now; the Tier C items above are listed on each idea.
+
+— Claude
