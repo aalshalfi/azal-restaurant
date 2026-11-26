@@ -3470,3 +3470,33 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 10:10 EST (Toronto) — Loop check: #32 fixes F1–F5 landed at a1a9dee; lead-verified in source; suite 101/101 on branch, 97/97 on main
+
+**Summary:** Claude landed the #32 fixes on `claude/reservations` at `a1a9dee` (commit `50c88ba` on main carries his 10:25 reply section). All five findings verified in source by the lead at the exact head; branch suite re-run green. Two small ruled cleanups are still open on the same branch; ChatGPT re-verifies at the new head once they land.
+**Tasks:** #32 fixes F1–F5 — Fixed in source, lead-verified; ChatGPT re-verify pending; #29/#30/#31/#33 — awaiting the owner's merge decision (temp arrangement 09:20).
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Verification (lead, exact head `a1a9dee2513ca4daa7690e9d5839066bd282da7f`):**
+- **F1 XSS — FIXED in source.** The confirmation now renders through `textContent` only (`reserve.js` L149–151: `p()` helper sets `el.textContent`, `done.replaceChildren(...)`); the two remaining `innerHTML` uses (L121 form, L131 cancel form) are static markup with no user interpolation — only computed dates and option numbers. `EMAIL` regex (L8) rejects markup/quote characters, so `<svg/onload=alert(1)>@example.com` fails validation in the browser; the same plain-address rule is enforced in SQL (`0005` L45, L199).
+- **F2 false email claim — FIXED in source.** Copy is now "Your booking is saved under {email}." (`reserve.js` L86 EN / L98 FR); no "confirmation is sent" claim anywhere in the file.
+- **F3 abuse protection — FIXED in source.** `reserve_table` throttles per email (5/10 min), per mobile (5/1 h) and per client IP (10/1 h) (`0005` L216–220); cancel attempts are logged in `reservation_attempts` and throttled per IP (10/15 min) and per code (5/15 min) (L263–267). A miss is returned, not raised, so the attempt row is kept.
+- **F5 stale snapshot — FIXED in source.** `azal_reservation_fits` is now declared `VOLATILE` (`0005` L139–141, with the purpose comment). The two-session test exists as `tests/sql/reservations-concurrency-a.sql` (books 8 of 10 seats, `pg_sleep(1)`) / `-b.sql` (second booking, `pg_sleep(0)`); behaviour file holds 63 `zz_eq` occurrences = 61 assertions after the definition/grant lines, matching Claude's claimed 61/61 in count. PG16 61/61 + the concurrency run itself are Claude's — no PG16 in the lead VM to re-run.
+- **F4 baseline — FIXED and hash-verified.** `tests/sql/README.md` L23–27 names PR #27 (`muse/p2-backfill` @ `181e967`) with blob + sha256 prefixes. Lead checked the exact bytes: PR #27 head is `181e967b9f02eada67ab0d8103f41aa887078167`; 0001 blob `5e1cf4371b57ed1b9e32f8bd7e2a1eabbbfcd148`, sha256 `6d8c59706f875695…16ee`; 0002 blob `f4e9c68a084b771aadbe088eb5610a50ea709e4f`, sha256 `8a9a1dd2300aa724…b387` — all prefixes match. One inaccuracy in the README: it also says "identical blobs are on `origin/p2bf`" but that ref does not exist remotely (ls-remote returns only `muse/p2-backfill`). PR #27 is the verified source; the `p2bf` line should be corrected or dropped.
+- **Suites re-run by the lead:** branch `claude/reservations` @ `a1a9dee` → **101/101 pass, 0 fail**; main @ `50c88ba` → **97/97 pass, 0 fail**.
+- **Reply baselines:** `last-chatgpt-reply.md` current (no new ChatGPT section since 09:59); `last-claude-reply.md` updated this run to the 10:25 section.
+- **Branch heads** (fresh fetch this run): `claude/reservations` @ `a1a9dee`, `claude/header-mobile` @ `227244c`, `claude/phone` @ `cc0a0e5`, `claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `muse/p2-backfill` @ `181e967`, main @ `50c88ba`.
+
+**Still open on `claude/reservations` (small, same branch — fold in before ChatGPT re-verifies):**
+1. **Step-2 copy** still reads "Leave a name and an email. Nothing else." (`reserve.html` L13; the ruled EN/FR wording from 07:50 — "Leave a name, a mobile number and an email." — was never applied). The live panel hides this at runtime, but the static fallback text is wrong.
+2. **Spec-doc cleanup:** `docs/reservations-spec.md` still carries pre-order (L9) and item 14 (L54).
+3. **Config phone field:** `reservation-config.js` still has no phone field (07:50 ruling). The form + SQL enforce the phone requirement, so this is config completeness only, not a functional gap. `notificationEmail` stays null by design until go-live.
+4. **README `origin/p2bf` line** (above) — correct or drop.
+
+**Lead ruling:** F1–F5 are **VERIFIED in source** at `a1a9dee`. @Claude — fold items 1–4 above into the same branch, then your stated next loop stands: #29 PR-description refresh + non-destructive merge of main into `claude/ordering`, then member history + points ledger. @ChatGPT — re-verify #32 (F1–F5 + the four cleanups) at the new head once posted; the 320px automated-assertion check on #33 stands for when Claude's next head lands. No merges, applies, or activations — all five PRs still await the owner's merge decision.
+
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
