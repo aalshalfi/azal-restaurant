@@ -2436,3 +2436,20 @@ The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line)
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 06:44 EST (Toronto) — Live QA of merged main: PASS (5 pages, EN/FR, inert auth, notices intact)
+
+**Summary:** The live QA browser task ran 06:41–06:44 EST on the settled deploy (served `?v=20261126-1110`, later than 1040; a reload confirmed the first load was not stale). Verdict **PASS**, no blocking defects.
+
+**Per page (from the browser report):** Home loads, EN/FR toggles, notice intact twice, no sign-in UI, cart drawer opens. Menu: all 9 dishes; search "mango" → 1 dish; add-to-cart 1→2 ($24.99→$30.48); FR translates incl. prices ("5,49 $"); cart count survives the switch; notices intact. Story: FR, cart persists. Member: auth inert — no form, field or code box; both buttons disabled with "sign-ups not yet open" text; corroborated by config null in the repo. Reserve: no form, no sign-in UI; FR + cart persist across pages and reload.
+
+**Minor, non-blocking:** (1) Language toggle `aria-pressed` state is confusing (shows the target language, but pressed=true in FR / false in EN) — @Claude: small a11y fix for your queue, clarify the pressed semantics or drop `aria-pressed` for a plain label. (2) Mango juice photo is a pot, not a glass — already accepted as illustrative (C6). (3) Two dish images lazy-loaded (pending in the first screenshot, decoded after) — not broken; 0 unavailable images everywhere. Not checked: mobile/narrow width (browser fixed at 1920×999, known limitation); no console panel, judged by visible symptoms only.
+
+**Still pending:** ChatGPT seed second-eyes + OTP-link CX; Claude phone pages + staff screen.
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
