@@ -4615,3 +4615,26 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 14:25 EST — #37 Arabic polish landed and lead-verified; #35 fix still owed, #36 merge still authorized
+
+**Summary:** Claude pushed the #37 polish round on `claude/arabic` mid-run (`ecd403a` → `73dcdd5`, 14:26). Lead-verified in source and by suite re-run; ChatGPT's CX re-verify at the new head is now the only step before merge. No new ChatGPT reply (diff vs baseline empty); no new Claude reply section on main yet (the polish is recorded in the branch commit message — Claude to fold it into his next reply section). No posts to the owner.
+
+**Verification (lead):**
+- **Main suite:** `node --test tests/*.test.mjs` on main @ `0c98ce9` → **100/100 pass, 0 fail**.
+- **#37 polish @ `73dcdd5` ("Arabic polish (ChatGPT CX on #37) + a real mistranslation fixed"):** branch suite re-run by lead in a temp worktree at the exact head → **104/104 pass** (matches Claude's claim; header browser 25/25 is Claude-reported, not re-runnable in the lead VM — no Playwright here). Dry-run merge vs main **CLEAN, 0 conflict markers**.
+- **Six edits confirmed in source (script.js `ar` table):** (1) points sentence reworded to "أضفنا إلى رصيدك {points} من النقاط عن طلباتك السابقة." — still interpolates `{points}`, so number-neutrality is only partial; flagged for ChatGPT's re-verify, not a blocker. (2) membership line "تم تسجيل الدخول، ويجري تفعيل عضويتك." ✓ (3) dish-1 "يُطهى اللحم والأرز معًا" in description and story ✓ (4) "الأكثر طلبًا" for Popular ✓ (5) chai story smoothed to "ويُقدَّم في عدن في مستهل الوجبة وختامها" ✓ (6) Signature label: Claude rendered it **"طبق للعرض"**, not ChatGPT's suggested "طبقنا المميّز" — a deliberate variant tied to the مثالي fix below; the label now reads as a preview label, which fits the demo context. ChatGPT's re-verify is the second eyes on this choice.
+- **مثالي mistranslation — real catch, fixed:** Claude found his own error ('مثالي' = 'ideal', not 'example') and fixed it in four strings — signatureLabel, demoLabel ("أطباق وأسعار للعرض فقط"), sfnNote ("اقتراح من قائمة العرض"), pickupFreshNote ("أوقات للتوضيح في هذه المعاينة") — guarded by a new test asserting zero مثالي in source. Suite green with the guard.
+- **Branch heads (`ls-remote`):** `claude/arabic` `73dcdd5` (moved), `claude/iftar-mode` `cad6c03`, `claude/yemen-map` `a9cbb7d`, `claude/ordering` `e039272`, `claude/reservations` `5bbcb55`, `claude/otp-link` `fa6cce9`, `claude/phone` `b8b822d`, `muse/p2-backfill` `5a14956` — all others unchanged.
+- **Dry-run merges vs main @ `0c98ce9` (`git merge-tree`):** #35, #36, #37 all **CLEAN, 0 conflict markers**.
+- **Divergence (branch ahead / main ahead):** #37 2/9, #36 1/15, #35 2/22 (behind growth is loop-churn commits on main only).
+- **Standing state:** 14:15 rulings otherwise stand — #35 fix round (sunset-slot selector + copy figure) still not landed; #36 merge authorized at `a9cbb7d` when Site checks are green; Table Pulse build after #37. #29–#32 stay paused per the owner directive; F6 PASS + member-history CX PASS stand.
+
+**Tasks:** #37 polish verified (this run)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Assignments:** @ChatGPT — CX re-verify #37 at the new head `73dcdd5` (second eyes on the two nuances: signatureLabel "طبق للعرض" vs "طبقنا المميّز", and the still-interpolated `{points}` in the points sentence); once PASS, #37 merges under the handover rule (CI green at the new head; Muse live QA after deploy). @Claude — (1) #35 fix round per the 14:15 ruling, then hand to ChatGPT for re-verify at the new head; (2) merge #36 when CI is green at `a9cbb7d`; (3) Table Pulse after #37 (rebase, claim files first); (4) record the polish round in your next CLAUDE-REPLY.md section. No merges, applies, or activations this round.
+**Questions for the other side:** none new.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
