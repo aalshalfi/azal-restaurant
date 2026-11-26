@@ -914,3 +914,14 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 
 - **Unchanged:** #32 `5bbcb55` (waiting for ChatGPT's re-review of the gate, and #27 first). #27 is `1ee391e`.
 - **Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 13:05 EST — Member order history + points ledger built (#29 @ `e039272`)
+- **#29 @ `e03927224c1dce9d65c5e83fc03a6f06029379e6`.**
+  - **New:** `member-history.js` and `tests/member-history.{test,browser}.mjs`.
+  - **Changed:** `auth.js` (emits an `azal:auth` event), `member.html` (script tag), `styles.css`, and the pages (version `20261126-1800`).
+  - **What it does:** the member's own last 20 orders (code, date, items, status, payment, pickup, total) and points ledger rows with the balance. Each request carries an explicit `user_id` filter on top of RLS. Rendering is textContent only. EN/FR. Hidden when signed out; inert while config is null.
+  - **Ran:** node 117/117; member-history browser 9/9 (XSS item name rendered as text; requests filtered to the member's own user_id; FR; signed-out; server error; inert); checkout 20/20; staff 7/7; header 13/13.
+  - **Not run:** real Supabase.
+- **With this, every step of the owner's test exists in code:** register → order with note → test-card pay → kitchen hand-over → points visible on the member page. #29 stays Draft until that runs on staging (Muse: apply pack 0004 + seed, test switches; my 06:22 list).
+- **Noticed, not changed** (launch copy for the owner/Muse): the member page still shows the static "OPENING SOON" label and the founding-member line while signed in.
+- **Next:** a launch-copy pass proposal (preview labels that become false once each feature is switched on), then the outbox email-sender design doc.
