@@ -8,6 +8,16 @@ const translations = {
   menuKicker:"FROM OUR KITCHEN",menuTitle:"Explore our",menuTitleEm:"menu.",menuIntro:"A first taste of what AZAL could serve. Browse the sample dishes below; all items and prices are illustrative and not available to order.",
   demoLabel:"CONCEPT MENU · SAMPLE PRICES",searchLabel:"Find a dish",searchPlaceholder:"Search dishes or ingredients…",
   catAll:"All dishes",catRice:"Rice & meat",catTraditional:"Traditional",catSides:"Sides",catDrinks:"Drinks",
+  sufraKicker:"A SMALL GUIDE TO THE MENU",sufraTitle:"Find your way",sufraTitleEm:"to the table.",
+  sufraIntro:"Start with what sounds good. One tap takes you straight to that part of our illustrative menu.",
+  sufraDemo:"DEMO GUIDE · SAMPLE MENU",sufraGroup:"Choose a menu starting point",
+  sufraWarm:"Something warming",sufraWarmCopy:"Browse traditional dishes",
+  sufraRice:"Fragrant rice",sufraRiceCopy:"Browse rice & meat dishes",
+  sufraSides:"Start with sides",sufraSidesCopy:"Browse sides and accompaniments",
+  sufraStatusInitial:"Choose a path to jump to that part of the sample menu.",
+  sufraStatusTraditional:"Showing the sample traditional dishes.",
+  sufraStatusRice:"Showing the sample rice and meat dishes.",
+  sufraStatusSides:"Showing the sample sides and accompaniments.",
   visitKicker:"COME TOGETHER",visitTitle:"We look forward",visitTitle2:"to welcoming",you:"you.",
   visitText:"AZAL is a restaurant concept in development. Location, contact details and opening hours will be shared once confirmed.",
   visitCard:"VISIT AZAL",visitCardTitle:"One location.",visitCardTitle2:"One warm welcome.",locationLabel:"Location",toAnnounce:"To be announced",
@@ -29,6 +39,16 @@ const translations = {
   menuKicker:"DE NOTRE CUISINE",menuTitle:"Découvrez notre",menuTitleEm:"menu.",menuIntro:"Un premier aperçu de ce qu’AZAL pourrait proposer. Parcourez les plats présentés ci-dessous; tous les articles et les prix sont illustratifs et ne sont pas disponibles à la commande.",
   demoLabel:"MENU CONCEPT · PRIX INDICATIFS",searchLabel:"Rechercher un plat",searchPlaceholder:"Rechercher des plats ou des ingrédients…",
   catAll:"Tous les plats",catRice:"Riz et viandes",catTraditional:"Plats traditionnels",catSides:"Accompagnements",catDrinks:"Boissons",
+  sufraKicker:"UN PETIT GUIDE DU MENU",sufraTitle:"Trouvez votre chemin",sufraTitleEm:"vers la table.",
+  sufraIntro:"Commencez par ce qui vous fait envie. Un seul geste vous mène directement à cette partie de notre menu illustratif.",
+  sufraDemo:"GUIDE DÉMO · MENU INDICATIF",sufraGroup:"Choisissez un point de départ dans le menu",
+  sufraWarm:"Quelque chose de réconfortant",sufraWarmCopy:"Voir les plats traditionnels",
+  sufraRice:"Du riz parfumé",sufraRiceCopy:"Voir les plats de riz et de viande",
+  sufraSides:"Commencer par les accompagnements",sufraSidesCopy:"Voir les accompagnements",
+  sufraStatusInitial:"Choisissez un parcours pour accéder directement à cette partie du menu indicatif.",
+  sufraStatusTraditional:"Affichage des plats traditionnels de démonstration.",
+  sufraStatusRice:"Affichage des plats de riz et de viande de démonstration.",
+  sufraStatusSides:"Affichage des accompagnements de démonstration.",
   visitKicker:"RÉUNISSONS-NOUS",visitTitle:"Nous avons hâte",visitTitle2:"de vous accueillir",you:".",
   visitText:"AZAL est un concept de restaurant en développement. L’emplacement, les coordonnées et les heures d’ouverture seront communiqués lorsqu’ils seront confirmés.",
   visitCard:"VISITER AZAL",visitCardTitle:"Un seul lieu.",visitCardTitle2:"Un accueil chaleureux.",locationLabel:"Emplacement",toAnnounce:"À annoncer",
@@ -61,6 +81,7 @@ function applyLanguage(){
  document.document.documentElement.dir="ltr";
  document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
+ document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
  const switcher=$("languageToggle");
  if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
  const active=tabs?.querySelector("button.active");
@@ -86,6 +107,7 @@ const cartCount=$("cartCount"), cartTotal=$("cartTotal"), checkoutButton=$("chec
 const checkoutModal=$("checkoutModal"), customerName=$("customerName"), checkoutMessage=$("checkoutMessage");
 const nav=document.querySelector(".nav"), toggle=document.querySelector(".menu-toggle");
 const search=$("menuSearch"), tabs=$("categoryTabs");
+const sufraCompass=$("sufraCompass"), sufraStatus=$("sufraStatus");
 
 function renderProducts(category="All",query=""){
  if(!productGrid)return;
@@ -111,8 +133,20 @@ renderCart();
 
 productGrid?.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"");});
 cartItems?.addEventListener("click",e=>{const b=e.target.closest("[data-change]");if(!b)return;const id=Number(b.dataset.change),next=(cart.get(id)||0)+Number(b.dataset.delta);if(next<=0)cart.delete(id);else cart.set(id,next);renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
-tabs?.addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;tabs.querySelectorAll("button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});renderProducts(b.dataset.category,search?.value||"")});
+tabs?.addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;tabs.querySelectorAll("button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});sufraCompass?.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x.dataset.sufraCategory===b.dataset.category;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});if(sufraStatus)sufraStatus.textContent=["Traditional","Rice","Sides"].includes(b.dataset.category)?t("sufraStatus"+b.dataset.category):t("sufraStatusInitial");renderProducts(b.dataset.category,search?.value||"")});
 search?.addEventListener("input",e=>{const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",e.target.value)});
+sufraCompass?.addEventListener("click",e=>{
+ const b=e.target.closest("button[data-sufra-category]");
+ if(!b)return;
+ const category=b.dataset.sufraCategory;
+ if(search)search.value="";
+ tabs?.querySelectorAll("button[data-category]").forEach(x=>{const active=x.dataset.category===category;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});
+ sufraCompass.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});
+ renderProducts(category,"");
+ if(sufraStatus)sufraStatus.textContent=t("sufraStatus"+category);
+ $("menu")?.scrollIntoView({behavior:"smooth",block:"start"});
+});
+
 $("cartOpen")?.addEventListener("click",openCart);
 $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
