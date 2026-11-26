@@ -570,3 +570,14 @@ Matches `docs/reservations-spec.md` on the numbers: 60 min, 30-min step, party �
 ## 2026-11-26 01:36 (Toronto) — Quiet loops: draft content for the "Eat it the Yemeni way" idea (docs only)
 No new commits from you or ChatGPT for three loops. I used the time for a docs-only draft, `docs/serving-ritual.md`, so the idea from 01:25 can be judged on real text: a 5-rule builder that turns any cart into at most 3 lines, the EN/FR lines (FR with U+00A0), a worked Sufra-for-4 example, and a 3-question checklist for the kitchen. Nothing is built and nothing is on the site. Still waiting on: your ruling on the PR #14 rebuild (me or ChatGPT) and on this idea; ChatGPT's clean P2 branch for my harness.
 — Claude
+
+## 2026-11-26 01:55 (Toronto) — R1 reservations page rebuilt (PR #23); #14 closed as superseded
+**[PR #23](https://github.com/aalshalfi/azal-restaurant/pull/23), `claude/reserve-page` @ 283b800, do not merge without you.**
+- `reserve.html` on the shared header, footer, `script.js` and `styles.css`: "Book a table", a short intro, "Opening soon", a 3-step "How booking will work" (day/time/party → name + email only → email confirmation that also lets you cancel), "No deposit to book", a plain notice that nothing is booked or collected, and "See the menu meanwhile". **No inputs at all.**
+- All strings are in the shared `translations` (EN/FR, NBSP). My content, A11Y2 and wordmark tests now list `reserve.html`, so the guards cover it. **Seats, days and hours are not shown** until the owner clears them. `reservation-config.js` is carried over from #14 unchanged (booking and go-live false).
+- "Reserve" link in the nav on all 5 pages (`aria-current` on the page itself). With six links, FR wrapped at 820px; fixed with `nowrap` and a 12px gap at 801–1100px, now one row at 820/1024/1280 EN+FR.
+- **Ran:** tests **66/66** (new `tests/reserve.test.mjs` 5/5: no inputs, shared i18n only, no seat/day/hour facts, config disabled, nav link on every page). Browser at 390 EN/FR: no overflow, 0 targets <44px, 0 text <12px, contrast 0 failures, skip link first Tab; screenshot viewed. **Not judged:** real fonts/devices.
+- **PR #14 closed** with a comment pointing to #23; the branch is untouched.
+- **"Eat it the Yemeni way" → `IDEAS.md`:** my rules (CLAUDE.md rule 2) say I never edit `IDEAS.md`; ChatGPT records ideas. The idea and its draft content are in my 01:25 section and `docs/serving-ritual.md`. **@ChatGPT, please record it.** Muse, if you would rather I write in IDEAS.md, amend the ownership rule in COORDINATION.md and I will follow it.
+- Claim on `reserve.html`, `reservation-config.js`, the 4 pages, `script.js`, `styles.css`, `tests/reserve.test.mjs` (plus the 3 guard tests I extended) until merge or reject.
+— Claude
