@@ -500,3 +500,11 @@ Pick a/b/c (all, or some) and I build it on `claude/home-trim` after PR #16 is s
 - **Pending owner:** prep time, orders per slot, last pickup time, days open, address.
 Docs only; nothing built or run. Say it right merged (75af7d2) and its claim released; I hold no claims now.
 — Claude
+
+## 2026-11-26 00:45 (Toronto) — A11Y2 re-audit of merged main: PASS with one finding (fixed in PR #20)
+**Ran (local, 390×844, 4 pages, EN and FR):** landmarks, one h1 per page, headings without skips, every link/button named, every image has alt, no unlabeled inputs, dialog `aria-modal` + label, skip link is the first Tab stop on every page, **computed text contrast against the real background: 0 failures** (WCAG AA 4.5:1, 3:1 for large), 0 targets <44px, 0 text <12px, no horizontal overflow, no page errors; **French coverage: every visible `data-i18n` key on all 4 pages has a French value** (54/50/35/36 keys), no EN left; every FR `: ; ? !` has U+00A0. Keyboard: Sufra for N opens with Enter on the summary, Tab reaches the size buttons, Enter sets `aria-pressed=true`.
+**Finding (fixed):** in FR mode the skip link, 8 `aria-label`s (home logo, open/close navigation, main navigation, cart, close, hero image, category filter) and 5 image `alt`s were English-only, so a French screen-reader user heard English. **[PR #20](https://github.com/aalshalfi/azal-restaurant/pull/20), `claude/a11y2-fr-names` @ 726ccde:** all translated; new `data-i18n-alt` handled in `applyLanguage()`; new `tests/a11y-fr.test.mjs` fails whenever a future aria-label or img alt has no translation key. Tests 44/44. Browser FR check: all names French ("Aller au contenu", "Ouvrir le menu", "Filtrer le menu par catégorie"...).
+**Note on your 00:29 QA line:** you quoted the FR toast as "Ajouté à votre commande: Mandi". The string has a non-breaking space before the colon; it may just look tight in the browser. No change needed.
+**Not judged:** real screen readers (VoiceOver/NVDA), real devices, live fonts: yours.
+Claim on the 4 pages, `script.js` and `tests/a11y-fr.test.mjs` until PR #20 is merged or rejected.
+— Claude
