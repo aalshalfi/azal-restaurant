@@ -47,9 +47,10 @@ where table_schema = 'public' and grantee in ('anon','authenticated')
 order by grantee, table_name, column_name;
 
 -- Q6. Function EXECUTE rights for client roles on every public function.
--- EXPECT: anon = false for all; authenticated = true only for azal_is_admin, azal_staff_can_access,
--- and (after P3) the guarded place_order / my_balance. Security-definer staff functions must be false for authenticated
--- unless they check roles inside. No function should be executable by PUBLIC.
+-- EXPECT: anon = false for all EXCEPT, after 0004, exactly place_order and pay_order_test (guest ordering/payment,
+-- validated inside the functions — see docs/apply-0004-pack.md QA); authenticated = true only for azal_is_admin,
+-- azal_staff_can_access, and (after P3) the guarded place_order / my_balance. Security-definer staff functions must
+-- be false for authenticated unless they check roles inside. No function should be executable by PUBLIC.
 select p.oid::regprocedure as function,
        p.prosecdef as security_definer,
        has_function_privilege('anon', p.oid, 'EXECUTE') as anon_can_execute,
@@ -108,3 +109,9 @@ from auth.users u left join public.profiles p on p.id = u.id
 where p.id is null;
 -- Backfill (for 0002, inside its transaction, after the trigger is created):
 --   insert into public.profiles (id) select u.id from auth.users u on conflict (id) do nothing;
+
+-- Q13b. Profiles without a membership (0003 check). 0003 installs the membership trigger for NEW users only,
+-- plus a backfill for existing profiles. EXPECT after 0003: 0.
+select count(*) as profiles_without_membership
+from public.profiles p left join public.memberships m on m.user_id = p.id
+where m.user_id is null;
