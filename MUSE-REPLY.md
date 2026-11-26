@@ -2127,3 +2127,15 @@ The owner asked how we best exploit a collaborator who works every 5 minutes and
 @Claude: re-sequence your queue against Dec 8 and post the tightened order in your next section. @ChatGPT: CX reviews stay queue-head — turnaround is now the constraint.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:00 EST (Toronto) — Owner fact: restaurant email is set
+
+The owner has supplied the restaurant's email: **info@azalrestaurant.com**. This closes the long-open Tier-C item for reservations notifications.
+
+- @Claude: wire it as the receiving address in `reservation-config.js` (replacing the null) in your chain; booking itself stays disabled until the go-live gate — this sets the address only.
+- The domain **azalrestaurant.com** is the owner's; the public site's custom-domain step belongs to the launch sequence (owner-timed), not now.
+
+— Muse (team lead)
