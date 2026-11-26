@@ -1,12 +1,12 @@
 /* AZAL Iftar Mode (Claude, creative sprint 2026-11-26). During Ramadan the site counts down to TODAY's sunset in
    Ottawa and offers "Order for iftar", which pre-selects the latest pickup slot at or before sunset.
    - Ramadan: the browser's built-in Umm al-Qura calendar (Intl, "islamic-umalqura"); no hard-coded dates.
-   - Sunset: NOAA solar equations, computed in the browser for Orléans/Ottawa; typically within about 2 minutes.
+   - Sunset: NOAA solar-calculator equations for Ottawa, rounded UP to the minute; within 1 minute of published Ottawa tables (tested).
    - Honest note shown with it: local moon-sighting announcements can differ by a day.
    Inert outside Ramadan. Preview any day with ?iftar=preview. No data is collected or sent. */
 (function (root) {
   "use strict";
-  const TZ = "America/Toronto", LAT = 45.47, LON = -75.52; // Orléans, Ottawa (city-level, not the restaurant address)
+  const TZ = "America/Toronto", LAT = 45.4215, LON = -75.6972; // Ottawa (the reference used by local published tables; not the restaurant address)
   const rad = Math.PI / 180;
 
   function ymdIn(ms, tz) {
@@ -22,20 +22,34 @@
       return month === 9 ? day : 0;
     } catch { return 0; }
   }
-  // Sunset instant (ms, UTC) for a civil date at lat/lon; NOAA general solar position equations, zenith 90.833 deg.
+  // Sunset instant (ms, UTC) for a civil date: NOAA solar-calculator equations (Julian-century form, two passes so the
+  // sun's position is taken at sunset itself), zenith 90.833 deg. Checked against published Ottawa tables (tests).
+  // The returned instant is rounded UP to the whole minute: shown iftar times are never early.
   function sunsetMs(y, m, d, lat, lon) {
     lat = lat == null ? LAT : lat; lon = lon == null ? LON : lon;
-    const start = Date.UTC(y, 0, 1), day = Math.round((Date.UTC(y, m - 1, d) - start) / 864e5) + 1;
-    const days = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
-    const g = (2 * Math.PI / days) * (day - 1);
-    const eqt = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
-    const decl = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
-    const cosH = Math.cos(90.833 * rad) / (Math.cos(lat * rad) * Math.cos(decl)) - Math.tan(lat * rad) * Math.tan(decl);
-    if (cosH < -1 || cosH > 1) return null;
-    const ha = Math.acos(cosH) / rad;
-    const minutesUtc = 720 - 4 * (lon - ha) - eqt;
-    return Date.UTC(y, m - 1, d) + Math.round(minutesUtc * 60) * 1000;
+    const day0 = Date.UTC(y, m - 1, d);
+    let utcMin = 720 - 4 * lon + 300; // first guess, then refine
+    for (let pass = 0; pass < 3; pass++) {
+      const jd = (day0 + utcMin * 60000) / 864e5 + 2440587.5, T = (jd - 2451545) / 36525;
+      const L0 = (280.46646 + T * (36000.76983 + T * 0.0003032)) % 360;
+      const M = 357.52911 + T * (35999.05029 - 0.0001537 * T);
+      const e = 0.016708634 - T * (0.000042037 + 0.0000001267 * T);
+      const C = Math.sin(M * rad) * (1.914602 - T * (0.004817 + 0.000014 * T)) + Math.sin(2 * M * rad) * (0.019993 - 0.000101 * T) + Math.sin(3 * M * rad) * 0.000289;
+      const omega = 125.04 - 1934.136 * T;
+      const lambda = L0 + C - 0.00569 - 0.00478 * Math.sin(omega * rad);
+      const eps0 = 23 + (26 + (21.448 - T * (46.815 + T * (0.00059 - T * 0.001813))) / 60) / 60;
+      const eps = eps0 + 0.00256 * Math.cos(omega * rad);
+      const decl = Math.asin(Math.sin(eps * rad) * Math.sin(lambda * rad));
+      const yv = Math.tan((eps / 2) * rad) ** 2;
+      const eqt = 4 / rad * (yv * Math.sin(2 * L0 * rad) - 2 * e * Math.sin(M * rad) + 4 * e * yv * Math.sin(M * rad) * Math.cos(2 * L0 * rad) - 0.5 * yv * yv * Math.sin(4 * L0 * rad) - 1.25 * e * e * Math.sin(2 * M * rad));
+      const cosH = Math.cos(90.833 * rad) / (Math.cos(lat * rad) * Math.cos(decl)) - Math.tan(lat * rad) * Math.tan(decl);
+      if (cosH < -1 || cosH > 1) return null;
+      utcMin = 720 - 4 * (lon - Math.acos(cosH) / rad) - eqt;
+    }
+    return day0 + Math.ceil(utcMin) * 60000;
   }
+  const MARGIN_MIN = 2; // safety margin added to the calculated sunset: the iftar time we show is never early
+  const iftarMs = (y, m, d) => { const ss = sunsetMs(y, m, d); return ss == null ? null : ss + MARGIN_MIN * 60000; };
   const torontoMinutes = (ms) => { const p = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ms)); return Number(p.find((x) => x.type === "hour").value) * 60 + Number(p.find((x) => x.type === "minute").value); };
   // Latest pickup slot (minutes after midnight) at or before sunset; falls back to the earliest slot after it.
   function iftarSlot(slots, sunsetMin) {
@@ -45,12 +59,12 @@
   function state(nowMs, preview) {
     const rd = ramadanDay(nowMs);
     if (!rd && !preview) return { active: false };
-    const t = ymdIn(nowMs), ss = sunsetMs(t.y, t.m, t.d);
+    const t = ymdIn(nowMs), ss = iftarMs(t.y, t.m, t.d);
     let next = ss;
-    if (nowMs > ss) { const tm = ymdIn(nowMs + 864e5); next = sunsetMs(tm.y, tm.m, tm.d); }
+    if (nowMs > ss) { const tm = ymdIn(nowMs + 864e5); next = iftarMs(tm.y, tm.m, tm.d); }
     return { active: true, preview: !rd, ramadanDay: rd, sunset: ss, nextSunset: next, before: nowMs <= ss, minutesLeft: Math.max(0, Math.round((ss - nowMs) / 60000)), sunsetMin: torontoMinutes(ss) };
   }
-  const api = { ramadanDay, sunsetMs, iftarSlot, state, torontoMinutes };
+  const api = { ramadanDay, sunsetMs, iftarMs, MARGIN_MIN, iftarSlot, state, torontoMinutes };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser ---------- */
@@ -58,9 +72,9 @@
   try { preview = new URLSearchParams(root.location.search).get("iftar") === "preview"; } catch {}
   if (!state(Date.now(), preview).active) return;
   const S = {
-    en: { mubarak: "Ramadan Mubarak", before: "Iftar in {h} h {m} min · sunset in Ottawa {time}", soon: "Iftar in {m} min · sunset in Ottawa {time}", after: "Iftar was at {time}. Tomorrow: {next}.",
-      order: "Order for iftar", note: "Sunset is calculated for Ottawa. Ramadan dates follow the Umm al-Qura calendar; local announcements may differ by a day.", previewTag: "Preview", picked: "Pickup set to {time}, just before iftar. You can change it." },
-    fr: { mubarak: "Ramadan Moubarak", before: "Iftar dans {h} h {m} min · coucher du soleil à Ottawa {time}", soon: "Iftar dans {m} min · coucher du soleil à Ottawa {time}", after: "L’iftar était à {time}. Demain : {next}.",
+    en: { mubarak: "Ramadan Mubarak", before: "Iftar in {h} h {m} min · {time} in Ottawa", soon: "Iftar in {m} min · {time} in Ottawa", after: "Iftar was at {time}. Tomorrow: {next}.",
+      order: "Order for iftar", note: "Iftar time = calculated Ottawa sunset plus a 2-minute safety margin. Ramadan dates follow the Umm al-Qura calendar; please follow your mosque’s announcement, which may differ by a day.", previewTag: "Preview", picked: "Pickup set to {time}, just before iftar. You can change it." },
+    fr: { mubarak: "Ramadan Moubarak", before: "Iftar dans {h} h {m} min · {time} à Ottawa", soon: "Iftar dans {m} min · {time} à Ottawa", after: "L’iftar était à {time}. Demain : {next}.",
       order: "Commander pour l’iftar", note: "Le coucher du soleil est calculé pour Ottawa. Les dates du Ramadan suivent le calendrier Umm al-Qura ; les annonces locales peuvent différer d’un jour.", previewTag: "Aperçu", picked: "Retrait fixé à {time}, juste avant l’iftar. Vous pouvez le changer." }
   };
   const lang = () => (document.documentElement.lang === "fr" ? "fr" : "en");

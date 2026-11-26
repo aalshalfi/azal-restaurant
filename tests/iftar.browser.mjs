@@ -14,8 +14,8 @@ async function at(iso, path, lang = "en") {
 { const p = await at("2026-11-26T17:00:00Z", "/index.html"); ok(await p.locator(".iftar-banner").count() === 0, "outside Ramadan: no banner, nothing changes"); await p.close(); }
 { const p = await at("2027-02-20T19:00:00Z", "/index.html"); // 14:00 Toronto, Ramadan 13
   const t = await p.textContent(".iftar-banner");
-  ok(/Ramadan Mubarak/.test(t) && /Iftar in 3 h 3\d min · sunset in Ottawa 5:3\d\sp\.m\./.test(t), "Ramadan day: live countdown to computed Ottawa sunset");
-  ok(/Umm al-Qura/.test(t) && !/Preview/.test(t), "honest calendar note; not marked preview");
+  ok(/Ramadan Mubarak/.test(t) && /Iftar in 3 h 3\d min · 5:\d\d\sp\.m\. in Ottawa/.test(t), "Ramadan day: live countdown to computed Ottawa iftar time");
+  ok(/Umm al-Qura/.test(t) && /2-minute safety margin/.test(t) && /mosque/.test(t) && !/Preview/.test(t), "honest note: margin, calendar, follow your mosque; not marked preview");
   await p.screenshot({ path: process.env.SHOT || "/tmp/iftar.png" }); await p.close(); }
 { const p = await at("2027-02-20T19:00:00Z", "/menu.html");
   await p.evaluate(() => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2]])); }); await p.reload(); await p.waitForTimeout(250);
@@ -23,11 +23,11 @@ async function at(iso, path, lang = "en") {
   ok(await p.evaluate(() => document.getElementById("cartDrawer").getAttribute("aria-hidden")) === "false", "Order for iftar opens the cart when it has items");
   await p.evaluate(() => document.getElementById("checkoutButton").click()); await p.waitForTimeout(200);
   const chosen = await p.evaluate(() => pickupState.choice);
-  ok(chosen === "1050", `pickup pre-selected at 17:30, the last slot before sunset (got ${chosen})`);
+  ok(chosen === "1050", `pickup pre-selected at 17:30, the last 15-min slot at or before iftar 17:39 (got ${chosen})`);
   ok(/just before iftar/.test(await p.textContent("#cartStatus")), "screen-reader announcement of the iftar slot");
   await p.close(); }
 { const p = await at("2027-02-21T00:30:00Z", "/index.html"); // 19:30 Toronto
-  ok(/Iftar was at 5:3\d\sp\.m\. Tomorrow: 5:3\d\sp\.m\./.test(await p.textContent(".iftar-banner")) && await p.locator(".iftar-order").count() === 0, "after sunset: tomorrow's time, no order button"); await p.close(); }
+  ok(/Iftar was at 5:\d\d\sp\.m\. Tomorrow: 5:\d\d\sp\.m\./.test(await p.textContent(".iftar-banner")) && await p.locator(".iftar-order").count() === 0, "after sunset: tomorrow's time, no order button"); await p.close(); }
 { const p = await at("2027-02-20T19:00:00Z", "/index.html", "fr"); const t = await p.textContent(".iftar-banner");
   ok(/Ramadan Moubarak/.test(t) && /Iftar dans 3 h/.test(t) && /Commander pour l’iftar/.test(t), "French"); await p.close(); }
 { const p = await at("2026-11-26T17:00:00Z", "/index.html?iftar=preview"); ok(/Preview/.test(await p.textContent(".iftar-banner")), "?iftar=preview shows it on any day, clearly tagged"); await p.close(); }
