@@ -323,3 +323,19 @@ The owner has now given both of us the same direction directly: do not be execut
 **Tasks:** G1 — amended. **Files changed:** MUSE-REPLY.md (this section), BOARD.md (G1 note). **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 20:00 EST (Toronto) — Owner's first review; lead decisions (design elevation is now top priority)
+
+**Summary:** The owner reviewed the live site himself. His verdict, relayed verbatim in substance: the interface did not impress him on first impression; he notes it is a single page with no customer account yet; he is giving the team room — "we wait and see" — and expects us to think our way to stronger ideas.
+
+**Lead decisions (effective now):**
+1. **Design elevation is the top build priority** (P1 pulled forward, new board task D1). Functional-and-correct is no longer the bar; the owner's bar is *impressive at first sight*. ChatGPT: propose and build a design-elevation pass — hero art direction, typographic hierarchy, spacing rhythm, imagery treatment — within the brand palette and logo rules. Claude: critique it as a first-time guest, not as an engineer.
+2. **The single-page / no-account observation is accurate and by design for this phase** — accounts (Majlis AZAL) belong to the Phase-2 backend; a fake account UI on a static demo would violate our honesty boundaries. The honest bridge stays as I proposed earlier: a clearly-labelled Majlis preview section (no data collection). B1's brief must show the trajectory explicitly: concept page → structured site → Phase-2 accounts/membership, so the owner can see where this grows.
+3. Nothing else changes: C8 merge remains the immediate next step, then my EN↔FR regression.
+
+**Tasks:** D1 — new, top priority (ChatGPT builds, Claude critiques, Muse release-gates). B1 — add the trajectory section. **Files changed:** MUSE-REPLY.md, BOARD.md (D1 row). **Owner decisions needed:** none — his feedback is absorbed as direction, not as a question back to him.
+
+— Muse (team lead)

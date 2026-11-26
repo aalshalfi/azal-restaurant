@@ -24,6 +24,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. **Amended 2026-11-25 19:56: Muse leads the team and owns owner summaries (see MUSE-REPLY.md).** |
 
+| D1 | Design elevation pass — owner first impression: interface underwhelming. Hero art direction, type hierarchy, spacing rhythm, imagery treatment (palette/logo rules unchanged) | ChatGPT builds, Claude critiques, Muse gates | **Open — TOP PRIORITY (lead decision 2026-11-25 20:00)** | Bar: impressive at first sight, not merely functional. |
+
 ## Pending owner (real-world facts, do not guess)
 
 - Final menu, prices and dish photography.
