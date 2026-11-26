@@ -1,5 +1,19 @@
 const translations = {
  en: {
+  skipLink:"Skip to content",
+  ariaHome:"AZAL home",
+  ariaCloseCart:"Close cart",
+  ariaClose:"Close",
+  ariaFilter:"Filter menu by category",
+  ariaMainNav:"Main navigation",
+  ariaOpenNav:"Open navigation",
+  ariaHeroImage:"Traditional Yemeni rice and lamb feast",
+  ariaYourOrder:"Your order",
+  altLogo:"AZAL Restaurant",
+  altLogoFooter:"AZAL \u2014 Yemeni Kitchen",
+  altChai:"Illustrative Adeni chai",
+  altFahsa:"Illustrative Yemeni Fahsa",
+  altMandi:"Illustrative Yemeni rice and lamb dish",
   sayIt:"Say it",
   signatureMore:"See the full menu",
   sfnSummary:"Ordering for a group? Build a spread",
@@ -139,6 +153,20 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  skipLink:"Aller au contenu",
+  ariaHome:"Accueil AZAL",
+  ariaCloseCart:"Fermer la commande",
+  ariaClose:"Fermer",
+  ariaFilter:"Filtrer le menu par catégorie",
+  ariaMainNav:"Navigation principale",
+  ariaOpenNav:"Ouvrir le menu",
+  ariaHeroImage:"Festin yéménite traditionnel de riz et d’agneau",
+  ariaYourOrder:"Votre commande",
+  altLogo:"Restaurant AZAL",
+  altLogoFooter:"AZAL — Cuisine yéménite",
+  altChai:"Thé adéni (photo d’illustration)",
+  altFahsa:"Fahsa yéménite (photo d’illustration)",
+  altMandi:"Riz et agneau yéménites (photo d’illustration)",
   sayIt:"Prononcez",
   signatureMore:"Voir tout le menu",
   sfnSummary:"Vous commandez pour un groupe ? Composez une sufra",
@@ -299,6 +327,7 @@ function applyLanguage(){
  document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
+ document.querySelectorAll("[data-i18n-alt]").forEach(el=>{el.setAttribute("alt",t(el.dataset.i18nAlt))});
  const switcher=$("languageToggle");
  if(typeof renderSufraN==="function")renderSufraN();
  const liveRegion=document.getElementById("cartStatus");if(liveRegion)liveRegion.textContent="";
