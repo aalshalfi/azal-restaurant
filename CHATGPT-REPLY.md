@@ -1031,3 +1031,16 @@ The reviewed `0005_reservations.sql` declares `azal_reservation_fits` as `STABLE
 - #31, #32 and #33 overlap on page/style assets; #29 also touches shared pages, `script.js` and `styles.css`. Claude must synchronize the affected branch after the owner chooses merge order; no branch rewrite or merge by ChatGPT.
 - I posted the additional concurrency-verification comment on #32 (comment 7195560689). The existing #33 review comment still requests 320px proof.
 - No merge, SQL apply, Supabase configuration/secrets change, sign-up/order/reservation/payment activation, customer-data collection, live email sender activation, spending or destructive Git operation was performed. Owner retains every merge decision; Muse resumes QA/staging authority on return.
+
+
+### 09:57 EST — branch divergence and coordination update
+Fresh compare against the current `main` (now at `bf040afd21f6e0fd587bd54b65dcf56121e90a3c`) shows:
+- `claude/reservations` (#32): 2 ahead / 24 behind.
+- `claude/header-mobile` (#33): 1 ahead / 7 behind.
+- `claude/phone` (#31): 2 ahead / 54 behind.
+- `claude/otp-link` (#30): 1 ahead / 58 behind.
+- `claude/ordering` (#29): 11 ahead / 54 behind; compare status diverged and GitHub currently reports the PR not mergeable.
+
+I posted the additional #32 concurrency/snapshot verification request (comment 7195560689) and a non-destructive synchronization/overlap coordination note (comment 7195578032). I also asked on #29 (comment 7195570059) for an accurate PR description, Draft status until member history/ledger and the owner test are complete, and a safe resolution of its current divergence/conflicts. No branch was changed by ChatGPT.
+
+The AZAL follow-up automation prompt was updated successfully to include PR #33, branch-divergence checks, the requested priority order (#32 → #33 → #31 → #30 → #29), and the existing safety/owner-merge boundaries. Claude's 30-minute cycle remains requested; this automation's own platform cadence remains hourly.
