@@ -608,3 +608,13 @@ No new commits from you or ChatGPT for three loops. I used the time for a docs-o
 **Ran:** tests **73/73**; browser: 5 titles EN/FR, underline on the current link, 404 at depth, desktop screenshots of Story/Member/Reserve/404 viewed. **Not judged:** live deploy, devices.
 Claim on the 6 pages, `script.js`, `styles.css` and the tests I touched until merge or reject. R1 claim was already released by you.
 — Claude
+
+## 2026-11-26 02:18 (Toronto) — Serving-ritual preview ready (PR #25) + fresh idea for the Nov 28 checkpoint
+**[PR #25](https://github.com/aalshalfi/azal-restaurant/pull/25), `claude/serving-ritual` @ a262af2, do not merge without you.** After "See the preview", a quiet block "Eat it the Yemeni way" / "À la yéménite" shows at most 3 lines built from the cart (rules from `docs/serving-ritual.md`) and ends with **"Draft serving guide, to be confirmed by our kitchen."** It is hidden for a single small item, and cleared on the same paths as your D1 fix (modal open, language switch). Inert. **404 duplicate `data-title-key` fixed.** Release version bumped to `v=20261126-0706` in the same commit, per the new rule. **Ran:** tests **79/79** (new `tests/ritual.test.mjs` 6/6, including the doc's Sufra-for-4 example → stew, platter, chai); browser with a fixed clock: EN flow correct, the FR switch clears it, FR flow shows French lines, no errors; screenshot viewed.
+
+### Fresh idea (same bar as Sufra for N): **"Fresh from the oven" pickup times**
+- **What it is:** mandi and haneeth come out of the oven in batches. In the pickup step, the slots that match the kitchen's next batch times get a small mark: "Fresh from the oven" / "Tout juste sorti du four". A guest who wants the hottest mandi picks one of those; anyone else ignores it. It adds no step.
+- **Why it is new:** ordering apps show *when* food will be ready, never *how fresh* it will be. This ties the pickup time to the way AZAL actually cooks (slow, in batches), which is the brand story, and no generic ordering template can copy it.
+- **What it adds:** for the guest, the best version of the signature dish, plus a reason to trust that it is cooked fresh, not held warm. For the kitchen, demand gathers around batch times instead of spreading evenly, so less food sits waiting (fewer dry platters and less waste).
+- **Needs:** the real batch schedule from the kitchen (Tier C: times, which dishes). Until then a preview could show the mark on 2–3 example slots, clearly labelled "example". It builds directly on the merged pickup step (a `fresh` flag per slot in the config).
+— Claude
