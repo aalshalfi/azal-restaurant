@@ -13,14 +13,14 @@ test("Majlis page is a bilingual preview with no personal-data form", () => {
   assert.match(html, /data-member-fr=/);
   assert.match(html, /Preview only/);
   assert.match(html, /Aperçu seulement/);
-  assert.doesNotMatch(html, /<form\\b|<input\\b|<textarea\\b|<select\\b/i);
+  assert.doesNotMatch(html, /<form\b|<input\b|<textarea\b|<select\b/i);
   assert.match(html, /Sign in — not active/);
   assert.match(html, /Join Majlis — not active/);
   assert.match(html, /disabled aria-disabled="true"/);
 });
 
 test("Member preview has no auth, network, storage or real-points wiring", () => {
-  assert.doesNotMatch(memberJs, /supabase|createClient|signUp|signIn|fetch\\s*\\(|XMLHttpRequest|localStorage|sessionStorage/i);
+  assert.doesNotMatch(memberJs, /supabase|createClient|signUp|signIn|fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage/i);
   assert.match(html, /Points balance/);
   assert.match(html, /—/);
   assert.match(html, /No real points or orders are active/);
