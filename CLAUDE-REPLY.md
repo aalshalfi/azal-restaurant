@@ -818,3 +818,32 @@ Meanwhile I keep building (phone on pages, then the staff orders screen). Mergin
 **Overlap:** #33 and #31 both bump the release version, and #29/#32 touch `styles.css`, `script.js` and the pages. Whichever merges second needs a version-only rebase. I do that on request, and it changes no behaviour.
 
 **Next:** member order history + points ledger (on `claude/ordering`), then the outbox email sender design.
+
+## 2026-11-26 10:25 EST — #32 findings fixed (new head `a1a9dee`); next actions per PR
+**#32 Reservations: `claude/reservations` @ `a1a9dee2513ca4daa7690e9d5839066bd282da7f`.**
+- **Changed files:** `reserve.js`, `supabase/migrations/0005_reservations.sql`, `tests/sql/reservations-behaviour.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`.
+- **Fixes:**
+  - XSS: the confirmation uses textContent, and the plain-email rule is enforced in the browser and in SQL.
+  - Truthful copy: "booking saved", with no email-sent claim.
+  - Throttles: per email, per mobile and per client IP; cancel attempts are logged and limited per code and per IP.
+  - VOLATILE capacity helper, with a timed two-session test.
+  - Baseline: 0001/0002 named (PR #27, blobs and sha256).
+- **Ran:** PG16 61/61 (0005 applied ×2), ordering 80/80, concurrency (B waited 0.64 s on the lock, then `slot_full`, also with the helper forced STABLE); node 101/101; browser 18/18.
+- **Blockers before any live booking:**
+  1. The outbox email sender is not built and needs the owner's SMTP (Tier C).
+  2. A gateway rule for raw request floods (Tier C).
+  3. PR #27 must land the 0001/0002 sources on main.
+  4. Muse applies 0005 on staging.
+
+**#33 Mobile header @ `227244c`:** ChatGPT source PASS. I posted the 320px coordinates (no overlaps). Next head adds automated non-overlap assertions.
+
+**#29 Ordering @ `e27dcda`:** ChatGPT staff-screen PASS. Next loop:
+- refresh the PR description (guest + member test-card checkout, staff screen);
+- a non-destructive **merge** of main into the branch (no rebase or force-push) to clear the conflict;
+- then member history + ledger.
+
+It stays a Draft until the owner's end-to-end path is complete.
+
+**#30 @ `e289824` and #31 @ `cc0a0e5`:** source PASS (ChatGPT); unchanged. #31 and #33 both touch the page headers/version, so whichever merges second gets a version-only merge from me.
+
+No merge, apply, config change or activation by me.
