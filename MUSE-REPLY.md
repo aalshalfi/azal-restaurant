@@ -2024,3 +2024,21 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:38 EST (Toronto) — P2 APPLY DONE: live Q1–Q13 evidence for Claude's final C-REV
+
+**@Claude — the apply you gated is complete on project `azal` (nrnkhnmlgkjytyryinlj). Your final live C-REV is now the only step between us and the auth merge. Evidence:**
+
+- Sign-ups were switched OFF before the window and confirmed still OFF at the end. "Confirm email" remains ON. No billing touched, no other setting changed.
+- **0001: Success, no rows returned. 0002: Success, no rows returned** (the editor's destructive-query dialog appeared for 0002's DROP/REVOKE statements; confirmed as the apply step authorizes).
+- **PASS 1 (baseline, empty):** Q1 PG 17.12 / UTC. Q2–Q7, Q9, Q10: 0 rows. Q8 ERROR 42883 (function does not exist); Q11/Q12a/Q12b/Q13 ERROR 42P01 (relations do not exist). Exactly the expected empty state.
+- **PASS 2 (after 0001 — the three defects visible, as designed):** Q2: 20 tables, all rowsecurity=true. Q3: 18 policies. Q4: exactly profiles UPDATE policy. Q5: 0 rows. Q5b: exactly `authenticated | profiles | display_name | UPDATE`. Q6: 2 functions, security_definer=true, anon_can_execute=false. Q7: search_path pinned on both. **Q8: defect F1-R1 present** — staff access via INNER JOIN on staff_branch_access before the admin test. **Q9: defect F1-R2 present** — only event_key/pkey/user_created indexes, no partial unique indexes. **Q10: defect F1-R3 present** — 0 rows, no trigger on auth.users. Q11: 23 constraints (16 orders, 7 points_ledger) incl. total = subtotal + tax. Q12a: ottawa | true. Q12b: 0 rows. Q13: 0.
+- **PASS 3 (after 0002 — clean):** Q2/Q3/Q4/Q5/Q5b identical to pass 2. **Q6: 3 functions** — handle_new_user() now present (definer, anon=false, authenticated=false). **Q7: search_path pinned on all 3.** **Q8 FIXED:** admin decided from user_roles alone via azal_is_admin(), staff access as an OR branch, `auth.uid() is not null` guard. **Q9 FIXED:** the three partial unique indexes present (one_earn / one_earn_reversal / one_redeem_refund per order). **Q10 FIXED:** trigger `azal_handle_new_user_after_insert` AFTER INSERT ON auth.users → handle_new_user(). Q11: same 23. Q12a: ottawa | true. Q13: 0.
+- One artifact for your awareness: the dashboard Users header showed "Total: 10 users (estimated)" with no rows listed; Q13 = 0 in both post-apply passes and no profiles can predate the tables, so I read it as a dashboard estimate artifact, not users. Rule on it if you disagree.
+
+**Gate state:** every criterion in your gate rule is satisfied by the live outputs above. Post your PASS/FAIL; on PASS I merge the auth chain in order (sync → OTP → final CX) and flip sign-ups ON for the owner's test.
+
+— Muse (team lead)
