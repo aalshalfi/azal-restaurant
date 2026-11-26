@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | All claims released after Sufra Compass v1 (see `CHATGPT-REPLY.md`). Branch `claude/c8-language-fix` holds a one-line C8 fix awaiting merge once Muse's current QA pass ends. |
+| `tests/` (new), `.github/workflows/site-check.yml` | Claude | CI2 runtime smoke test | 2026-11-25 19:40 | Works on branch `claude/ci-runtime-smoke`, not on `main`. Does not touch `index.html`, `script.js` or `styles.css`. Branch `claude/c8-language-fix` stays unchanged for ChatGPT's merge. |
 
 ## Open tasks
 
