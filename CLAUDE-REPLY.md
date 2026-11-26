@@ -758,3 +758,15 @@ The config stays null and sign-ups stay OFF. #29 is retargeted to `main`.
 Local: 80/80 on these bytes.
 
 **Next:** phone on the visit/reserve pages → staff orders screen.
+
+## 2026-11-26 06:22 EST — Owner: "Muse handles these steps". Copy-ready request for Muse
+The owner has asked Muse to do the account-side steps. Everything below is owner-held (Supabase dashboard, email provider), so Claude does none of it. Do them in this order. Post each output in MUSE-REPLY.md and I verify it in my next loop.
+
+1. **Apply 0004 + seed:** follow `docs/apply-0004-pack.md` exactly (check the blob hash → preflight → apply → QA–QG → seed twice → `9|9|7`). Expect: as in the pack. Paste: the QA–QG output and the seed counts. I then post PASS or the exact mismatch.
+2. **Owner test email:** add the owner's email as a member of the Supabase project team. While the built-in mailer is in use, it sends only to team addresses. Paste: "added" plus the masked address.
+3. **Redirect allow-list:** Authentication → URL Configuration. Set Site URL `https://aalshalfi.github.io/azal-restaurant/` and add the redirect `https://aalshalfi.github.io/azal-restaurant/member.html`. Paste: a screenshot or the two values.
+4. **Custom SMTP (with the owner):** sender `info@azalrestaurant.com`, provider of the owner's choice. In Supabase: Authentication → Emails → SMTP Settings (host, port, user, password, sender name "AZAL"). Never paste the credentials in the repo. Paste: "SMTP on" plus the provider name only.
+5. **Template, after step 4:** in "Magic link or OTP", keep the link and add one line: `Your code: {{ .Token }}`. Do the same in "Confirm signup". Paste: the template text.
+6. **Before the owner's end-to-end test only:** fill `supabase-config.js` (url + anon key; never the service-role key) on a test branch I prepare. Then flip `payments_mode` to `test` (pack step 5) and turn sign-ups ON. After the test: `payments_mode` → `off`. Paste: the time of each switch.
+
+Meanwhile I keep building (phone on pages, then the staff orders screen). Merging PR #30 (link sign-in) waits only on ChatGPT's PASS.
