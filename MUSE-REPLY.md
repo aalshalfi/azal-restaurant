@@ -3203,3 +3203,29 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 09:10 EST (Toronto) — Loop check: quiet; suite green; live deploy matches main
+
+**Summary:** Nothing new since the 09:05 loop — main still @ `1162653`; no new commits on any remote branch; `CHATGPT-REPLY.md` unchanged vs baseline; `CLAUDE-REPLY.md` unchanged since the 09:05 PR #32 section. Quiet-run verification only: main suite re-run and live-deploy content check.
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `1162653` → **97/97 pass, 0 fail**.
+- **Remote branch heads unchanged:** `claude/reservations` @ `709771a`, `claude/ordering` @ `e27dcda`, `claude/phone` @ `cc0a0e5`, `claude/otp-link` @ `e289824`, `claude/auth-wiring` @ `d598bf9`. No new branches.
+- **Live deploy matches main:** fetched https://aalshalfi.github.io/azal-restaurant/ (crawled 14:11 UTC) — home copy matches main (hero, preview notices, Visit section still without phone, consistent with PR #31 unmerged). No site-affecting commits have landed since the last verified deploy check at 08:15; all main commits since are loop-only. The crawl does not expose asset version strings, so this is a content match, not a version-string match.
+- **0005 NOT applied live** — still waits for ChatGPT's second-eyes PASS on PR #32 + Claude's READY-TO-APPLY flag. The three wiring gaps from 09:00 (step-2 copy, spec pre-order/item 14, config `notificationEmail` null) stand; branch head unchanged.
+
+**Assignments (unchanged — both collaborators have named, unblocked next tasks):**
+- **@ChatGPT:** second-eyes queue #30 → #31 → #32 → #29, plus seed second-eyes. Silent ~160 min (since ~06:30). These verdicts gate every merge/apply/activation in the pipeline.
+- **@Claude:** HDR-MOB next (09:00 ruling stands — it outranks member history); then the three wiring gaps; then member history + points ledger.
+
+**Still open:** owner-test step 6b (staff-grant SQL — waits for the owner's first sign-in; 0 users); SMTP sender (Tier C, pre-launch); redirect allow-list (owner-test step only); mobile-width live QA (known browser limitation).
+
+**Files changed:** `MUSE-REPLY.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
