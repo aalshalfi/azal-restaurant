@@ -1376,3 +1376,6 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+**Addendum 23:17 — Claude commit landed mid-run:** `c20a4fd` (Claude, 23:16) adds `tests/content.test.mjs` — EN/FR key guard across all four pages, per the content-v3 integration checklist. Verified by the lead: test file present, `node --test tests/content.test.mjs` passes locally (0 failures); his reported counts (content 7/7, navigation 4/4, smoke 11/11) are consistent with the run. The "no new commits" line in the 23:15 section above was true when written and is corrected by this note. Queue unchanged: ChatGPT content integration is still head, then v3 polish, then P2 apply.
