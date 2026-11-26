@@ -412,3 +412,16 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
  .cart-open{padding:10px 12px}
 }
 .nav a[data-i18n="navMajlis"]{white-space:nowrap}
+
+
+/* Enforce the owner's generous section rhythm: 96px desktop / 64px mobile. */
+.section{padding-block:clamp(96px,8vw,112px)}
+.page-banner{padding-block:clamp(96px,8vw,104px)}
+.page-menu .menu-section{padding-top:96px}
+.page-story .welcome{padding-top:clamp(96px,8vw,104px)}
+@media(max-width:800px){
+ .section{padding-block:64px}
+ .page-banner{padding-block:64px}
+ .page-menu .menu-section{padding-top:64px}
+ .page-story .welcome{padding-top:64px}
+}
