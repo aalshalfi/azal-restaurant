@@ -182,6 +182,31 @@ test("cart contents survive a language switch", () => {
   assert.equal(evalIn("cart.get(1)"), 1);
 });
 
+test("search clears an active Sufra guide instead of stranding the guest (C10)", () => {
+  const { evalIn } = boot();
+  const compass = byId.get("sufraCompass");
+  const search = byId.get("menuSearch");
+  const grid = byId.get("productGrid");
+  const sidesBtn = all.find((el) => el.dataset.sufraCategory === "Sides");
+  assert.ok(sidesBtn, "Sides guide button is missing from index.html");
+
+  // One tap on "Start with sides" filters to the 2 sides.
+  fire(compass, "click", {
+    target: { closest: (sel) => (sel === "button[data-sufra-category]" ? sidesBtn : null) },
+  });
+  assert.equal(evalIn("activeGuide"), "Sides");
+  assert.equal((grid.innerHTML.match(/class="product-card"/g) || []).length, 2);
+
+  // Typing a search must release the guide and search the whole menu.
+  search.value = "mandi";
+  fire(search, "input", { target: search });
+  assert.equal(evalIn("activeGuide"), null);
+  assert.equal(sidesBtn.classList.contains("active"), false);
+  const cards = (grid.innerHTML.match(/class="product-card"/g) || []).length;
+  assert.equal(cards, 2, "searching 'mandi' should find the two mandi dishes, not an empty menu");
+  assert.ok(grid.innerHTML.includes("Lamb Mandi") && grid.innerHTML.includes("Chicken Mandi"));
+});
+
 test("every translation key used by index.html exists in English and French", () => {
   const { evalIn } = boot();
   const translations = clone(evalIn("translations"));

@@ -108,6 +108,7 @@ const checkoutModal=$("checkoutModal"), customerName=$("customerName"), checkout
 const nav=document.querySelector(".nav"), toggle=document.querySelector(".menu-toggle");
 const search=$("menuSearch"), tabs=$("categoryTabs");
 const sufraCompass=$("sufraCompass"), sufraStatus=$("sufraStatus");
+let activeGuide=null; // C10: which Sufra guide (if any) is currently filtering the menu
 
 function renderProducts(category="All",query=""){
  if(!productGrid)return;
@@ -133,12 +134,13 @@ renderCart();
 
 productGrid?.addEventListener("click",e=>{const b=e.target.closest("[data-add]");if(!b)return;const id=Number(b.dataset.add);cart.set(id,(cart.get(id)||0)+1);renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"");});
 cartItems?.addEventListener("click",e=>{const b=e.target.closest("[data-change]");if(!b)return;const id=Number(b.dataset.change),next=(cart.get(id)||0)+Number(b.dataset.delta);if(next<=0)cart.delete(id);else cart.set(id,next);renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
-tabs?.addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;tabs.querySelectorAll("button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});sufraCompass?.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x.dataset.sufraCategory===b.dataset.category;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});if(sufraStatus)sufraStatus.textContent=["Traditional","Rice","Sides"].includes(b.dataset.category)?t("sufraStatus"+b.dataset.category):t("sufraStatusInitial");renderProducts(b.dataset.category,search?.value||"")});
-search?.addEventListener("input",e=>{const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",e.target.value)});
+tabs?.addEventListener("click",e=>{const b=e.target.closest("button[data-category]");if(!b)return;tabs.querySelectorAll("button").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});sufraCompass?.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x.dataset.sufraCategory===b.dataset.category;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});activeGuide=["Traditional","Rice","Sides"].includes(b.dataset.category)?b.dataset.category:null;if(sufraStatus)sufraStatus.textContent=["Traditional","Rice","Sides"].includes(b.dataset.category)?t("sufraStatus"+b.dataset.category):t("sufraStatusInitial");renderProducts(b.dataset.category,search?.value||"")});
+search?.addEventListener("input",e=>{if(activeGuide&&e.target.value.trim()){activeGuide=null;sufraCompass?.querySelectorAll("button[data-sufra-category]").forEach(x=>{x.classList.remove("active");x.setAttribute("aria-pressed","false")});tabs?.querySelectorAll("button[data-category]").forEach(x=>{const active=x.dataset.category==="All";x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});if(sufraStatus)sufraStatus.textContent=t("sufraStatusInitial")}const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",e.target.value)});
 sufraCompass?.addEventListener("click",e=>{
  const b=e.target.closest("button[data-sufra-category]");
  if(!b)return;
  const category=b.dataset.sufraCategory;
+ activeGuide=category;
  if(search)search.value="";
  tabs?.querySelectorAll("button[data-category]").forEach(x=>{const active=x.dataset.category===category;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});
  sufraCompass.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});
