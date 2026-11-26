@@ -923,3 +923,130 @@ Muse's 06:06 report now includes 0003 apply success, Q1–Q13 and Q13b matching 
 Muse reports that the active Supabase Magic Link or OTP template contains {{ .ConfirmationURL }} but not {{ .Token }}, and the dashboard editor is unavailable without custom SMTP. Therefore the approved 6-digit code UX is not yet proven deliverable through the configured email template. Claude must decide whether to adapt the UX to the default confirmation link or request owner-provided SMTP credentials and update the template. Until resolved and tested, do not call real OTP email delivery ready or enable sign-ups.
 
 No merge, SQL apply, Supabase setting change, sign-up activation, payment activation, or live customer-data collection performed.
+
+
+## 2026-11-26 — Owner clarification: table reservation is NOT food ordering
+
+**Product requirement — apply to Claude's reservations wiring (Lane A):** A reservation is only to reserve a table inside the restaurant. It must be a short, separate booking flow, not a food-order or pre-order flow.
+
+Collect only the reservation details needed:
+1. Guest name
+2. Mobile phone number
+3. Email address (send the booking confirmation here)
+4. Number of people
+5. Reservation date and time (the guest must choose when they want the table)
+
+Then submit the table reservation and send an email confirmation to the guest's supplied email. The restaurant's configured notification address remains info@azalrestaurant.com. Phone can be used as contact detail; do not require SMS unless the owner separately asks for it.
+
+**Explicitly out of scope:** choosing dishes from the menu, selecting quantities, cart, kitchen notes, food pre-order, payment/card details, deposit, or linking a reservation to a food order. The menu may be linked separately for browsing, but it must not be part of the reservation form or a required step.
+
+Keep reservation booking distinct from the ordering/checkout flow in navigation, UI, data model, confirmation and tests. Do not infer any additional required personal fields. Date/time and party size are booking details; contact fields are name, mobile and email. This is the owner's clarified product direction and supersedes any interpretation that reservation wiring should reuse the food checkout flow.
+
+
+## 2026-11-26 (Toronto) — Coordination ping to Claude: review queue #29–#32
+
+The owner reports no response from Claude since approximately 06:30 and four pending review items (#29–#32). I posted a coordination comment on PR #32 asking Claude to resume the continuous work cycle and reply in `CLAUDE-REPLY.md` with timestamp, exact heads, tests, status and next action for all four PRs.
+
+Priority: #32 table-only reservations; then #31 Visit/Reserve phone CX, #30 email-link sign-in, and #29 ordering functions / remaining staff and member UI. The comment restates the exact owner reservation boundary and explicitly prohibits merge, SQL apply, Supabase config changes, signup/payment/reservation activation, or live customer-data collection. Muse retains QA and staging authority. ChatGPT will review each synchronized exact SHA; no review verdict or merge approval is implied by the ping.
+
+GitHub comment: https://github.com/aalshalfi/azal-restaurant/pull/32#issuecomment-7194531272
+
+
+## 2026-11-26 (Toronto) — Temporary owner-authorized operating arrangement while Muse is away
+
+The owner explicitly approved the temporary arrangement through Muse's return tomorrow. I posted the authorization to Claude on PR #32 (comment 7194617044): Claude continues implementation and tests across #29–#32; ChatGPT performs independent second-eyes review at exact SHAs; the owner retains the final decision to merge reviewed code. A ChatGPT PASS is not itself a merge command.
+
+Priority: #32 table-only reservations, #31 phone/Visit CX, #30 email-link sign-in, #29 ordering and remaining member/staff UI, adjusted for dependencies. Claude must report exact SHAs, files changed, tests actually run/results and blockers in CLAUDE-REPLY.md.
+
+Hard boundaries remain: no production/live Supabase migration apply; no Supabase config/secrets changes; no real sign-up, order, reservation, payment or customer-data activation; no live email sender activation; no spending or destructive Git history changes. Such actions remain inert pending a separate explicit owner decision and environment verification. Muse resumes QA/staging duties on return. The table-only reservation scope is unchanged.
+
+## 2026-11-26 (Toronto) — Scheduled AZAL review checkpoint: exact heads #29–#32
+
+### Current PR state and synchronized SHAs
+- **#32 Reservations:** open, non-draft, branch claude/reservations, head 709771a10d6b4b488426f34f4532536b1b26f542, mergeable.
+- **#31 Visit + Reserve phone:** open, non-draft, branch claude/phone, head cc0a0e56d4931e22b58c6b658672d831e831cb06, mergeable. The owner's new mobile-header feedback is posted; no implementation commit yet.
+- **#30 Email-link sign-in:** open, non-draft, branch claude/otp-link, head e2898248d58ff386cddf0c382de0060bf206553e, mergeable.
+- **#29 Ordering + staff screen:** open, Draft, branch claude/ordering, head e27dcda906a11f571353e8cd1f0773ffdc044e30, GitHub reports not mergeable. The new staff screen is in this head.
+- Current PR comments and reply files show no Claude acknowledgement/update after the 09:05 EST reservation report. I re-pinged Claude about his own 30-minute loop and posted the mobile-header request on #31.
+
+### #32 — source review at exact head 709771a10d6b4b488426f34f4532536b1b26f542
+**Status: CHANGES REQUIRED before source-level PASS.** I inspected 0005_reservations.sql, reserve.js, reserve.html, the Node/browser tests and SQL behavior test source. I did not execute PostgreSQL or the browser suite. Findings posted in a PR comment:
+1. **DOM XSS:** reserve.js inserts booked.email into done.innerHTML at line 138. The client regex at line 7 accepts <svg/onload=alert(1)>@example.com; the SQL email constraint uses the same permissive pattern. Render untrusted values with text nodes / textContent or rigorously escape them; add a regression test.
+2. **False email-delivery claim:** the guest confirmation copy says the email “is sent”, but 0005 only queues reservation_outbox rows. The sender Edge Function/webhook and owner SMTP are not included or tested. Make copy truthful and keep booking inert until sending/retries are implemented and verified.
+3. **Abuse protection:** the anonymous reserve_table RPC is throttled only by email; cancel_reservation has no throttle, despite the reservations spec calling for contact/IP throttling and cancellation rate limiting. Add server-side limits that cannot be bypassed by changing email, or keep public endpoints gated.
+4. **Migration reproducibility:** the current main tree contains only 0003 and 0004 under supabase/migrations; 0001/0002 are absent although 0005 requires them. This also prevents independent verification of the core branch_hours constraints. Record/restore the exact baseline migration sources and hashes before any fresh-database deployment.
+
+The table-only field scope itself is correct: name, mobile, email, party size, date and time only. Claude reports PG16 53/53, ordering regression 80/80, one-winner concurrency, Node 99/99 and fake-Supabase browser 14/14; these are Claude-reported, not independently run by ChatGPT. No real Supabase/email test. The combined status endpoint returned no checks for this SHA.
+
+### #31 — phone CX at exact head cc0a0e56d4931e22b58c6b658672d831e831cb06
+**Phone-scope source review: PASS.** Both pages use tel:+13439996199; EN/FR Visit copy says opening preparation is underway in Orléans without inventing an address. Claude reports Node 99/99; the checked-in phone test covers the phone target and French copy. No independent execution or CI status. The separate owner mobile-header request remains open: menu control is still centered and the outlined YOUR ORDER block remains oversized. #31 and #32 touch overlapping page/style files, so Claude must coordinate before editing and provide responsive screenshots and touch-target checks.
+
+### #30 — email-link sign-in at exact head e2898248d58ff386cddf0c382de0060bf206553e
+**Source-level PASS for link adoption.** requestCode sets redirect_to; adoptLink verifies the returned access token, stores the session and the page removes the fragment after processing. Tests cover redirect construction, link adoption, invalid links and malformed email. No real email or redirect-allow-list verification. Keep config null and sign-ups OFF until Muse/owner gates and a real delivery test.
+
+### #29 — staff screen at exact head e27dcda906a11f571353e8cd1f0773ffdc044e30
+**Source-level PASS for the new staff orders screen.** It requires a session, checks branch staff access, queries only paid/open branch orders, escapes order data, and sends only accept/ready/hand_over through staff_update_order. The page is noindex, unlinked from public navigation and inert with null config. Claude reports Node 111/111 and fake-Supabase browser 7/7; not independently executed. Still outstanding: member order history/points ledger and owner end-to-end test. PR description is stale (signed-in/pay-at-pickup wording versus current guest/test-card code); Claude should update it and the reply file. PR remains Draft and GitHub reports not mergeable.
+
+### Actions / safety
+- Posted source-level review comments on #29–#31 and a blocker comment on #32. These are not merge approvals.
+- Asked Claude to continue his 30-minute cadence and record exact heads/tests/blockers in CLAUDE-REPLY.md; asked him to implement the mobile header refinement only after checking overlap with #32.
+- No PR merged, no SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spending and no destructive Git operation.
+
+## 2026-11-26 (Toronto) — PR #33 mobile-header review
+
+Claude acknowledged the temporary owner arrangement in CLAUDE-REPLY.md and created PR #33, HDR-MOB, at exact head 227244cda2af9eb2949270a073be1d3c8dfd4c8a on branch claude/header-mobile. Raw GitHub PR metadata reports mergeable_state=clean and mergeable=true; compare shows one commit ahead of its main base and no commits behind.
+
+**Source-level CX verdict: PASS for the requested 390px mobile layout.** I inspected the shared header markup across index, menu, member, reserve, story and 404, plus styles.css, script.js and tests/header-mobile.test.mjs:
+- At widths <=800px, the logo is first; EN/FR, Majlis, compact bag/count and menu are grouped on the right.
+- Header height is 64px, with 44px controls.
+- The old bordered YOUR ORDER block is replaced by a bag icon and count; the accessible text label remains in the button.
+- Desktop quick controls and bag icon are hidden, leaving the existing navigation and text cart.
+- Both language controls are wired; script.js updates their accessible labels and removes aria-pressed.
+- The new Node test checks all six page headers, mobile-only CSS and language wiring.
+
+Claude reports Node 100/100 and Playwright measurements at 390px (control positions, EN/FR switch, bag opens with count 3), 320px (no horizontal overflow) and 1280px (desktop unchanged). I inspected the source/test but did not independently execute the browser run. The combined status endpoint returned no checks; no real-phone or live QA evidence.
+
+**Small follow-up:** I asked Claude to record element positions/visibility at 320px and provide a screenshot or automated assertion that the logo and all four controls remain visible and non-overlapping. Review comment posted on PR #33 (review id 6075979020). No merge approval implied; the owner decides.
+
+### Current raw mergeability snapshot
+- #32: raw GitHub API says clean / mergeable at 709771a10d6b4b488426f34f4532536b1b26f542, but the four source/security/deployment findings above remain unresolved.
+- #33: clean / mergeable at 227244cda2af9eb2949270a073be1d3c8dfd4c8a.
+- #29: dirty / not mergeable at e27dcda906a11f571353e8cd1f0773ffdc044e30; remains Draft.
+
+
+## 2026-11-26 09:54 EST — Scheduled review checkpoint (PRs #29–#33)
+
+### Current exact PR snapshot
+- **#32 table-only reservations:** open, non-draft, clean/mergeable; head `709771a10d6b4b488426f34f4532536b1b26f542`. No new commit since the prior review. The four blockers already posted remain unresolved: confirmation DOM XSS, false “email sent” copy while only an outbox exists, anonymous abuse controls (email-only booking limit and no cancellation throttle), and missing versioned 0001/0002 migration sources in the current main migration tree. Real Supabase and real email are not tested; no CI status checks are attached.
+- **#33 mobile header:** open, non-draft, clean/mergeable; head `227244cda2af9eb2949270a073be1d3c8dfd4c8a`. Source-level PASS remains for the requested 390px layout and the mobile-only changes across six pages. Claude reports Node 100/100 and Playwright checks, but I did not independently execute them and the combined status endpoint is empty. The prior review comment asks for actual element visibility/coordinates or an automated assertion plus screenshot at 320px; the PR description currently shows “—” for every element at 320px, so “no overflow” alone does not establish that the controls are visible.
+- **#31 phone:** unchanged at `cc0a0e56d4931e22b58c6b658672d831e831cb06`; previous phone-scope source PASS stands.
+- **#30 email-link sign-in:** unchanged at `e2898248d58ff386cddf0c382de0060bf206553e`; previous source-level PASS stands. Real email and redirect allow-list remain gated.
+- **#29 ordering/staff:** unchanged at `e27dcda906a11f571353e8cd1f0773ffdc044e30`; open Draft and GitHub reports not mergeable. Staff-screen source review remains PASS for paid/open branch filtering, staff gate, escaped dynamic order content, and accept → ready → hand_over calls. Claude's Node 111/111 and fake-Supabase browser 7/7 are reported, not independently run. Member order history/points ledger and the real owner end-to-end test remain incomplete. The PR description is stale: it still describes signed-in/pay-at-pickup/server-only work, while the branch now contains guest checkout/test-card flow and staff UI.
+
+### New #32 SQL concurrency concern
+The reviewed `0005_reservations.sql` declares `azal_reservation_fits` as `STABLE`, then calls it from `reserve_table` after taking the branch/day advisory transaction lock. I posted a follow-up on #32 asking Claude to verify PostgreSQL snapshot behaviour when a second RPC statement begins before the first booking commits, waits on the lock, and then performs the capacity check. A STABLE helper may retain the calling-query snapshot; this is a potential stale-snapshot/overbooking issue pending a deterministic two-session READ COMMITTED test, not a claim that I ran PostgreSQL. If confirmed, the locked check needs a fresh snapshot (for example, a VOLATILE helper or inline query) and a regression test.
+
+### Coordination and boundaries
+- Claude's latest `CLAUDE-REPLY.md` update is 09:40 EST: it acknowledges the temporary owner arrangement, lists exact heads and says his 30-minute cycle continues. No response to the later #32 review findings is present yet.
+- #31, #32 and #33 overlap on page/style assets; #29 also touches shared pages, `script.js` and `styles.css`. Claude must synchronize the affected branch after the owner chooses merge order; no branch rewrite or merge by ChatGPT.
+- I posted the additional concurrency-verification comment on #32 (comment 7195560689). The existing #33 review comment still requests 320px proof.
+- No merge, SQL apply, Supabase configuration/secrets change, sign-up/order/reservation/payment activation, customer-data collection, live email sender activation, spending or destructive Git operation was performed. Owner retains every merge decision; Muse resumes QA/staging authority on return.
+
+
+### 09:57 EST — branch divergence and coordination update
+Fresh compare against the current `main` (now at `bf040afd21f6e0fd587bd54b65dcf56121e90a3c`) shows:
+- `claude/reservations` (#32): 2 ahead / 24 behind.
+- `claude/header-mobile` (#33): 1 ahead / 7 behind.
+- `claude/phone` (#31): 2 ahead / 54 behind.
+- `claude/otp-link` (#30): 1 ahead / 58 behind.
+- `claude/ordering` (#29): 11 ahead / 54 behind; compare status diverged and GitHub currently reports the PR not mergeable.
+
+I posted the additional #32 concurrency/snapshot verification request (comment 7195560689) and a non-destructive synchronization/overlap coordination note (comment 7195578032). I also asked on #29 (comment 7195570059) for an accurate PR description, Draft status until member history/ledger and the owner test are complete, and a safe resolution of its current divergence/conflicts. No branch was changed by ChatGPT.
+
+The AZAL follow-up automation prompt was updated successfully to include PR #33, branch-divergence checks, the requested priority order (#32 → #33 → #31 → #30 → #29), and the existing safety/owner-merge boundaries. Claude's 30-minute cycle remains requested; this automation's own platform cadence remains hourly.
+
+
+### 09:59 EST — #27 baseline dependency identified
+The 0001/0002 sources are not wholly absent from the repository's open work: PR #27 (`muse/p2-backfill`) contains `docs/schema-reference/0001_azal_staging_baseline.sql` and `supabase/migrations/0002_p2_fixes.sql`. They are not yet on `main`. Fresh compare: PR #27 is 3 commits ahead / 140 behind current main, so it is an unresolved synchronization and lead-review dependency for #32's required chain 0001→0002→0003→0004→0005. I corrected the earlier wording and posted this dependency clarification on #32 (comment 7195596953). No SQL was applied.
+
+I also inspected #27's 0002 definition of `azal_staff_can_access(p_branch_slug text)`; this confirms the RPC argument name used by the #29 staff screen. The staff-screen source-level PASS is unchanged, subject to real staging/RLS verification.
