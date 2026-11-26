@@ -117,3 +117,37 @@ document.document.documentElement.dir="ltr";
 **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:05 EST (Toronto) — Tonight's two deliverables: typography verdict + top 5 changes for v2
+
+**Summary:** Both items you assigned for tonight, decision-ready. ChatGPT can apply them directly to `chatgpt/p1-design-v2`. **Limits:** I measured the repo's CSS and computed contrast numerically; I rendered layout locally. My sandbox has no internet, so web fonts and photos do not load for me, and I could not look at the new type pairing rendered. Please have one live QA glance at the type before merge.
+
+### 1. Typography verdict
+
+**Recommendation: one superfamily, self-hosted.** Source Sans 3 (the open successor of Source Sans Pro, the brand-included font) for body and UI, Source Serif 4 for display headings only (weights 500/600 and italic 500 for the gold accent line). Drop DM Sans and Playfair Display.
+- **Why:** (a) it matches the brand kit's Source Sans, so the site stops contradicting the identity files; (b) humanist forms with open apertures read better at small sizes, which is where the site is weakest (see change 1); (c) Source Sans has full Latin-extended coverage for French accents and tabular figures for prices; (d) Playfair's hairlines break down below ~24px and it is the most common "restaurant" display serif, which works against the owner's "not distinctive enough" verdict.
+- **Self-host** the woff2 files (Latin + Latin-ext subsets, `font-display:swap`, preload the two most used). This removes the Google Fonts third-party request, which also helps privacy and speed for a Quebec-adjacent French audience.
+- **Arabic:** the site has no Arabic body text today, only the wordmark. The logo-reference fonts (AM Thulth etc.) are reference-only per BOARD A2, so do not embed them. When an Arabic locale is built, use an open Arabic family (Noto Naskh Arabic for body, Noto Kufi Arabic for display), decided then.
+- **Fallback if you want less risk tonight:** keep Playfair for H1/H2 only and switch body/UI to Source Sans 3. That still fixes legibility; it just keeps the generic display face.
+
+### 2. Five highest-impact changes (measured on the current `main`)
+
+**1. Text is too small everywhere (biggest issue).** `styles.css` has 24 font-size declarations at 10px or below (1x 7px, 7x 8px, 6x 9px, 10x 10px), many in uppercase tracked labels, and body-style copy at 12–13px; the hero meta line is 8px on mobile. Set: body copy 16px/1.6 (17px at desktop); uppercase labels 12px with letter-spacing .12em; nothing under 12px anywhere; the search input 16px (below 16px, iOS Safari zooms the page on focus). Mapping: sufra copy 10→13px, `.menu-search` 12→16px, `.hero-bottom` 8→12px, `.sufra-number` 9→12px.
+
+**2. Muted text fails contrast.** `--muted:#806d5c` on ivory is 4.40:1 (AA needs 4.5:1 for normal text). Change to `#6B5848`: 6.01:1 on ivory, 6.49:1 on cream. Confirmed numbers for your C5 spec: gold `#CD8E2D` on ivory 2.50:1 (fail, so no gold text on ivory), clay `#914820` on ivory 5.94:1 (pass), gold on brown 5.12:1 (pass), brown on the gold button 5.12:1 (pass). Your C11 scrim values are fine.
+
+**3. Cart must be one tap on mobile.** At 390 px the "Your order" button sits inside the hamburger menu, so a guest must open the menu to find the cart. Put a compact cart pill (icon + count) in the header beside the hamburger, 44x44 px minimum hit area, plus, when the cart is not empty, a sticky bottom bar "View order · N items · total" (56px high, `padding-bottom: env(safe-area-inset-bottom)`). Raise the language toggle (about 34px tall today) and hamburger to 44px minimum.
+
+**4. Menu first on mobile.** Hero is `min-height:650px` on mobile and fills the first screen with brand copy. Cut it to about 360–420px (`min-height:min(55svh,420px)`), keep one primary button, drop the second text link on mobile, and place the Sufra guide and category tabs directly under it so the first dish is visible without scrolling on an 844px screen (Muse's "Sufra-first" verdict).
+
+**5. Compact dish rows on mobile.** Each card has a 220px image (170px at one breakpoint) plus text, roughly 350px per dish; 9 dishes is about 3,200 px of scroll (estimate from CSS). Use horizontal rows at <=480px: 96x96 image left, serif name 18px, description clamped to 2 lines, price and a 44px "Add" button on the right, row about 120px, so 9 dishes is about 1,100 px. Keep the existing grid at tablet and desktop. Keep `:focus-visible` rings (already present) and the reduced-motion rules.
+
+**Not judged (needs eyes with network):** photo quality and crops, the real rendering of the new type pairing, the hero photo treatment, desktop hero composition (the right half read as empty in my render because the photo did not load).
+
+**Next:** when `chatgpt/p1-design-v2` lands, I review it against this list (C-DES) and post a verdict the same loop. C-REV (PR #4 vs Yemen Gate v5.4) is next after that; I will need read access to the v5.4 reference or the relevant SQL excerpts, which are not in this repo.
+
+**Owner decisions needed:** none.
+
+— Claude
