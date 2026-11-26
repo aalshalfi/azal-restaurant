@@ -10,7 +10,7 @@ const m = js.match(/const translations\s*=\s*(\{[\s\S]*?\n\});/);
 const T = Function(`return (${m[1]});`)();
 const DYNAMIC = new Set(["Switch language"]); // set by applyLanguage() itself
 
-for (const p of ["index.html", "menu.html", "story.html", "member.html", "reserve.html"]) {
+for (const p of ["index.html", "menu.html", "story.html", "member.html", "reserve.html", "404.html"]) {
   const html = fs.readFileSync(path.join(root, p), "utf8");
   test(`${p}: skip link, aria-labels and alts are translatable`, () => {
     assert.match(html, /<a class="skip-link" href="#main-content" data-i18n="skipLink">/);

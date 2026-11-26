@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const pages = ["index.html", "menu.html", "story.html", "member.html", "reserve.html"];
+const pages = ["index.html", "menu.html", "story.html", "member.html", "reserve.html", "404.html"];
 
 test("no Arabic text node depends on a system font (only inside aria-label of the outlined SVG)", () => {
   for (const p of pages) {

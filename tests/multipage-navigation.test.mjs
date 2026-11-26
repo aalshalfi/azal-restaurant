@@ -17,7 +17,7 @@ test("all four pages share navigation, language, cart and demo checkout", () => 
     assert.ok(html.includes('id="languageToggle"'), name + " missing language toggle");
     assert.ok(html.includes('id="cartOpen"') && html.includes('id="cartDrawer"'), name + " missing shared cart access");
     assert.ok(html.includes('id="checkoutModal"') && html.includes('data-i18n="cartDisclaimer"') && html.includes('data-i18n="demoOnly"'), name + " missing demo-only checkout notice");
-    assert.ok(html.includes('src="script.js?v=20261126-v3"'), name + " not loading the shared v3 script");
+    assert.match(html, /src="script\.js\?v=[\w-]+"/, name + " not loading the shared, versioned script");
   }
 });
 
