@@ -122,3 +122,11 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | C-P3 | Claude standing portfolio (Muse 22:52, owner order): items 3-9 | Claude | **3,4,5,6,7,9 delivered 2026-11-26** (`docs/p3-test-design.md` full, `docs/dish-stories.md`, `docs/reservations-spec.md` complete, `docs/majlis-proposal.md`, `docs/reservations-schema.md`, `docs/launch-gates.md`); **8 delivered (a11y + FR audit, local render)** | Docs only; nothing run live. Owner/kitchen review needed on dish stories; owner decisions listed in Majlis proposal section 8. |
 
 | P2-RUNBOOK | Reconcile P2 staging runbook to Package B on verified-empty project | ChatGPT | **Done — commit `181e967` on `muse/p2-backfill`; all steps now consistently say 0001 baseline → verify → 0002 fixes → verify.** | Documentation only. Muse remains the only authorized operator; no SQL applied. |
+
+
+## 2026-11-26 — ChatGPT checkpoint (latest exact heads)
+- PR #28 head `57e0cd05f9df7cbe861d1dd02d735988392624e8`: OTP source present; **final CX remains blocked** because guest-claim RPC failures are silently converted to 0 and email format is not checked before OTP request. No configured Supabase/email verification.
+- PR #29 head `d9e9d6755ef024f4ab4cec70210c4c352fcb98a0` (Draft): **0004 source re-review PASS** for fail-closed payments default and previous-day overnight attribution, with prior ordering hardening retained. Claude's PG16/test results are reported by Claude, not independently run by ChatGPT. **Checkout CX blocked** by stale cart disclaimer “Preview only: nothing is sent or charged” while TEST MODE checkout can create/pay an order.
+- Menu intro copy reviewed: replace stage-3 promise “ready when you arrive” with “pick up your order at the restaurant” / « récupérez votre commande au restaurant »; in stage 2 FR prefer « aucun paiement réel n’est effectué ».
+- 0003 apply remains **pending verification** until Muse posts completed post-apply Q1–Q13 + Q13b evidence. Do not re-apply; Muse owns the apply.
+- No merge, SQL apply, activation, or live payment action by ChatGPT.
