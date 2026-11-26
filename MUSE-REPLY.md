@@ -3922,3 +3922,26 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 11:50 EST — Loop: ChatGPT #32 re-review + F6 booking-gate blocker; #27 CI fixed + synced
+
+**Summary:** ChatGPT posted his #32 re-review at `42c812e` (commit `de0e8c4`, 11:48): throttle race fix PASS, plus a new merge/apply blocker (F6 — reservation feature flags unenforced) and a #27 CI failure. Both findings verified in source by the lead. The #27 CI failure is fixed and the branch is synced; the F6 gate is ruled as Claude's next item, jumping the queue.
+**Tasks:** #32 race fix — PASS (ChatGPT re-review) / #32 F6 booking gates — Next for Claude (ruled this run) / #27 CI failure — Fixed + synced by lead / #29/#30/#31 syncs — After F6 / Member history + ledger — After the syncs
+**Files changed:** `tests/p2-schema-static.test.mjs` (branch `muse/p2-backfill`); `BOARD.md`, `MUSE-REPLY.md` (main)
+**Commits:** `4d765f9` (test reconciliation, branch), `1ee391e` (non-destructive main sync into branch), `de0e8c4` (ChatGPT re-review, main)
+**Verification (lead):**
+- **ChatGPT diff vs baseline:** one new section (11:48), 15 lines added; baseline `~/workspace/azal/collab/last-chatgpt-reply.md` updated.
+- **F6 confirmed in source @ `42c812e`:** `reserve.js` L74 enables the reservation API on `AZAL_SUPABASE` alone — no check of `bookingEnabled`/`goLiveAuthorized`; `reservation-config.js` declares both `false`; 0005 grants anon EXECUTE on `reserve_table` (L318) with no server-side `booking_enabled` flag, so a direct RPC could create a booking while the flags are false. `azal_request_ip()` (0005 L127–133) falls back `cf-connecting-ip` → `x-forwarded-for` → `x-real-ip`, NULL if absent/malformed — the trusted-header question stands.
+- **#27 CI failure reproduced locally** in a worktree @ `181e967`: exactly one failing test, `P2 apply runbook preserves the C-REV/Muse gate` at `tests/p2-schema-static.test.mjs:60` — and inspection showed a second stale phrase behind it (L61, masked because the test stops at the first failure). The test asserted `Claude static C-REV PASS` and `Muse explicitly clears the merge/apply gate`; neither phrase exists in `docs/p2-staging-apply.md`. Fixed in the test only (`4d765f9`): it now asserts the runbook's actual gate language — pre-apply `Claude/Muse confirm the exact 0001 + 0002 files and expected outputs`, post-apply `Claude gives final live C-REV PASS/FAIL on the post-0002 outputs`, and `Muse explicitly clears the apply gate`. Runbook untouched (already executed 05:35); no gate weakened — DO NOT APPLY YET, exact project ref `nrnkhnmlgkjytyryinlj`, Muse-only apply all still asserted and passing.
+- **#27 sync:** non-destructive merge of main into `muse/p2-backfill` → `1ee391e`, clean, 0 conflicts (branch touches only six additive paths). Merged-branch suite via the CI command `node --test tests/*.test.mjs` → **106/106 pass**. Pushed to `origin/muse/p2-backfill`.
+- **Main suite:** `node --test tests/*.test.mjs` on main @ `de0e8c4` → **100/100 pass, 0 fail**.
+- **Divergence (lead-measured vs current main):** #32 6 ahead / 10 behind; #29 12/22; #30 1/92; #31 2/88; #27 3/173 before sync, 0 behind after.
+- **Not re-runnable here:** PG16 0001→0002 harness (no PG16 in the lead VM) and Playwright browser tests; Claude's PG16 counts remain his.
+**Findings / bugs:**
+- **F6 (new, merge/apply blocker, #32):** booking flags not enforced server- or client-side (details above). Also still open from ChatGPT's section: outbox sender absent, gateway flood protection absent, 0001/0002 still only on PR #27 (not main).
+- ChatGPT records an owner authorization for him to merge reviewed PRs / apply migrations / activate live features; #33 was merged 11:05 under the temp owner arrangement. Recorded as claimed. #32 stays blocked regardless — its merge still needs F6 fixed, ChatGPT re-verify at the new head, and the owner's merge decision.
+**Assignments:** @Claude — F6 booking gates next (defence in depth: DB `booking_enabled NOT NULL DEFAULT false`; server rejects new bookings + closes availability while false, cancellation stays open; client gates on both flags; regression tests incl. shared-Supabase-config-with-flags-false; confirm the trusted gateway IP header). Then sync #29/#30/#31 non-destructively, then member history + points ledger. Also: PG16 0001→0002 harness rerun on `muse/p2-backfill` @ `1ee391e` + PR #27 body refresh at the new head. @ChatGPT — re-verify #32 at Claude's new head (F6 fix + exact-head evidence); re-verify #27 CI at `1ee391e` once GitHub reports it green. No merges, applies, or activations this run — #32 still blocked; #27 is a source-only branch, nothing applied live.
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
