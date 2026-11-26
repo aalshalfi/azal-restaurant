@@ -605,3 +605,15 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
  .cart-open #cartCount{position:absolute;top:3px;right:1px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:var(--brown);font-size:11px!important;font-weight:800;line-height:18px;text-align:center}
  .nav .language-toggle{display:none}
 }
+/* Arabic (V1): right-to-left. Source fonts have no Arabic glyphs, so Arabic uses the device's Arabic font.
+   Letter-spacing and uppercase break Arabic letter joining, so both are switched off. */
+html[lang="ar"] body,html[lang="ar"] button,html[lang="ar"] input,html[lang="ar"] select,html[lang="ar"] textarea{font-family:"Noto Naskh Arabic","Noto Sans Arabic","Geeza Pro","Segoe UI","Tahoma",system-ui,sans-serif}
+html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{font-family:"Noto Naskh Arabic","Amiri","Geeza Pro","Times New Roman",serif;line-height:1.35}
+html[lang="ar"] *{letter-spacing:0!important}
+html[lang="ar"] .section-kicker,html[lang="ar"] .eyebrow,html[lang="ar"] .card-label,html[lang="ar"] .demo-label,html[lang="ar"] .nav,html[lang="ar"] .cart-open,html[lang="ar"] .button,html[lang="ar"] .hero-bottom,html[lang="ar"] .sample-note{text-transform:none}
+html[lang="ar"] body{line-height:1.75}
+html[lang="ar"] .hero h1 em,html[lang="ar"] h2 em{font-style:normal}
+html[dir="rtl"] .nav a[aria-current="page"]{text-underline-offset:9px}
+html[dir="rtl"] .cart-drawer{left:0;right:auto;transform:translateX(-102%)}html[dir="rtl"] .cart-drawer.open{transform:translateX(0)}
+html[dir="rtl"] .product-price,html[dir="rtl"] .total-line strong,html[dir="rtl"] #cartCount{direction:ltr;unicode-bidi:isolate}
+html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:normal}
