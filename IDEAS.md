@@ -169,3 +169,37 @@ The hero receives a CSS-only arch composition using the existing sample image an
 | Truthfulness / status | **Proposed for R1/P3 after capacity, service days and floor plan are confirmed.** No sample slots or waitlist promise before real inventory exists. |
 
 **Research basis:** Toast Canada's 2026 reservation guidance recommends smart defaults (common party sizes), alternatives instead of dead ends, and clear confirmation; Toast Tables setup guidance requires active service periods, table capacity, online access and flow-control before real time slots are shown. AZAL's version remains capacity-first and does not copy any provider's UI. Sources: [Toast Canada — reservations and waitlists](https://pos.toasttab.com/ca/blog/on-the-line/best-practices-for-managing-reservations-and-waitlists-for-your-restaurant) · [Toast Tables — setup and availability](https://support.toasttab.com/en/article/Getting-Started-Toast-Waitlist).
+
+## 2026-11-26 — "Eat it the Yemeni way" serving ritual
+
+**Status:** Implemented as a clearly labelled draft preview; merged to main and live-QA passed by Muse (PR #25 / merge recorded in MUSE-REPLY.md). This entry records the product idea and its guardrails, not a claim that kitchen serving instructions are final.
+
+**Concept:** After a guest previews a suitable sample cart, show up to three quiet, cart-derived serving cues in the natural sequence (for example, stew → platter → chai). Hide the block for carts that do not qualify. Clear it whenever the preview is reopened or the language changes.
+
+**Guest value:** A small, useful introduction to Yemeni table hospitality without another step or a generic chatbot.
+
+**Guardrails:** Keep the bilingual copy labelled draft until the owner/kitchen confirms the actual serving order and wording. Never present the example as an authoritative recipe or instruction.
+
+## 2026-11-26 — "Fresh from the oven" pickup-time preview
+
+**Status:** Implemented as an example-only preview; merged to main at `f9eeeea`. Muse delegated live QA. The displayed times (12:00, 13:30, 18:00) are examples, not operating or kitchen commitments.
+
+**Concept:** Mark selected pickup slots with a restrained "Fresh from the oven" / "Tout juste sorti du four" label, plus accessible screen-reader text and a note explaining that the times are examples.
+
+**Guest value:** Connects pickup choice to the restaurant's batch-cooking story without adding a new step.
+
+**Guardrails:** Real batch times and the dishes associated with each batch are Tier C kitchen facts. Keep the example notice until the owner/kitchen supplies and approves the real schedule. Do not imply guaranteed freshness or a live kitchen schedule.
+
+## 2026-11-26 — "Hosted by …" hospitality invitation
+
+**Status:** Proposed only — not implemented and not approved. Requires Majlis accounts (P4), owner approval of the cost of one complimentary Adeni chai for a first-time invited guest, and abuse controls.
+
+**Concept:** A member may eventually invite one friend with a message such as "A friend is hosting you at AZAL." The guest receives a chai on their first eligible pickup; the host receives recognition for hosting, not cash or points.
+
+**Why it may fit AZAL:** It frames word-of-mouth as hospitality and generosity rather than a transactional referral discount.
+
+**Guardrails / decision gates:**
+- No live invitation link, reward promise, redemption code, or cost commitment before owner approval.
+- Define eligibility, one-time redemption, monthly limits, identity/abuse checks and server-side enforcement before implementation.
+- Majlis accounts and a reliable order ledger must exist first.
+- A neutral "Coming with Majlis: host a friend" copy-only teaser may be considered later, but do not add it without Muse's prioritization.
