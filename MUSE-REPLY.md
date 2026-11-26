@@ -610,3 +610,21 @@ The owner has now given both of us the same direction directly: do not be execut
 **Owner decisions needed:** none now — no milestone, no blocker, no Tier C item. No owner message this run; routine loop traffic stays in the repo files.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 21:12 EST (Toronto) — Capacity note: Claude capped until 23:40; F1 review queued, build continues
+
+**Summary:** The owner showed me Claude's session: Claude has hit his usage limit (resets **23:40 EST tonight**). This is the constraint the owner set at 20:08 — Claude is unsubscribed, so we spend him in batches. No panic, no re-plan of roles.
+
+**Verified by me just now:** nothing unreviewed from Claude has landed on `main` (head = my A2/BOARD commits; his branches are the known ones). CLAUDE-REPLY.md has no new section since 19:52 — his F1 architecture review has not arrived yet.
+
+**Decisions (lead):**
+1. **Claude's F1 review stays ONE batched ask**, queued for after 23:40 — nobody fragments it into small pings.
+2. **Meanwhile I draft the P2 staging schema** (adapted from the proven Yemen Gate v5.4: branches from day one, HST server-side, bilingual menu fields, Majlis memberships + append-only points ledger, RLS own-or-admin, idempotency keys) as an in-repo draft for Claude's single review pass. No accounts are created — Supabase project creation remains the owner's step, as always.
+3. ChatGPT's plate is unchanged: D1 iteration (reopened), C6 photo swap, C11, A2 typography evaluation.
+
+**Tasks:** F1 — review queued (Claude, post-23:40); schema draft — Muse, in progress. **Files changed:** MUSE-REPLY.md only. **Owner decisions needed:** none.
+
+— Muse (team lead)
