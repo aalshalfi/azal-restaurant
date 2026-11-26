@@ -40,7 +40,8 @@
           : /already registered|already exists/i.test(msg) ? "already_registered"
           : /signups? not allowed|signup.*disabled/i.test(msg) ? "signups_closed"
           : /password/i.test(msg) && /(short|weak|least|character)/i.test(msg) ? "weak_password"
-          : res.status === 429 ? "rate_limited" : "error";
+          : /expired|invalid.*(token|otp)|otp.*invalid/i.test(msg) ? "code_invalid"
+          : res.status === 429 || /only request this after|rate limit/i.test(msg) ? "rate_limited" : "error";
         throw e;
       }
       return data;
@@ -72,6 +73,28 @@
         const s = toSession(d);
         if (s) { write(s); return { session: s, confirm: false }; }
         return { session: null, confirm: true };
+      },
+      // Email one-time code (primary sign-in, lead ruling): one flow for new and returning members.
+      async requestCode(email) {
+        if (!enabled) throw Object.assign(new Error("disabled"), { code: "disabled" });
+        await call("/auth/v1/otp", { method: "POST", body: { email, create_user: true } });
+        return true;
+      },
+      async verifyCode(email, token) {
+        if (!enabled) throw Object.assign(new Error("disabled"), { code: "disabled" });
+        const s = toSession(await call("/auth/v1/verify", { method: "POST", body: { type: "email", email, token } }));
+        if (!s) throw Object.assign(new Error("no session"), { code: "code_invalid" });
+        write(s);
+        return s;
+      },
+      // Guest points (0004): move pending claims for this verified email into the ledger. 0 if none or not deployed.
+      async claimGuestPoints() {
+        const s = await session();
+        if (!s) return 0;
+        try {
+          const r = await call("/rest/v1/rpc/claim_guest_points", { method: "POST", token: s.access_token, body: {} });
+          return Number((r && r.points_added) || 0);
+        } catch { return 0; }
       },
       async signOut() {
         const s = read();
@@ -115,11 +138,12 @@
   const tr = (k) => (typeof t === "function" ? t(k) : k); // t() is script.js's global translator
   const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const fmtPoints = (n) => new Intl.NumberFormat(document.documentElement.lang === "fr" ? "fr-CA" : "en-CA").format(n);
-  let last = null, mode = "signin", message = "";
+  let last = null, mode = "code", codeSentTo = "", message = "", lastSentAt = 0;
 
   function errorKey(e) {
     return { invalid_credentials: "authErrCredentials", email_not_confirmed: "authErrConfirm", already_registered: "authErrExists",
-      signups_closed: "authErrClosed", weak_password: "authErrWeak", rate_limited: "authErrRate", network: "authErrNetwork" }[e && e.code] || "authErrGeneric";
+      signups_closed: "authErrClosed", weak_password: "authErrWeak", rate_limited: "authErrRate", network: "authErrNetwork",
+      code_invalid: "authErrCode" }[e && e.code] || "authErrGeneric";
   }
 
   function headerState(st) {
@@ -138,8 +162,32 @@
         `<p class="auth-hello">${esc(tr("authHello").replace("{name}", st.name || st.email || ""))}</p>` +
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
         `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${pending ? "—" : fmtPoints(st.points)}</strong></div></div>` +
+        (st.claimed ? `<p class="auth-claimed" role="status">${esc(tr("authClaimed").replace("{points}", fmtPoints(st.claimed)))}</p>` : "") +
         `<p class="auth-note">${tr("authPreviewNote")}</p>` +
         `<div class="member-actions"><button class="button member-join" type="button" id="authSignOut">${tr("authSignOut")}</button></div>`;
+      return;
+    }
+    if (mode === "code") {
+      const step2 = Boolean(codeSentTo);
+      card.innerHTML =
+        `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
+        `<h2 class="auth-title">${tr("authCodeTitle")}</h2>` +
+        (step2
+          ? `<form class="auth-form" id="authCodeVerify" novalidate>` +
+            `<p class="auth-sent">${esc(tr("authCodeSent").replace("{email}", codeSentTo))}</p>` +
+            `<label for="authCode">${tr("authCodeLabel")}</label><input id="authCode" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="8" required>` +
+            `<p class="auth-message" id="authMessage" role="status" aria-live="polite">${esc(message)}</p>` +
+            `<button class="button button-gold" type="submit" id="authSubmit">${tr("authCodeVerify")}</button>` +
+            `</form>` +
+            `<div class="auth-links"><button class="text-link dark-link auth-switch" type="button" id="authResend">${tr("authCodeResend")}</button>` +
+            `<button class="text-link dark-link auth-switch" type="button" id="authChangeEmail">${tr("authCodeChange")}</button></div>`
+          : `<form class="auth-form" id="authCodeRequest" novalidate>` +
+            `<label for="authEmail">${tr("authEmail")}</label><input id="authEmail" name="email" type="email" autocomplete="email" required>` +
+            `<p class="auth-message" id="authMessage" role="status" aria-live="polite">${esc(message)}</p>` +
+            `<button class="button button-gold" type="submit" id="authSubmit">${tr("authCodeSend")}</button>` +
+            `</form>` +
+            `<button class="text-link dark-link auth-switch" type="button" id="authUsePassword">${tr("authUsePassword")}</button>`) +
+        `<p class="auth-note">${tr("authCodeNote")}</p><p class="auth-note">${tr("authPrivacy")}</p>`;
       return;
     }
     const isUp = mode === "signup";
@@ -152,21 +200,53 @@
       `<p class="auth-message" id="authMessage" role="status" aria-live="polite">${esc(message)}</p>` +
       `<button class="button button-gold" type="submit" id="authSubmit">${tr(isUp ? "memberJoin" : "memberSignIn")}</button>` +
       `</form>` +
-      `<button class="text-link dark-link auth-switch" type="button" id="authSwitch">${tr(isUp ? "authHaveAccount" : "authNoAccount")}</button>` +
+      `<div class="auth-links"><button class="text-link dark-link auth-switch" type="button" id="authSwitch">${tr(isUp ? "authHaveAccount" : "authNoAccount")}</button>` +
+      `<button class="text-link dark-link auth-switch" type="button" id="authUseCode">${tr("authUseCode")}</button></div>` +
       `<p class="auth-note">${tr("authPrivacy")}</p>`;
   }
 
-  async function refresh() {
+  async function refresh(afterSignIn) {
+    let claimed = 0;
+    if (afterSignIn) claimed = await auth.claimGuestPoints();
     last = await auth.state();
+    if (claimed > 0) last.claimed = claimed;
     headerState(last);
     renderCard(last);
   }
 
   document.addEventListener("click", async (e) => {
     if (e.target && e.target.id === "authSwitch") { mode = mode === "signin" ? "signup" : "signin"; message = ""; renderCard(last); }
-    if (e.target && e.target.id === "authSignOut") { await auth.signOut(); message = ""; mode = "signin"; refresh(); }
+    if (e.target && e.target.id === "authSignOut") { await auth.signOut(); message = ""; mode = "code"; codeSentTo = ""; refresh(); }
+    if (e.target && e.target.id === "authUsePassword") { mode = "signin"; message = ""; renderCard(last); }
+    if (e.target && e.target.id === "authUseCode") { mode = "code"; codeSentTo = ""; message = ""; renderCard(last); }
+    if (e.target && e.target.id === "authChangeEmail") { codeSentTo = ""; message = ""; renderCard(last); }
+    if (e.target && e.target.id === "authResend") {
+      if (Date.now() - lastSentAt < 60000) { message = tr("authCodeWait"); const m = document.getElementById("authMessage"); if (m) m.textContent = message; return; }
+      try { await auth.requestCode(codeSentTo); lastSentAt = Date.now(); message = tr("authCodeResent"); } catch (err) { message = tr(errorKey(err)); }
+      const m = document.getElementById("authMessage"); if (m) m.textContent = message;
+    }
   });
   document.addEventListener("submit", async (e) => {
+    if (e.target && e.target.id === "authCodeRequest") {
+      e.preventDefault();
+      const email = e.target.email.value.trim();
+      const btn = document.getElementById("authSubmit");
+      if (!email) { message = tr("authErrMissingEmail"); document.getElementById("authMessage").textContent = message; return; }
+      btn.disabled = true;
+      try { await auth.requestCode(email); codeSentTo = email; lastSentAt = Date.now(); message = ""; renderCard(last); document.getElementById("authCode")?.focus(); }
+      catch (err) { message = tr(errorKey(err)); const m = document.getElementById("authMessage"); if (m) m.textContent = message; btn.disabled = false; }
+      return;
+    }
+    if (e.target && e.target.id === "authCodeVerify") {
+      e.preventDefault();
+      const code = e.target.code.value.replace(/\s+/g, "");
+      const btn = document.getElementById("authSubmit");
+      if (!/^[0-9]{6,8}$/.test(code)) { message = tr("authErrCode"); document.getElementById("authMessage").textContent = message; return; }
+      btn.disabled = true;
+      try { await auth.verifyCode(codeSentTo, code); message = ""; codeSentTo = ""; await refresh(true); }
+      catch (err) { message = tr(errorKey(err)); const m = document.getElementById("authMessage"); if (m) m.textContent = message; btn.disabled = false; }
+      return;
+    }
     if (!e.target || e.target.id !== "authForm") return;
     e.preventDefault();
     const email = e.target.email.value.trim(), password = e.target.password.value;
@@ -181,7 +261,7 @@
         await auth.signIn(email, password);
         message = "";
       }
-      await refresh();
+      await refresh(true);
     } catch (err) {
       message = tr(errorKey(err));
       const m = document.getElementById("authMessage");

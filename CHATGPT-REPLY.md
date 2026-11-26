@@ -840,3 +840,20 @@ A fresh compare after the latest documentation commits now reports `claude/auth-
 **PR comment:** https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7189366205
 
 **Safety:** no database apply, merge, signup activation, payment integration, or live guest-data collection performed.
+
+
+## 2026-11-26 (Toronto) — Claude's 0004 fixes verified; final second-eyes update
+
+**Claude's report was checked against the actual PR #29 head `0e41dbfa884e354a953f77144c1c1bee8a6cbd6b` (branch `claude/ordering`, stacked on PR #28 head `c9da047a4ff57091b2ad306f6f47078692cbfe1c`).** The original five findings are addressed in the reviewed source: guest name/email orders and pending claims; test refund on paid cancellation; advisory lock by owner/email + idempotency key before lookup; strict cart validation; explicit pickup-grid validation. The migration uses `search_path = ''` for SECURITY DEFINER functions. Guest claim functions only expose matching pending claims and move them to the member ledger with row locks and conflict protection. The checked-in test file covers guest test payment → hand-over → pending claim → same-email claim, and a separate two-session concurrency procedure is documented.
+
+**New blocker posted to PR #29:** `app_settings.payments_mode` is inserted as `'test'` by default. This is not fail-closed: any environment receiving 0004 would start with fake payment authorization enabled. Requested migration default `'off'`; Muse should explicitly enable `'test'` only on isolated staging as a separately recorded setup action. PR comment: https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7189602498.
+
+**Remaining medium correctness issue:** overnight pickup hours still select the hours row by the weekday of the after-midnight pickup date, rather than attributing it to the previous day's overnight window. Asked Claude to implement previous-day attribution or explicitly constrain supported hours to same-day windows and remove the overnight-safe claim. This does not block the currently described daytime-only sample, but it must be fixed/scoped before claiming overnight support.
+
+**Auth dependency:** PR #28 head `c9da047` has a passing Site checks workflow (#282), but `auth.js` remains password-only: no email OTP request/verify path. Muse approved email OTP as primary sign-in; final CX PASS and guest-claim acceptance remain blocked until OTP lands and is tested. Real email delivery/device tests are not evidenced.
+
+**Runbook assignment completed:** rewrote `docs/p2-staging-apply.md` on `muse/p2-backfill` to consistently require verified-empty preflight → 0001 baseline → Q1–Q13 verification → 0002 P2 fixes → Q1–Q13 + Q5b verification. Removed the contradictory 'apply only 0002' and 'never execute 0001' instructions. Commit `181e967b9f02eada67ab0d8103f41aa887078167`. Documentation only; Muse remains the sole SQL operator.
+
+**Board updated:** commit `a69f5657080ac9a836e1c16037c1e87d87727642` records the current 0004 review and OTP/payment-mode gates.
+
+**Verification boundary:** Claude reports PG16 74/74 plus concurrency test and regression 50/50. I inspected source and test design only; I did not independently execute PostgreSQL, apply migrations, merge PRs, enable signup, or enable test payments on staging. No real payment provider or card data is connected.

@@ -98,3 +98,34 @@ test("repo ships inert: config empty, no secret-looking keys, member page has no
   const member = fs.readFileSync(path.join(root, "member.html"), "utf8");
   assert.ok(!/<form|<input/.test(member));
 });
+
+test("email code: request then verify stores a session; bad code maps to code_invalid", async () => {
+  const st = mem();
+  const s = server([
+    [/\/auth\/v1\/otp$/, (u, init) => { const b = JSON.parse(init.body); return b.create_user === true && b.email ? json(200, {}) : json(400, {}); }],
+    [/\/auth\/v1\/verify$/, (u, init) => JSON.parse(init.body).token === "123456" ? json(200, tok()) : json(403, { msg: "Token has expired or is invalid" })]
+  ]);
+  const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
+  assert.equal(await a.requestCode("a@example.invalid"), true);
+  await assert.rejects(a.verifyCode("a@example.invalid", "000000"), { code: "code_invalid" });
+  assert.equal(st.getItem(KEY), null);
+  await a.verifyCode("a@example.invalid", "123456");
+  assert.equal(JSON.parse(st.getItem(KEY)).access_token, "A1");
+  assert.equal(JSON.parse(s.calls.find((c) => /verify/.test(c.url)).init.body).type, "email");
+});
+
+test("code request rate limit maps to rate_limited", async () => {
+  const a = createAuth({ config: CFG, fetch: async () => json(429, { msg: "For security purposes, you can only request this after 52 seconds." }), storage: mem() });
+  await assert.rejects(a.requestCode("a@example.invalid"), { code: "rate_limited" });
+});
+
+test("guest points claim: calls the RPC with the session, returns points; 0 when missing", async () => {
+  const st = mem(); st.setItem(KEY, JSON.stringify({ access_token: "A1", refresh_token: "R1", expires_at: 2e12, user: { id: "u-1" } }));
+  const s = server([[/rpc\/claim_guest_points/, () => json(200, { points_added: 249 })]]);
+  const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
+  assert.equal(await a.claimGuestPoints(), 249);
+  assert.equal(s.calls[0].init.method, "POST");
+  assert.equal(s.calls[0].init.headers.Authorization, "Bearer A1");
+  const b = createAuth({ config: CFG, fetch: server([]).fetch, storage: st, now: () => 1e12 });
+  assert.equal(await b.claimGuestPoints(), 0);
+});
