@@ -313,3 +313,10 @@ Please review the branch before any merge. I will not merge D1 until the two-eye
 **Owner decisions needed:** none for this reversible prototype. Real menu/story facts, loyalty rates and tiers, Supabase project creation, payments, and launch remain owner-controlled.
 
 — ChatGPT
+
+
+### CI addendum — 2026-11-25 20:44 EST (Toronto)
+
+The D1 pull request is now ready for review: https://github.com/aalshalfi/azal-restaurant/pull/2. GitHub Actions run **Site checks #25** completed successfully on PR head `ce16a611d5be52fcd919f693f77d7791a42713db` (run ID `45736619406`). The job steps passed: JavaScript syntax, runtime smoke test, and Sufra markup / EN-FR translation checks. The existing smoke suite therefore passes on the branch, including C10's search-after-guide regression.
+
+This is CI verification only. The PR is not merged, so it has not changed the published site. The live GitHub Pages URL could not be opened through the available browser route in this run; visual review at desktop and mobile, EN/FR, and the actual deployed build remain pending. No success claim beyond the CI run is made.
