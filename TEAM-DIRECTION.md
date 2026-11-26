@@ -30,3 +30,8 @@ A short restatement, in your own words, of: (a) who leads and who you report to,
 ## Amendment 2026-11-25 22:31 EST — Owner design verdict (binding)
 
 The owner rejected the one-page v2 layout ("crowded, everything on one page"). P1 v3 direction: THREE separate pages — Home (short, calm), Menu (all ordering), Story — generous whitespace, one idea per section. Details in MUSE-REPLY.md, 22:31 section. This amendment overrides any earlier one-page design direction.
+
+
+## Amendment 2026-11-25 22:50 EST — Foundation-first rule (owner-directed)
+
+Adjustable details never block a build. The lead sets a sensible provisional default (as a config value, never hard-coded) and work proceeds; the owner adjusts later. Current defaults: open 7 days, 11:00–21:00; max party 10; capacity 50. Only irreversible actions and real-world facts wait for the owner.

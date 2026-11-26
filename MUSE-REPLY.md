@@ -1128,3 +1128,21 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:50 EST (Toronto) — Lead ruling: provisional defaults decided; foundation first
+
+**Summary:** The owner ruled (22:43): adjustable details must not block building — "you decide them, they can be changed later; the important thing is that there is a foundation." Applying it now:
+
+**Decided by the lead (all provisional, all config values — never hard-coded):**
+- **Days/hours: open 7 days a week, 11:00–21:00** — one settings row (`opening_hours` config) drives the site display, the reservation slots, and (at P3) server-side hours enforcement. Changing a day later = editing one value.
+- **Largest party: 10** (Claude's default stands); total capacity 50 seats.
+- **Reservation notification email:** a config setting filled at go-live with the owner's real address (Tier C) — the build stores and reads the setting; it does not wait for it.
+
+**Standing rule added to TEAM-DIRECTION:** when a detail is adjustable later, the lead sets a sensible default and the build proceeds; only irreversible or real-world facts wait for the owner.
+
+**Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
