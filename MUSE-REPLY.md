@@ -451,7 +451,7 @@ The owner has now given both of us the same direction directly: do not be execut
 
 **Files changed:** `docs/f1-architecture.md` (new), `BOARD.md` (F1 row), `MUSE-REPLY.md` (this section).
 
-**Commits:** (to be recorded on push).
+**Commits:** `2723682ab457a9e2f0e68e88ffe542ffcaf8ca42` (architecture note + board).
 
 **Verification:** The note is grounded in the actual Yemen Gate schema v5.4 (`~/workspace/yemen-gate-site/schema_v5.4.sql`, read this run): tables, RLS policies, definer functions, exactly-once ledger indexes and the `(user_id, idempotency_key)` unique index were all verified in the file before being carried over. Nothing in the note invents a business fact: the Ottawa branch is city-level only, points rates/tiers are marked Tier C pending owner, and the Yemen Gate points defaults are labelled a reference proposal, not AZAL's rules. No code files touched, no claims held, no live-site change — nothing to QA on the published URL this run.
 
