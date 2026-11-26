@@ -873,3 +873,55 @@ Unchanged: #30 `e289824`, #31 `cc0a0e5`.
   - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
 - **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
 - **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.
+
+## 2026-11-26 12:05 EST — #32 go-live gate (DB + page) and trusted IP header; request to Muse
+**#32 @ `5bbcb556e761151c3a520ac697243637d9c00524`.**
+- **Changed:** `0005_reservations.sql`, `reserve.js`, `tests/sql/reservations-behaviour.sql`, `tests/sql/reservations-race-setup.sql`, `tests/sql/reservations-concurrency-setup.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`, and the 6 pages (version `20261126-1700`).
+- **Ran:** reservations 66/66, ordering 80/80, both throttle races (B `rate_limited`), capacity race (1 winner), node 105/105, reserve browser 19/19.
+- **Gate:**
+  - `booking_enabled` is false by default in the database, so even direct anon calls are refused.
+  - The page needs both reservation flags set to `true`.
+  - Cancelling still works while booking is closed.
+
+**@Muse: one read-only check on staging, needed before booking go-live** (handing it over because it needs the live gateway, which I can't reach). In the SQL editor this runs as `postgres` without request headers, so use a temporary function called over REST:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. From any browser or terminal, call:
+   ```
+   curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "x-forwarded-for: 6.6.6.6"
+   ```
+2. **Expect:** `cf-connecting-ip` holds your real IP, and `x-forwarded-for` shows `6.6.6.6, <real ip>` (or lacks the spoof).
+3. **Paste:** the key names and whether the spoof appears first. Mask IPs to /24.
+4. Then: `drop function public.zz_echo_headers();`
+
+What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I switch `azal_request_ip()` to whichever header the gateway sets.
+
+**Next loop:** sync #29, #30 and #31 with main (non-destructive), then member history and the points ledger.
+
+## 2026-11-26 12:40 EST — #29/#30/#31 synced with main after #33; Muse's gateway check accepted
+- **Gateway header (Muse 12:11): accepted.** On the live gateway `cf-connecting-ip` holds the real IP, and `x-forwarded-for` carries the spoof first. `azal_request_ip()` at #32 `5bbcb55` uses cf-connecting-ip first and never the first XFF hop, so no change is needed. Thanks, Muse; the probe is dropped and verified gone.
+- **Syncs.** Each was a non-destructive merge of main. Pages take main's header plus the branch's own changes, and styles keep both blocks. GitHub reports all three clean.
+
+  | PR | New head | Tests run |
+  |---|---|---|
+  | #31 | `b8b822d7a004f04b0c935692e3b3196c7a223f4e` | node 102/102; header browser 13/13 |
+  | #30 | `fa6cce9bd21e4167af336eb4c34b1641032b2ea8` | node 101/101; header 13/13; link sign-in browser check |
+  | #29 | `593373fbbd3fef0d6d7ad0d4a8c57f077694cc47` (`staff.html` gets the new header) | node 114/114; checkout 20/20; staff 7/7; header 13/13 |
+
+- **Unchanged:** #32 `5bbcb55` (waiting for ChatGPT's re-review of the gate, and #27 first). #27 is `1ee391e`.
+- **Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 13:05 EST — Member order history + points ledger built (#29 @ `e039272`)
+- **#29 @ `e03927224c1dce9d65c5e83fc03a6f06029379e6`.**
+  - **New:** `member-history.js` and `tests/member-history.{test,browser}.mjs`.
+  - **Changed:** `auth.js` (emits an `azal:auth` event), `member.html` (script tag), `styles.css`, and the pages (version `20261126-1800`).
+  - **What it does:** the member's own last 20 orders (code, date, items, status, payment, pickup, total) and points ledger rows with the balance. Each request carries an explicit `user_id` filter on top of RLS. Rendering is textContent only. EN/FR. Hidden when signed out; inert while config is null.
+  - **Ran:** node 117/117; member-history browser 9/9 (XSS item name rendered as text; requests filtered to the member's own user_id; FR; signed-out; server error; inert); checkout 20/20; staff 7/7; header 13/13.
+  - **Not run:** real Supabase.
+- **With this, every step of the owner's test exists in code:** register → order with note → test-card pay → kitchen hand-over → points visible on the member page. #29 stays Draft until that runs on staging (Muse: apply pack 0004 + seed, test switches; my 06:22 list).
+- **Noticed, not changed** (launch copy for the owner/Muse): the member page still shows the static "OPENING SOON" label and the founding-member line while signed in.
+- **Next:** a launch-copy pass proposal (preview labels that become false once each feature is switched on), then the outbox email-sender design doc.
