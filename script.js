@@ -25,10 +25,10 @@ const translations = {
   cartKicker:"YOUR SELECTION",cartTitle:"Your order",subtotal:"Subtotal",cartDisclaimer:"Demo checkout only. No payment or restaurant order will be submitted.",
   checkoutButton:"Continue to demo checkout",demoOnly:"DEMO ONLY",checkoutTitle:"Almost there.",
   checkoutText:"This is a website preview. Your order will not be sent to AZAL and no payment will be taken.",
-  nameLabel:"Your name",namePlaceholder:"Name",orderType:"Order type",pickup:"Pickup (demo)",delivery:"Delivery (demo)",placeDemo:"Preview demo order",
+  demoPickupOnly:"Pickup preview only. No customer details, date, or payment are collected.",placeDemo:"Preview demo order",
   add:"Add +",added:"Added ✓",noResults:"No dishes match that search. Try another name or category.",
   emptyCart:"Your basket is waiting for something delicious.",each:"each",removeOne:"Remove one",addOne:"Add one",
-  nameRequired:"Please enter your name to preview the demo.",thankYou:"Thank you",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
+  thankYou:"Demo preview",demoContains:"Your demo order contains",items:"item(s)",notSent:"This has not been sent to the restaurant."
  },
  fr: {
   navMenu:"Menu",navStory:"Notre histoire",navVisit:"Nous trouver",cartButton:"Votre commande",stickyCartLabel:"Voir la commande",
@@ -56,10 +56,10 @@ const translations = {
   cartKicker:"VOTRE SÉLECTION",cartTitle:"Votre commande",subtotal:"Sous-total",cartDisclaimer:"Paiement de démonstration uniquement. Aucune commande ne sera transmise au restaurant et aucun paiement ne sera effectué.",
   checkoutButton:"Continuer vers le paiement démo",demoOnly:"DÉMONSTRATION UNIQUEMENT",checkoutTitle:"Presque terminé.",
   checkoutText:"Ceci est un aperçu du site. Votre commande ne sera pas transmise à AZAL et aucun paiement ne sera prélevé.",
-  nameLabel:"Votre nom",namePlaceholder:"Nom",orderType:"Type de commande",pickup:"À emporter (démo)",delivery:"Livraison (démo)",placeDemo:"Prévisualiser la commande démo",
+  demoPickupOnly:"Aperçu du ramassage uniquement. Aucune coordonnée, date ou donnée de paiement n’est recueillie.",placeDemo:"Prévisualiser la commande démo",
   add:"Ajouter +",added:"Ajouté ✓",noResults:"Aucun plat ne correspond à votre recherche. Essayez un autre nom ou une autre catégorie.",
   emptyCart:"Votre panier attend quelque chose de délicieux.",each:"l’unité",removeOne:"En retirer un",addOne:"En ajouter un",
-  nameRequired:"Veuillez saisir votre nom pour prévisualiser la démo.",thankYou:"Merci",demoContains:"Votre commande démo contient",items:"article(s)",notSent:"Cette commande n’a pas été transmise au restaurant."
+  thankYou:"Aperçu démo",demoContains:"Votre commande démo contient",items:"article(s)",notSent:"Cette commande n’a pas été transmise au restaurant."
  }
 };
 const productTranslations = {
@@ -105,7 +105,7 @@ const money = n => new Intl.NumberFormat(language==="fr"?"fr-CA":"en-CA",{style:
 const productGrid=$("productGrid"), cartDrawer=$("cartDrawer"), backdrop=$("cartBackdrop"), cartItems=$("cartItems");
 const cartCount=$("cartCount"), cartTotal=$("cartTotal"), checkoutButton=$("checkoutButton");
 const stickyCartBar=$("stickyCartBar"),stickyCartCount=$("stickyCartCount"),stickyCartTotal=$("stickyCartTotal");
-const checkoutModal=$("checkoutModal"), customerName=$("customerName"), checkoutMessage=$("checkoutMessage");
+const checkoutModal=$("checkoutModal"), checkoutMessage=$("checkoutMessage");
 const nav=document.querySelector(".nav"), toggle=document.querySelector(".menu-toggle");
 const search=$("menuSearch"), tabs=$("categoryTabs");
 const sufraCompass=$("sufraCompass"), sufraStatus=$("sufraStatus");
@@ -160,7 +160,7 @@ $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
 checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
 $("modalClose")?.addEventListener("click",closeModal);
-$("placeDemoOrder")?.addEventListener("click",()=>{const name=customerName?.value.trim();if(!name){if(checkoutMessage)checkoutMessage.textContent=t("nameRequired");return}const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}, ${name}. ${t("demoContains")} ${count} ${t("items")}. ${t("notSent")}`;cart.clear();renderCart()});
+$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${t("notSent")}`;cart.clear();renderCart()});
 checkoutModal?.addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeModal()});
 toggle?.addEventListener("click",()=>{const open=nav?.classList.toggle("open")||false;toggle.setAttribute("aria-expanded",String(open))});
 nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}));
