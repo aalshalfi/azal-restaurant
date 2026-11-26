@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | C6 image/credit changes committed on `chatgpt/c6-illustrative-photo-fixes-20261125`, PR #5 open; awaiting CI and visual QA. |
+| none | | | | C6 image/credit changes refreshed on `chatgpt/c6-illustrative-photo-fixes-20261125-v2`; PR #6 open, 2 ahead / 0 behind; PR #5 closed as superseded. |
 
 
 
@@ -16,7 +16,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 |---|---|---|---|---|
 | C8 | EN/FR switch does nothing | Muse merged, Muse re-QA'd | **Done — merged `f884ec3`, live QA passed desktop 20:03 EST** | Lead cherry-picked Claude's fix commit `90f89b5` (branch carried stale parallel BOARD/COORDINATION copies, so a full merge would have conflicted; branch superseded, do not merge). Live: FR toggle translates all 9 cards, French search/filters work, cart survives EN→FR→EN, Sufra guide in FR, demo notices intact. Mobile width + `lang` attribute direct read still unverified (browser could not resize/inspect). |
 | C9 | Header "YOUR ORDER" button wraps to two lines, badge overlaps text | ChatGPT | Desktop verified; mobile header pending | Fix commit `8e93e9d` verified live by Muse at desktop 1920 px (19:42 EST): single line, no wrap or overlap. Narrow/mobile header still unverified — QA browser cannot resize. |
-| C6 | Four mismatched illustrative dish photos | ChatGPT implements, Muse gates | **PR #5 open — image source/attribution patch drafted; CI + live EN/FR desktop/mobile review pending** | Replacements: Hummus → `HummusLebanese.jpg` (Dumarest, CC BY-SA 3.0); Fahsa → `خبز ملوح.jpg` (SharabSalam, CC BY-SA 4.0 — correction to earlier board attribution); Adeni Chai illustrative tea image → `Chai_In_Sakora.jpg` (Dadhichbittu007, CC BY-SA 4.0); Mango juice → `Mango_juice.JPG` (Vyom25, CC BY-SA 4.0). Footer includes visible source/author/licence credits and EN/FR credit label. Files: `script.js`, `index.html`. No actual AZAL photography is implied. PR #5: https://github.com/aalshalfi/azal-restaurant/pull/5. |
+| C6 | Four mismatched illustrative dish photos | ChatGPT implements, Muse gates | **PR #6 open — source/attribution patch ready; CI + live EN/FR desktop/mobile review pending** | Hummus → `HummusLebanese.jpg` (Dumarest, CC BY-SA 3.0); Fahsa → `خبز ملوح.jpg` (SharabSalam, CC BY-SA 4.0; corrects previous board attribution); Adeni Chai illustrative tea → `Chai_In_Sakora.jpg` (Dadhichbittu007, CC BY-SA 4.0); Mango juice → `Mango_juice.JPG` (Vyom25, CC BY-SA 4.0). Footer credits source/author/licence and has EN/FR label. No AZAL photography implied. PR #6: https://github.com/aalshalfi/azal-restaurant/pull/6. PR #5 closed as superseded. |
 | M1 | Favicon visual check in a real browser tab | Muse | File repaired; tab visual pending | File repaired by Muse (commit `2c5ded22`): valid SVG, 163,768 B, loads live with no XML error. Browser-tab visual still unconfirmed (screenshots do not show the tab strip). |
 | A1 | Arabic wordmark "أَزَال" shows as boxes in the QA browser | Muse | Open | Likely a missing font in the QA environment. Verify on a real device. |
 | S1 | Sufra Compass v1 prototype | Muse | **QA passed 19:42 EST (EN); FR regression after C8 merge** | Live QA passed: all three guide buttons, search clearing, tab sync, keyboard, cart, demo checkout. Critique given in `MUSE-REPLY.md`. One new finding filed as C10. FR half of QA waits on the C8 merge. |
