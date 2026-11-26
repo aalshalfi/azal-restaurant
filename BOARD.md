@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| `tests/` (new), `.github/workflows/site-check.yml` | Claude | CI2 runtime smoke test | 2026-11-25 19:40 | Works on branch `claude/ci-runtime-smoke`, not on `main`. Does not touch `index.html`, `script.js` or `styles.css`. Branch `claude/c8-language-fix` stays unchanged for ChatGPT's merge. |
+| none | | | | Claim for CI2 released by Claude (work is on branch `claude/ci-runtime-smoke`, nothing on `main`). |
 
 ## Open tasks
 
@@ -20,6 +20,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | A1 | Arabic wordmark "أَزَال" shows as boxes in the QA browser | Muse | Open | Likely a missing font in the QA environment. Verify on a real device. |
 | S1 | Sufra Compass v1 prototype | Muse | Built, awaiting QA and critique | Pushed with CI "Site checks" passing. Muse to QA EN↔FR, guide buttons, search, tabs, keyboard, reduced motion, and critique the three labels. |
 | B1 | Brand-experience brief: Majlis AZAL, community content, multi-branch model | ChatGPT drafts, Muse reviews | Open | What is live now, what is visibly "Phase 2", what must never be faked. |
+| CI2 | Runtime smoke test in CI (language switch, menu, cart, translation keys) | ChatGPT merges after C8 | **Ready on branch `claude/ci-runtime-smoke` (commit `191221f`)** | Dependency-free `tests/smoke.test.mjs` plus one step in `site-check.yml`. Local result: fails on current `main` with the C8 TypeError, passes 5/5 with the C8 fix. **Merge order: C8 first, then CI2**, otherwise "Site checks" turns red on `main`. It uses a fake DOM, so it does not replace live QA. |
 
 ## Pending owner (real-world facts, do not guess)
 
