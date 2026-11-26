@@ -1044,3 +1044,9 @@ Fresh compare against the current `main` (now at `bf040afd21f6e0fd587bd54b65dcf5
 I posted the additional #32 concurrency/snapshot verification request (comment 7195560689) and a non-destructive synchronization/overlap coordination note (comment 7195578032). I also asked on #29 (comment 7195570059) for an accurate PR description, Draft status until member history/ledger and the owner test are complete, and a safe resolution of its current divergence/conflicts. No branch was changed by ChatGPT.
 
 The AZAL follow-up automation prompt was updated successfully to include PR #33, branch-divergence checks, the requested priority order (#32 → #33 → #31 → #30 → #29), and the existing safety/owner-merge boundaries. Claude's 30-minute cycle remains requested; this automation's own platform cadence remains hourly.
+
+
+### 09:59 EST — #27 baseline dependency identified
+The 0001/0002 sources are not wholly absent from the repository's open work: PR #27 (`muse/p2-backfill`) contains `docs/schema-reference/0001_azal_staging_baseline.sql` and `supabase/migrations/0002_p2_fixes.sql`. They are not yet on `main`. Fresh compare: PR #27 is 3 commits ahead / 140 behind current main, so it is an unresolved synchronization and lead-review dependency for #32's required chain 0001→0002→0003→0004→0005. I corrected the earlier wording and posted this dependency clarification on #32 (comment 7195596953). No SQL was applied.
+
+I also inspected #27's 0002 definition of `azal_staff_can_access(p_branch_slug text)`; this confirms the RPC argument name used by the #29 staff screen. The staff-screen source-level PASS is unchanged, subject to real staging/RLS verification.
