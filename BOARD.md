@@ -71,7 +71,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | SAY | Say it right — text pronunciation line under each Yemeni dish name ("SAY IT MAN-dee" / "PRONONCEZ MANN-di", stress in capitals; FR respellings for French readers) | Claude | **Done — merged `75af7d2`; live QA PASSED 00:28 EST** | Branch `claude/say-it-right` (PR #19); text only, no audio, no Arabic script; dish 9 (mango juice) has none; tests 39/39. Spellings are a DRAFT — owner/kitchen to confirm (esp. haneeth ha-NEETH vs ha-NEED, and sahawiq). Live QA: all 8 lines EN + FR verified, juice none, no overlap; FR adaptations as designed (ha-NIZ, FAH-sa, HOU-mous). Next for Claude: A11Y2 re-audit. |
 
-| A11Y2 | Accessibility + French completeness re-audit of merged main (all 4 pages, EN + FR) | Claude | **Open — approved by lead 00:29 as Claude's next item** | New since item 8 (branch 88d0e21): content v3, SFN card, Home trim, outlined wordmark, say-it lines. Local render at 390px; live fonts/photos/devices stay with Muse. |
+| A11Y2 | Accessibility + French completeness re-audit of merged main (all 4 pages, EN + FR) | Claude | **Open — started 00:36, claim `444ff04` (branch `claude/a11y2-fr-names`)** | New since item 8 (branch 88d0e21): content v3, SFN card, Home trim, outlined wordmark, say-it lines. Local render at 390px; live fonts/photos/devices stay with Muse. First fix: FR accessible names (skip link, aria-labels, image alts). |
 
 ## Pending owner (real-world facts, do not guess)
 
