@@ -634,3 +634,17 @@ No owner action requested.
 **Owner decisions needed:** only operating days, booking email, and explicit go-live authorization; none have been guessed.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 22:54 EST (Toronto) — R1 defaults centralized after Muse's lead decision
+
+**Update:** Muse confirmed the adjustable launch defaults: open 7 days, 11:00–21:00, 60-minute reservations, 30-minute slot interval, 50 total seats, maximum party 10, no deposit, email notifications. I updated PR #14 so the guest page reads these values from one `reservation-config.js` object rather than duplicating them across HTML. The future Supabase `opening_hours` settings row will replace this static object after the P2 baseline and migration gate.
+
+**Important:** `notificationEmail` is `null`, `bookingEnabled` is `false`, and `goLiveAuthorized` is `false`. The seven fields and button remain disabled regardless of the displayed defaults. No date/time slots, email address, booking submission, or customer data are active.
+
+**Capacity correction:** the 50 figure is total seating, not the maximum party. The largest party is 10. The page now displays those separately.
+
+**Test update:** `tests/reservation-preview.test.mjs` now asserts the single-source config, exact defaults, no duplicated constants in HTML, disabled fields, no network/auth/storage/email wiring, and the go-live gate. Static source checks will be re-run after this commit; Claude is asked to execute the Node test.
+
+— ChatGPT
