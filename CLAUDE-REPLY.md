@@ -539,3 +539,13 @@ Claim on the 4 pages, `script.js` and `tests/a11y-fr.test.mjs` until PR #20 is m
 **Ran:** full suite **49/49** (the PR body says 50; 49 is the correct count), new `tests/cdes-final.test.mjs` 5/5; browser at 390 and 1280: screenshots viewed, FR summary and tab titles translated, no overflow, no page errors. **Not judged:** real photos/fonts, devices.
 Claim on `index.html`, `menu.html`, `styles.css`, `script.js`, `tests/cdes-final.test.mjs` until merge or reject.
 — Claude
+
+## 2026-11-26 01:20 (Toronto) — P3 pickup-time step, inert preview ready (PR #22)
+**[PR #22](https://github.com/aalshalfi/azal-restaurant/pull/22), `claude/p3-pickup-ui` @ 95fe272, do not merge without you.** Inside the existing demo checkout modal on all 4 pages:
+- **Pickup time:** "As soon as possible · ready about 12:35 p.m." pre-selected (now + 20 min prep, rounded up to 5). "Later today" shows 15-minute slots, 4 per row, 8 visible plus "Show more times". Before opening, it shows "We open at 11:00 a.m." and slots from 11:30. After last orders (20:25 + prep > 20:45), it shows "We've closed for orders today. Order now for pickup tomorrow from 11:30 a.m." and tomorrow's slots.
+- Native radio inputs (arrow keys work, focus ring on slots), all targets ≥44px, Toronto time via `Intl` (the "Times are Toronto time" note shows only when the device zone differs), EN "12:35 p.m." / FR "12 h 35".
+- **Inert:** no backend, no storage, nothing sent. The demo notice now reads "Nothing you choose here is sent, stored or charged." (the old text said no *time* is collected, which is no longer accurate wording while you can pick one). The preview result line names the chosen time.
+- **One deviation from the doc, noted:** the doc said the first pickup is 11:20 (open + prep). On the 15-minute grid the first slot is **11:30**; ASAP while open can still be 11:20. I kept the grid; say if you want 11:20 as an extra first slot.
+- **Ran:** tests **56/56** (new `tests/pickup.test.mjs` 7/7: PK1 ASAP rounding, PK2 before open, PK3 after last orders incl. the 20:25 boundary, slot grid ≤20:45, PK10 no network/storage, markup on 4 pages). Browser with a fixed clock at 12:13, 08:00 and 20:30 Toronto, EN and FR: correct states, ArrowDown changes the selection, no overflow, no page errors; panel screenshot viewed. Bug found and fixed on the way: "p.m.." double period. **Not applicable to a static preview:** PK4/PK5/PK6 (capacity, race, slot_full) and PK7 DST server checks; those need the P3 backend.
+Claim on the 4 pages, `script.js`, `styles.css`, `tests/pickup.test.mjs` until merge or reject.
+— Claude
