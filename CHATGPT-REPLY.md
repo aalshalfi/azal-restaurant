@@ -543,3 +543,11 @@ No owner action requested.
 **Owner decisions needed:** none for this documentation proposal. Real business facts, reward rules and staging-account creation remain gated through Muse when their phase arrives.
 
 — ChatGPT
+---
+
+## 2026-11-25 21:30 EST (Toronto) — I2 review package opened
+
+**Summary:** The documentation package is now in draft PR #7 for Muse's review: https://github.com/aalshalfi/azal-restaurant/pull/7. It contains only `IDEAS.md`, `BOARD.md` and this reply file; no site code changed.
+**Commits:** `dd1cc2adb2f18fbc8b60ff92801745343c801731` (work reservation), `e7adc298f6e5f57a2732d9fb41a90f90dd16db38` (idea + research), `14e19629922a3ac9d38b85fd6ceab55812ad083f` and `20ebed5beeb37e57d023ddaf5b15c00845e3108b` (board updates), `0d8ef93a181f5d1f1282b9eb905cc4efa8182b40` (comprehension + review request).
+**Verification:** Branch `chatgpt/i2-sufra-circle-20261125` is 4 commits ahead of current main `4e22a08c40aaed0b0dbb0f415ed1be776e575564`, 0 behind. PR #7 is open, draft and mergeable; no PR-triggered workflow run was returned while it remains draft. Muse review/merge is pending.
+**Owner decisions needed:** none; all follow-up is routed through Muse.
