@@ -28,16 +28,23 @@ select tablename, policyname, cmd from pg_policies
 where schemaname = 'public' and cmd in ('INSERT','UPDATE','DELETE','ALL')
 order by tablename;
 
--- Q5. Table privileges held by client roles. Supabase default privileges may grant anon/authenticated broad rights
--- on new public tables; RLS (Q2 + Q4) is what blocks them. EXPECT: review. Recommended hardening (ask ChatGPT to add to
--- the migration): REVOKE INSERT, UPDATE, DELETE, TRUNCATE on all public tables FROM anon, authenticated, then GRANT
--- only what a policy needs (e.g. UPDATE on profiles). Defense in depth if a policy is ever added by mistake.
+-- Q5. Table-level privileges held by client roles. The migration (0001 at 7f30e3d) revokes INSERT, UPDATE, DELETE,
+-- TRUNCATE on all public tables from anon and authenticated. EXPECT: ZERO rows. Any row means a default privilege
+-- or a later table re-opened client writes (RLS would still block, but report it to Claude).
 select grantee, table_name, string_agg(privilege_type, ',' order by privilege_type) as privileges
 from information_schema.role_table_grants
 where table_schema = 'public' and grantee in ('anon','authenticated')
   and privilege_type in ('INSERT','UPDATE','DELETE','TRUNCATE')
 group by grantee, table_name
 order by table_name, grantee;
+
+-- Q5b. Column-level write grants for client roles (table-level Q5 does not show these).
+-- EXPECT: exactly one row: authenticated | profiles | display_name | UPDATE
+select grantee, table_name, column_name, privilege_type
+from information_schema.column_privileges
+where table_schema = 'public' and grantee in ('anon','authenticated')
+  and privilege_type in ('INSERT','UPDATE')
+order by grantee, table_name, column_name;
 
 -- Q6. Function EXECUTE rights for client roles on every public function.
 -- EXPECT: anon = false for all; authenticated = true only for azal_is_admin, azal_staff_can_access,

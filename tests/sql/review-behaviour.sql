@@ -55,7 +55,7 @@ select zz_eq('A cannot INSERT order (client)', public.zz_try($$insert into publi
 select zz_eq('A cannot UPDATE order', public.zz_try($$update public.orders set total_cents=1 where id='10000000-0000-0000-0000-000000000001'$$), '42501');
 select zz_eq('A cannot DELETE order', public.zz_try($$delete from public.orders where id='10000000-0000-0000-0000-000000000001'$$), '42501');
 select zz_eq('A cannot INSERT points_ledger', public.zz_try($$insert into public.points_ledger(user_id,event_key,entry_type,delta_points,reason) values ('00000000-0000-0000-0000-0000000000a1','x1','earn',500,'hack')$$), '42501');
-select zz_eq('A cannot INSERT payment_events', public.zz_try($$insert into public.payment_events select * from public.payment_events limit 0$$), '42501');
+select zz_eq('A cannot INSERT payment_events', public.zz_try($$insert into public.payment_events default values$$), '42501');
 select zz_eq('A cannot self-promote (INSERT user_roles admin)', public.zz_try($$insert into public.user_roles values ('00000000-0000-0000-0000-0000000000a1','admin')$$), '42501');
 select zz_eq('A can read only own roles (1)', public.zz_val('select count(*) from public.user_roles'), '1');
 select zz_eq('A can update own display_name', public.zz_try($$update public.profiles set display_name='Ali' where id='00000000-0000-0000-0000-0000000000a1'$$), 'ok');

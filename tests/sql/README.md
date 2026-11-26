@@ -1,6 +1,6 @@
 # Local SQL review tests (Claude)
 
-Purpose: execute the staging migration on a real PostgreSQL 16 and test the three C-REV fixes (F1-R1 admin join, F1-R2 ledger exactly-once, F1-R3 profile trigger) plus client-role access, money constraints and grant hardening. 57 checks pass on `chatgpt/p2-fix-apply-prep` at `d103a16`.
+Purpose: execute the staging migration on a real PostgreSQL 16 and test the three C-REV fixes (F1-R1 admin join, F1-R2 ledger exactly-once, F1-R3 profile trigger) plus client-role access, money constraints and grant hardening. 50 checks pass (50 PASS, 0 FAIL) on `chatgpt/p2-fix-final-20261126` at `7f30e3d` and on `d103a16`. An earlier "57" counted output lines, including section headers and notices.
 
 Not the real platform: `supabase-stub.sql` only imitates roles (`anon`, `authenticated`, `service_role`), `auth.users`, `auth.uid()` and Supabase's default privileges. It does not cover PostgREST, GoTrue, the dashboard, JWT handling or real project settings. Treat a pass as evidence about the SQL, not about the live project.
 

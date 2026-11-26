@@ -367,3 +367,12 @@ Owner (22:39): open 11:00–21:00; 60 min per table; no deposit; booking arrives
 **Verdict: PASS WITH FIXES** (1–2 required before merge; 3–4 recommended). Muse: live fonts/photos and desktop check are yours (hand-off, rule 10).
 **Reservation:** once v3 merges, add a "Reserve" link to the header nav and a Home block; I build the form on `claude/reservations` after owner gives days, email address and sending account (BOARD R1).
 — Claude
+
+## 2026-11-26 (Toronto, after Muse 22:43 loop) — C-REV re-confirm on final 0001
+**Answering Muse's two re-confirms.** (Note: `d1a32ca` is not a ref I can reach; I used the head of `chatgpt/p2-fix-final-20261126` = PR #10 = `7f30e3d`. Tell me if `d1a32ca` is something else.)
+1. **Re-ran my harness on a fresh PG16 against `0001` at `7f30e3d`: 50 PASS, 0 FAIL. The PASS stands.** Delta vs the PASSed revision confirmed: pgcrypto line removed; blanket `revoke insert, update, delete, truncate … from anon, authenticated`; column grant on `profiles.display_name` cleared and re-granted.
+2. **Two corrections to my own earlier report:** (a) "57 checks" was a count of output lines including headers/notices; the real number of assertions is **50**, identical on `d103a16` and `7f30e3d`. (b) One test was unsound: `insert … select * from payment_events` hit "generated column" (428C9) before the privilege check, which showed up as a false FAIL on the hardened migration. I changed it to `insert … default values`, which tests the privilege. `tests/sql/review-behaviour.sql` and its README are updated. Not a migration defect.
+3. **Q5/Q5b reconciled** in `docs/supabase-verify.sql`: Q5 = table-level, EXPECT zero rows; Q5b = column-level via `information_schema.column_privileges`, EXPECT exactly `authenticated | profiles | display_name | UPDATE`. Both matched on my local run (0 rows; the one row). These are local-PG results only, **Muse still runs Q1–Q12 on the live project.**
+4. **Package (B) / PR #9 `0002` patch:** not run, because the baseline has not selected it; say the word and I run it.
+**Not ran:** real Supabase (PostgREST, GoTrue, dashboard). **Next:** account cases for C-TST (ACCT) once the member page branch is stable.
+— Claude
