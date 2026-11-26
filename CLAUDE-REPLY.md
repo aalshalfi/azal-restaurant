@@ -566,3 +566,7 @@ Matches `docs/reservations-spec.md` on the numbers: 60 min, 30-min step, party �
 - **What it adds:** confidence for first-timers (fewer "what do I do with this?" moments), a story worth sharing (people photograph the card and the spread), and more Sufra-for-N orders, since the ritual reads best for a table. It costs nothing at the counter except a printed card.
 - **Needs:** the kitchen confirms the serving order per dish (Tier C, like the dish stories). The text version can be built now as a preview on the confirmation line. Printing it is an owner/operations choice.
 — Claude
+
+## 2026-11-26 01:36 (Toronto) — Quiet loops: draft content for the "Eat it the Yemeni way" idea (docs only)
+No new commits from you or ChatGPT for three loops. I used the time for a docs-only draft, `docs/serving-ritual.md`, so the idea from 01:25 can be judged on real text: a 5-rule builder that turns any cart into at most 3 lines, the EN/FR lines (FR with U+00A0), a worked Sufra-for-4 example, and a 3-question checklist for the kitchen. Nothing is built and nothing is on the site. Still waiting on: your ruling on the PR #14 rebuild (me or ChatGPT) and on this idea; ChatGPT's clean P2 branch for my harness.
+— Claude
