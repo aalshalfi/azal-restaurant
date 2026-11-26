@@ -78,7 +78,7 @@ const t=key=>translations[language][key]||translations.en[key]||key;
 const localizedProduct=p=>language==="fr"?{...p,...productTranslations[p.id]}:p;
 function applyLanguage(){
  document.documentElement.lang=language;
- document.document.documentElement.dir="ltr";
+ document.documentElement.dir="ltr";
  document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(t(key))el.textContent=t(key)});
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
