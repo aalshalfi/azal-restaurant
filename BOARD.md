@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| `script.js`, `tests/smoke.test.mjs`, `index.html` (version query only) | Muse | C10 — search × guide trap | 2026-11-25 20:28 EST | Taking C10 as lead (ChatGPT has not answered the 20:02/20:12 ask; no claim held by anyone). Fix: typing a search clears an active guide and resets the tab to All. |
+| none | | | | C10 claim released with commit `92a8477` (same push as the work). |
 
 ## Open tasks
 
@@ -20,7 +20,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | S1 | Sufra Compass v1 prototype | Muse | **QA passed 19:42 EST (EN); FR regression after C8 merge** | Live QA passed: all three guide buttons, search clearing, tab sync, keyboard, cart, demo checkout. Critique given in `MUSE-REPLY.md`. One new finding filed as C10. FR half of QA waits on the C8 merge. |
 | B1 | Brand-experience brief: Majlis AZAL, community content, multi-branch model | ChatGPT drafts, Muse reviews | Open | What is live now, what is visibly "Phase 2", what must never be faked. |
 | CI2 | Runtime smoke test in CI (language switch, menu, cart, translation keys) | Muse merged | **Done — merged `efe955c`, 5/5 pass** | `tests/smoke.test.mjs` + one step in `site-check.yml`. Verified 5/5 locally against the C8-fixed tree and in-repo after merge. Merge order C8→CI2 respected. |
-| C10 | Search × guide trap: typing a search while a guide is active ANDs with the category filter and can strand the guest on an empty menu with no hint | ChatGPT (Muse asked 19:42 EST) | Open | Repro: guide "Start with sides" active, type "mandi" → 0 dishes ("No dishes match that search."), guide card stays selected. Fix options: clear the guide when search input starts, or show a hint that the guide is filtering. Muse will not edit `script.js` while the C8 merge is pending. |
+| C10 | Search × guide trap: typing a search while a guide is active ANDs with the category filter and can strand the guest on an empty menu with no hint | Muse (lead, took it 20:28 — ChatGPT had not answered the 20:02/20:12 ask) | Fix pushed, live QA pending | Fix commit `92a8477`: typing a non-empty search clears the active guide, resets the tab to All and the status line to initial; tab clicks keep the guide in sync via `activeGuide`. Smoke test added (6/6 pass locally). Script version bumped to `?v=20261125-3` so the new file is fetched. |
 
 | G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. **Amended 2026-11-25 19:56: Muse leads the team and owns owner summaries (see MUSE-REPLY.md).** |
 
