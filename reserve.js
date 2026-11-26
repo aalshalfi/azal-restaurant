@@ -4,7 +4,8 @@
 (function (root) {
   "use strict";
   const TZ = "America/Toronto";
-  const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  // Plain addresses only: no spaces, markup or quote characters (matches the 0005 check).
+  const EMAIL = /^[^@\s<>"'`\\(),;:]+@[^@\s<>"'`\\(),;:]+\.[^@\s<>"'`\\(),;:]+$/;
 
   // Same rule as the server (azal_reservation_phone): 10 digits -> +1, 11 starting with 1 -> +, or + and 10-15 digits.
   function normalizePhone(raw) {
@@ -58,7 +59,11 @@
         lastSig = ""; // the next booking is a new attempt
         return r;
       },
-      async cancel(code, email) { return rpc("cancel_reservation", { p_code: String(code || "").trim(), p_email: String(email || "").trim() }); }
+      async cancel(code, email) {
+        const r = await rpc("cancel_reservation", { p_code: String(code || "").trim(), p_email: String(email || "").trim() });
+        if (r && (r.status === "not_found" || r.status === "too_late")) throw Object.assign(new Error(r.status), { code: r.status });
+        return r;
+      }
     };
   }
 
@@ -75,10 +80,10 @@
 
   const S = {
     en: { kicker: "TABLES", intro: "Come and sit with us: the majlis way, around shared plates.", party: "How many people?", date: "Date", time: "Time",
-      name: "Your name", phone: "Mobile phone", email: "Email (your confirmation goes here)", book: "Book the table", working: "One moment…",
+      name: "Your name", phone: "Mobile phone", email: "Email", book: "Book the table", working: "One moment…",
       noSlots: "No free tables that day for this many people. Try another day.", pickTime: "Choose a time.", loading: "Loading times…",
       big: "More than {n} people? Call us and we’ll set the table.", deposit: "No deposit. Nothing to pay.",
-      done: "Your table for {party} is booked for {date} at {time}.", doneCode: "Your booking code: {code}", doneMail: "The confirmation is sent to {email}. Keep the code to cancel.",
+      done: "Your table for {party} is booked for {date} at {time}.", doneCode: "Your booking code: {code}", doneKeep: "Your booking is saved under {email}. Keep this code: with that email, it lets you cancel.",
       another: "Book another table", cancelTitle: "Cancel a booking", cancelCode: "Booking code", cancelEmail: "Email used to book", cancelBtn: "Cancel the booking",
       cancelled: "Booking {code} is cancelled. The table is free for someone else.",
       e_invalid_party: "Choose how many people.", e_invalid_time: "Choose a time.", e_invalid_name: "Please add your name.", e_invalid_phone: "Please enter a mobile number with area code, like 343 555 0101.",
@@ -87,10 +92,10 @@
       e_rate_limited: "Too many bookings from this email just now. Please wait a few minutes.", e_not_found: "We couldn’t find a booking with that code and email.", e_too_late: "That booking can no longer be cancelled online. Please call us.",
       e_network: "Connection problem. Check your connection and try again: you won’t be booked twice.", e_error: "Something went wrong. Please try again." },
     fr: { kicker: "RÉSERVATIONS", intro: "Venez vous asseoir avec nous, à la manière du majlis, autour de plats partagés.", party: "Combien de personnes ?", date: "Date", time: "Heure",
-      name: "Votre nom", phone: "Téléphone mobile", email: "Courriel (votre confirmation y est envoyée)", book: "Réserver la table", working: "Un instant…",
+      name: "Votre nom", phone: "Téléphone mobile", email: "Courriel", book: "Réserver la table", working: "Un instant…",
       noSlots: "Aucune table libre ce jour-là pour ce nombre de personnes. Essayez un autre jour.", pickTime: "Choisissez une heure.", loading: "Chargement des heures…",
       big: "Plus de {n} personnes ? Appelez-nous et nous dresserons la table.", deposit: "Aucun dépôt. Rien à payer.",
-      done: "Votre table pour {party} est réservée le {date} à {time}.", doneCode: "Votre code de réservation : {code}", doneMail: "La confirmation est envoyée à {email}. Gardez le code pour annuler.",
+      done: "Votre table pour {party} est réservée le {date} à {time}.", doneCode: "Votre code de réservation : {code}", doneKeep: "Votre réservation est enregistrée au nom de {email}. Gardez ce code\u00a0: avec ce courriel, il permet d’annuler.",
       another: "Réserver une autre table", cancelTitle: "Annuler une réservation", cancelCode: "Code de réservation", cancelEmail: "Courriel utilisé pour réserver", cancelBtn: "Annuler la réservation",
       cancelled: "La réservation {code} est annulée. La table est libre pour quelqu’un d’autre.",
       e_invalid_party: "Choisissez le nombre de personnes.", e_invalid_time: "Choisissez une heure.", e_invalid_name: "Veuillez indiquer votre nom.", e_invalid_phone: "Entrez un numéro mobile avec l’indicatif, par exemple 343 555 0101.",
@@ -134,8 +139,17 @@
     for (const [id, k] of [["rsParty", "party"], ["rsDate", "date"], ["rsName", "name"], ["rsPhone", "phone"], ["rsEmail", "email"], ["rcCode", "cancelCode"], ["rcEmail", "cancelEmail"]]) form.parentNode.querySelector(`label[for=${id}]`).textContent = L(k);
     $("rsTimeLabel").textContent = L("time"); $("rsBig").textContent = L("big", { n: maxParty }); $("rsDeposit").textContent = L("deposit");
     $("rsSubmit").textContent = busy ? L("working") : L("book"); $("rcTitle").textContent = L("cancelTitle"); $("rcSubmit").textContent = L("cancelBtn");
-    $("rsSlots").innerHTML = slots.map((s, i) => `<button type="button" role="radio" class="rs-slot" aria-checked="${s.starts_at === chosen}" tabindex="${s.starts_at === chosen || (!chosen && i === 0) ? 0 : -1}" data-at="${s.starts_at}">${fmtTime(s.starts_at)}</button>`).join("");
-    if (booked) done.innerHTML = `<p class="rs-done-main">${L("done", { party: booked.party_size, date: fmtDate(booked.starts_at), time: fmtTime(booked.starts_at) })}</p><p class="rs-code">${L("doneCode", { code: booked.code })}</p><p>${L("doneMail", { email: booked.email })}</p><button type="button" class="button" id="rsAnother">${L("another")}</button>`;
+    const box = $("rsSlots"); box.replaceChildren(...slots.map((sl, i) => {
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "rs-slot"; btn.setAttribute("role", "radio");
+      btn.setAttribute("aria-checked", String(sl.starts_at === chosen)); btn.tabIndex = sl.starts_at === chosen || (!chosen && i === 0) ? 0 : -1;
+      btn.dataset.at = sl.starts_at; btn.textContent = fmtTime(sl.starts_at); return btn;
+    }));
+    if (booked) {
+      const p = (cls, text) => { const el = document.createElement("p"); if (cls) el.className = cls; el.textContent = text; return el; };
+      const again = document.createElement("button"); again.type = "button"; again.className = "button"; again.id = "rsAnother"; again.textContent = L("another");
+      done.replaceChildren(p("rs-done-main", L("done", { party: booked.party_size, date: fmtDate(booked.starts_at), time: fmtTime(booked.starts_at) })), p("rs-code", L("doneCode", { code: booked.code })), p("", L("doneKeep", { email: booked.email })), again);
+    }
   }
   async function loadSlots() {
     const seq = ++loadSeq; chosen = null; slots = []; $("rsSlotMsg").textContent = L("loading"); paint();

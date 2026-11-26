@@ -33,6 +33,7 @@ select zz_eq('same key + same request replays the same booking', (public.reserve
 select zz_eq('same key, different request refused', zz_try($$select public.reserve_table('test', zz_t(19,30), 4, 'Sara A.', 'sara@example.invalid', '343 555 0101', 'resv-key-000000001')$$), 'idempotency_conflict');
 select zz_eq('missing phone refused', zz_try($$select public.reserve_table('test', zz_t(12,0), 2, 'A', 'a@example.invalid', '', 'resv-key-000000002')$$), 'invalid_phone');
 select zz_eq('short phone refused', zz_try($$select public.reserve_table('test', zz_t(12,0), 2, 'A', 'a@example.invalid', '555-0101', 'resv-key-000000003')$$), 'invalid_phone');
+select zz_eq('markup in email refused (XSS guard)', zz_try($$select public.reserve_table('test', zz_t(12,0), 2, 'A', '<svg/onload=alert(1)>@example.com', '3435550101', 'resv-key-0000000x1')$$), 'invalid_email');
 select zz_eq('bad email refused', zz_try($$select public.reserve_table('test', zz_t(12,0), 2, 'A', 'not-an-email', '3435550101', 'resv-key-000000004')$$), 'invalid_email');
 select zz_eq('empty name refused', zz_try($$select public.reserve_table('test', zz_t(12,0), 2, '  ', 'a@example.invalid', '3435550101', 'resv-key-000000005')$$), 'invalid_name');
 select zz_eq('party 11 refused online', zz_try($$select public.reserve_table('test', zz_t(12,0), 11, 'A', 'a@example.invalid', '3435550101', 'resv-key-000000006')$$), 'party_too_large');
@@ -67,8 +68,8 @@ select zz_eq('branch_hours closed weekday: no availability', (select count(*)::t
 
 \echo ===== guest cancel
 set role anon;
-select zz_eq('wrong email cannot cancel (same error as wrong code)', zz_try(format('select public.cancel_reservation(%L, %L)', :'r1'::jsonb->>'code', 'other@example.invalid')), 'not_found');
-select zz_eq('wrong code cannot cancel', zz_try($$select public.cancel_reservation('AAAAAAAA', 'sara@example.invalid')$$), 'not_found');
+select zz_eq('wrong email cannot cancel (same answer as wrong code)', public.cancel_reservation(:'r1'::jsonb->>'code', 'other@example.invalid')->>'status', 'not_found');
+select zz_eq('wrong code cannot cancel', public.cancel_reservation('AAAAAAAA', 'sara@example.invalid')->>'status', 'not_found');
 select zz_eq('code + email cancels', (public.cancel_reservation(lower(:'r1'::jsonb->>'code'), 'SARA@example.invalid')->>'status'), 'cancelled');
 select zz_eq('cancel again is a replay', (public.cancel_reservation(:'r1'::jsonb->>'code', 'sara@example.invalid')->>'replayed'), 'true');
 select zz_eq('anon cannot run host actions', zz_try($$select public.staff_set_reservation_status(gen_random_uuid(),'seated')$$), '42501');
@@ -76,10 +77,23 @@ reset role;
 select zz_eq('cancel queued one cancellation email', (select count(*)::text from public.reservation_outbox where kind='guest_cancellation'), '1');
 select zz_eq('freed seats: 19:00 bookable again for 4', (select count(*)::text from public.reservation_availability('test', zz_day(), 4) where starts_at = zz_t(19,0)), '1');
 
+\echo ===== throttles (not bypassable by changing email)
+select set_config('request.headers', '{"x-forwarded-for":"203.0.113.7, 10.0.0.1"}', false) \gset
+select zz_eq('per-IP: 10 bookings per hour from one IP, 11th refused even with fresh emails and phones', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.reserve_table(%L, %L, 1, %L, %L, %L, %L)', 'test', zz_t(11,0,2)+(i*interval '30 min'), 'I', 'ip'||i||'@example.invalid', '613555'||lpad(i::text,4,'0'), 'ip-key-000000000'||lpad(i::text,2,'0'))),'|',1),''),'?'), ',') from generate_series(1,11) i), 'ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,rate_limited');
+select zz_eq('IP recorded from the first x-forwarded-for hop', (select count(*)::text from public.reservations where created_ip = '203.0.113.7'), '10');
+select set_config('request.headers', '{"x-forwarded-for":"198.51.100.9"}', false) \gset
+select zz_eq('per-phone: 6th booking for one mobile in an hour refused across emails', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.reserve_table(%L, %L, 1, %L, %L, %L, %L)', 'test', zz_t(11,0,4)+(i*interval '30 min'), 'P', 'ph'||i||'@example.invalid', '613 555 9999', 'ph-key-000000000'||lpad(i::text,2,'0'))),'|',1),''),'?'), ',') from generate_series(1,6) i), 'ok,ok,ok,ok,ok,rate_limited');
+select zz_eq('cancel guessing: 5 tries per code in 15 min, then rate_limited', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.cancel_reservation(%L, %L)', 'ZZZZZZZZ', 'x'||i||'@example.invalid')),'|',1),''),'?'), ',') from generate_series(1,6) i), 'ok,ok,ok,ok,ok,rate_limited');
+select set_config('request.headers', '{"x-forwarded-for":"192.0.2.44"}', false) \gset
+select zz_eq('cancel guessing: 10 tries per IP in 15 min across codes, then rate_limited', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.cancel_reservation(%L, %L)', 'Y'||lpad(i::text,7,'Q'), 'z@example.invalid')),'|',1),''),'?'), ',') from generate_series(1,11) i), 'ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,rate_limited');
+select set_config('request.headers', '', false) \gset
+select zz_eq('anon cannot read the attempts log', (select has_table_privilege('anon','public.reservation_attempts','select')::text), 'false');
+select zz_eq('capacity helper is VOLATILE (fresh snapshot after the lock)', (select provolatile::text from pg_proc where proname='azal_reservation_fits'), 'v');
+
 \echo ===== host stand (staff)
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000f1',false) \gset
 set role authenticated;
-select zz_eq('staff reads branch bookings (name, phone, party)', (select count(*)::text from public.reservations where branch_slug='test' and guest_phone like '+1%'), (select count(*)::text from public.reservations));
+select zz_eq('staff reads all branch bookings (name, phone, party)', (select (count(*) > 20)::text from public.reservations where branch_slug='test' and guest_phone like '+1%'), 'true');
 select (select id from public.reservations where guest_email='y@example.invalid') as y \gset
 select zz_eq('no_show refused before start+15', zz_try(format('select public.staff_set_reservation_status(%L,%L)', :'y', 'no_show')), 'bad_transition');
 select zz_eq('confirmed -> seated', (public.staff_set_reservation_status(:'y', 'seated')->>'status'), 'seated');
@@ -96,5 +110,5 @@ reset role;
 \echo ===== grants and hardening
 select zz_eq('anon may execute exactly: availability, reserve, cancel (0005 functions)', (select string_agg(p.proname, ',' order by p.proname) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in ('reservation_availability','reserve_table','cancel_reservation','staff_set_reservation_status','azal_reservation_phone','azal_reservation_fits') and has_function_privilege('anon', p.oid, 'execute')), 'cancel_reservation,reservation_availability,reserve_table');
 select zz_eq('SECURITY DEFINER functions pin search_path to empty', (select count(*)::text from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname in ('reservation_availability','reserve_table','cancel_reservation','staff_set_reservation_status') and p.prosecdef and p.proconfig = array['search_path=""']), '4');
-select zz_eq('no client INSERT/UPDATE/DELETE on the 5 new tables', (select count(*)::text from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','authenticated') and table_name like 'reservation%' and privilege_type <> 'SELECT'), '0');
-select zz_eq('RLS on all 5 new tables', (select count(*)::text from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname like 'reservation%' and c.relkind='r' and c.relrowsecurity), '5');
+select zz_eq('no client INSERT/UPDATE/DELETE on the 6 new tables', (select count(*)::text from information_schema.role_table_grants where table_schema='public' and grantee in ('anon','authenticated') and table_name like 'reservation%' and privilege_type <> 'SELECT'), '0');
+select zz_eq('RLS on all 6 new tables', (select count(*)::text from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relname like 'reservation%' and c.relkind='r' and c.relrowsecurity), '6');

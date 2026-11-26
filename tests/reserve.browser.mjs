@@ -13,8 +13,8 @@ async function open(lang = "en") {
   await page.route("https://fake.supabase.co/**", async (r) => {
     const u = r.request().url(), bd = r.request().postDataJSON(); sent.push({ fn: u.split("/rpc/")[1], bd });
     if (u.endsWith("reservation_availability")) return r.fulfill({ json: bd.p_party > 8 ? [] : [{ starts_at: "2026-11-27T23:00:00Z", seats_left: 20 }, { starts_at: "2026-11-27T23:30:00Z", seats_left: 6 }, { starts_at: "2026-11-28T00:00:00Z", seats_left: 50 }] });
-    if (u.endsWith("reserve_table")) { if (full && bd.p_starts_at === "2026-11-27T23:00:00Z") { full = false; return r.fulfill({ status: 400, json: { message: "slot_full" } }); } return r.fulfill({ json: { reservation_id: "r1", code: "K7PQ2XMA", starts_at: bd.p_starts_at, party_size: bd.p_party, status: "confirmed" } }); }
-    if (u.endsWith("cancel_reservation")) return r.fulfill(bd.p_code === "K7PQ2XMA" ? { json: { code: "K7PQ2XMA", status: "cancelled" } } : { status: 400, json: { message: "not_found" } });
+    if (u.endsWith("reserve_table")) { if (full && bd.p_starts_at === "2026-11-27T23:00:00Z") { full = false; return r.fulfill({ status: 400, json: { message: "slot_full" } }); } return r.fulfill({ json: { reservation_id: "r1", code: bd.p_name === "Inject" ? "<img src=x onerror=window.__xss=1>" : "K7PQ2XMA", starts_at: bd.p_starts_at, party_size: bd.p_party, status: "confirmed" } }); }
+    if (u.endsWith("cancel_reservation")) return r.fulfill({ json: bd.p_code === "K7PQ2XMA" ? { code: "K7PQ2XMA", status: "cancelled" } : { status: "not_found" } });
     return r.fulfill({ status: 404, json: {} });
   });
   await page.addInitScript((l) => localStorage.setItem("azal-language", l), lang);
@@ -42,12 +42,24 @@ async function open(lang = "en") {
   await page.waitForSelector("#reserveDone:not([hidden])");
   const txt = await page.textContent("#reserveDone");
   ok(!/\.\./.test(txt), "no doubled period after p.m."); ok(/table for 4/.test(txt) && /K7PQ2XMA/.test(txt) && /sara@example\.com/.test(txt), "confirmation shows party, code and email");
+  ok(!/sent to|envoyée/.test(txt) && /saved/.test(txt), "no false 'email sent' claim; says the booking is saved");
   const rq = sent.filter((s) => s.fn === "reserve_table");
   ok(rq.length === 2 && rq[1].bd.p_phone === "+13435550101" && !/note|item|pay|card/.test(JSON.stringify(rq)), "two requests (full, then booked), phone normalised, no food/payment data");
   await page.screenshot({ path: process.env.SHOT || "/tmp/reserve-done.png", fullPage: false });
   await page.click("#rcTitle"); await page.fill("#rcCode", "k7pq2xma"); await page.fill("#rcEmail", "sara@example.com"); await page.click("#rcSubmit");
   await page.waitForFunction(() => /cancelled/.test(document.getElementById("rcMsg").textContent));
   ok(true, "cancel with code + email");
+  await page.fill("#rcCode", "ZZZZZZZZ"); await page.click("#rcSubmit"); await page.waitForFunction(() => /couldn’t find/.test(document.getElementById("rcMsg").textContent));
+  ok(true, "wrong code: 'not found' message (server returns status, not an error)");
+  // XSS regression: markup in the email never reaches the server; markup coming back from the server renders as text.
+  await page.click("#rsAnother").catch(() => {});
+  await page.waitForSelector("#reserveForm:not([hidden]) .rs-slot");
+  const before = sent.filter((s) => s.fn === "reserve_table").length;
+  await page.click(".rs-slot >> nth=2"); await page.fill("#rsName", "Inject"); await page.fill("#rsPhone", "3435550101");
+  await page.fill("#rsEmail", "<svg/onload=window.__xss=1>@example.com"); await page.click("#rsSubmit");
+  ok(sent.filter((s) => s.fn === "reserve_table").length === before && /check your email/.test(await page.textContent("#rsError")), "markup email refused in the browser, nothing sent");
+  await page.fill("#rsEmail", "inject@example.com"); await page.click("#rsSubmit"); await page.waitForSelector("#reserveDone:not([hidden])");
+  ok(await page.evaluate(() => !window.__xss && document.querySelectorAll("#reserveDone img, #reserveDone svg").length === 0 && /<img src=x/.test(document.getElementById("reserveDone").textContent)), "server value with markup is shown literally, no element created, no script ran");
   await page.selectOption("#rsParty", "9").catch(() => {});
   await page.close();
 }

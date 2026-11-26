@@ -42,7 +42,7 @@ create table if not exists public.reservations (
   id uuid primary key default gen_random_uuid(),
   branch_slug text not null references public.branches(slug) on delete restrict,
   guest_name text not null check (char_length(guest_name) between 1 and 80),
-  guest_email text not null check (char_length(guest_email) <= 254 and guest_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  guest_email text not null check (char_length(guest_email) <= 254 and guest_email ~ '^[^@\s<>"''`\\(),;:]+@[^@\s<>"''`\\(),;:]+\.[^@\s<>"''`\\(),;:]+$'),
   guest_phone text not null check (guest_phone ~ '^\+[1-9][0-9]{9,14}$'),
   party_size integer not null check (party_size between 1 and 50),
   starts_at timestamptz not null,
@@ -51,11 +51,14 @@ create table if not exists public.reservations (
   code text not null unique check (code ~ '^[A-HJ-KM-NP-Z2-9]{8}$'),
   idempotency_key text not null check (char_length(idempotency_key) between 16 and 128),
   request_hash text not null,
+  created_ip text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint reservation_window check (ends_at > starts_at),
   constraint reservation_idem unique (guest_email, idempotency_key)
 );
+alter table public.reservations add column if not exists created_ip text;
+create index if not exists reservations_ip_recent_idx on public.reservations (created_ip, created_at) where created_ip is not null;
 create index if not exists reservations_branch_time_idx on public.reservations (branch_slug, starts_at) where status in ('confirmed','seated');
 
 create table if not exists public.reservation_events (
@@ -78,6 +81,18 @@ create table if not exists public.reservation_outbox (
   last_error text
 );
 create index if not exists reservation_outbox_unsent_idx on public.reservation_outbox (created_at) where sent_at is null;
+
+-- Throttle log for anonymous endpoints (cancel attempts persist even when the code is wrong).
+create table if not exists public.reservation_attempts (
+  id bigint generated always as identity primary key,
+  kind text not null check (kind in ('cancel')),
+  ip text,
+  subject text,
+  at timestamptz not null default now()
+);
+create index if not exists reservation_attempts_recent_idx on public.reservation_attempts (kind, at);
+alter table public.reservation_attempts enable row level security;
+revoke all on public.reservation_attempts from public, anon, authenticated;
 
 alter table public.reservation_settings enable row level security;
 alter table public.reservation_closures enable row level security;
@@ -108,9 +123,22 @@ returns text language sql immutable set search_path = '' as $$
   from (select pg_catalog.regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g') as d) x;
 $$;
 
+-- Client IP as seen by the Supabase API gateway (PostgREST request.headers). NULL when absent (local harness).
+create or replace function public.azal_request_ip()
+returns text language plpgsql stable set search_path = '' as $$
+declare v text;
+begin
+  v := nullif(pg_catalog.current_setting('request.headers', true), '');
+  if v is null then return null; end if;
+  return nullif(pg_catalog.btrim(pg_catalog.split_part(coalesce(v::json->>'cf-connecting-ip', v::json->>'x-forwarded-for', v::json->>'x-real-ip', ''), ',', 1)), '');
+exception when others then return null;
+end;
+$$;
+
 -- Seats taken at every slot tick of [p_start, p_start + dwell) must leave room for p_party.
+-- VOLATILE on purpose: it runs after the branch-day lock and must see bookings committed while we waited.
 create or replace function public.azal_reservation_fits(p_branch text, p_start timestamptz, p_party integer)
-returns boolean language plpgsql stable set search_path = '' as $$
+returns boolean language plpgsql volatile set search_path = '' as $$
 declare v_s public.reservation_settings; v_t timestamptz; v_taken integer;
 begin
   select * into v_s from public.reservation_settings where branch_slug = p_branch;
@@ -163,12 +191,12 @@ returns jsonb language plpgsql security definer set search_path = '' as $$
 declare v_s public.reservation_settings; v_b public.branches; v_h public.branch_hours; v_day date; v_local timestamp;
   v_name text := pg_catalog.btrim(coalesce(p_name, '')); v_email text := pg_catalog.lower(pg_catalog.btrim(coalesce(p_email, '')));
   v_phone text := public.azal_reservation_phone(p_phone); v_hash text; v_r public.reservations; v_code text; v_i integer; v_bytes bytea;
-  v_alpha constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  v_alpha constant text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; v_ip text := public.azal_request_ip();
 begin
   if p_branch is null or p_starts_at is null or p_party is null or p_idempotency_key is null
      or char_length(p_idempotency_key) not between 16 and 128 then raise exception 'invalid'; end if;
   if char_length(v_name) not between 1 and 80 then raise exception 'invalid_name'; end if;
-  if char_length(v_email) > 254 or v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'invalid_email'; end if;
+  if char_length(v_email) > 254 or v_email !~ '^[^@\s<>"''`\\(),;:]+@[^@\s<>"''`\\(),;:]+\.[^@\s<>"''`\\(),;:]+$' then raise exception 'invalid_email'; end if;
   if v_phone is null then raise exception 'invalid_phone'; end if;
   select * into v_s from public.reservation_settings where branch_slug = p_branch;
   select * into v_b from public.branches where slug = p_branch;
@@ -185,7 +213,10 @@ begin
     return pg_catalog.jsonb_build_object('reservation_id', v_r.id, 'code', v_r.code, 'starts_at', v_r.starts_at, 'party_size', v_r.party_size, 'status', v_r.status, 'replayed', true);
   end if;
 
+  -- Throttles: per email, per mobile number, and per client IP (an attacker can vary the email but not cheaply all three).
   if (select count(*) from public.reservations where guest_email = v_email and created_at > now() - interval '10 minutes') >= 5
+     or (select count(*) from public.reservations where guest_phone = v_phone and created_at > now() - interval '1 hour') >= 5
+     or (v_ip is not null and (select count(*) from public.reservations where created_ip = v_ip and created_at > now() - interval '1 hour') >= 10)
   then raise exception 'rate_limited'; end if;
 
   -- Time rules, judged in the branch time zone.
@@ -211,8 +242,8 @@ begin
     exit when not exists (select 1 from public.reservations where code = v_code);
   end loop;
 
-  insert into public.reservations (branch_slug, guest_name, guest_email, guest_phone, party_size, starts_at, ends_at, code, idempotency_key, request_hash)
-  values (p_branch, v_name, v_email, v_phone, p_party, p_starts_at, p_starts_at + pg_catalog.make_interval(mins => v_s.dwell_minutes), v_code, p_idempotency_key, v_hash)
+  insert into public.reservations (branch_slug, guest_name, guest_email, guest_phone, party_size, starts_at, ends_at, code, idempotency_key, request_hash, created_ip)
+  values (p_branch, v_name, v_email, v_phone, p_party, p_starts_at, p_starts_at + pg_catalog.make_interval(mins => v_s.dwell_minutes), v_code, p_idempotency_key, v_hash, v_ip)
   returning * into v_r;
   insert into public.reservation_events (reservation_id, from_status, to_status, actor) values (v_r.id, null, 'confirmed', auth.uid());
   insert into public.reservation_outbox (reservation_id, kind, to_email) values (v_r.id, 'guest_confirmation', v_email);
@@ -226,14 +257,19 @@ $$;
 -- Guests cancel with code + email (no account). Only before the start time.
 create or replace function public.cancel_reservation(p_code text, p_email text)
 returns jsonb language plpgsql security definer set search_path = '' as $$
-declare v_r public.reservations;
+declare v_r public.reservations; v_ip text := public.azal_request_ip();
+  v_code text := pg_catalog.upper(pg_catalog.btrim(coalesce(p_code, ''))); v_email text := pg_catalog.lower(pg_catalog.btrim(coalesce(p_email, '')));
 begin
-  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-cancel|' || pg_catalog.lower(coalesce(p_email, ''))));
-  select * into v_r from public.reservations where code = pg_catalog.upper(pg_catalog.btrim(coalesce(p_code, '')))
-    and guest_email = pg_catalog.lower(pg_catalog.btrim(coalesce(p_email, ''))) for update;
-  if v_r.id is null then raise exception 'not_found'; end if;  -- same error for wrong code or wrong email
+  -- Throttle guessing: per client IP and per code. A miss is RETURNED (not raised) so the attempt row is kept.
+  if (v_ip is not null and (select count(*) from public.reservation_attempts where kind = 'cancel' and ip = v_ip and at > now() - interval '15 minutes') >= 10)
+     or (select count(*) from public.reservation_attempts where kind = 'cancel' and subject = v_code and at > now() - interval '15 minutes') >= 5
+  then raise exception 'rate_limited'; end if;
+  insert into public.reservation_attempts (kind, ip, subject) values ('cancel', v_ip, pg_catalog.left(v_code, 16));
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtext('resv-cancel|' || v_code));
+  select * into v_r from public.reservations where code = v_code and guest_email = v_email for update;
+  if v_r.id is null then return pg_catalog.jsonb_build_object('status', 'not_found'); end if;  -- same answer for wrong code or wrong email
   if v_r.status = 'cancelled' then return pg_catalog.jsonb_build_object('code', v_r.code, 'status', 'cancelled', 'replayed', true); end if;
-  if v_r.status <> 'confirmed' or v_r.starts_at <= now() then raise exception 'too_late'; end if;
+  if v_r.status <> 'confirmed' or v_r.starts_at <= now() then return pg_catalog.jsonb_build_object('code', v_r.code, 'status', 'too_late'); end if;
   update public.reservations set status = 'cancelled', updated_at = now() where id = v_r.id;
   insert into public.reservation_events (reservation_id, from_status, to_status, actor) values (v_r.id, 'confirmed', 'cancelled', auth.uid());
   insert into public.reservation_outbox (reservation_id, kind, to_email) values (v_r.id, 'guest_cancellation', v_r.guest_email);
@@ -265,6 +301,7 @@ $$;
 
 -- ---------- grants ----------
 revoke all on function public.azal_reservation_phone(text) from public, anon, authenticated;
+revoke all on function public.azal_request_ip() from public, anon, authenticated;
 revoke all on function public.azal_reservation_fits(text, timestamptz, integer) from public, anon, authenticated;
 revoke all on function public.reservation_availability(text, date, integer) from public;
 revoke all on function public.reserve_table(text, timestamptz, integer, text, text, text, text) from public;

@@ -29,7 +29,7 @@ test("invalid input sends nothing", async () => {
   const calls = [];
   const r = R.createReservations({ config: CFG, fetch: async (...a) => { calls.push(a); return { ok: true, json: async () => ({}) }; } });
   const good = { party: 2, startsAt: "2026-11-28T00:00:00Z", name: "A", email: "a@b.co", phone: "3435550101" };
-  for (const [k, v, code] of [["phone", "", "invalid_phone"], ["email", "x", "invalid_email"], ["name", " ", "invalid_name"], ["party", 11, "invalid_party"], ["startsAt", null, "invalid_time"]])
+  for (const [k, v, code] of [["phone", "", "invalid_phone"], ["email", "x", "invalid_email"], ["email", "<svg/onload=alert(1)>@example.com", "invalid_email"], ["email", "a\"b@example.com", "invalid_email"], ["name", " ", "invalid_name"], ["party", 11, "invalid_party"], ["startsAt", null, "invalid_time"]])
     await assert.rejects(r.reserve({ ...good, [k]: v }), { code });
   assert.equal(calls.length, 0);
 });
@@ -43,6 +43,17 @@ test("retry after a network error reuses the key; a changed request or a new boo
   await r.reserve(f);
   assert.equal(keys[0], keys[1]);
   assert.notEqual(keys[1], keys[2]);
+});
+
+test("cancel: a 'not_found' or 'too_late' status from the server becomes an error code", async () => {
+  const r = R.createReservations({ config: CFG, fetch: async () => ({ ok: true, json: async () => ({ status: "not_found" }) }) });
+  await assert.rejects(r.cancel("ZZZZZZZZ", "a@b.co"), { code: "not_found" });
+});
+
+test("no innerHTML with dynamic values in the confirmation or time slots", () => {
+  const src = readFileSync(new URL("../reserve.js", import.meta.url), "utf8");
+  assert.doesNotMatch(src, /done\.innerHTML|rsSlots"\)\.innerHTML/);
+  assert.match(src, /done\.replaceChildren\(/);
 });
 
 test("availability and cancel call the 0005 functions; inert without config", async () => {
