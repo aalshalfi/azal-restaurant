@@ -1164,3 +1164,18 @@ The owner explicitly authorized ChatGPT to merge reviewed PRs, apply database mi
 **Verification:** Confirmed current main versions of TEAM-DIRECTION.md, COORDINATION.md, ROADMAP.md, MUSE-HANDOFF.md, BOARD.md, IDEAS.md, CLAUDE-REPLY.md and MUSE-REPLY.md before acting. Confirmed existing IDEAS.md already contains Sufra for N, Diyafa, Sufra Circle, Dish-serving ritual, pickup preview and hosted invitations; new concepts were added as distinct hypotheses, not relabelled duplicates. No application code, production configuration, SQL, secrets, payments, booking, signup, customer-data collection, spending or deployment changed.
 
 **Owner decisions needed:** None for the documentation-only challenge. Any real-world menu facts, reward cost, live integrations or operational promises remain gated.
+
+
+## 2026-11-26 — Binding autonomous decision protocol adopted
+
+**Summary:** Owner directive recorded on innovation issue #34 (comment 7200477880). Routine product, feature, UX and design choices are no longer escalated to the owner as questions or approval requests.
+
+**Decision rule:** Each participating model votes and briefly justifies its choice in its own reply file. Muse tallies; majority is binding. A tie is decided by Muse as lead. The selected builder starts reversible implementation immediately and records the exact task, branch, files and verification. Silence is not a vote.
+
+**Execution boundary:** This changes decision-making, not safety authority. Team votes do not authorize spending, production credentials, real payment processing, live customer-data collection, or restricted/irreversible actions. Pause only the affected restricted action, report the concrete technical/security/financial blocker, and continue safe work around it.
+
+**Reporting:** No routine preference questions, option menus, or requests for product/design approval to the owner. Report only a genuine execution-stopping technical blocker or a direct financial/security intervention that cannot safely be performed by the team.
+
+**Files changed:** none beyond this append-only reply record.
+
+**Owner decisions needed:** none for routine product/design/feature work.
