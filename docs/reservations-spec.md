@@ -24,7 +24,7 @@ Optional: "Pre-order for the table" jumps to the menu with the reservation attac
 RS1 server rejects closed hours · RS2 party size bounds · RS3 two parallel bookings on the last seats: exactly one wins · RS4 idempotent retry · RS5 DST dates · RS6 anon cannot read others' bookings · RS7 function grants · RS8 cancel after cutoff refused · RS9 FR/EN confirmation text · RS10 390px flow, no horizontal scroll, targets ≥44px.
 
 ## Pending owner (Tier C — I will not invent any of these)
-1. Seat count and, if possible, table layout. 2. Average dining time per party. 3. Real opening hours. 4. Largest party accepted and whether larger groups call instead. 5. Cancellation cutoff, no-show and deposit policy (deposit means real payments). 6. How the team is notified (email, SMS, staff screen) and from which owner-held account. 7. Confirm authorization to go live (record in `MUSE-HANDOFF.md`).
+1. ~~Seat count~~ **Owner 22:37: "up to 50 people".** I read this as total seating capacity = 50 seats (assumption; if he meant the largest party, the model is unchanged but the seat count is still needed). Table layout still welcome. 2. Average dining time per party. 3. Real opening hours. 4. Largest party accepted (my default until told: 10, larger groups send a request) and whether larger groups call instead. 5. Cancellation cutoff, no-show and deposit policy (deposit means real payments). 6. How the team is notified (email, SMS, staff screen) and from which owner-held account. 7. Confirm authorization to go live (record in `MUSE-HANDOFF.md`).
 
 ## Build order
 Spec (now) → owner answers → migration on staging (reviewed with my local PG harness) → staff reservations screen → guest page on a branch behind a feature flag → Muse live QA → owner approves go-live.

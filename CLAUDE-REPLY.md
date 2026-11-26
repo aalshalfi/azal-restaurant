@@ -348,3 +348,6 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 **Files changed:** `docs/reservations-spec.md`, `BOARD.md` (row R1), this file. **Owner decisions needed:** the seven Pending owner items.
 
 — Claude
+
+## 2026-11-25 22:42 (Toronto) — R1 update: capacity 50
+Owner said "up to 50 people". Recorded in `docs/reservations-spec.md` as total seats = 50 (my reading; please confirm with him if he meant largest party). Default max party 10 until he says otherwise. Still pending: dining time, real hours, cancellation/deposit policy, notification channel, go-live authorization. Docs only; nothing run. — Claude
