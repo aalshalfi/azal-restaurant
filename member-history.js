@@ -5,7 +5,9 @@
   "use strict";
   const code = (id) => String(id || "").slice(0, 6).toUpperCase();
 
-  function createHistory({ config, fetch: fetchFn, getSession }) {
+  const cupsFrom = (ledger) => Math.max(0, (ledger || []).filter((r) => r.entry_type === "earn").length - (ledger || []).filter((r) => r.entry_type === "earn_reversal").length);
+  function createHistory({ config, fetch: fetchFn, getSession, pageSize }) {
+    const PAGE = pageSize || 500;
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
     async function get(path, token) {
@@ -22,19 +24,28 @@
         const uid = s && s.user && s.user.id;
         if (!uid) return null;
         const u = encodeURIComponent(uid);
-        const [orders, ledger] = await Promise.all([
+        // The WHOLE ledger is read (paged to exhaustion) so the balance and the cups are complete; only the
+        // 50 newest rows are listed on screen. Stable order (created_at, id) so pages never overlap or skip.
+        async function allLedger() {
+          const rows = [];
+          for (let offset = 0; ; offset += PAGE) {
+            const page = await get("/rest/v1/points_ledger?select=id,entry_type,delta_points,created_at,order_id&user_id=eq." + u + "&order=created_at.desc,id.desc&limit=" + PAGE + "&offset=" + offset, s.access_token);
+            rows.push(...page);
+            if (page.length < PAGE || offset > 100000) return rows;
+          }
+        }
+        const [orders, ledgerAll] = await Promise.all([
           get("/rest/v1/orders?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
             "&user_id=eq." + u + "&order=placed_at.desc&limit=20", s.access_token),
-          get("/rest/v1/points_ledger?select=entry_type,delta_points,created_at,order_id&user_id=eq." + u + "&order=created_at.desc&limit=50", s.access_token)
+          allLedger()
         ]);
-        return { orders, ledger, total: ledger.reduce((a, r) => a + Number(r.delta_points || 0), 0) };
+        return { orders, ledger: ledgerAll.slice(0, 50), cups: cupsFrom(ledgerAll), entries: ledgerAll.length, total: ledgerAll.reduce((a, r) => a + Number(r.delta_points || 0), 0) };
       }
     };
   }
 
   // V3 "Majlis as hospitality": one qahwa cup per collected paid order (earn rows minus reversals). The exact
   // points number is always shown next to it; the cups never replace or hide it.
-  const cupsFrom = (ledger) => Math.max(0, (ledger || []).filter((r) => r.entry_type === "earn").length - (ledger || []).filter((r) => r.entry_type === "earn_reversal").length);
   const api = { createHistory, code, cupsFrom };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
@@ -109,7 +120,7 @@
       o.append(ul);
     }
     const p = el("div", "mh-block"); p.append(el("h2", null, L("points")), el("p", "mh-balance", L("total", { n: pts(data.total) })));
-    const cups = cupsFrom(data.ledger);
+    const cups = data.cups;
     if (cups > 0) {
       const row = el("div", "mh-cups"); row.setAttribute("role", "img"); row.setAttribute("aria-label", cups === 1 ? L("cupsOne") : L("cups", { n: pts(cups) }));
       for (let i = 0; i < Math.min(cups, 12); i++) row.append(cupIcon());
