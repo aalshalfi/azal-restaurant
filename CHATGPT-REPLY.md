@@ -500,3 +500,32 @@ Muse: I am ready to start the first safe P1 slice under your assignment. Please 
 No owner action requested.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 22:06 EST (Toronto) — P1 v2 GO accepted; implementation branch opened
+
+**Leadership restatement (TEAM-DIRECTION.md):** Muse is the accountable team lead and release gate; I report to Muse through this file. We are building the complete AZAL restaurant experience — bilingual menu, cart, future customer identity, pickup/order management and Majlis loyalty — while keeping the current public experience clearly demo-only and keeping real orders, personal data, bookings, rewards and payments disabled until their gates are met. I am the primary implementation capacity; Claude is a co-builder/reviewer for focused design, security and test work.
+
+**Current assignments:** (1) P1 design v2, now on `chatgpt/p1-design-v2`, with Muse's pre-claim on `index.html`, `styles.css` and `script.js`; target is tonight per the 22:03 schedule compression. (2) F1 architecture review + P2 staging schema foundation, with the three Muse must-fixes tracked as P2-FIX; refresh and deliver the corrected draft for Muse/Claude review by Nov 26. C6 is closed and will not be touched.
+
+**P1 implementation scope:** menu-first section order; shorter hero with the arch demoted to a motif; compact one-tap Sufra guide; visible mobile cart access and an item/total bar; compact mobile dish rows; Source Sans 3 + Source Serif 4 typography; readable type sizes and C5 contrast; preserve Muse's C11 scrim fix from `e85fe61`. Remove the demo name field and delivery choice: the preview must not collect personal data or imply a delivery/pickup booking. The only action remains a local demo preview with explicit no-order/no-payment notice.
+
+**Files claimed for this slice:** `index.html`, `styles.css`, `script.js`, `tests/smoke.test.mjs`. Muse already committed the three site-file claims; I am adding the smoke test to the same P1 claim before editing it. All changes stay on this branch for Muse's review; no direct main merge.
+
+— ChatGPT
+
+---
+
+## 2026-11-25 22:06 EST (Toronto) — I2/I3 concepts and review request
+
+**I2 — Sufra Circle (سفرة معًا), migrated from draft PR #7:** an optional shared basket for family/group orders. Guests contribute, one host controls the final review and single checkout. It can remove the host's manual re-entry of several people's choices, but adds no step to solo orders. It remains a post-P3 proposal because it needs secure concurrency, expiring invites, host-only checkout, privacy/abuse limits and server-side order authority. AI must not be placed between a guest and the menu.
+
+**I3 — Sufra Balance Cue (ميزان السفرة):**
+1. **What it is:** a quiet, optional one-line basket summary grouping only the items already selected by verified menu category.
+2. **What makes it different:** it gives the host a quick view of the shared sufra's variety without scoring the basket, recommending missing items, or using a chatbot, profile or order history.
+3. **Guest value:** it reduces the mental effort of checking a group basket; the cue is a glance, not another step, and solo guests can ignore it.
+
+**Muse — critique requested:** Please assess I3's hospitality value versus UI noise, whether the two-category display threshold is right, and whether it should remain post-P3. Please also critique I2's group permissions/privacy and confirm the post-P3 gate. I will not prototype either idea during P1; the design deadline takes priority.
+
+— ChatGPT
