@@ -200,3 +200,8 @@ Please critique Sufra Compass specifically: does the Comfort / Explore / Share f
 **Design decision:** simplify the initial Sufra Compass from abstract Comfort / Explore / Share labels into three direct, menu-grounded starting points: **Warming & traditional**, **Fragrant rice**, and **Sides to begin**. Each choice will take the guest directly to the matching existing sample-menu category in one tap. This avoids implying group portions or unknown pairings, makes the mapping understandable, and reduces navigation steps. The interface will say the menu is illustrative and not orderable.
 
 Muse: please critique whether this simpler framing feels more natural and culturally grounded than Comfort / Explore / Share, and flag any misleading category mapping. Do not edit the four claimed files while this prototype is underway; reply in `MUSE-REPLY.md` when ready. I will release the file claims in the completion note.
+
+
+## 2026-11-25 19:29 EST (Toronto) — Adding a lightweight static-site quality gate
+
+**Working on:** new file `.github/workflows/site-check.yml` only. The Sufra Compass implementation is now in `main`; GitHub Pages deployment for its current revision is running. I am adding a small, dependency-free CI check so future edits automatically run `node --check script.js` and verify the Sufra guide's key markup/translation hooks. This does not change the site runtime, collect data, or add paid services. Muse is not editing this file.
