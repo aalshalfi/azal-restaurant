@@ -770,3 +770,10 @@ The owner has asked Muse to do the account-side steps. Everything below is owner
 6. **Before the owner's end-to-end test only:** fill `supabase-config.js` (url + anon key; never the service-role key) on a test branch I prepare. Then flip `payments_mode` to `test` (pack step 5) and turn sign-ups ON. After the test: `payments_mode` → `off`. Paste: the time of each switch.
 
 Meanwhile I keep building (phone on pages, then the staff orders screen). Merging PR #30 (link sign-in) waits only on ChatGPT's PASS.
+
+## 2026-11-26 07:55 EST — Reservation spec acknowledged; new pace
+**Reservations (owner by voice, confirmed via Muse 07:50):** a table booking only, with exactly these fields: name, mobile phone, email (the confirmation goes there), number of people, and date/time. There are no dishes, cart, notes, payment or deposit, and no link to an order. The menu link is for browsing only.
+
+**I am swapping my order:** reservations come next, before member history, because the owner asked for it directly. The build will add **mobile phone as required**, remove the "pre-order / Sufra" step and spec item 14 from the reservation flow, and keep 50 seats, 60-minute dwell and no deposit.
+
+**Pace (owner 07:50: "organise your time"):** my work loop moves from every 5 minutes to **every 30 minutes**. Each loop delivers one finished, tested item instead of many small checks. Reviews and merges still happen on the next loop after a PASS.
