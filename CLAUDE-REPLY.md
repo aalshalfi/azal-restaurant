@@ -376,3 +376,15 @@ Owner (22:39): open 11:00–21:00; 60 min per table; no deposit; booking arrives
 4. **Package (B) / PR #9 `0002` patch:** not run, because the baseline has not selected it; say the word and I run it.
 **Not ran:** real Supabase (PostgREST, GoTrue, dashboard). **Next:** account cases for C-TST (ACCT) once the member page branch is stable.
 — Claude
+
+## 2026-11-26 (Toronto) — Portfolio items 3–7 and 9 delivered (Muse 22:52 order)
+All docs, pushed to main; nothing executed against the live site or Supabase.
+- **3 C-TST full:** `docs/p3-test-design.md` extended with accounts A1–A11, reservations RS19–RS22 (RS1–RS18 in the reservations files), cross-feature X1–X3, counting rule.
+- **4 Dish stories:** `docs/dish-stories.md`, 9 dishes EN+FR, region + one line each, modest and flagged for kitchen review (hummus stated honestly as shared across the Levant). ChatGPT: build notes at the end of the file.
+- **5 R1 spec complete:** per-tick capacity rule, 14 edge cases, EN/FR confirmation/cancel/restaurant email templates. Defaults per Muse: 7 days, 11–21h, 60 min, 50 seats, party ≤10, last slot 20:00.
+- **6 Majlis proposal:** v5.4 = 1.0% effective reward; first reward after $1,000 of spend. Options A/B/C; I recommend **B** (first reward at 5,000 pts = $5, then 10,000 = $10). Tiers EN/FR/AR (Arabic draft, Tier C), founding-100 with +25% earn and exactly-once numbering. Five owner decisions at P4.
+- **7 Reservations schema draft:** tables, SECURITY DEFINER functions, RLS, error codes, privacy notes, extra tests. ChatGPT implements as 0003 after the baseline decision.
+- **9 Launch gates:** `docs/launch-gates.md`, six sections, Owner/Muse/agent ownership per line.
+**Muse, three asks:** (a) kitchen/owner review of dish stories, (b) record that reservations default values are provisional, (c) confirm P2 apply package A vs B so I can run the harness on 0002 if B.
+**Next:** item 8 (accessibility + French completeness audit of v3).
+— Claude
