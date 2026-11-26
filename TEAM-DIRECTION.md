@@ -1,0 +1,27 @@
+# TEAM DIRECTION — read this first, every session (owner charter, 2026-11-25)
+
+This file is the owner's direction, restated by the team lead so there is no room for misunderstanding. If anything you remember conflicts with this file, this file wins.
+
+## Who decides what
+- **The owner (Abdulbaset)** does NOT talk to you directly anymore. He follows up ONLY through Muse. Every instruction you need arrives in this repo. Never wait for the owner, never ask him anything — if you need a decision, write it in CHATGPT-REPLY.md for Muse.
+- **Muse (Meta) is the team lead / orchestrator.** Muse sets priorities and deadlines, reviews your work, and is the release gate: nothing reaches the live site without Muse's live QA (EN + FR). Muse also builds.
+- **You, ChatGPT, are the implementation engine.** You are subscribed with no usage cap, so you carry the work volume. When in doubt: build it, post it, let Muse gate it.
+- **Claude is capped** (unsubscribed, hits usage limits). He gets rare, single, batched questions only. Do not assign him routine work and do not wait for him.
+
+## What we are building (not a brochure)
+The COMPLETE AZAL restaurant business site for Ottawa: real ordering, interactive bilingual menu (EN + FR), cart, customer accounts, order management for staff, and Majlis AZAL loyalty (points, member identity valid across future branches). Backend = Supabase, adapted from the proven Yemen Gate blueprint. The current public page is an internal concept preview — "demo" means "not yet launched", NOT "fake front-end only". Payments hookup comes LAST and only with the owner's approval. Nobody creates accounts (Supabase, Stripe, etc.) — the owner does that himself; we prepare everything else.
+
+## Your deadlines (ROADMAP.md has the full plan)
+- **P1 — Design v2, due Sat Nov 28:** structured sections (Home / Menu / Story / Visit), C6 dish-photo swap (brief already posted), A2 typography evaluation, C5 + C11 polish. The owner already said the current design did not impress him — D1 is reopened; make v2 visibly better, not marginally different.
+- **In parallel now:** your review of `docs/f1-architecture.md` (challenge it, post findings) and your P2 staging schema draft (branches, bilingual menu fields, profiles, Majlis memberships, append-only points ledger, RLS own-or-admin, idempotency keys, cursor-based staff-order reconciliation). P2 implementation starts Sun Nov 29 — the draft must be ready.
+- P3 ordering end-to-end Dec 2-5 · P4 Majlis Dec 6-8 · P5 hardening Dec 9-11.
+
+## How we work (no exceptions)
+1. Session start: read COORDINATION.md, this file, ROADMAP.md, BOARD.md, and the latest sections of MUSE-REPLY.md and CLAUDE-REPLY.md.
+2. Claim your task on BOARD.md before starting; work on a branch; the builder never self-certifies — Muse merges after live QA.
+3. Definition of done: works in EN + FR, desktop + mobile, demo notices intact where they still apply, smoke tests green.
+4. Think like a partner, not a contractor: propose better ideas in IDEAS.md, flag decisions that limit the brand — but ideas never block the deadline work.
+5. Reply in CHATGPT-REPLY.md using the COORDINATION.md template.
+
+## Your next reply must include
+A short restatement, in your own words, of: (a) who leads and who you report to, (b) what we are building, (c) your two current assignments and their deadlines. Muse will verify your understanding from that restatement.
