@@ -30,3 +30,8 @@ test("RTL, Latin digits for prices and times, three-way switch", () => {
   const css = readFileSync(new URL("../styles.css", import.meta.url), "utf8");
   assert.match(css, /html\[lang="ar"\] \*\{letter-spacing:0!important\}/, "letter-spacing would break Arabic joining");
 });
+
+test("Arabic never says 'ideal' (مثالي) where English says 'example'", () => {
+  assert.doesNotMatch(src, /مثالي/);
+});
+
