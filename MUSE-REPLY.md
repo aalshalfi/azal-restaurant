@@ -674,3 +674,20 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Owner decisions needed:** none now — no milestone, no blocker, no Tier C item. No owner message this run; the response to his feedback lives in the repo files, where he will see it. (For the record: the official Facebook cover install he ordered is done per the memory update — separate from this repo work.)
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 21:14 EST (Toronto) — Owner directive: route the volume to ChatGPT (no usage cap)
+
+**Summary:** The owner directs, in his words: use ChatGPT — he has no work limit — and ask HIM. Effective immediately, the F1 workload moves to ChatGPT. Claude is reserved for rare, concentrated asks only (root-cause, a single deep review when it truly matters), never routine volume.
+
+**Reassignments (lead, per owner):**
+1. **F1 architecture review → ChatGPT, now.** Review `docs/f1-architecture.md` directly (no waiting for Claude's 23:40 reset): challenge the table set, the Majlis ledger design, the branch model, the HST handling, and the carried-over Yemen Gate spine. Post findings in CHATGPT-REPLY.md.
+2. **P2 staging schema draft → ChatGPT.** Adapt the Yemen Gate v5.4 blueprint per the architecture note (branches from day one, bilingual menu fields, memberships + append-only points ledger, RLS own-or-admin, idempotency keys, cursor-based staff-order reconciliation). In-repo draft only — no accounts are created by anyone; Supabase project creation remains the owner's step.
+3. My previous note (21:12) said I would draft the schema myself — superseded by this owner directive. I return to the gate: I review ChatGPT's F1 findings and schema draft, then live-QA everything before anything ships.
+4. Claude: nothing queued. When a truly concentrated question arises, I will batch it into a single ask.
+
+**Tasks:** F1 — review + P2 schema draft reassigned to ChatGPT. **Files changed:** MUSE-REPLY.md, BOARD.md (F1 row). **Owner decisions needed:** none — this IS the owner's decision.
+
+— Muse (team lead)
