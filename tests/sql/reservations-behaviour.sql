@@ -10,6 +10,12 @@ grant execute on function public.zz_try(text), public.zz_eq(text,text,text) to a
 insert into public.branches(slug,name_en,name_fr,city,timezone,tax_rate_bps) values ('test','Test','Test','Toronto','America/Toronto',1300);
 insert into public.branch_hours(branch_slug,weekday,opens_local,closes_local,closed) select 'test', d, '11:00','21:00', false from generate_series(0,6) d;
 insert into public.reservation_settings(branch_slug, notify_email) values ('test','host@example.invalid');
+select zz_eq('booking ships CLOSED: booking_enabled defaults to false (ottawa)', (select booking_enabled::text from public.reservation_settings where branch_slug='ottawa'), 'false');
+set role anon;
+select zz_eq('closed branch: availability is empty', (select count(*)::text from public.reservation_availability('test', (now() at time zone 'America/Toronto')::date + 3, 2)), '0');
+select zz_eq('closed branch: a direct anon reserve_table call is refused', zz_try($$select public.reserve_table('test', (((now() at time zone 'America/Toronto')::date + 3) + time '12:00') at time zone 'America/Toronto', 2, 'A', 'a@example.invalid', '3435550101', 'closed-key-0000001')$$), 'booking_closed');
+reset role;
+update public.reservation_settings set booking_enabled = true where branch_slug = 'test';
 insert into auth.users(id,email) values ('00000000-0000-0000-0000-0000000000f1','f1@example.invalid'),('00000000-0000-0000-0000-0000000000c1','c1@example.invalid');
 insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000f1','staff');
 insert into public.staff_branch_access(user_id,branch_slug) values ('00000000-0000-0000-0000-0000000000f1','test');
@@ -80,7 +86,10 @@ select zz_eq('freed seats: 19:00 bookable again for 4', (select count(*)::text f
 \echo ===== throttles (not bypassable by changing email)
 select set_config('request.headers', '{"x-forwarded-for":"203.0.113.7, 10.0.0.1"}', false) \gset
 select zz_eq('per-IP: 10 bookings per hour from one IP, 11th refused even with fresh emails and phones', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.reserve_table(%L, %L, 1, %L, %L, %L, %L)', 'test', zz_t(11,0,2)+(i*interval '30 min'), 'I', 'ip'||i||'@example.invalid', '613555'||lpad(i::text,4,'0'), 'ip-key-000000000'||lpad(i::text,2,'0'))),'|',1),''),'?'), ',') from generate_series(1,11) i), 'ok,ok,ok,ok,ok,ok,ok,ok,ok,ok,rate_limited');
-select zz_eq('IP recorded from the first x-forwarded-for hop', (select count(*)::text from public.reservations where created_ip = '203.0.113.7'), '10');
+select zz_eq('IP taken from the LAST x-forwarded-for hop (gateway), never the client-set first hop', (select count(*)::text from public.reservations where created_ip = '10.0.0.1')||'/'||(select count(*)::text from public.reservations where created_ip = '203.0.113.7'), '10/0');
+select set_config('request.headers', '{"x-forwarded-for":"6.6.6.6, 10.0.0.1","cf-connecting-ip":"192.0.2.200"}', false) \gset
+select zz_eq('cf-connecting-ip wins when present', public.azal_request_ip(), '192.0.2.200');
+select set_config('request.headers', '{"x-forwarded-for":"203.0.113.7, 10.0.0.1"}', false) \gset
 select set_config('request.headers', '{"x-forwarded-for":"198.51.100.9"}', false) \gset
 select zz_eq('per-phone: 6th booking for one mobile in an hour refused across emails', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.reserve_table(%L, %L, 1, %L, %L, %L, %L)', 'test', zz_t(11,0,4)+(i*interval '30 min'), 'P', 'ph'||i||'@example.invalid', '613 555 9999', 'ph-key-000000000'||lpad(i::text,2,'0'))),'|',1),''),'?'), ',') from generate_series(1,6) i), 'ok,ok,ok,ok,ok,rate_limited');
 select zz_eq('cancel guessing: 5 tries per code in 15 min, then rate_limited', (select string_agg(coalesce(nullif(split_part(public.zz_try(format('select public.cancel_reservation(%L, %L)', 'ZZZZZZZZ', 'x'||i||'@example.invalid')),'|',1),''),'?'), ',') from generate_series(1,6) i), 'ok,ok,ok,ok,ok,rate_limited');
@@ -89,6 +98,11 @@ select zz_eq('cancel guessing: 10 tries per IP in 15 min across codes, then rate
 select set_config('request.headers', '', false) \gset
 select zz_eq('anon cannot read the attempts log', (select has_table_privilege('anon','public.reservation_attempts','select')::text), 'false');
 select zz_eq('capacity helper is VOLATILE (fresh snapshot after the lock)', (select provolatile::text from pg_proc where proname='azal_reservation_fits'), 'v');
+
+\echo ===== gate off again: cancel still works for existing bookings
+update public.reservation_settings set booking_enabled = false where branch_slug = 'test';
+select zz_eq('closing bookings later does not block cancelling one', public.cancel_reservation((select code from public.reservations where guest_email='g1@example.invalid'), 'g1@example.invalid')->>'status', 'cancelled');
+update public.reservation_settings set booking_enabled = true where branch_slug = 'test';
 
 \echo ===== host stand (staff)
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000f1',false) \gset

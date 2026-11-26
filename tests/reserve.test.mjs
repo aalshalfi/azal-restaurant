@@ -75,3 +75,15 @@ test("reserve page loads reserve.js with the release version; copy asks for mobi
   assert.ok(h.indexOf(`auth.js?v=${v}`) < h.indexOf(`reserve.js?v=${v}`));
   assert.match(readFileSync(new URL("../script.js", import.meta.url), "utf8"), /reserveHow2:"Leave your name, mobile number and email\. Nothing else\."/);
 });
+
+test("booking has its own go-live gate: shared Supabase config alone is not enough", () => {
+  const sb = { url: "https://x.supabase.co", anonKey: "anon" };
+  assert.equal(R.bookingLive({ bookingEnabled: true, goLiveAuthorized: true }, sb), true);
+  assert.equal(R.bookingLive({ bookingEnabled: false, goLiveAuthorized: true }, sb), false);
+  assert.equal(R.bookingLive({ bookingEnabled: true, goLiveAuthorized: false }, sb), false);
+  assert.equal(R.bookingLive({ bookingEnabled: "true", goLiveAuthorized: true }, sb), false);
+  assert.equal(R.bookingLive({ bookingEnabled: true, goLiveAuthorized: true }, { url: null, anonKey: null }), false);
+  const cfg = readFileSync(new URL("../reservation-config.js", import.meta.url), "utf8");
+  assert.match(cfg, /bookingEnabled: false,/);
+  assert.match(cfg, /goLiveAuthorized: false/);
+});

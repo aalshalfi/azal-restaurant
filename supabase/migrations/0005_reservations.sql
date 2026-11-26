@@ -28,8 +28,10 @@ create table if not exists public.reservation_settings (
   min_lead_minutes integer not null default 60 check (min_lead_minutes between 0 and 1440),
   window_days integer not null default 30 check (window_days between 1 and 365),
   notify_email text check (notify_email is null or notify_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  booking_enabled boolean not null default false,  -- server-side gate: OFF until the owner's go-live decision
   updated_at timestamptz not null default now()
 );
+alter table public.reservation_settings add column if not exists booking_enabled boolean not null default false;
 
 create table if not exists public.reservation_closures (
   branch_slug text not null references public.branches(slug) on delete restrict,
@@ -110,7 +112,7 @@ create policy reservations_read_staff on public.reservations
 
 insert into public.reservation_settings (branch_slug, notify_email)
 select slug, 'info@azalrestaurant.com' from public.branches where slug = 'ottawa'
-on conflict (branch_slug) do nothing;
+on conflict (branch_slug) do nothing;  -- booking_enabled stays false: turning it on is a separate, recorded owner decision
 
 -- ---------- helpers ----------
 create or replace function public.azal_reservation_phone(p_phone text)
@@ -126,11 +128,17 @@ $$;
 -- Client IP as seen by the Supabase API gateway (PostgREST request.headers). NULL when absent (local harness).
 create or replace function public.azal_request_ip()
 returns text language plpgsql stable set search_path = '' as $$
-declare v text;
+declare v text; h json; xff text[];
 begin
+  -- Trust only what the gateway sets: cf-connecting-ip (overwritten by Cloudflare in front of Supabase), else the
+  -- LAST x-forwarded-for hop (appended by the proxy). The FIRST hop is client-controlled and is never used.
+  -- Which header the live gateway sets is verified on staging before go-live (CLAUDE-REPLY 12:05, Muse step).
   v := nullif(pg_catalog.current_setting('request.headers', true), '');
   if v is null then return null; end if;
-  return nullif(pg_catalog.btrim(pg_catalog.split_part(coalesce(v::json->>'cf-connecting-ip', v::json->>'x-forwarded-for', v::json->>'x-real-ip', ''), ',', 1)), '');
+  h := v::json;
+  if nullif(pg_catalog.btrim(h->>'cf-connecting-ip'), '') is not null then return pg_catalog.btrim(h->>'cf-connecting-ip'); end if;
+  xff := pg_catalog.regexp_split_to_array(coalesce(h->>'x-forwarded-for', ''), '\s*,\s*');
+  return nullif(pg_catalog.btrim(xff[pg_catalog.array_length(xff, 1)]), '');
 exception when others then return null;
 end;
 $$;
@@ -162,7 +170,7 @@ declare v_s public.reservation_settings; v_b public.branches; v_h public.branch_
 begin
   select * into v_s from public.reservation_settings where branch_slug = p_branch;
   select * into v_b from public.branches where slug = p_branch;
-  if v_s.branch_slug is null or v_b.slug is null or p_day is null or p_party is null or p_party < 1 or p_party > v_s.max_party then return; end if;
+  if v_s.branch_slug is null or v_b.slug is null or not v_s.booking_enabled or p_day is null or p_party is null or p_party < 1 or p_party > v_s.max_party then return; end if;
   if exists (select 1 from public.reservation_closures c where c.branch_slug = p_branch and c.closed_on = p_day) then return; end if;
   select * into v_h from public.branch_hours h where h.branch_slug = p_branch and h.weekday = pg_catalog.date_part('dow', p_day)::smallint;
   if v_h.branch_slug is null or v_h.closed or v_h.closes_local <= v_h.opens_local then return; end if;
@@ -201,6 +209,7 @@ begin
   select * into v_s from public.reservation_settings where branch_slug = p_branch;
   select * into v_b from public.branches where slug = p_branch;
   if v_s.branch_slug is null or v_b.slug is null then raise exception 'invalid'; end if;
+  if not v_s.booking_enabled then raise exception 'booking_closed'; end if;  -- even a direct RPC call is refused
   if p_party < 1 then raise exception 'invalid'; end if;
   if p_party > v_s.max_party then raise exception 'party_too_large'; end if;
 

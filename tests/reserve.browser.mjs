@@ -17,6 +17,7 @@ async function open(lang = "en") {
     if (u.endsWith("cancel_reservation")) return r.fulfill({ json: bd.p_code === "K7PQ2XMA" ? { code: "K7PQ2XMA", status: "cancelled" } : { status: "not_found" } });
     return r.fulfill({ status: 404, json: {} });
   });
+  await page.route("**/reservation-config.js*", async (r) => { const body = (await (await r.fetch()).text()).replace("bookingEnabled: false", "bookingEnabled: true").replace("goLiveAuthorized: false", "goLiveAuthorized: true"); r.fulfill({ contentType: "text/javascript", body }); });
   await page.addInitScript((l) => localStorage.setItem("azal-language", l), lang);
   await page.goto(`http://localhost:${port}/reserve.html`);
   await page.waitForSelector(".rs-slot");
@@ -68,6 +69,14 @@ async function open(lang = "en") {
   ok(/Combien de personnes \?/.test(await page.textContent("label[for=rsParty]")) && /Téléphone mobile/.test(await page.textContent("label[for=rsPhone]")), "French labels with non-breaking spaces");
   await page.selectOption("#rsParty", "9"); await page.waitForFunction(() => /Aucune table/.test(document.getElementById("rsSlotMsg").textContent));
   ok(true, "no slots: clear FR message");
+  await page.close();
+}
+{ // shared Supabase config present (sign-in/ordering live) but booking flags false: page stays inert, nothing is called
+  const page = await b.newPage(); const calls = [];
+  await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
+  await page.route("https://fake.supabase.co/**", (r) => { calls.push(r.request().url()); r.fulfill({ json: [] }); });
+  await page.goto(`http://localhost:${port}/reserve.html`); await page.waitForTimeout(400);
+  ok(await page.locator("#reserveForm").count() === 0 && calls.filter((u) => /reserv/.test(u)).length === 0 && await page.locator("[data-i18n='reserveNotice']").isVisible(), "Supabase config on + booking flags false: no form, no booking call, notice stays");
   await page.close();
 }
 { const page = await b.newPage(); await page.goto(`http://localhost:${port}/reserve.html`); await page.waitForTimeout(300);

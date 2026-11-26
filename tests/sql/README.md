@@ -26,7 +26,7 @@ Concurrent same-key retry: run `tests/sql/ordering-concurrency.sql` in two sessi
 
   Both are live on project `azal` (P2 closed). Load them from PR #27 until it merges.
 - **Apply chain:** stub → 0001 → 0002 → 0003 → 0004 → 0005. 0005 is idempotent; it was tested applied twice.
-- **`reservations-behaviour.sql`** on a fresh db: **61 PASS, 0 FAIL**. It covers:
+- **`reservations-behaviour.sql`** on a fresh db: **66 PASS, 0 FAIL**. Booking ships **closed**: `reservation_settings.booking_enabled` defaults to false, availability is empty, and a direct anon `reserve_table` call gets `booking_closed`. Cancelling still works while closed. The client IP is taken from `cf-connecting-ip`, else the **last** `x-forwarded-for` hop; the client-set first hop is never used. It covers:
   - the owner's six fields and validation (phone required, normalised to +1; plain email only — markup refused);
   - party 1–10; the 30-min grid; hours with the stay ending by close; 60-min lead; 30-day window; closures;
   - per-tick capacity; idempotent replay and conflict;

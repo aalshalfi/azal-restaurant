@@ -67,15 +67,18 @@
     };
   }
 
-  const api = { createReservations, normalizePhone, validate, torontoDate };
+  const bookingLive = (cfg, sb) => Boolean(cfg && cfg.bookingEnabled === true && cfg.goLiveAuthorized === true && sb && sb.url && sb.anonKey);
+  const api = { createReservations, normalizePhone, validate, torontoDate, bookingLive };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
   const rs = createReservations({ config: root.AZAL_SUPABASE || {}, fetch: root.fetch && root.fetch.bind(root) });
   root.AZALReservations = rs;
   const how = document.querySelector(".reserve-how");
-  if (!rs.enabled || !how) return;
   const cfg = root.AZAL_RESERVATION_CONFIG || {};
+  // Booking has its OWN go-live gate: the shared Supabase config (also used by sign-in and ordering) is not enough.
+  // The server refuses too (reservation_settings.booking_enabled), so this is defence in depth, not the only lock.
+  if (!bookingLive(cfg, root.AZAL_SUPABASE) || !how) return;
   const maxParty = cfg.maxPartySize || 10;
 
   const S = {
@@ -88,7 +91,7 @@
       cancelled: "Booking {code} is cancelled. The table is free for someone else.",
       e_invalid_party: "Choose how many people.", e_invalid_time: "Choose a time.", e_invalid_name: "Please add your name.", e_invalid_phone: "Please enter a mobile number with area code, like 343 555 0101.",
       e_invalid_email: "Please check your email address.", e_slot_full: "That time just filled up. Choose another time.", e_closed: "We’re closed at that time. Choose another time.",
-      e_too_soon: "That time is too soon to book online. Choose a later time or call us.", e_too_far: "We take bookings up to 30 days ahead.", e_party_too_large: "For more than {n} people, please call us.",
+      e_too_soon: "That time is too soon to book online. Choose a later time or call us.", e_too_far: "We take bookings up to 30 days ahead.", e_booking_closed: "Online booking is not open yet. Please call us.", e_party_too_large: "For more than {n} people, please call us.",
       e_rate_limited: "Too many bookings from this email just now. Please wait a few minutes.", e_not_found: "We couldn’t find a booking with that code and email.", e_too_late: "That booking can no longer be cancelled online. Please call us.",
       e_network: "Connection problem. Check your connection and try again: you won’t be booked twice.", e_error: "Something went wrong. Please try again." },
     fr: { kicker: "RÉSERVATIONS", intro: "Venez vous asseoir avec nous, à la manière du majlis, autour de plats partagés.", party: "Combien de personnes ?", date: "Date", time: "Heure",
@@ -100,7 +103,7 @@
       cancelled: "La réservation {code} est annulée. La table est libre pour quelqu’un d’autre.",
       e_invalid_party: "Choisissez le nombre de personnes.", e_invalid_time: "Choisissez une heure.", e_invalid_name: "Veuillez indiquer votre nom.", e_invalid_phone: "Entrez un numéro mobile avec l’indicatif, par exemple 343 555 0101.",
       e_invalid_email: "Veuillez vérifier votre courriel.", e_slot_full: "Cette heure vient d’être complète. Choisissez une autre heure.", e_closed: "Nous sommes fermés à cette heure. Choisissez une autre heure.",
-      e_too_soon: "Cette heure est trop proche pour réserver en ligne. Choisissez plus tard ou appelez-nous.", e_too_far: "Nous prenons les réservations jusqu’à 30 jours à l’avance.", e_party_too_large: "Pour plus de {n} personnes, appelez-nous.",
+      e_too_soon: "Cette heure est trop proche pour réserver en ligne. Choisissez plus tard ou appelez-nous.", e_too_far: "Nous prenons les réservations jusqu’à 30 jours à l’avance.", e_booking_closed: "La réservation en ligne n’est pas encore ouverte. Appelez-nous.", e_party_too_large: "Pour plus de {n} personnes, appelez-nous.",
       e_rate_limited: "Trop de réservations avec ce courriel. Patientez quelques minutes.", e_not_found: "Aucune réservation ne correspond à ce code et à ce courriel.", e_too_late: "Cette réservation ne peut plus être annulée en ligne. Appelez-nous.",
       e_network: "Problème de connexion. Vérifiez votre connexion et réessayez : vous ne serez pas réservé deux fois.", e_error: "Un problème est survenu. Veuillez réessayer." }
   };
