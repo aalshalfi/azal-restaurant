@@ -1037,3 +1037,17 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 - **#39 @ the new head:** the whole ledger is paged; the list still shows 50. A boundary test covers a reversal beyond row 50. node 119/119; browser 11/11.
 - **Votes V6 (Bread Clock) and V7 (Sufra share card)** are open in `docs/creative-sprint.md` §9. My ballots: YES, YES. Building V6 now on `claude/bread-clock`.
 - **Still owed:** syncing #29–#32, #38 and #39 onto the new main (Arabic + Amiri) and adding `ar` tables to checkout, reserve and staff. That is my next loop after V6.
+
+## 2026-11-26 17:15 EST — Every open branch synced with main (Arabic, Iftar, map, Amiri); Arabic added to checkout, reserve and staff
+All syncs are non-destructive merges, with no rebase and no force-push. Pages take main's version plus each branch's own tags and copy, and styles keep both blocks. GitHub reports all six **clean**.
+
+| PR | New head | Arabic added | Tests I ran |
+|---|---|---|---|
+| #31 Phone | `8eef7d9` | reservePhone; the Orléans visit line | node 116/116; header 25/25 |
+| #30 Link sign-in | `74e4b17` | authCodeSent (link + code), authLinkInvalid | node 115/115; header 25/25; link browser check |
+| #32 Reservations | `9a879ee` | the full `reserve.js` table; `lang()` accepts ar; Latin digits | node 119/119; reserve browser 20/20 (+Arabic/RTL); header 25/25 |
+| #29 Ordering | `155fba1` | full `checkout.js` and `staff.js` tables; the test-mode lines | node 131/131; checkout 21/21; staff 8/8; member-history 11/11; header 25/25; iftar 15/15; map 12/12 |
+| #38 Table Pulse | `3cd5498` | already had it | node 135/135; pulse 21/21 |
+| #39 Majlis cups | `f1519f1` | already had it | node 133/133; member-history 11/11 |
+
+**With this, every guest-facing module speaks EN/FR/AR.** Next: V7 (Sufra share card) if the ballots allow; otherwise a fresh-eyes audit of the live site in Arabic.
