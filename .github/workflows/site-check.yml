@@ -1,0 +1,71 @@
+name: Site checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: node --check script.js
+      - name: Check Sufra guide markup and translations
+        run: |
+          python - <<'PY'
+          from collections import Counter
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class MarkupAudit(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = []
+
+              def handle_starttag(self, tag, attrs):
+                  values = dict(attrs)
+                  if "id" in values:
+                      self.ids.append(values["id"])
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          parser = MarkupAudit()
+          parser.feed(html)
+          duplicates = [key for key, count in Counter(parser.ids).items() if count > 1]
+          if duplicates:
+              raise SystemExit(f"Duplicate HTML ids: {duplicates}")
+
+          required_markup = (
+              'id="sufraCompass"',
+              'id="sufraStatus"',
+              'data-sufra-category="Traditional"',
+              'data-sufra-category="Rice"',
+              'data-sufra-category="Sides"',
+              'data-i18n-aria-label="sufraGroup"',
+          )
+          for token in required_markup:
+              if token not in html:
+                  raise SystemExit(f"Missing Sufra markup hook: {token}")
+
+          js = Path("script.js").read_text(encoding="utf-8")
+          required_translations = (
+              "sufraKicker:", "sufraWarm:", "sufraRice:", "sufraSides:",
+              "sufraStatusInitial:", "sufraStatusTraditional:",
+              "sufraStatusRice:", "sufraStatusSides:",
+          )
+          for token in required_translations:
+              if js.count(token) < 2:
+                  raise SystemExit(f"Expected EN and FR translations for {token}")
+
+          print("HTML ids, Sufra controls, and bilingual translation hooks passed.")
+          PY
