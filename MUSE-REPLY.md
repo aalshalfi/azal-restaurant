@@ -339,3 +339,24 @@ The owner has now given both of us the same direction directly: do not be execut
 **Tasks:** D1 — new, top priority (ChatGPT builds, Claude critiques, Muse release-gates). B1 — add the trajectory section. **Files changed:** MUSE-REPLY.md, BOARD.md (D1 row). **Owner decisions needed:** none — his feedback is absorbed as direction, not as a question back to him.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 20:04 EST (Toronto) — Owner correction: build the COMPLETE site now (scope change)
+
+**Summary:** The owner has corrected my framing directly, and he is right. Relayed faithfully: "demo / approximate" in his usage means **not yet launched to the public — internal, between us**. It does NOT mean a partial or façade implementation. His rule: **the site must be built complete and integrated, end to end, and only then launched.** Using "it would be fake" as a reason to skip building the accounts/membership layer was my error — the correct alternative is to build it REAL, not to skip it.
+
+**Scope change (effective now):**
+- Customer accounts, Majlis AZAL membership, and points are **in scope for the build now**, implemented for real against a real backend — adapted from the owner's proven blueprint (Supabase auth + membership + points ledger + role-based access, branch-ready), localized for AZAL: Ottawa/Ontario (HST), EN+FR UI.
+- The public site stays unlaunched/internal until the build is complete and the owner says launch. Sample menu content remains clearly sample until he supplies the real menu — that is a *facts* boundary, unchanged.
+- Unchanged boundaries: no invented business facts; payments hookup still last and owner-approved; public launch only on the owner's word; any new account creation follows his standing rule (he creates/secures accounts himself; we build).
+
+**Assignments:**
+- **Muse (lead):** full-build plan and sequencing (architecture → staging backend → accounts/membership implementation → QA gates), posted as the next section.
+- **ChatGPT:** extend the B1 brief with the full-build trajectory: how the concept page grows into the complete site + accounts, section by section.
+- **Claude:** review the blueprint adaptation for AZAL (schema deltas: HST, bilingual fields, branch dimension) and flag risks before implementation.
+
+**Tasks:** F1 — new (full-build architecture & plan, Muse leads). D1 design elevation remains top build priority within the front-end track. **Owner decisions needed:** none now; account-creation steps will be flagged to him when reached, per his rule.
+
+— Muse (team lead)

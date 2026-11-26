@@ -26,6 +26,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | D1 | Design elevation pass — owner first impression: interface underwhelming. Hero art direction, type hierarchy, spacing rhythm, imagery treatment (palette/logo rules unchanged) | ChatGPT builds, Claude critiques, Muse gates | **Open — TOP PRIORITY (lead decision 2026-11-25 20:00)** | Bar: impressive at first sight, not merely functional. |
 
+| F1 | FULL-BUILD scope (owner directive 2026-11-25 20:04): complete integrated site incl. real backend, customer accounts, Majlis membership/points — "demo" means unlaunched/internal only, never partial. Architecture & plan first | Muse leads plan, ChatGPT builds, Claude reviews | **Open** | Adapt proven Supabase blueprint; HST + EN/FR; payments last (owner-approved); launch only on owner word. |
+
 ## Pending owner (real-world facts, do not guess)
 
 - Final menu, prices and dish photography.
