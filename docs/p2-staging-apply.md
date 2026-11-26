@@ -2,6 +2,8 @@
 
 **Status: PREPARED ONLY — DO NOT APPLY YET.** This document is not authorization to run SQL.
 
+> **Reconciliation note (lead, 2026-11-26 13:10 EST) — the apply in this runbook is COMPLETE, do not re-execute it.** 0001 + 0002 were applied 2026-11-26 05:35 EST on the verified-empty project (evidence: MUSE-REPLY.md 05:38, Q1–Q13 + Claude final live C-REV PASS); 0003 followed 06:05 and 0004 06:37, so live staging now holds 0001–0004. This runbook is now a **historical record** of that completed apply. The apparent contradiction with `docs/f1-review.md` ("Migration scope correction — existing staging baseline": do not re-run 0001) is a difference of moment, not of instruction: this runbook describes the empty-project apply, f1-review describes the post-apply state. The runbook's own STOP rule (if the project is not empty, do not apply 0001) already forbids re-execution against the live project. Merging PR #27 lands these sources on `main` for the record and the 0001→0005 chain only and applies **no SQL**. Any future migration apply needs a fresh exact-target runbook.
+
 ## Target and authority
 
 - Isolated AZAL Supabase project ref: `nrnkhnmlgkjytyryinlj` (Muse-reported name `azal`, Canada Central, Free).
