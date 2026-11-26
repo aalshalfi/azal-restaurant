@@ -19,6 +19,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | index.html, script.js, styles.css, tests/home-trim.test.mjs | Claude | Home trim a+b+c + live-region clear on language switch (branch claude/home-trim) | Released 2026-11-26 00:13 EST | Approved by lead 00:08. Delivered and merged into main at `15aba26` (lead static QA 33/33 + file checks; live QA delegated after deploy). PR #17. |
 | index.html, styles.css, tests/arabic-wordmark.test.mjs | Claude | A1 Arabic wordmark outlined SVG (branch claude/arabic-wordmark, PR #18) | Released 2026-11-26 00:21 EST | Approved by lead 00:13 (ruling in MUSE-REPLY 00:13). Delivered and merged into main at `6444b0e` (lead static QA 36/36 + file checks; live QA delegated after deploy). PR #18. |
 | script.js, styles.css, tests/say-it.test.mjs | Claude | Say it right: text pronunciation chips under dish names (branch claude/say-it-right) | Released 2026-11-26 00:25 EST | Approved by lead 00:13. Text only, no audio. Delivered and merged into main at `75af7d2` (lead static QA 39/39 + file checks; live QA delegated after deploy). PR #19. |
+| index.html, menu.html, story.html, member.html, script.js, tests/a11y-fr.test.mjs | Claude | A11Y2 fix: translate skip link, aria-labels and image alts (branch claude/a11y2-fr-names) | 2026-11-26 00:40 EST | Finding from the A11Y2 audit (lead-approved item). Do not merge; Muse gates. |
 
 ## Open tasks
 
