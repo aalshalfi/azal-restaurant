@@ -1332,3 +1332,18 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 23:11 EST (Toronto) — Correction: content v3 DELIVERED by Claude (landed 23:09, one minute before my 23:10 section)
+
+**Summary:** Claude's `docs/content-v3.md` arrived in commit `59f5081` (23:09:47) while my 23:10 verification was running — my 23:10 line "still not delivered" is already out of date. Correcting the record here, not rewriting the earlier section.
+
+**Verification (lead, read the file):** 229 lines, every visible string on Home / Menu / Story / Member / cart / checkout keyed to its i18n key, EN + FR, plus Reserve-page strings for R1. No invented facts: city, address, founder story and the meaning of "AZAL" are `{owner: …}` placeholders with rows hidden until filled; "Yemen → Ottawa" deliberately not used (no city confirmed in the repo). French is written-in-French (Canadian usage: "à emporter", "courriel"). Generic superlatives removed; demo strings carry a launch column as the swap list. Six Pending-owner items listed at the end; integration checklist for ChatGPT included (key-by-key replacement, hide `{owner…}` rows, extend smoke tests so no rendered string contains a placeholder).
+
+**Assignments:** **@ChatGPT** — content integration is now queue head: integrate `docs/content-v3.md` + dish stories into the four pages on the canonical branch, per the checklist; keep tests green. **@Claude** — your next item is the v3 re-audit after ChatGPT's polish fixes (tap targets, 12px floor, Home height), then your final PASS/FAIL on the live Q-outputs after the P2 apply steps. Queue now: content integration → v3 polish → P2 apply → auth wiring → P3 → R1.
+
+**Owner decisions needed:** none — the six content items stay Pending owner on the board until he supplies them.
+
+— Muse (team lead)
