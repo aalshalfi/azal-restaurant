@@ -33,25 +33,27 @@
     <div class="reservation-notice" role="status" data-res-en="Reservations are not open yet — this page cannot create, send or confirm a booking. No personal information is collected." data-res-fr="Les réservations ne sont pas encore ouvertes — cette page ne peut pas créer, envoyer ni confirmer une réservation. Aucun renseignement personnel n’est recueilli.">Reservations are not open yet — this page cannot create, send or confirm a booking. No personal information is collected.</div>
   </section>
 
-  <section class="reservation-facts" aria-label="Confirmed reservation details">
-    <article class="reservation-fact"><span data-res-en="Reservation length" data-res-fr="Durée de réservation">Reservation length</span><strong data-res-en="60 minutes" data-res-fr="60 minutes">60 minutes</strong></article>
-    <article class="reservation-fact"><span data-res-en="Capacity" data-res-fr="Capacité">Capacity</span><strong data-res-en="To be confirmed" data-res-fr="À confirmer">To be confirmed</strong></article>
-    <article class="reservation-fact"><span data-res-en="Deposit" data-res-fr="Dépôt">Deposit</span><strong data-res-en="No deposit required" data-res-fr="Aucun dépôt requis">No deposit required</strong></article>
-    <article class="reservation-fact"><span data-res-en="Opening window" data-res-fr="Plage d’ouverture">Opening window</span><strong>11:00–21:00</strong></article>
+  <section class="reservation-facts" aria-label="Reservation settings">
+    <article class="reservation-fact"><span data-res-en="Reservation length" data-res-fr="Durée de réservation">Reservation length</span><strong id="reservationDuration">60 minutes</strong></article>
+    <article class="reservation-fact"><span data-res-en="Largest party" data-res-fr="Groupe maximal">Largest party</span><strong id="reservationPartyLimit">Up to 10 guests</strong></article>
+    <article class="reservation-fact"><span data-res-en="Total dining capacity" data-res-fr="Capacité totale">Total dining capacity</span><strong id="reservationTotalSeats">50 seats</strong></article>
+    <article class="reservation-fact"><span data-res-en="Deposit" data-res-fr="Dépôt">Deposit</span><strong id="reservationDeposit">No deposit required</strong></article>
+    <article class="reservation-fact"><span data-res-en="Opening days" data-res-fr="Jours d’ouverture">Opening days</span><strong id="reservationDays">Daily</strong></article>
+    <article class="reservation-fact"><span data-res-en="Opening hours" data-res-fr="Heures d’ouverture">Opening hours</span><strong id="reservationHours">11:00–21:00</strong></article>
   </section>
 
   <section class="reservation-layout" aria-label="Reservation request">
     <article class="reservation-card">
       <div class="reservation-card-top"><span class="reservation-eyebrow" data-res-en="REQUEST A TABLE" data-res-fr="DEMANDER UNE TABLE">REQUEST A TABLE</span><span class="reservation-state" data-res-en="NOT OPEN" data-res-fr="NON OUVERT">NOT OPEN</span></div>
       <h2 data-res-en="Plan your gathering." data-res-fr="Préparez votre rencontre.">Plan your gathering.</h2>
-      <p class="reservation-copy" data-res-en="The booking details below are prepared for the reservation flow. They remain disabled until operating days, capacity rules and the booking contact are approved." data-res-fr="Les champs ci-dessous sont préparés pour le parcours de réservation. Ils resteront désactivés jusqu’à l’approbation des jours d’ouverture, des règles de capacité et du contact de réservation.">The booking details below are prepared for the reservation flow. They remain disabled until operating days, capacity rules and the booking contact are approved.</p>
+      <p class="reservation-copy" data-res-en="The booking details below use the current configurable settings. The controls remain disabled until the reservation system, receiving email and launch approval are in place." data-res-fr="Les détails ci-dessous utilisent les paramètres configurables actuels. Les commandes restent désactivées jusqu’à la mise en place du système, de l’adresse de réception et de l’approbation du lancement.">The booking details below are prepared for the reservation flow. They remain disabled until operating days, capacity rules and the booking contact are approved.</p>
       <fieldset class="reservation-fields" disabled aria-describedby="reservation-disabled-note">
         <div class="reservation-field"><label for="guest-name" data-res-en="Your name" data-res-fr="Votre nom">Your name</label><input id="guest-name" type="text" autocomplete="off" placeholder="Name"></div>
         <div class="reservation-field"><label for="guest-email" data-res-en="Email address" data-res-fr="Adresse courriel">Email address</label><input id="guest-email" type="email" autocomplete="off" placeholder="Email"></div>
         <div class="reservation-field"><label for="guest-phone" data-res-en="Phone number" data-res-fr="Numéro de téléphone">Phone number</label><input id="guest-phone" type="tel" autocomplete="off" placeholder="Phone"></div>
         <div class="reservation-field"><label for="booking-date" data-res-en="Date" data-res-fr="Date">Date</label><input id="booking-date" type="date"></div>
-        <div class="reservation-field"><label for="booking-time" data-res-en="Preferred time" data-res-fr="Heure souhaitée">Preferred time</label><select id="booking-time"><option data-res-en="Times will appear after approval" data-res-fr="Les heures seront affichées après approbation">Times will appear after approval</option></select></div>
-        <div class="reservation-field"><label for="party-size" data-res-en="Number of guests" data-res-fr="Nombre de personnes">Number of guests</label><input id="party-size" type="number" min="1" placeholder="To be confirmed"></div>
+        <div class="reservation-field"><label for="booking-time" data-res-en="Preferred time" data-res-fr="Heure souhaitée">Preferred time</label><select id="booking-time"><option data-res-en="Times appear when booking opens" data-res-fr="Les heures seront affichées à l’ouverture">Times appear when booking opens</option></select></div>
+        <div class="reservation-field"><label for="party-size" data-res-en="Number of guests (up to 10)" data-res-fr="Nombre de personnes (jusqu’à 10)">Number of guests (up to 10)</label><input id="party-size" type="number" min="1" max="10" placeholder="1–10"></div>
         <div class="reservation-field reservation-field-wide"><label for="booking-note" data-res-en="Optional note" data-res-fr="Note facultative">Optional note</label><textarea id="booking-note" rows="3" placeholder=""></textarea></div>
       </fieldset>
       <p class="reservation-disabled-note" id="reservation-disabled-note" data-res-en="These fields are disabled and do not accept or store information." data-res-fr="Ces champs sont désactivés et n’acceptent ni n’enregistrent de renseignements.">These fields are disabled and do not accept or store information.</p>
@@ -62,12 +64,11 @@
       <p class="reservation-kicker" data-res-en="BEFORE BOOKINGS OPEN" data-res-fr="AVANT L’OUVERTURE DES RÉSERVATIONS">BEFORE BOOKINGS OPEN</p>
       <h2 data-res-en="A few details are still being confirmed." data-res-fr="Quelques détails restent à confirmer.">A few details are still being confirmed.</h2>
       <ul>
-        <li data-res-en="Operating days are not yet confirmed." data-res-fr="Les jours d’ouverture ne sont pas encore confirmés.">Operating days are not yet confirmed.</li>
-        <li data-res-en="Capacity details are being confirmed." data-res-fr="Les détails de capacité sont en cours de confirmation.">Capacity details are being confirmed.</li>
-        <li data-res-en="The reservation email address has not been provided." data-res-fr="L’adresse courriel de réservation n’a pas encore été fournie.">The reservation email address has not been provided.</li>
-        <li data-res-en="Online booking will open only after explicit approval." data-res-fr="La réservation en ligne ouvrira uniquement après approbation explicite.">Online booking will open only after explicit approval.</li>
+        <li data-res-en="The largest party is set to 10 guests; total dining capacity is 50 seats." data-res-fr="Le groupe maximal est fixé à 10 personnes; la capacité totale est de 50 places.">The largest party is set to 10 guests; total dining capacity is 50 seats.</li>
+        <li data-res-en="Reservation notices are by email; the receiving address is configured at launch." data-res-fr="Les avis de réservation sont envoyés par courriel; l’adresse de réception sera configurée au lancement.">Reservation notices are by email; the receiving address is configured at launch.</li>
+        <li data-res-en="Online booking remains disabled until explicit go-live approval." data-res-fr="La réservation en ligne reste désactivée jusqu’à l’autorisation explicite de mise en service.">Online booking remains disabled until explicit go-live approval.</li>
       </ul>
-      <p class="reservation-side-note" data-res-en="Until then, please explore the menu. Table reservations are not enabled yet." data-res-fr="D’ici là, découvrez le menu. Les réservations de table ne sont pas encore activées.">Until then, please explore the menu. Table reservations are not enabled yet.</p>
+      <p class="reservation-side-note" data-res-en="These settings can be adjusted before launch. No booking can be created from this page yet." data-res-fr="Ces paramètres peuvent être ajustés avant le lancement. Aucune réservation ne peut encore être créée depuis cette page.">These settings can be adjusted before launch. No booking can be created from this page yet.</p>
       <a class="reservation-menu-link" href="menu.html#menu" data-res-en="Explore the menu" data-res-fr="Découvrir le menu">Explore the menu</a>
     </aside>
   </section>
@@ -81,6 +82,7 @@
 </footer>
 
 <script src="script.js?v=20261126-v3" defer></script>
-<script src="reservations.js?v=20261125-preview" defer></script>
+<script src="reservation-config.js?v=20261125-defaults" defer></script>
+<script src="reservations.js?v=20261125-config" defer></script>
 </body>
 </html>
