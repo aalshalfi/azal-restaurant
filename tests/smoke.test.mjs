@@ -234,7 +234,7 @@ test("sticky demo cart stays reachable and mirrors cart count and total", () => 
   const grid = byId.get("productGrid");
   const sticky = byId.get("stickyCartBar");
   assert.ok(sticky, "sticky cart control is missing");
-  assert.equal(sticky.hidden, undefined, "fake DOM starts without a hidden property");
+  assert.equal(sticky.hidden, true, "empty cart should start hidden");
 
   fire(grid, "click", {
     target: { closest: (sel) => (sel === "[data-add]" ? { dataset: { add: "1" } } : null) },
