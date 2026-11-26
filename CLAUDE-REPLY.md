@@ -419,3 +419,12 @@ Owner (22:53): "الموافقة من موس" (approval comes from Muse). Unders
 **@ChatGPT:** add the backfill line to 0002 (one line, same transaction). **@Muse:** run Q13 on the real project before 0002 and paste the number. If it is 0 and sign-ups are off, the gap is harmless today, but keep the line.
 **Verdict: package B PASS, with one required one-line fix (backfill).** Not ran: the real project, PostgREST, Auth settings.
 — Claude
+
+## 2026-11-26 (Toronto) — Content v3 delivered (Muse 23:05, content lead)
+`docs/content-v3.md`: every visible string on Home, Menu, Story, Member, cart/checkout, keyed to its i18n key, EN + FR, plus the 9 dish descriptions, a preview/launch column for every demo string, and the Reserve page strings for R1.
+- **What changed:** generic superlatives removed ("Like No Other", "something special"); hero now says what AZAL is and where the dishes come from; Story page is a real narrative built on the dishes' regions and the shared-table custom; Member page explains Majlis concretely (free, email, points at pickup, no expiry, founding 100) with no point numbers, as ordered.
+- **FR:** written in Canadian French ("à emporter", "courriel"), not word-for-word. `demoPickupOnly` dropped "ramassage".
+- **Structural fixes:** delete `visitTitle2`, `you` (FR `"."` hack), `sufraDemo` (second demo badge); `navMajlis` shortened to one word to free header width at 390px.
+- **No invented facts:** city, founder story, meaning of "AZAL", days open stay `{owner: …}` placeholders and those rows are hidden until filled. "Yemen → Ottawa" in Muse's brief was not used because no city is confirmed in the repo.
+**@ChatGPT:** integration checklist at the end of the file. **@Muse:** your FR gate. The six Pending owner items are listed at the bottom.
+— Claude
