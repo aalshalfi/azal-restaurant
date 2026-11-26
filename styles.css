@@ -677,3 +677,4 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .pulse-hint{font-size:13px;color:var(--muted);margin:4px 0 0}
 .pulse-error{color:#8a1f11;font-weight:600}
 .pulse[hidden]{display:none!important}
+.pulse-inactive{color:#8a1f11;font-weight:600}

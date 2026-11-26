@@ -8,12 +8,12 @@ const b = await chromium.launch(); const port = srv.address().port;
 async function open({ status = "accepted", lang = "en", w = 390, signedIn = true, failAll = false } = {}) {
   const page = await b.newPage({ viewport: { width: w, height: 900 } });
   await page.clock.install({ time: new Date("2026-11-27T17:00:00Z") });
-  const st = { status, polls: 0 };
+  const st = { status, polls: 0, pay: "paid" };
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await page.route("https://fake.supabase.co/**", (r) => {
     const u = decodeURIComponent(r.request().url());
     if (u.includes("/rest/v1/orders?select=id,fulfilment_status")) { st.polls++; if (failAll) return r.fulfill({ status: 500, json: {} });
-      const row = { id: "abc12300-0000-4000-8000-000000000001", fulfilment_status: st.status, payment_status: "paid", pickup_slot: "2026-11-27T17:30:00Z", updated_at: "2026-11-27T17:00:00Z" };
+      const row = { id: "abc12300-0000-4000-8000-000000000001", fulfilment_status: st.status, payment_status: st.pay, pickup_slot: "2026-11-27T17:30:00Z", updated_at: "2026-11-27T17:00:00Z" };
       if (u.includes("fulfilment_status=not.in") && ["handed_over", "cancelled"].includes(st.status)) return r.fulfill({ json: [] });
       return r.fulfill({ json: [row] }); }
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [] });
@@ -51,6 +51,12 @@ const labels = (page) => page.$$eval(".pulse-step", (ls) => ls.map((l) => l.clas
   ok(/Order cancelled/.test(await page.textContent("#tablePulse + p[role=status]")), "cancellation announced");
   const n = st.polls; await page.clock.runFor(120000); ok(st.polls === n, "stops polling once cancelled");
   ok(/Last checked/.test(t), "timestamp labelled as the last check, not a server update"); await page.close(); }
+{ const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");
+  st.pay = "refunded"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-inactive");
+  ok(await page.locator(".pulse-step").count() === 0 && /no longer active/.test(await page.textContent("#tablePulse")), "paid -> refunded while open: timeline removed, truthful 'no longer active'");
+  const n = st.polls; await page.clock.runFor(120000); ok(st.polls === n, "stops polling once the payment is refunded"); await page.close(); }
+{ const { page, st } = await open({ status: "ready" }); await page.waitForSelector(".pulse-step");
+  st.pay = "voided"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-inactive"); ok(true, "paid -> voided: same truthful state"); await page.close(); }
 { const { page } = await open({ status: "cancelled" }); await page.waitForTimeout(300);
   ok(await page.locator("#tablePulse").isHidden(), "no open paid order at load (cancelled earlier): nothing shown, nothing invented"); await page.close(); }
 { const { page } = await open({ failAll: true }); await page.waitForSelector(".pulse-error");

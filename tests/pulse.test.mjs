@@ -31,3 +31,9 @@ test("reads only the member's own PAID order (explicit user_id); no guest path; 
   assert.doesNotMatch(src.slice(src.indexOf("const S = {"), src.indexOf("const lang =")), /\bminutes?\b|\bmin\b|ETA|almost ready|%|دقيقة|minute/i, "no time estimate in any copy");
   assert.doesNotMatch(src, /innerHTML/);
 });
+
+test("payment no longer paid (refunded/voided) = not an active order", () => {
+  assert.equal(P.isClosedPayment({ payment_status: "paid" }), false);
+  assert.equal(P.isClosedPayment({ payment_status: "refunded" }), true);
+  assert.equal(P.isClosedPayment({ payment_status: "voided" }), true);
+});

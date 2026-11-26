@@ -10,6 +10,8 @@
   "use strict";
   const KNOWN = ["placed", "accepted", "preparing", "ready", "handed_over", "cancelled"];
   const TERMINAL = ["handed_over", "cancelled"];
+  // An order whose payment is no longer "paid" (refunded / voided) is not an active kitchen order any more.
+  const isClosedPayment = (o) => Boolean(o && o.payment_status && o.payment_status !== "paid");
   // Steps to show for a given persisted status. Each: { key, state: "done" | "current" | "todo" }.
   function timeline(status) {
     if (!KNOWN.includes(status)) return null;               // unknown status: show "unavailable", never guess
@@ -43,7 +45,7 @@
     };
   }
 
-  const api = { timeline, createPulse, code, TERMINAL };
+  const api = { timeline, createPulse, code, TERMINAL, isClosedPayment };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser ---------- */
@@ -55,13 +57,13 @@
   const S = {
     en: { title: "Your order", code: "Code {code}", updated: "Last checked {time}", refresh: "Refresh", pickup: "Pickup time: {time}",
       placed: "Received", accepted: "Accepted by the kitchen", preparing: "Being prepared", ready: "Ready for pickup", handed_over: "Collected", cancelled: "Order cancelled",
-      now: "Now", unavailable: "Status unavailable right now. Try again.", hint: "This updates by itself. It shows what the kitchen has confirmed, not an estimate." },
+      now: "Now", unavailable: "Status unavailable right now. Try again.", inactive: "This order is no longer active: its payment was refunded or voided.", hint: "This updates by itself. It shows what the kitchen has confirmed, not an estimate." },
     fr: { title: "Votre commande", code: "Code {code}", updated: "Dernière vérification à {time}", refresh: "Actualiser", pickup: "Heure de retrait : {time}",
       placed: "Reçue", accepted: "Acceptée par la cuisine", preparing: "En préparation", ready: "Prête à emporter", handed_over: "Récupérée", cancelled: "Commande annulée",
-      now: "En cours", unavailable: "Statut indisponible pour le moment. Réessayez.", hint: "Cette page se met à jour seule. Elle montre ce que la cuisine a confirmé, pas une estimation." },
+      now: "En cours", unavailable: "Statut indisponible pour le moment. Réessayez.", inactive: "Cette commande n’est plus active\u00a0: son paiement a été remboursé ou annulé.", hint: "Cette page se met à jour seule. Elle montre ce que la cuisine a confirmé, pas une estimation." },
     ar: { title: "طلبك", code: "الرمز {code}", updated: "آخر تحقّق {time}", refresh: "تحديث", pickup: "وقت الاستلام: {time}",
       placed: "استُلم", accepted: "قبله المطبخ", preparing: "قيد التحضير", ready: "جاهز للاستلام", handed_over: "تم الاستلام", cancelled: "أُلغي الطلب",
-      now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", hint: "تتحدّث هذه الصفحة تلقائياً. تعرض ما أكّده المطبخ، لا وقتاً تقديرياً." }
+      now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", inactive: "هذا الطلب لم يعد نشطاً: أُعيد مبلغه أو أُلغي دفعه.", hint: "تتحدّث هذه الصفحة تلقائياً. تعرض ما أكّده المطبخ، لا وقتاً تقديرياً." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
@@ -81,8 +83,9 @@
     head.append(el("h2", null, L("title")));
     if (order) head.append(el("span", "pulse-code", L("code", { code: code(order.id) })));
     const out = [head];
-    const steps = order && timeline(order.fulfilment_status);
-    if (failed || !steps) out.push(el("p", "pulse-error", L("unavailable")));
+    const steps = order && !isClosedPayment(order) && timeline(order.fulfilment_status);
+    if (order && isClosedPayment(order)) out.push(el("p", "pulse-inactive", L("inactive")));
+    else if (failed || !steps) out.push(el("p", "pulse-error", L("unavailable")));
     else {
       const ol = el("ol", "pulse-steps");
       for (const s of steps) {
@@ -102,17 +105,18 @@
     box.replaceChildren(...out);
   }
   function stop() { if (timer) { clearInterval(timer); timer = null; } }
-  function start() { stop(); if (order && !TERMINAL.includes(order.fulfilment_status)) timer = setInterval(() => { if (!document.hidden) load(false); }, 25000); }
+  function start() { stop(); if (order && !TERMINAL.includes(order.fulfilment_status) && !isClosedPayment(order)) timer = setInterval(() => { if (!document.hidden) load(false); }, 25000); }
   async function load(manual) {
     const my = ++seq;
     try {
       const o = order ? await p.byId(order.id) : await p.active();
       if (my !== seq) return;
       order = o; failed = false; lastAt = new Date();
-      if (o && o.fulfilment_status !== lastStatus) { if (lastStatus !== null) live.textContent = L(o.fulfilment_status) || ""; lastStatus = o.fulfilment_status; }
+      const key = o ? (isClosedPayment(o) ? "inactive" : o.fulfilment_status) : null;
+      if (o && key !== lastStatus) { if (lastStatus !== null) live.textContent = L(key) || ""; lastStatus = key; }
     } catch (e) { if (my !== seq) return; if (e.code === "signed_out") { order = null; failed = false; } else failed = true; }
     paint();
-    if (!order || TERMINAL.includes(order.fulfilment_status)) stop(); else if (!timer) start();
+    if (!order || TERMINAL.includes(order.fulfilment_status) || isClosedPayment(order)) stop(); else if (!timer) start();
   }
   document.addEventListener("visibilitychange", () => { if (!document.hidden && order && !TERMINAL.includes(order.fulfilment_status)) load(false); });
   document.addEventListener("azal:auth", (e) => { if (e.detail && e.detail.status === "signed_in") { order = null; lastStatus = null; load(false); } else { seq++; stop(); order = null; failed = false; paint(); } });
