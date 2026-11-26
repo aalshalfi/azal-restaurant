@@ -1,7 +1,9 @@
 -- AZAL 0004: real pickup ordering (Claude, owner test mandate 05:20). Apply after 0001 + 0002 + 0003.
 -- Clients still cannot write tables. All writes go through these SECURITY DEFINER functions, which
--- re-derive prices, tax, pickup time and capacity on the server. NO PAYMENT: orders are "pay at pickup";
--- staff mark them paid at the counter. Points are earned once, when an order is paid AND handed over.
+-- re-derive prices, tax, pickup time and capacity on the server. OWNER RULE (05:26): an order must be PAID
+-- ONLINE; the kitchen never acts on an unpaid order. Payments run in TEST MODE only (azal-test provider, test
+-- tokens, no card number ever reaches the server). A real provider (e.g. Stripe) replaces pay_order_test at
+-- go-live; that needs the owner's account (Tier C). Points are earned once, when an order is paid AND handed over.
 -- Rules (config constants, docs/p3-pickup-ui.md defaults): prep 20 min; 15-min slots; 6 orders/slot;
 -- last pickup = closing - 15 min; ASAP = now + prep rounded up to 5 min; earn 10 pts per $1 of pre-tax
 -- subtotal (floored), per the adopted Majlis Option B working draft. Idempotent migration.
@@ -107,7 +109,8 @@ begin
   -- Capacity: serialise per branch+slot, then count.
   perform pg_advisory_xact_lock(hashtext(p_branch || '@' || v_slot::text));
   select count(*) into v_count from public.orders
-   where branch_slug = p_branch and pickup_slot = v_slot and fulfilment_status <> 'cancelled';
+   where branch_slug = p_branch and pickup_slot = v_slot and fulfilment_status <> 'cancelled'
+     and (payment_status = 'paid' or placed_at > v_now - interval '15 minutes');   -- unpaid holds expire
   if v_count >= c_slot_cap then raise exception 'slot_full'; end if;
 
   -- Server prices only.
@@ -143,9 +146,10 @@ end;
 $azal_place_order$;
 
 -- --------------------------------------------------------------------------------------------
--- staff_update_order: staff of the branch (or admin) move an order forward, mark it paid at pickup,
--- or cancel it. Earns points exactly once when the order is BOTH paid and handed over.
--- p_action: accept | prepare | ready | hand_over | mark_paid | cancel
+-- staff_update_order: staff of the branch (or admin) move a PAID order forward, or cancel.
+-- p_action: accept | prepare | ready | hand_over | cancel. Unpaid orders cannot be worked on (owner rule).
+-- Cancelling a paid order records a test refund (test mode only; real refunds come with the real provider).
+-- Earns points exactly once when the order is paid AND handed over.
 -- --------------------------------------------------------------------------------------------
 create or replace function public.staff_update_order(p_order uuid, p_action text)
 returns jsonb
@@ -163,31 +167,33 @@ begin
   if not found then raise exception 'order_not_found'; end if;
   if not public.azal_staff_can_access(v_o.branch_slug) then raise exception 'not_staff'; end if;
   v_from := v_o.fulfilment_status;
-  if v_from in ('handed_over', 'cancelled') and p_action <> 'mark_paid' then raise exception 'order_closed'; end if;
+  if v_from in ('handed_over', 'cancelled') then raise exception 'order_closed'; end if;
+  if p_action <> 'cancel' and v_o.payment_status <> 'paid' then raise exception 'unpaid_order'; end if;
 
-  if p_action = 'mark_paid' then
-    if v_o.payment_status <> 'unpaid' or v_from = 'cancelled' then raise exception 'bad_transition'; end if;
-    update public.orders set payment_status = 'paid', updated_at = now() where id = p_order;
-    v_to := v_from;
-  else
-    v_to := case p_action
-      when 'accept' then case when v_from = 'placed' then 'accepted' end
-      when 'prepare' then case when v_from in ('placed','accepted') then 'preparing' end
-      when 'ready' then case when v_from in ('accepted','preparing') then 'ready' end
-      when 'hand_over' then case when v_from = 'ready' then 'handed_over' end
-      when 'cancel' then case when v_from in ('placed','accepted','preparing','ready') then 'cancelled' end
-    end;
-    if v_to is null then raise exception 'bad_transition'; end if;
-    if v_to = 'handed_over' and v_o.payment_status <> 'paid' then raise exception 'unpaid_handover'; end if;
-    update public.orders set fulfilment_status = v_to, updated_at = now(),
-      handed_over_at = case when v_to = 'handed_over' then now() else handed_over_at end
-     where id = p_order;
+  v_to := case p_action
+    when 'accept' then case when v_from = 'placed' then 'accepted' end
+    when 'prepare' then case when v_from in ('placed','accepted') then 'preparing' end
+    when 'ready' then case when v_from in ('accepted','preparing') then 'ready' end
+    when 'hand_over' then case when v_from = 'ready' then 'handed_over' end
+    when 'cancel' then 'cancelled'
+  end;
+  if v_to is null then raise exception 'bad_transition'; end if;
+
+  if v_to = 'cancelled' and v_o.payment_status = 'paid' then
+    if coalesce((select value from public.app_settings where key = 'payments_mode'), 'off') <> 'test' then
+      raise exception 'refund_requires_provider';
+    end if;
+    insert into public.payment_events (order_id, provider, provider_event_id, event_type, amount_cents)
+    values (p_order, 'azal-test', 'test_refund_' || p_order, 'refund_succeeded', v_o.total_cents);
+    update public.orders set payment_status = 'refunded' where id = p_order;
   end if;
 
+  update public.orders set fulfilment_status = v_to, updated_at = now(),
+    handed_over_at = case when v_to = 'handed_over' then now() else handed_over_at end
+   where id = p_order;
   insert into public.order_events (order_id, actor_user_id, event_type, from_status, to_status)
   values (p_order, auth.uid(), p_action, v_from, v_to);
 
-  -- Earn once: paid AND handed over. The partial unique index on (order_id) for 'earn' guarantees once.
   select * into v_o from public.orders where id = p_order;
   if v_o.payment_status = 'paid' and v_o.fulfilment_status = 'handed_over' then
     v_points := (v_o.subtotal_cents * 10) / 100;   -- 10 pts per $1, floored
@@ -201,11 +207,68 @@ begin
 end;
 $azal_staff_update_order$;
 
+-- --------------------------------------------------------------------------------------------
+-- TEST-MODE payments. app_settings is server-only (RLS on, no policies, no client grants).
+-- pay_order_test(order, token): the customer pays their own unpaid order with a TEST token.
+-- Tokens (the browser maps test card numbers to these; real card numbers are refused in the browser and
+-- never sent): tok_test_ok -> paid; tok_test_declined -> declined; tok_test_insufficient -> declined.
+-- Errors: not_signed_in, order_not_found, payments_not_in_test_mode, already_paid, order_closed,
+-- invalid_test_token, payment_window_expired (unpaid > 15 min: start a new order)
+-- --------------------------------------------------------------------------------------------
+create table if not exists public.app_settings (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.app_settings enable row level security;
+revoke all on table public.app_settings from anon, authenticated;
+insert into public.app_settings (key, value) values ('payments_mode', 'test') on conflict (key) do nothing;
+
+create or replace function public.pay_order_test(p_order uuid, p_token text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $azal_pay_order_test$
+declare
+  v_uid uuid := auth.uid();
+  v_o public.orders;
+  v_outcome text;
+begin
+  if v_uid is null then raise exception 'not_signed_in'; end if;
+  if coalesce((select value from public.app_settings where key = 'payments_mode'), 'off') <> 'test' then
+    raise exception 'payments_not_in_test_mode';
+  end if;
+  select * into v_o from public.orders where id = p_order and user_id = v_uid for update;
+  if not found then raise exception 'order_not_found'; end if;
+  if v_o.payment_status = 'paid' then raise exception 'already_paid'; end if;
+  if v_o.fulfilment_status = 'cancelled' or v_o.payment_status <> 'unpaid' then raise exception 'order_closed'; end if;
+  if v_o.placed_at < now() - interval '15 minutes' then raise exception 'payment_window_expired'; end if;
+  v_outcome := case p_token when 'tok_test_ok' then 'paid' when 'tok_test_declined' then 'declined'
+                            when 'tok_test_insufficient' then 'declined' end;
+  if v_outcome is null then raise exception 'invalid_test_token'; end if;
+
+  insert into public.payment_events (order_id, provider, provider_event_id, event_type, amount_cents)
+  values (p_order, 'azal-test', 'test_' || gen_random_uuid(), case when v_outcome = 'paid' then 'payment_succeeded' else 'payment_failed' end,
+          case when v_outcome = 'paid' then v_o.total_cents else 0 end);
+  if v_outcome = 'paid' then
+    update public.orders set payment_status = 'paid', updated_at = now() where id = p_order;
+    insert into public.order_events (order_id, actor_user_id, event_type, from_status, to_status, details)
+    values (p_order, v_uid, 'paid', 'unpaid', 'paid', jsonb_build_object('provider', 'azal-test'));
+  end if;
+  return jsonb_build_object('order_id', p_order, 'outcome', v_outcome,
+    'reason', case p_token when 'tok_test_insufficient' then 'insufficient_funds' when 'tok_test_declined' then 'card_declined' end,
+    'total_cents', v_o.total_cents);
+end;
+$azal_pay_order_test$;
+
 -- Grants: nothing for anon or PUBLIC; signed-in users may call; staff checks happen inside.
 revoke all on function public.place_order(text, jsonb, timestamptz, text, text) from public, anon;
 revoke all on function public.staff_update_order(uuid, text) from public, anon;
+revoke all on function public.pay_order_test(uuid, text) from public, anon;
 grant execute on function public.place_order(text, jsonb, timestamptz, text, text) to authenticated;
 grant execute on function public.staff_update_order(uuid, text) to authenticated;
+grant execute on function public.pay_order_test(uuid, text) to authenticated;
 -- The new column inherits the table-level revokes of 0002; restate client DML revoke for safety.
 revoke insert, update, delete, truncate on table public.orders from anon, authenticated;
 

@@ -62,14 +62,33 @@ set role authenticated;
 select zz_eq('another customer sees none of c1''s orders', (select count(*)::text from public.orders), '0');
 reset role;
 
+\echo ===== test payments (owner rule: paid online before the kitchen acts)
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000f1',false) \gset
+set role authenticated;
+select zz_eq('kitchen cannot accept an unpaid order', zz_try($$select public.staff_update_order('$$ || (:'o1'::jsonb->>'order_id') || $$','accept')$$), 'unpaid_order');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c2',false) \gset
+set role authenticated;
+select zz_eq('another customer cannot pay c1''s order', zz_try($$select public.pay_order_test('$$ || (:'o1'::jsonb->>'order_id') || $$','tok_test_ok')$$), 'order_not_found');
+select zz_eq('client cannot read app_settings', zz_try($$select * from public.app_settings$$), '42501');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
+set role authenticated;
+select zz_eq('declined test card leaves the order unpaid', public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_declined')->>'outcome', 'declined');
+select zz_eq('insufficient funds reason', public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_insufficient')->>'reason', 'insufficient_funds');
+select zz_eq('unknown token refused (no real cards)', zz_try($$select public.pay_order_test('$$ || (:'o1'::jsonb->>'order_id') || $$','4242424242424242')$$), 'invalid_test_token');
+select zz_eq('still unpaid after declines', (select payment_status from public.orders where id = (:'o1'::jsonb->>'order_id')::uuid), 'unpaid');
+select zz_eq('test card pays the order', public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_ok')->>'outcome', 'paid');
+select zz_eq('paying twice refused', zz_try($$select public.pay_order_test('$$ || (:'o1'::jsonb->>'order_id') || $$','tok_test_ok')$$), 'already_paid');
+reset role;
+select zz_eq('payment events: 2 failed + 1 succeeded for the full total', (select string_agg(event_type||':'||amount_cents, ',' order by id) from public.payment_events where order_id = (:'o1'::jsonb->>'order_id')::uuid), 'payment_failed:0,payment_failed:0,payment_succeeded:6325');
+
 \echo ===== staff flow and points
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000f1',false) \gset
 set role authenticated;
-select zz_eq('accept', public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'accept')->>'fulfilment_status', 'accepted');
+select zz_eq('accept (paid)', public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'accept')->>'fulfilment_status', 'accepted');
 select zz_eq('hand over before ready refused', zz_try($$select public.staff_update_order('$$ || (:'o1'::jsonb->>'order_id') || $$','hand_over')$$), 'bad_transition');
 select zz_eq('ready', public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'ready')->>'fulfilment_status', 'ready');
-select zz_eq('hand over unpaid refused', zz_try($$select public.staff_update_order('$$ || (:'o1'::jsonb->>'order_id') || $$','hand_over')$$), 'unpaid_handover');
-select zz_eq('mark paid at pickup', public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'mark_paid')->>'payment_status', 'paid');
 select zz_eq('hand over', public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'hand_over')->>'fulfilment_status', 'handed_over');
 select zz_eq('closed order cannot move again', zz_try($$select public.staff_update_order('$$ || (:'o1'::jsonb->>'order_id') || $$','hand_over')$$), 'order_closed');
 reset role;
@@ -77,5 +96,26 @@ select zz_eq('exactly one earn row: 559 points (10/$1 of $55.97, floored)', (sel
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
 set role authenticated;
 select zz_eq('customer sees own balance 559', (select coalesce(sum(delta_points),0)::text from public.points_ledger), '559');
+select (public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":2}]',null,null,'c1-key-000000000009'))::text as o2 \gset
+select zz_eq('pay order 2', public.pay_order_test((:'o2'::jsonb->>'order_id')::uuid,'tok_test_ok')->>'outcome', 'paid');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000f1',false) \gset
+set role authenticated;
+select zz_eq('cancelling a paid order refunds it (test mode)', public.staff_update_order((:'o2'::jsonb->>'order_id')::uuid,'cancel')->>'payment_status', 'refunded');
+reset role;
+select zz_eq('refund event recorded for the full total', (select event_type||':'||amount_cents from public.payment_events where order_id = (:'o2'::jsonb->>'order_id')::uuid and event_type like 'refund%'), 'refund_succeeded:1354');
+select zz_eq('no points for a cancelled order', (select count(*)::text from public.points_ledger where order_id = (:'o2'::jsonb->>'order_id')::uuid), '0');
+
+\echo ===== unpaid holds expire; payments off
+update public.orders set placed_at = placed_at - interval '20 minutes' where idempotency_key like 'cap-key-%';
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
+set role authenticated;
+select zz_eq('expired unpaid holds free the slot', public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',((current_date + 1) + time '12:00') at time zone 'America/Toronto',null,'cap-key-000000000008')->>'status', 'placed');
+select zz_eq('paying an expired unpaid order refused', zz_try($$select public.pay_order_test(id,'tok_test_ok') from public.orders where idempotency_key = 'cap-key-000000000001'$$), 'payment_window_expired');
+reset role;
+update public.app_settings set value = 'off' where key = 'payments_mode';
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
+set role authenticated;
+select zz_eq('test payments refused when payments_mode is not test', zz_try($$select public.pay_order_test(id,'tok_test_ok') from public.orders where idempotency_key = 'cap-key-000000000008'$$), 'payments_not_in_test_mode');
 reset role;
 \echo ===== done
