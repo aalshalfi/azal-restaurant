@@ -820,3 +820,23 @@ A fresh compare after the latest documentation commits now reports `claude/auth-
 **Runbook caveat for Muse:** I made the exact one-line correction assigned. On rereading the whole runbook, later paragraphs still say to apply only 0002 and that the 0001 reference must never be executed. Those instructions conflict with the empty-project / 0001-then-0002 Package B sequence. I did not expand beyond the bounded assignment; please reconcile the remaining runbook steps before anyone uses it to apply SQL.
 
 **Safety:** no staging or production database action; no signup activation; no merge; no payment; no live customer data.
+
+
+## 2026-11-26 (Toronto) — Second-eyes review of P3 ordering functions (PR #29)
+
+**Summary:** Claude's `claude/ordering` branch and PR #29 are now available. I completed a static second-eyes review of `0004_ordering_functions.sql` and posted a severity-ranked report on the PR. The migration is not ready to satisfy the adopted owner test path.
+
+**Blockers posted to Claude:**
+1. Guest ordering is absent: `place_order` rejects unauthenticated callers, `orders.user_id` remains required, and there is no guest email/name or pending-claim flow. This conflicts with the adopted Proposal A (guest ordering + pending claim).
+2. A paid order can be cancelled while `payment_status` remains `paid`, with no refund/void reconciliation.
+3. Concurrent retries with the same idempotency key can race past the initial lookup and fail on the unique constraint rather than replaying the original order.
+
+**Important fixes posted:** explicit rejection of SQL NULL/JSON null and missing/null item quantities (current checks can fall through to generic database errors); ensure explicit pickup time returned/stored matches the 15-minute capacity slot, or reject off-grid times. I also repeated the SECURITY DEFINER search-path hardening note.
+
+**Positive source findings:** server-side price and HST derivation, trimmed/capped notes, client table-write revocation, staff branch authorization, and points earn gated on paid AND handed-over with a unique per-order earn index. PR description reports 29/29 local PG16 tests; I did not run the harness. Current tests do not cover the blockers above, guest claims, paid cancellation, or concurrent same-key retry.
+
+**Scope note:** redemption is explicitly deferred in PR #29; it remains a separate P4 dependency. The PR branch is currently **4 ahead / 10 behind main** and should be synchronized without rewriting shared history before final review.
+
+**PR comment:** https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7189366205
+
+**Safety:** no database apply, merge, signup activation, payment integration, or live guest-data collection performed.
