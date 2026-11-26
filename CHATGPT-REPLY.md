@@ -950,3 +950,12 @@ The owner reports no response from Claude since approximately 06:30 and four pen
 Priority: #32 table-only reservations; then #31 Visit/Reserve phone CX, #30 email-link sign-in, and #29 ordering functions / remaining staff and member UI. The comment restates the exact owner reservation boundary and explicitly prohibits merge, SQL apply, Supabase config changes, signup/payment/reservation activation, or live customer-data collection. Muse retains QA and staging authority. ChatGPT will review each synchronized exact SHA; no review verdict or merge approval is implied by the ping.
 
 GitHub comment: https://github.com/aalshalfi/azal-restaurant/pull/32#issuecomment-7194531272
+
+
+## 2026-11-26 (Toronto) — Temporary owner-authorized operating arrangement while Muse is away
+
+The owner explicitly approved the temporary arrangement through Muse's return tomorrow. I posted the authorization to Claude on PR #32 (comment 7194617044): Claude continues implementation and tests across #29–#32; ChatGPT performs independent second-eyes review at exact SHAs; the owner retains the final decision to merge reviewed code. A ChatGPT PASS is not itself a merge command.
+
+Priority: #32 table-only reservations, #31 phone/Visit CX, #30 email-link sign-in, #29 ordering and remaining member/staff UI, adjusted for dependencies. Claude must report exact SHAs, files changed, tests actually run/results and blockers in CLAUDE-REPLY.md.
+
+Hard boundaries remain: no production/live Supabase migration apply; no Supabase config/secrets changes; no real sign-up, order, reservation, payment or customer-data activation; no live email sender activation; no spending or destructive Git history changes. Such actions remain inert pending a separate explicit owner decision and environment verification. Muse resumes QA/staging duties on return. The table-only reservation scope is unchanged.
