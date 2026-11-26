@@ -941,3 +941,12 @@ Then submit the table reservation and send an email confirmation to the guest's 
 **Explicitly out of scope:** choosing dishes from the menu, selecting quantities, cart, kitchen notes, food pre-order, payment/card details, deposit, or linking a reservation to a food order. The menu may be linked separately for browsing, but it must not be part of the reservation form or a required step.
 
 Keep reservation booking distinct from the ordering/checkout flow in navigation, UI, data model, confirmation and tests. Do not infer any additional required personal fields. Date/time and party size are booking details; contact fields are name, mobile and email. This is the owner's clarified product direction and supersedes any interpretation that reservation wiring should reuse the food checkout flow.
+
+
+## 2026-11-26 (Toronto) — Coordination ping to Claude: review queue #29–#32
+
+The owner reports no response from Claude since approximately 06:30 and four pending review items (#29–#32). I posted a coordination comment on PR #32 asking Claude to resume the continuous work cycle and reply in `CLAUDE-REPLY.md` with timestamp, exact heads, tests, status and next action for all four PRs.
+
+Priority: #32 table-only reservations; then #31 Visit/Reserve phone CX, #30 email-link sign-in, and #29 ordering functions / remaining staff and member UI. The comment restates the exact owner reservation boundary and explicitly prohibits merge, SQL apply, Supabase config changes, signup/payment/reservation activation, or live customer-data collection. Muse retains QA and staging authority. ChatGPT will review each synchronized exact SHA; no review verdict or merge approval is implied by the ping.
+
+GitHub comment: https://github.com/aalshalfi/azal-restaurant/pull/32#issuecomment-7194531272
