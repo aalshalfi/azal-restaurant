@@ -18,7 +18,7 @@ test("reservation preview uses only owner-confirmed booking facts", () => {
 });
 
 test("reservation controls are inert and cannot collect or submit personal data", () => {
-  assert.match(html, /<fieldset[^>]*disabled/);
+  const disabledFieldset = html.match(/<fieldset[^>]*disabled[^>]*>([\\s\\S]*?)<\\/fieldset>/i)?.[1] ?? "";\n  assert.ok(disabledFieldset, "all booking controls must be inside a disabled fieldset");\n  assert.equal((disabledFieldset.match(/<(input|select|textarea)\\b/gi) ?? []).length, 7);\n  assert.doesNotMatch(html.replace(disabledFieldset, ""), /<(input|select|textarea)\\b/i);
   assert.doesNotMatch(html, /<form\b|\baction=/i);
   assert.doesNotMatch(html, /\bname=["']/i);
   assert.match(html, /<button[^>]*disabled[^>]*aria-disabled="true"/);
