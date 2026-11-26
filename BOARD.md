@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| `styles.css` | ChatGPT | D1 — hero art direction and visual hierarchy | 2026-11-25 20:38 EST | Reserved for a reversible CSS-only concept pass on a feature branch; no logo, palette, copy facts, or image source changes. |
+| `styles.css` | ChatGPT | D1 — hero art direction and visual hierarchy | 2026-11-25 20:38 EST | Released after CSS-only prototype commit `458f7e2`; PR/review pending, no further edits until feedback. |
 
 ## Open tasks
 
@@ -18,13 +18,13 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | M1 | Favicon visual check in a real browser tab | Muse | File repaired; tab visual pending | File repaired by Muse (commit `2c5ded22`): valid SVG, 163,768 B, loads live with no XML error. Browser-tab visual still unconfirmed (screenshots do not show the tab strip). |
 | A1 | Arabic wordmark "أَزَال" shows as boxes in the QA browser | Muse | Open | Likely a missing font in the QA environment. Verify on a real device. |
 | S1 | Sufra Compass v1 prototype | Muse | **QA passed 19:42 EST (EN); FR regression after C8 merge** | Live QA passed: all three guide buttons, search clearing, tab sync, keyboard, cart, demo checkout. Critique given in `MUSE-REPLY.md`. One new finding filed as C10. FR half of QA waits on the C8 merge. |
-| B1 | Brand-experience brief: Majlis AZAL, community content, multi-branch model | ChatGPT drafts, Muse reviews | Open | What is live now, what is visibly "Phase 2", what must never be faked. |
+| B1 | Brand-experience brief: Majlis AZAL, community content, multi-branch model | ChatGPT drafts, Muse reviews | **Concept direction drafted; Muse critique requested** | Sufra Thread, Majlis Welcome Note, and a static bilingual Majlis Journal are recorded in `CHATGPT-REPLY.md`; no facts, rewards, or personal-data collection are activated. |
 | CI2 | Runtime smoke test in CI (language switch, menu, cart, translation keys) | Muse merged | **Done — merged `efe955c`, 5/5 pass** | `tests/smoke.test.mjs` + one step in `site-check.yml`. Verified 5/5 locally against the C8-fixed tree and in-repo after merge. Merge order C8→CI2 respected. |
 | C10 | Search × guide trap: typing a search while a guide is active ANDs with the category filter and can strand the guest on an empty menu with no hint | Muse (lead) | **Done — fixed `92a8477`, live QA passed desktop 20:33 EST** | Typing a non-empty search now clears the active guide, resets the tab to All and the status line to initial. Smoke test added (6/6 pass). Live: "Start with sides" → 2 sides; "mandi" → guide deselected, both mandi dishes shown; clear search → 9 dishes. Deploy lag noted: first load ~2 min after push still served the old build. |
 
 | G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. **Amended 2026-11-25 19:56: Muse leads the team and owns owner summaries (see MUSE-REPLY.md).** |
 
-| D1 | Design elevation pass — owner first impression: interface underwhelming. Hero art direction, type hierarchy, spacing rhythm, imagery treatment (palette/logo rules unchanged) | ChatGPT builds, Claude critiques, Muse gates | **Open — TOP PRIORITY (lead decision 2026-11-25 20:00)** | Bar: impressive at first sight, not merely functional. |
+| D1 | Design elevation pass — owner first impression: interface underwhelming. Hero art direction, type hierarchy, spacing rhythm, imagery treatment (palette/logo rules unchanged) | ChatGPT builds, Claude critiques, Muse gates | **Prototype on branch `chatgpt/d1-hero-arch-20261125` (`458f7e2`); PR #2 CI passed (Site checks #25); awaiting two-eyes review and live EN/FR desktop/mobile QA — not Done** | CSS-only Welcome Arch uses the existing image and palette; no logo, content, or behavior changes. Do not merge until review + live QA. |
 
 | F1 | FULL-BUILD scope (owner directive 2026-11-25 20:04): complete integrated site incl. real backend, customer accounts, Majlis membership/points — "demo" means unlaunched/internal only, never partial. Architecture & plan first | Muse leads plan, ChatGPT builds, Claude reviews | **Open — P1 architecture note posted `docs/f1-architecture.md` 20:12 EST, awaiting Claude review before any implementation** | Adapt proven Supabase blueprint (Yemen Gate v5.4); branches table from day one, HST 13% server-side, bilingual menu fields, Majlis memberships table, branch hours; points rates/tiers still Tier C pending owner. P2 (staging backend) after Claude review. |
 
