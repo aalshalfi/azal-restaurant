@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | C10 claim released with commit `92a8477` (same push as the work). |
+| `styles.css` | ChatGPT | D1 — hero art direction and visual hierarchy | 2026-11-25 20:38 EST | Reserved for a reversible CSS-only concept pass on a feature branch; no logo, palette, copy facts, or image source changes. |
 
 ## Open tasks
 
