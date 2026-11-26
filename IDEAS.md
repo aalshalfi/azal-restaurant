@@ -70,3 +70,83 @@ The hero receives a CSS-only arch composition using the existing sample image an
 | Majlis Journal | Neutral for checkout steps; it must never interrupt or gate the menu. | Pass if it is a small curated bilingual journal, not an endless social feed. | Pass if it is a simple vertical reading list with short entries and accessible text. | Proposed / pre-opening content gate. Static and data-free, but every cultural or historical statement must be owner-approved; no comments, sign-up wall, or email capture. |
 
 **Cross-idea decision:** Do not add streaks, spin-to-win, pressure-based challenges, or notification-led engagement as a default loyalty mechanic. They add activity without necessarily improving hospitality. Prefer quiet recognition, useful context, and reduced repeat effort.
+
+
+## 2026-11-25 — Claude's v3 Menu and Majlis proposals (recorded by ChatGPT)
+
+### 1. Sufra for N — سفرة لـ N
+
+**What:** One calm question at the top of Menu: how many people are at the table (2 / 4 / 6 / 8). One tap proposes an editable shared spread from approved menu combinations, then adds it to the sample cart in one step.
+
+**What makes it distinct:** It composes a whole table rather than filtering individual dishes (Sufra Compass) or letting multiple guests collaborate in one cart (Sufra Circle). It reflects Yemeni shared-meal behaviour without copying a competitor's flow.
+
+**Guest value:** Potentially replaces 5–8 individual add actions with one choice and a balanced starting point.
+
+| Quality check | Evaluation |
+|---|---|
+| Reduces steps | Pass if one group-size tap proposes the spread and one add action; fail if it adds a multi-step wizard. |
+| Simple and elegant | Pass as one compact card with editable sample items; no modal or chat. |
+| Mobile-first | Pass as four large horizontal chips at 390px; the spread preview stays compact. |
+| Truthfulness / status | **Proposed — recommended first Menu prototype, awaiting Muse ranking.** Use clearly labelled sample combinations only; real portions and combinations require owner approval (Tier C). |
+
+### 2. Say it right — dish-name pronunciation
+
+**What:** An optional small “Say it” chip under a dish name, initially text-only with an owner-approved Latin-letter pronunciation. Audio can be added later only from staff-recorded clips.
+
+**What makes it distinct:** It solves a real first-time guest hesitation without adding a chatbot, extra page, or promotional interaction.
+
+**Guest value:** Guests can order unfamiliar Yemeni dish names more confidently and with less friction.
+
+| Quality check | Evaluation |
+|---|---|
+| Reduces steps | Neutral / pass — it does not shorten checkout, but may remove the need to search elsewhere. |
+| Simple and elegant | Pass if optional, one short line, and never louder than the dish name. |
+| Mobile-first | Pass with a 44px minimum tap target and no audio autoplay. |
+| Truthfulness / status | **Proposed — text-only prototype after owner approves spellings.** No fabricated audio or unapproved transliterations. |
+
+### 3. Iftar & Eid pickup window
+
+**What:** A future pickup-time helper that can show slots relative to local sunset (for example, a slot around iftar) and group-pickup capacity on selected high-demand days.
+
+**What makes it distinct:** It treats pickup timing as a meaningful hospitality constraint rather than a generic clock-time list.
+
+**Guest value:** Less uncertainty about when to arrive; clearer kitchen demand by slot.
+
+| Quality check | Evaluation |
+|---|---|
+| Reduces steps | Potential pass if the right slot is suggested; not useful if it adds date questions. |
+| Simple and elegant | Conditional — show only during owner-approved periods, never a permanent extra control. |
+| Mobile-first | Pass as a short vertical slot list with clear capacity states. |
+| Truthfulness / status | **Deferred to P3.** Requires owner-confirmed opening/iftar availability and kitchen capacity; compute dates rather than hardcoding Ramadan/Eid dates. No hours or slots may be invented. |
+
+### 4. Diyafa — ضيافة guest invitations
+
+**What:** A future Majlis benefit that lets an eligible member gift a tea or dessert invitation to a guest using a one-time pickup code after a defined number of completed orders.
+
+**What makes it distinct:** It turns loyalty from self-reward into generosity and hosting, without streaks, spin-to-win, or pressure notifications.
+
+**Guest value:** A reason to return that feels like inviting someone to the table, and a warm introduction for a new guest.
+
+| Quality check | Evaluation |
+|---|---|
+| Reduces steps | Neutral — must be a one-tap gift from the member page, not a claim form. |
+| Simple and elegant | Pass if the invitation is one quiet card and one code; no reward feed. |
+| Mobile-first | Pass as a compact member-page card with a copyable one-time code. |
+| Truthfulness / status | **Concept only — P4.** Requires owner-approved reward rules/costs and a ledger design; no code, points, or reward promise until approved. |
+
+### 5. Sufra Circle — shared group cart
+
+**What:** An optional shared-cart session where guests can add sample dishes to one table cart while a host keeps final review control.
+
+**What makes it distinct:** Unlike Sufra for N, it does not compose a spread; it coordinates multiple contributors to one cart.
+
+**Guest value:** Less back-and-forth for families and groups choosing together.
+
+| Quality check | Evaluation |
+|---|---|
+| Reduces steps | Pass for groups only; adds steps for solo diners, so it must never be the default. |
+| Simple and elegant | Conditional — one invite link and one host review; no chat or account requirement. |
+| Mobile-first | Conditional — each contributor needs a clear add/undo path and the host needs a compact live summary. |
+| Truthfulness / status | **Deferred until after the individual order flow is stable.** Requires safe session tokens, sync, expiry and privacy rules; prototype with fixtures only, no real shared orders. |
+
+**Muse ranking request:** Please rank Sufra for N and Say it right for the v3 Menu page. Keep Iftar & Eid for P3, Diyafa for P4, and Sufra Circle deferred until the individual ordering flow is stable.
