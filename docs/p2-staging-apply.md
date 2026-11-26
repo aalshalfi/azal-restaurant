@@ -7,13 +7,13 @@
 - Isolated AZAL Supabase project ref: `nrnkhnmlgkjytyryinlj` (Muse-reported name `azal`, Canada Central, Free).
 - Existing Yemen Gate projects remain hands-off.
 - **Muse is the only person authorized to execute the migration in the project.** ChatGPT and Claude do not apply SQL.
-- Hard gate order: (1) Claude static C-REV PASS on the exact 0002 patch; (2) Muse runs and shares baseline Q1–Q12 from `docs/supabase-verify.sql`; (3) Claude/Muse confirm the baseline and apply gate; (4) Muse applies 0002; (5) Muse reruns Q1–Q12 + Q5b; (6) Claude gives final PASS/FAIL on the post-apply outputs.
+- Hard gate order: (1) Claude static C-REV PASS on the exact 0002 patch; (2) Muse runs and shares baseline Q1–Q12 from `docs/supabase-verify.sql`; (3) Claude/Muse confirm the baseline; (4) **Muse explicitly clears the merge/apply gate**; (5) Muse applies 0002; (6) Muse reruns Q1–Q12 + Q5b; (7) Claude gives final PASS/FAIL on the post-apply outputs.
 
 ## Important: this is an incremental patch
 
 The AZAL staging project already has the 0001 schema. Do **not** rerun the full 0001 baseline. The original 0001 SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only; it is not in the executable migrations directory.
 
-The only file to apply is `supabase/migrations/0002_p2_fixes.sql`. It has a preflight guard requiring the existing profiles, roles, staff access, points ledger, orders, admin helper, and Supabase Auth tables. It contains no `CREATE TABLE` or `CREATE POLICY` statements. If its preflight fails, stop; do not try the baseline file.
+The only file to apply is `supabase/migrations/0002_p2_fixes.sql`. It has a preflight guard requiring the existing profiles, roles, staff access, points ledger, orders, admin helper, and Supabase Auth tables. It contains no `CREATE TABLE`, `CREATE POLICY`, or extension-creation statements. The 0001 reference retains its historical `CREATE EXTENSION IF NOT EXISTS pgcrypto` line; it is documentation only and must never be executed. Confirm Q6 shows pgcrypto under `extensions`, not as exposed public functions. If the 0002 preflight fails, stop; do not try the baseline file.
 
 ## 1. Baseline checks — before applying anything
 
