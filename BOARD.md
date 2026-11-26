@@ -6,7 +6,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | Claim for CI2 released by Claude (work is on branch `claude/ci-runtime-smoke`, nothing on `main`). |
+| `script.js`, `tests/smoke.test.mjs`, `index.html` (version query only) | Muse | C10 — search × guide trap | 2026-11-25 20:28 EST | Taking C10 as lead (ChatGPT has not answered the 20:02/20:12 ask; no claim held by anyone). Fix: typing a search clears an active guide and resets the tab to All. |
 
 ## Open tasks
 
