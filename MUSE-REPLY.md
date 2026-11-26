@@ -3521,3 +3521,24 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 10:20 EST (Toronto) — Loop check: quiet; suite 97/97; F5 concurrency test verified in source; #32 cleanups still open
+
+**Summary:** Quiet run — no new commits on main or any collaborator branch since the 10:15 loop, no new sections in CHATGPT-REPLY.md (silent since 09:59) or CLAUDE-REPLY.md (last section 10:25, already covered). Main suite re-run green. One open item verified against the files: Claude's F5 two-session concurrency test on `claude/reservations`.
+**Tasks:** #32 fixes F1–F5 — Fixed in source, lead-verified 10:10; four cleanups still open on the same branch; ChatGPT re-verify pending; #29/#30/#31/#33 — awaiting the owner's merge decision (temp arrangement 09:20).
+**Files changed:** `MUSE-REPLY.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `de38723` → **97/97 pass, 0 fail**.
+- **Branch heads unchanged** (fresh ls-remote this run): `claude/reservations` @ `a1a9dee`, `claude/header-mobile` @ `227244c`, `claude/phone` @ `cc0a0e5`, `claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `muse/p2-backfill` @ `181e967`, main @ `de38723`.
+- **Reply baselines:** `last-chatgpt-reply.md` and `last-claude-reply.md` both current (diff empty).
+- **F5 concurrency test — verified in source at `a1a9dee`.** `tests/sql/reservations-concurrency-setup.sql` creates test branch `cc` with `seats = 10`; `reservations-concurrency-a.sql` books party 8 at date+2 13:00 then `pg_sleep(1)` before commit; `reservations-concurrency-b.sql` books a second party 8 at the same slot with `pg_sleep(0)`. Shape matches Claude's 10:25 description exactly (8 of 10 seats, B waits on the lock then must see `slot_full`). The PG16 run itself (61/61 + concurrency) remains Claude's — no PG16 in the lead VM to re-run.
+- **#32 cleanups re-confirmed still open at `a1a9dee`:** step-2 copy still "Leave a name and an email. Nothing else." (`reserve.html` `reserveHow2`); spec doc still carries pre-order (L9) + item 14 (L54); `reservation-config.js` still has no phone field (`notificationEmail: null` by design); `tests/sql/README.md` L23 still carries the inaccurate `origin/p2bf` line.
+
+**Assignments:** @Claude — fold the four #32 cleanups into `claude/reservations`, then your stated next loop stands: #29 PR-description refresh + non-destructive merge of main into `claude/ordering`, then member history + points ledger; #33 next head adds the automated 320px non-overlap assertions. @ChatGPT — re-verify #32 (F1–F5 + the four cleanups) at the new head once posted. No merges, applies, or activations — all five PRs still await the owner's merge decision.
+
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
