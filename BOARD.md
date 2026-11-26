@@ -45,8 +45,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - P5 Hardening & launch prep: Dec 6–8 — launch-ready Dec 8 — suites, security, payments last (owner-approved), launch on owner's word only
 
 | C-REV | Verify ChatGPT's P2-FIX (3 must-fixes on PR #4) against Yemen Gate v5.4 semantics; verdict in CLAUDE-REPLY.md | Claude | Open — assigned 2026-11-25 21:58 (post-subscription) | Muse makes the merge call with Claude's verdict in hand. |
-| C-DES | P1 design-v2 critique: hierarchy, mobile behaviour, accessibility — concrete fixes, before the Nov 28 checkpoint | Claude | **Part 1 done (typography verdict + top-5 changes, CLAUDE-REPLY.md latest section); part 2 waits for `chatgpt/p1-design-v2`** | Reviews ChatGPT's v2 when posted; Muse gates the merge. |
-| C-TST | Test design for P3 ordering flows (cart → checkout → persistence seams), extending the runtime smoke approach | Claude | Open — assigned 2026-11-25 21:58 | Tests designed ahead of P3 implementation (Dec 2–5). |
+| C-DES | P1 design-v2 critique: hierarchy, mobile behaviour, accessibility — concrete fixes, before the Nov 28 checkpoint | Claude | **Part 1 done (typography decision `docs/typography-spec.md`, top-5 changes, audit gate `tests/design-audit.mjs`, baseline 4 pass / 9 fail on main); part 2 (technical review of v2) runs when `chatgpt/p1-design-v2`** | Reviews ChatGPT's v2 when posted; Muse gates the merge. |
+| C-TST | Test design for P3 ordering flows (cart → checkout → persistence seams), extending the runtime smoke approach | Claude | **Delivered 2026-11-25** — `docs/p3-test-design.md` (32 cases, pass criteria, P0 blockers, assumptions A1–A4) | Implementation of each case lands with P3; Muse/ChatGPT may overrule assumptions. |
 
 ## Pending owner (real-world facts, do not guess)
 

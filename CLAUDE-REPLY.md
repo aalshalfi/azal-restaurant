@@ -151,3 +151,30 @@ document.document.documentElement.dir="ltr";
 **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:13 EST (Toronto) — Completion orders: typography decision, audit gate for v2, P3 test design
+
+**Summary:** Delivered the three items in your 22:12 orders that do not depend on ChatGPT's branch. C-DES review is armed and runs the moment `chatgpt/p1-design-v2` appears (no such branch on the remote yet).
+
+**1. Typography verdict (single decision, with values):** `docs/typography-spec.md`. Source Sans 3 body/UI + Source Serif 4 display, self-hosted; ready-to-paste tokens, size floor 12px, body 16px, inputs 16px, buttons 44px+, muted `#6B5848`. I could not download font files (no internet in my sandbox), so the file records where to fetch them. Please live-check the pairing before merge.
+
+**2. Objective gate for v2 (C-DES):** `tests/design-audit.mjs` (local tool, not in CI): `node tests/design-audit.mjs <dir>` serves a checkout and measures the five binding points at 390x844 plus a desktop sanity pass. Baseline on current `main` (measured, not estimated): 4 pass, 9 fail.
+- Cart visible without opening the menu: FAIL (hidden, 0x0); still reachable at scroll 2400: FAIL.
+- First dish starts at **2,426px** from the top (target: within 844px): FAIL.
+- **69** visible text elements under 12px (e.g. eyebrow 9px, sample note 8px, hero meta 8px, buttons 10px): FAIL. Body 16px: PASS (inherited default; component classes override it, so that pass is weak).
+- Search input 12px (target 16px): FAIL. `--muted` 4.40:1 (target 4.5): FAIL.
+- Hero 620px on mobile (target <=440): FAIL. Dish card **374px** each, 9 dishes (target row <=140): FAIL.
+- Tap targets under 44px: hamburger 34x35, category tabs 37px high, add buttons 57x34: FAIL.
+- Pass: no horizontal overflow or page errors; desktop keeps the 3-column grid and visible cart.
+
+**How I will review v2:** run the audit on the branch (target: 0 FAIL on the mobile checks, the two desktop checks still pass), run `node --test tests/smoke.test.mjs` (6/6 expected), then read the diff for the five binding points, FR string length overflow, focus rings and reduced motion. I will post a verdict in this file the same cycle. Limits stay: no live site, no real photos or fonts.
+
+**3. C-TST — P3 ordering-flow test design:** `docs/p3-test-design.md`: 7 client cases (CI-runnable), 14 database cases, 5 staff-reconciliation cases, 6 end-to-end cases, each with a pass criterion, plus P0 merge blockers. Includes regression cases for the three PR #4 must-fixes (D12 admin join, D13 profile trigger, D14 ledger exactly-once). I verified the HST examples with decimal arithmetic. Assumptions A1–A4 are listed at the top (tax on subtotal rounded half-up; fixture hours until the owner supplies real ones; Toronto time); overrule any of them.
+
+**C-REV:** still needs the Yemen Gate v5.4 semantics. `docs/f1-architecture.md` section 2 gives me the contract (function names, exactly-once indexes, own-or-admin RLS), which is enough to review the three fixes against the stated semantics once ChatGPT posts the corrected SQL. I will say clearly which points I could check only against that description, not against v5.4 source.
+
+**Files changed:** `docs/typography-spec.md`, `docs/p3-test-design.md`, `tests/design-audit.mjs` (new), `BOARD.md`, this file. No site files touched. **Owner decisions needed:** none.
+
+— Claude
