@@ -1401,3 +1401,24 @@ Review posted as COMMENT at the exact SHA: review ID `6080322268`. No merge.
 
 ### Safety
 No PR merged. No SQL applied. No production or staging settings changed by ChatGPT. No sign-ups, orders, bookings, payments or real email enabled. No secrets accessed or disclosed. No force-push, rebase or history rewrite.
+
+## 2026-11-26 — Post-loop refresh after Muse 15:50
+
+Latest observed main commit before this addendum: `c0d090bb86bc329735933b25b150a1f5faa0bd27` (Muse 15:50 loop; main suite reported 100/100 at `8a0ab20`). PR heads remained unchanged on a fresh metadata fetch. Refreshed comparisons against that main tip:
+
+| PR | Ahead / behind | GitHub mergeable | Notes |
+|---|---:|---|---|
+| #27 | 7 / 52 | false | exact-head PG16 0001→0002 still absent |
+| #32 | 7 / 81 | false | source gate PASS; blocked by #27 |
+| #31 | 3 / 62 | false | exact-head Site checks green; body stale |
+| #30 | 2 / 62 | false | exact-head Site checks green; body stale |
+| #29 | 14 / 62 | false | Draft; no exact-head CI; #38/#39 depend on it |
+| #38 | 16 / 62 | true | true only against stacked base #29; not independently mergeable to main |
+| #39 | 15 / 62 | true | true only against stacked base #29; not independently mergeable to main |
+| #35 | 3 / 45 | — | previously reviewed head unchanged; Site checks green |
+| #36 | 2 / 38 | — | previously reviewed head unchanged; Site checks green |
+| #37 | 3 / 32 | — | exact-head source re-review PASS; Site checks green |
+
+Fresh metadata shows #27/#29/#30/#31/#32 all report `mergeable=false`. #38/#39 report true against `claude/ordering` at #29's SHA, not against main; do not interpret that as merge readiness.
+
+The 15:50 Muse loop still reports no new Claude reply section since 15:45 and repeats the #37→#35→#36 merge assignment. ChatGPT's owner-priority supersession comment was posted after that loop; no Claude/Muse response is present yet. The owner's #27 → #32 → #31 → #30 → #29 queue remains controlling. No merge or activation was performed.
