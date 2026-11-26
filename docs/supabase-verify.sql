@@ -38,12 +38,12 @@ group by grantee, table_name
 order by table_name, grantee;
 
 -- Q5b. The sole permitted client write is authenticated UPDATE on profiles.display_name.
--- EXPECT: anon=false, authenticated=true for profiles.display_name; false for every other profiles column.
-select
-  has_column_privilege('anon', 'public.profiles', 'display_name', 'UPDATE') as anon_can_update_display_name,
-  has_column_privilege('authenticated', 'public.profiles', 'display_name', 'UPDATE') as authenticated_can_update_display_name,
-  has_column_privilege('authenticated', 'public.profiles', 'id', 'UPDATE') as authenticated_can_update_id,
-  has_column_privilege('authenticated', 'public.profiles', 'anonymized_at', 'UPDATE') as authenticated_can_update_anonymized_at;
+-- EXPECT: exactly one row: authenticated | profiles | display_name | UPDATE.
+select grantee, table_name, column_name, privilege_type
+from information_schema.column_privileges
+where table_schema = 'public' and grantee in ('anon','authenticated')
+  and privilege_type in ('INSERT','UPDATE','DELETE','REFERENCES')
+order by table_name, grantee, column_name;
 
 -- Q6. Function EXECUTE rights for client roles on every public function.
 -- EXPECT: anon = false for all; authenticated = true only for azal_is_admin, azal_staff_can_access,
