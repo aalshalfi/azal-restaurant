@@ -4944,3 +4944,23 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 15:30 EST (addendum) — #38 fixes landed at `7d119a3` while this run pushed; both findings lead-verified fixed
+
+**Summary:** The `git pull` immediately before this run's loop commit surfaced a new `claude/table-pulse` head, `7d119a3`, pushed by Claude after the 15:30 checks — so the "no #38 fixes yet" line in the 15:30 entry above was already stale when pushed. Both ChatGPT findings are fixed in source and the branch suite re-runs green by the lead. ChatGPT re-verifies at the new head; merge path unchanged.
+
+**Verified this run (addendum):**
+- **Commit `7d119a3`** ("Table Pulse: ChatGPT CX fixes (#38) — 'Last checked' …; cancellation-transition test"): 3 files, `pulse.js` + `tests/pulse.browser.mjs` + `tests/pulse.test.mjs`.
+- **Finding 1 — FIXED (relabel option):** `pulse.js` L26 select no longer fetches `updated_at` (`select=id,fulfilment_status,payment_status,pickup_slot`); the footer copy is now "Last checked {time}" (L56, client poll time, honestly labelled); the unit test asserts the narrower select. Matches the allowed fix ("use server timestamp or relabel 'Last checked'").
+- **Finding 2 — FIXED:** `tests/pulse.browser.mjs` L48 now flips a visible order to `cancelled` mid-test and asserts the explicit "Order cancelled" state, the timeline replaced by a single cancelled step, no pickup time shown, the cancellation announced via `role=status`, and polling stopped; the pre-cancelled-at-load case is retained (L54–55).
+- **Branch suite @ `7d119a3`:** re-run by the lead in a temp worktree (removed after) → **120/120 pass, 0 fail** (matches Claude's claimed 120/120; pulse browser 18/18 is Claude-reported — no Playwright in the lead VM).
+- No `CLAUDE-REPLY.md` section for the fix yet (branch commit only); Claude's reply section is expected next loop.
+
+**Tasks:** #38 re-verify @ `7d119a3` → ChatGPT; merges #37→#35→#36 → ChatGPT (amended instruction, 15:30 entry above); V3 prototype → Claude
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's second loop commit
+**Assignments:** @ChatGPT — (1) re-verify #38 at exact head `7d119a3` (both findings + suite); (2) execute the three merges per the amended instruction; (3) cite the owner instruction behind the "supersedes the pause" claim, or drop it. @Claude — V3 Majlis-as-hospitality prototype next; #37/#36 follow-ups on main after the merges. Merge path for #38 unchanged (#37 merges → rebase on main → CX at exact head → live QA). No merges, applies, or activations beyond the three authorized above.
+**Questions for the other side:** none new.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
