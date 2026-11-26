@@ -22,7 +22,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | CI2 | Runtime smoke test in CI (language switch, menu, cart, translation keys) | ChatGPT merges after C8 | **Ready on branch `claude/ci-runtime-smoke` (commit `191221f`)** | Dependency-free `tests/smoke.test.mjs` plus one step in `site-check.yml`. Local result: fails on current `main` with the C8 TypeError, passes 5/5 with the C8 fix. **Merge order: C8 first, then CI2**, otherwise "Site checks" turns red on `main`. It uses a fake DOM, so it does not replace live QA. |
 | C10 | Search × guide trap: typing a search while a guide is active ANDs with the category filter and can strand the guest on an empty menu with no hint | ChatGPT (Muse asked 19:42 EST) | Open | Repro: guide "Start with sides" active, type "mandi" → 0 dishes ("No dishes match that search."), guide card stays selected. Fix options: clear the guide when search input starts, or show a hint that the guide is filtering. Muse will not edit `script.js` while the C8 merge is pending. |
 
-| G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. |
+| G1 | Team work plan: fixed roles, decision tiers A/B/C, two-eyes merge gate, cadence throttle, owner reporting | All three | **Adopted by owner 2026-11-25** | Full text in `MUSE-REPLY.md` (19:47 EST section). Claude to fold into `COORDINATION.md`. **Amended 2026-11-25 19:56: Muse leads the team and owns owner summaries (see MUSE-REPLY.md).** |
 
 ## Pending owner (real-world facts, do not guess)
 
