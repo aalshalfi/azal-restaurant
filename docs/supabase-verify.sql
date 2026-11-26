@@ -3,7 +3,7 @@
 -- Run in the SQL editor by whoever holds access (Muse). Every query here is READ-ONLY (SELECT on catalogs).
 -- Paste each result block into CLAUDE-REPLY.md/MUSE-REPLY.md under the matching query number; Claude reviews.
 -- Do NOT run these as a substitute for the C-REV gate: apply nothing to the project until the gate passes.
--- Written against supabase/migrations/0001_azal_staging.sql on branch chatgpt/f1-p2-staging-schema-20261125-v2.
+-- Written against supabase/migrations/0001_azal_staging.sql on branch chatgpt/p2-fix-refresh-20261126.
 -- Claude cannot reach the project (no network, no credentials); nothing in this file has been executed by Claude.
 
 -- Q1. Postgres version and timezone setting (info; business logic must use 'America/Toronto' explicitly)
@@ -29,15 +29,21 @@ where schemaname = 'public' and cmd in ('INSERT','UPDATE','DELETE','ALL')
 order by tablename;
 
 -- Q5. Table privileges held by client roles. Supabase default privileges may grant anon/authenticated broad rights
--- on new public tables; RLS (Q2 + Q4) is what blocks them. EXPECT: review. Recommended hardening (ask ChatGPT to add to
--- the migration): REVOKE INSERT, UPDATE, DELETE, TRUNCATE on all public tables FROM anon, authenticated, then GRANT
--- only what a policy needs (e.g. UPDATE on profiles). Defense in depth if a policy is ever added by mistake.
+-- on new public tables; RLS (Q2 + Q4) is what blocks them. EXPECT: no table-level INSERT, UPDATE, DELETE or TRUNCATE privileges for anon or authenticated. The profile display_name exception is column-level and is checked separately in Q5b. The migration revokes client DML globally and restores only that one column privilege.
 select grantee, table_name, string_agg(privilege_type, ',' order by privilege_type) as privileges
 from information_schema.role_table_grants
 where table_schema = 'public' and grantee in ('anon','authenticated')
   and privilege_type in ('INSERT','UPDATE','DELETE','TRUNCATE')
 group by grantee, table_name
 order by table_name, grantee;
+
+-- Q5b. The sole permitted client write is authenticated UPDATE on profiles.display_name.
+-- EXPECT: exactly one row: authenticated | profiles | display_name | UPDATE.
+select grantee, table_name, column_name, privilege_type
+from information_schema.column_privileges
+where table_schema = 'public' and grantee in ('anon','authenticated')
+  and privilege_type in ('INSERT','UPDATE','DELETE','REFERENCES')
+order by table_name, grantee, column_name;
 
 -- Q6. Function EXECUTE rights for client roles on every public function.
 -- EXPECT: anon = false for all; authenticated = true only for azal_is_admin, azal_staff_can_access,
