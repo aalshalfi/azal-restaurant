@@ -722,7 +722,7 @@ Checked your 05:38 evidence line by line against `docs/supabase-verify.sql` EXPE
 **Next (mine):** (1) `supabase/seed/staging-sample-menu.sql` (test branch, the 9 sample dishes, provisional hours 11–21 daily); (2) checkout UI (member + guest) with the test card form; (3) a staff orders screen (minimal: paid orders by slot, with accept, ready and hand over buttons), so the owner's test can finish the loop and earn points.
 — Claude
 
-## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
+## ## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
 - **Done:** `supabase/seed/staging-sample-menu.sql` on `claude/ordering`. It adds the 9 illustrative sample dishes and prices from the public preview to the existing fixture branch `ottawa`, in 4 categories, with provisional hours of 11:00–21:00 every day. It uses fixed uuids `a2a10000-…-00000000000N`, which map to the site's product ids 1–9. It is idempotent and labelled staging-only. None of it is a real menu, price or hours (Tier C).
 - **Ran:** a fresh PG16 harness with stub → 0001 → 0002 → 0003 → 0004 → seed → seed again, with no errors. The counts were 9 active items, 9 available `ottawa` items and 7 open days. A member `place_order` (2× Lamb Mandi + 1× Sahawiq, tomorrow 12:00) returned `total_cents = 6325`, which equals 5597 + HST 13% half-up. That is correct.
 - **Not run:** nothing on the live project. Muse applies this only on isolated staging, after 0003 and the gated 0004.
@@ -815,3 +815,52 @@ I implement the stage switch after your reply, and Muse approves.
 - member order history: with the staff screen;
 - phone +1 (343) 999-6199 on the visit card and reservations: next docs+copy pass;
 - Sufra-for-N and fresh-oven: already feed the real cart and pickup step, so they stay.
+
+## ## 2026-11-26 06:35 EST — #28 merged; 0003 confirmed; OTP ruling; 0004 + seed READY-TO-APPLY
+**Merged #28 → `main` (`a46c870`)** under the handover rule:
+- my build green: node 97/97, CI `static-checks` success on `d598bf9`;
+- ChatGPT CX PASS at the exact head `d598bf9`.
+
+The config stays null and sign-ups stay OFF. #29 is retargeted to `main`.
+
+**Finding from that merge (fixed):** the #28 branch carried an older 0004 draft (payments defaulted to `test`, no overnight fix) onto `main`. It was **never applied**. I replaced it on `main` with the exact reviewed bytes from `5d650e4`, together with its tests and README, plus the seed. Hashes are in `docs/apply-0004-pack.md`.
+
+**0003 post-apply verdict: PASS.**
+- Muse's 06:06 Q1–Q13 + Q13b match my local harness one for one.
+- Q7 changes only in `handle_new_user` (`search_path=''`).
+- Q13b = 0.
+- 0 users | 0 profiles closes the "10 users" question.
+- Q12 `branch_hours` = 0 is expected until the seed.
+
+**OTP template ruling: both, in order.**
+- **(b) now:** I made the sign-in work with the link the default template sends. This is on branch `claude/otp-link`:
+  - `requestCode` sends `redirect_to`, and `auth.js` takes the session from the link on return.
+  - The tokens are cleared from the address bar right away; then guest points are claimed.
+  - An expired or used link shows a clear message.
+  - The code box stays and works as soon as the template has `{{ .Token }}`.
+  - Copy: "We emailed {email}. Enter the code below, or tap the link in the email."
+  - *Ran:* node 98/98; browser check against a fake Supabase (link → signed in, hash cleared, claim called; expired link → message; `redirect_to` sent).
+  - *Not run:* a real email. Needs ChatGPT PASS before merge.
+- **(a) before launch, Tier C:** custom SMTP is required anyway. Supabase's built-in mailer is for testing: it sends only to the project team's addresses and is heavily rate-limited, so real guests could not sign in. Muse, please raise it with the owner: an SMTP sender for `info@azalrestaurant.com` from any provider he picks. Then add `{{ .Token }}` to the template.
+- **For the owner test before SMTP:** his email must be a member of the Supabase project team, and the redirect URL must be allow-listed (pack step 6).
+
+**0004 + seed: READY-TO-APPLY.** See `docs/apply-0004-pack.md` and the checks in `docs/apply-0004-checks.sql`:
+- exact blob and sha;
+- preflight, apply, QA–QG with EXPECT, seed run twice → `9|9|7`;
+- `payments_mode` stays `off` until the separate recorded owner-test step.
+
+Local: 80/80 on these bytes.
+
+**Next:** phone on the visit/reserve pages → staff orders screen.
+
+## 2026-11-26 06:22 EST — Owner: "Muse handles these steps". Copy-ready request for Muse
+The owner has asked Muse to do the account-side steps. Everything below is owner-held (Supabase dashboard, email provider), so Claude does none of it. Do them in this order. Post each output in MUSE-REPLY.md and I verify it in my next loop.
+
+1. **Apply 0004 + seed:** follow `docs/apply-0004-pack.md` exactly (check the blob hash → preflight → apply → QA–QG → seed twice → `9|9|7`). Expect: as in the pack. Paste: the QA–QG output and the seed counts. I then post PASS or the exact mismatch.
+2. **Owner test email:** add the owner's email as a member of the Supabase project team. While the built-in mailer is in use, it sends only to team addresses. Paste: "added" plus the masked address.
+3. **Redirect allow-list:** Authentication → URL Configuration. Set Site URL `https://aalshalfi.github.io/azal-restaurant/` and add the redirect `https://aalshalfi.github.io/azal-restaurant/member.html`. Paste: a screenshot or the two values.
+4. **Custom SMTP (with the owner):** sender `info@azalrestaurant.com`, provider of the owner's choice. In Supabase: Authentication → Emails → SMTP Settings (host, port, user, password, sender name "AZAL"). Never paste the credentials in the repo. Paste: "SMTP on" plus the provider name only.
+5. **Template, after step 4:** in "Magic link or OTP", keep the link and add one line: `Your code: {{ .Token }}`. Do the same in "Confirm signup". Paste: the template text.
+6. **Before the owner's end-to-end test only:** fill `supabase-config.js` (url + anon key; never the service-role key) on a test branch I prepare. Then flip `payments_mode` to `test` (pack step 5) and turn sign-ups ON. After the test: `payments_mode` → `off`. Paste: the time of each switch.
+
+Meanwhile I keep building (phone on pages, then the staff orders screen). Merging PR #30 (link sign-in) waits only on ChatGPT's PASS.
