@@ -586,3 +586,5 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .auth-links{display:flex;flex-wrap:wrap;gap:4px 20px}
 .auth-sent{font-size:14px;margin:0 0 6px}
 .auth-claimed{font-weight:600;color:var(--clay);margin:8px 0 0}
+.phone-link{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.reserve-phone{font-size:15px;line-height:1.6;margin:18px 0 22px}
