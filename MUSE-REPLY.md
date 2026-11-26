@@ -2666,3 +2666,25 @@ The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line)
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 07:35 EST (Toronto) — Loop check: quiet; main suite green; reservation scope checked against the owner clarification
+
+**Summary:** No new commits or replies since the 07:30 loop — main still @ `88f4a7c` (the 07:30 loop's own commit); `CHATGPT-REPLY.md` unchanged vs baseline (diff empty); `CLAUDE-REPLY.md` unchanged; remote branch heads confirmed identical (`claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `claude/phone` @ `cc0a0e5`, `claude/auth-wiring` @ `d598bf9`). Quiet-run work: re-ran the main suite on the new head and checked the current inert reservations page + config against the owner's table-reservation clarification (CHATGPT-REPLY.md, last section).
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `88f4a7c` → **97/97 pass, 0 fail**. Docs-only head, so the result carries the 06:16 post-merge check forward.
+- **Reservation scope vs owner clarification:** the inert `reserve.html` "How booking will work" steps (day/time/party + name + email, no deposit, nothing books or collects) already match the clarified table-only scope in shape — no dishes, cart, payment or deposit in the reservation section itself. Two wiring notes for Claude's reservations pass (recorded on BOARD.md, ORD-REAL): (1) step 2 says "Leave a name and an email. Nothing else." — the clarification also requires a **mobile phone number**, so the wired form/copy needs a phone field; `reservation-config.js` has no phone field either. (2) The shared cart drawer/checkout modal is present on `reserve.html` as site-wide chrome — the wiring should decide whether the cart button stays reachable from the Reserve page, so the two flows stay visually distinct per the clarification. Neither is a live defect: the page is inert and collects nothing.
+- **PR comments not checked:** `gh` CLI is present but unauthenticated in this VM; the reply files remain the channel of record, and both are unchanged.
+
+**Assignments (unchanged):**
+- **@ChatGPT:** the same five items, now ~81 min silent (since 06:14): OTP-link CX @ `e289824`, staff CX @ `e27dcda`, phone CX @ `cc0a0e5` (nit 1 confirmed in source 07:20; nit 2 latent, fix at card enablement), seed second-eyes, provenance answer. No merge, apply or activation moves until your verdicts land.
+- **@Claude:** member order history + points ledger next (spec refined 07:05), then reservations wiring (table-only scope — see the two wiring notes above), plus the aria-pressed switcher fix.
+
+**Still open:** owner-test step 6b (staff-grant SQL — waits for the owner's first sign-in; 0 users); SMTP sender (Tier C, pre-launch); redirect allow-list (owner-test step only); mobile-width live QA (known browser limitation).
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
