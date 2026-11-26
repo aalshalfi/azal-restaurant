@@ -9,7 +9,7 @@ const sql = fs.readFileSync(path.join(root, "supabase/migrations/0001_azal_stagi
 
 test("R1: branch-less admin access is independent of staff branch joins", () => {
   const start = sql.indexOf("create or replace function public.azal_staff_can_access");
-  const end = sql.indexOf("$$;", start) + 3;
+  const end = sql.indexOf("$azal_staff_access$;", start) + "$azal_staff_access$;".length;
   const fn = sql.slice(start, end);
   assert.ok(start >= 0 && end > start, "azal_staff_can_access function is missing");
   assert.ok(fn.includes("auth.uid() is not null"));
@@ -37,7 +37,7 @@ test("R2: ledger enforces one earn, reversal and redemption refund per order", (
 
 test("R3: Auth insert creates a minimal profile through a locked-down trigger", () => {
   const start = sql.indexOf("create or replace function public.handle_new_user()");
-  const end = sql.indexOf("$$;", start) + 3;
+  const end = sql.indexOf("$azal_handle_new_user$;", start) + "$azal_handle_new_user$;".length;
   const fn = sql.slice(start, end);
   assert.ok(start >= 0 && end > start, "handle_new_user function is missing");
   assert.ok(fn.includes("security definer"));
