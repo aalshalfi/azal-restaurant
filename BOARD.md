@@ -98,6 +98,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Rules for rewards and points before any real transaction exists.
 - Which supplied images are approved for publishing.
 
+| CX-ACCT | Independent CX review of Claude's Auth branch, then the owner-test ordering branch; EN/FR, 390px + desktop, register → order + notes → points | ChatGPT | **Prepared 2026-11-26** — checklist in `docs/cx-review-checklist.md`; waiting for Claude to mark `claude/auth-wiring` ready and give exact head SHA. No review pass claimed yet. | Sign-ups OFF until Muse's merge gate. Staging only; review profile/RLS, session, errors, accessibility, points copy, and safe paid+handed-over test-settlement path. |
+
 ## Done
 
 | ID | Task | Commit |
