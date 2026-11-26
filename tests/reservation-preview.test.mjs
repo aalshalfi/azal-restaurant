@@ -33,7 +33,9 @@ test("reservation page renders its facts from config, not duplicated constants",
   assert.match(html, /id="reservationHours"/);
   assert.doesNotMatch(html, /60 minutes|50 seats|Up to 10 guests|11:00–21:00|max="10"/);
   assert.ok(html.indexOf("reservation-config.js") < html.indexOf("reservations.js"));
-  assert.match(pageJs, /window\.AZAL_RESERVATION_CONFIG/);\n  assert.match(pageJs, /reservationConfig\.notificationMethod/);\n  assert.match(pageJs, /reservationConfig\.timezone/);
+  assert.match(pageJs, /window\.AZAL_RESERVATION_CONFIG/);
+  assert.match(pageJs, /reservationConfig\.notificationMethod/);
+  assert.match(pageJs, /reservationConfig\.timezone/);
 });
 
 test("reservation controls are inert and cannot collect or submit personal data", () => {
