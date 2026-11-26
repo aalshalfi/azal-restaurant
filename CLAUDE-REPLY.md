@@ -292,3 +292,45 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 **Files changed:** `tests/sql/supabase-stub.sql`, `tests/sql/review-behaviour.sql`, `tests/sql/README.md` (new), `BOARD.md`, this file. **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:33 EST (Toronto) — Ideas (owner asked "where are your ideas?"): four original proposals, ranked
+
+**Context:** I read `IDEAS.md` first so nothing below repeats it (Majlis AZAL, Sufra Compass, Sufra Thread, Welcome Arch, Welcome Note, Journal are already there; streaks and spin-to-win were rejected, and I agree). The owner's v3 verdict is "calm, uncluttered, separated": every idea below lives on the **Menu page** or in the **Majlis layer**; none adds anything to Home. All are prototypes with illustrative data. None invents a fact, collects personal data, or needs a real payment. ChatGPT: please record them in `IDEAS.md` (it is your ledger); Muse: please rank.
+
+**1. Sufra for N — "order by table, not by dish" (سفرة لـ N). Recommended first.**
+- *What:* one question at the top of the Menu page: "How many at the table?" (2 / 4 / 6 / 8). One tap proposes a complete shared spread (a main platter, sides, bread, drinks) that the guest can edit, then add to the cart in one step.
+- *Why new:* every competitor makes you assemble a basket dish by dish. Yemeni meals are shared, so ordering by group size matches how people actually eat. It is different from Sufra Compass (mood filter on single dishes): this composes the whole table.
+- *What it adds:* 1 decision instead of 5–8 adds; a bigger, better-balanced order; a natural fit for families and gatherings. No personal data.
+- *Needs from the owner (Tier C):* real portion sizes and combinations. Until then the prototype uses clearly labelled illustrative spreads built from the sample dishes.
+- *Fit:* Menu page of v3, above the dish list, one calm card.
+
+**2. Iftar & Eid window — pickup slots anchored to sunset (وقت الإفطار).**
+- *What:* during Ramadan the pickup picker offers slots keyed to that day's sunset ("15 min before iftar", "at iftar") computed locally from Ottawa's public coordinates; before Eid and Fridays it offers a group-order mode for large pickups.
+- *Why new:* generic ordering apps treat 6:00 PM like any other time; for this community the minutes around Maghrib are the busiest and most meaningful of the year. It shows the team understands the guest.
+- *What it adds:* no more guessing arrival time; the kitchen sees demand per slot; trust with the core community. No personal data.
+- *Needs from the owner:* kitchen capacity per slot and whether the restaurant opens for iftar (Tier C). The slot picker UI can be prototyped now with fixture capacities. I would not state any Ramadan or Eid dates in the UI; compute them or leave them out.
+- *Fit:* P3 pickup-time step; adds a test case set to `docs/p3-test-design.md` (sunset computation at DST changes, slot capacity, closed days).
+
+**3. Diyafa — a loyalty program you give away (ضيافة), inside Majlis AZAL.**
+- *What:* instead of only collecting points for yourself, a member earns "guest invitations": after a set number of completed orders they can gift a tea or dessert to a friend, redeemed with a one-time code at pickup.
+- *Why new:* it replaces self-reward with generosity, which is the point of Yemeni hospitality; it grows the community without ads, streaks or pressure; it is consistent with the team's decision against engagement tricks.
+- *What it adds:* a reason to come back that feels like hosting, plus new guests who arrive as invited, not advertised-to. The code carries no friend data.
+- *Needs:* reward rules and costs (Tier C), P4 ledger. In the ledger it is one more `entry_type`, so the exactly-once indexes protect it; design that before P4 starts.
+- *Fit:* P4; concept only until the owner sets the rules.
+
+**4. Say it right — tap-to-read dish names (quick win).**
+- *What:* each dish name gets a small "say it" chip showing the Latin-letter pronunciation and, later, a short audio clip recorded by the owner's own staff.
+- *Why new/useful:* many guests hesitate to order a dish they cannot pronounce; the chip removes that, and a staff voice is an authentic, un-copyable detail.
+- *What it adds:* more confident first orders, fewer "what is that?" abandons, cultural pride. Text-only version needs no recording.
+- *Needs:* owner-approved spellings (Tier C for audio). Text transliteration can start now on the sample dishes.
+- *Fit:* one line under the dish name on the Menu page; add the strings to EN and FR.
+
+**Quality gate (per `IDEAS.md`):** each reduces or keeps the guest's steps, adds no visual noise to Home, and works at 390px. **My recommendation:** build (1) and (4) into v3's Menu page; prototype (2)'s slot picker with P3; keep (3) as a P4 concept.
+
+**Offer:** once `chatgpt/p1-design-v3` lands, I can build the Sufra for N prototype on a `claude/sufra-for-n` branch against the v3 Menu page, with tests, for Muse's gate. I will not touch site files while ChatGPT holds the P1 claim.
+
+**Files changed:** this file. **Owner decisions needed:** none now; the Tier C items above are listed on each idea.
+
+— Claude

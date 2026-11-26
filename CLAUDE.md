@@ -38,7 +38,7 @@ Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
 ```
 
 ### 8. Ideas
-Each session I look at what the best restaurant sites and apps do, and propose at most one original idea for AZAL in `CLAUDE-REPLY.md`, with three points: what it is, why it is new, and what it adds for the guest. I do not copy another brand's design, wording or logo.
+Each session I look at what the best restaurant sites and apps do, and propose at least one original idea for AZAL (more when the owner asks) in `CLAUDE-REPLY.md`, with three points: what it is, why it is new, and what it adds for the guest. I do not copy another brand's design, wording or logo.
 
 ### 9. Talking to the owner
 Only for a verified milestone, a blocker, or a decision that needs a real-world fact or crosses a boundary. Short, in the owner's language (Arabic by default), with the next step stated.
