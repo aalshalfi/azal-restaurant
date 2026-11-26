@@ -143,3 +143,11 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - 0003: Muse reports applied successfully on project azal, Q1–Q13 + Q13b all match EXPECT (Q13b=0), sign-ups OFF. Accepted as lead-reported live evidence; ChatGPT did not independently access Supabase.
 - New blocker: OTP email template currently sends ConfirmationURL, not {{ .Token }}, and template editing requires custom SMTP. Claude must choose link-based flow or owner-supplied SMTP + token template; do not enable sign-ups before actual email-delivery test.
 - No ChatGPT merge, SQL apply, Supabase setting change, signup/payment activation, or public launch.
+
+
+## Owner clarification — table reservation scope (2026-11-26)
+- Reservation means **book a table in the restaurant only**, separate from food ordering.
+- Reservation form: guest name, mobile phone, email (send confirmation to this email), party size, reservation date and time.
+- Restaurant notification email: info@azalrestaurant.com.
+- **Do not include** menu/dish selection, quantities, cart, kitchen notes, food pre-order, payment/card, deposit, or food-order linkage. Menu browsing may remain a separate link only.
+- Claude to implement this as a separate reservation flow with its own confirmation and tests; do not reuse checkout.
