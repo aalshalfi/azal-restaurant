@@ -896,3 +896,30 @@ Read Muse's latest `MUSE-REPLY.md` section (05:44–06:10). She confirms Claude 
 - Muse's latest report says 0003 apply was launched, but the current reply file still contains no completed 0003 post-apply Q1–Q13 + Q13b result set. Treat 0003 as **pending verification**, not live/complete. Do not re-run it; Muse explicitly owns the apply and said not to re-apply.
 
 No merge, SQL apply, config activation, signup activation, test-payment activation or live customer-data collection performed.
+
+
+## 2026-11-26 (Toronto) — Re-review after Claude's 06:20 fixes
+
+### PR #28 — CX source review at exact head d598bf9c91aabca504e7e8f554b6d5a6ec41d6b5
+**Verdict: PASS (source-level CX gate).** The two previous blockers are addressed in the current source:
+- claimGuestPoints() returns separate added and failed fields. A genuine zero result remains normal; RPC/network failure is surfaced in the member card with an accessible alert and a Try again action. The retry invokes the claim again.
+- Email format is checked in the request handler and in requestCode() before the OTP endpoint is called; tests assert malformed addresses generate zero requests.
+- EN/FR strings exist for the claim-failure message, retry action and invalid-email message. The auth unit suite includes separate assertions for success, genuine zero, failure and malformed email.
+- GitHub's Site checks workflow for this exact PR head completed successfully. Claude reports 97/97 Node tests and a fake-Supabase browser check (bad email sends no request; claim 500 shows retry; retry adds 249). I inspected the source/tests but did not independently run that browser session.
+
+**Boundary:** PASS is for source-level CX and the reported fake-service tests only. No real Supabase staging session, OTP email delivery, or production-like sign-in was tested. Keep the Supabase config inert and sign-ups OFF until Muse's live gate. No merge performed by ChatGPT.
+
+### PR #29 — ordering + checkout CX at exact head 5d650e49ad5349fec8e761660bf55989218a979f
+**Verdict: PASS for the previously raised source-level SQL and checkout CX blockers.** The prior 0004 SQL review remains valid at the new head: payments default off, the test-payment RPC requires an explicit test setting, overnight windows check yesterday before today, and the earlier claim/idempotency/validation/search_path safeguards remain present. The checkout script now changes both cart disclaimer and menu intro translation keys to their EN/FR TEST MODE versions when configured; the FR copy uses « aucun paiement réel n’est effectué ».
+- The browser test now asserts that no “nothing is sent” disclaimer survives in live TEST MODE, and checks French TEST MODE wording. Claude reports 106/106 Node tests and 20/20 Playwright checks; I inspected the test assertions but did not execute them independently.
+- PR #29 remains Draft and no GitHub workflow run is attached to this exact head. Remaining product work: staff orders screen, reservations wiring/confirmation email, member order history/ledger, and full owner end-to-end test.
+
+**Boundary:** These are source-level passes only. Muse must still apply 0004 and the seed on isolated staging through her apply process; no SQL apply, payment-mode change, config activation, merge, or public launch was performed by ChatGPT.
+
+### Muse's latest 0003 evidence
+Muse's 06:06 report now includes 0003 apply success, Q1–Q13 and Q13b matching EXPECT (Q13b = 0), and sign-ups OFF. I accept 0003 as applied and verified on project azal per Muse's reported live evidence. I did not independently access the Supabase project.
+
+### New technical gate discovered by Muse: OTP email template
+Muse reports that the active Supabase Magic Link or OTP template contains {{ .ConfirmationURL }} but not {{ .Token }}, and the dashboard editor is unavailable without custom SMTP. Therefore the approved 6-digit code UX is not yet proven deliverable through the configured email template. Claude must decide whether to adapt the UX to the default confirmation link or request owner-provided SMTP credentials and update the template. Until resolved and tested, do not call real OTP email delivery ready or enable sign-ups.
+
+No merge, SQL apply, Supabase setting change, sign-up activation, payment activation, or live customer-data collection performed.
