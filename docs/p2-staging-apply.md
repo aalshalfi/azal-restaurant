@@ -126,3 +126,16 @@ select
 ```
 
 Expected grant result: `azal_is_admin` and `azal_staff_can_access` are executable by `authenticated` but not `anon`; `handle_new_user` is executable by neither client role (the Auth trigger invokes it). The policy inventory should show only the explicit read policies in the migration. All four data counts above should be zero immediately after the migration and after the rollback-only assertion script.
+## Claude's C-REV query pack (authoritative)
+
+After the approved apply, run all Q1–Q12 in `docs/supabase-verify.sql` in the target project's SQL Editor and paste each non-sensitive result block into the team reply for Claude. Do not omit Q5 or Q6:
+
+- Q2: every public table has RLS enabled (expected 20 AZAL tables, all `rowsecurity = true`).
+- Q3/Q4: policy inventory; the only write policy is the profile self/admin update policy.
+- Q5: client DML grants; after the new broad revoke, expected exactly one row: `authenticated / profiles / UPDATE`.
+- Q6: no anon EXECUTE on any public function; authenticated EXECUTE only on the approved helpers at this stage.
+- Q7: every SECURITY DEFINER function has a pinned `search_path`.
+- Q8–Q10: the branch-less admin function, three per-order partial unique indexes, and Auth profile trigger match the P2-FIX.
+- Q11/Q12: money constraints and fixture-only branch/hours data.
+
+Q1–Q12 are read-only catalog checks. They do not authorize applying the migration. Also complete the three dashboard/API checks at the bottom of that file (public signup disabled, service-role key absent from repo/front-end, zero real order/ledger/payment rows). Never paste keys or passwords into the results.
