@@ -744,3 +744,52 @@ I have not changed PR #9, applied SQL, or modified any Muse-owned file. P2 remai
 **Owner decisions needed:** None for these documentation/coordination updates. The "Hosted by …" reward cost and real kitchen batch schedule remain owner decisions; no feature activation is requested.
 
 — ChatGPT
+
+## 2026-11-26 (Toronto) — CX review prepared; reservations and Majlis rulings folded
+
+**Summary:** I started the assigned work instead of waiting for the Auth branch. I created `docs/cx-review-checklist.md` for the full owner path and folded the current reservations and Majlis decisions into `MUSE-HANDOFF.md`. I also added my CX task to `BOARD.md`. Claude owns the Auth files and I will not edit his claimed files.
+
+**Baseline review findings (current main):**
+- `member.html` is still inert: the sign-in/join controls are disabled and there is no active form on this page. That is expected before the Auth gate.
+- Its current public copy says the first 100 members receive a permanent founding benefit and that points do not expire. Those are proposal-level terms in `docs/majlis-proposal.md`, not confirmed owner rules. They need to be reconciled before sign-ups are enabled.
+- The member preview says points accrue on every pickup order, but the schema semantics in `docs/p3-test-design.md` award only after an order is paid and handed over. The live copy and implementation must align.
+- The requested order-notes field and an approved staging-only test settlement path are explicit checks. Payments remain unauthorized; no client-side paid flag and no points on unpaid orders.
+
+**Files changed:**
+- `docs/cx-review-checklist.md` — detailed independent review gates for Auth, profile/member, RLS, EN/FR, mobile/accessibility, ordering notes, server totals, idempotency, staff screen and points.
+- `MUSE-HANDOFF.md` — reservations status and outstanding approvals; owner’s member-test mandate; Claude/Muse/ChatGPT role split; safe test-settlement dependency; five-minute background-loop limitation.
+- `BOARD.md` — CX-ACCT task recorded as prepared, waiting for Claude’s ready branch/head.
+- No application code, database, credentials or Supabase settings changed.
+
+**Questions / handoff:**
+- **Claude:** when `claude/auth-wiring` is ready, post the exact head SHA and test results in `CLAUDE-REPLY.md`; include the proposed staging-only paid/handed-over test path or the exact missing server function/schema dependency. Please flag the current Founding Member / points-expiry copy for resolution before sign-ups.
+- **Muse:** please tag the exact branch/head for CX review when ready. I will return a severity-ranked, reproducible EN/FR phone-first report; no merge recommendation until the exact head is tested.
+
+**Verification:** GitHub file writes succeeded. No branch build or browser test was run because the Auth branch is not yet ready. This is preparation, not a CX PASS.
+
+**Cadence:** the five-minute check-in requirement is noted. I cannot run a background timer or wake myself between turns in this chat; I will check the repository when active and will not pretend unattended polling is running.
+
+— ChatGPT
+
+## 2026-11-26 (Toronto) — Initial source review of Claude Auth PR #28
+
+**Summary:** Claude's draft Auth branch is now available, so I reviewed the source rather than waiting. PR #28 is `claude/auth-wiring` at reported head `9b7214f`. The compare against current main reports **1 commit ahead / 6 behind**. I posted the findings as a PR conversation comment (GitHub will not accept a formal review from the same connected account that authored the PR).
+
+**Blocking findings before sign-ups are enabled:**
+1. **Membership row provisioning is missing.** `auth.js` reads `public.memberships`, but the current schema provides no membership INSERT policy or membership-creation trigger/function. P2's new-user trigger creates only `profiles`. So a newly registered user can get a profile but will not automatically get a membership row. Claude must coordinate a server-side provisioning path or record the schema dependency with Muse; do not create memberships from the browser.
+2. **Unapproved promises remain in `member.html`.** It still promises a permanent Founding Member benefit/bonus and says points do not expire. Those are proposal-level terms, not approved rules. Remove/neutralize them or get approval before Muse turns sign-ups on. The copy "points arrive when you collect" must align with the schema's eligible state: paid AND handed over.
+3. **The signed-in member card still calls the balance a preview.** It says "Preview: points appear here once ordering opens" while the code fetches a live ledger balance. Replace this with an accurate explanation and retain the general site preview notice separately.
+
+**Positive findings:** `supabase-config.js` remains null for URL and anon key, so the feature stays inert; I found no service-role key. Claude reports 90/90 local tests and a fake-browser walkthrough (signup confirmation, sign-in, French, session persistence and sign-out). I have not independently run that suite or accessed the real staging project.
+
+**Review status:** Initial source review only — **not approved**. I did not merge, enable sign-ups, change Supabase configuration, or edit Claude's claimed files. The formal review action was rejected by GitHub because the connected account is the PR author; the full findings are on PR #28 as a conversation comment. Claude should update from latest main without rewriting shared history, address the findings, and post a new exact head SHA. I will then re-review EN/FR, phone-first and desktop, against that head.
+
+**Files changed this round:** `BOARD.md` only; checklist and handoff updates were recorded in the prior round. No application code changed.
+
+— ChatGPT
+
+## 2026-11-26 (Toronto) — Auth branch divergence follow-up
+
+A fresh compare after the latest documentation commits now reports `claude/auth-wiring` **1 commit ahead / 8 behind main** (it was 1/6 when I first reviewed it). The additional behind commits landed on main after the first review; Claude should synchronize the branch without rewriting shared history before the final CX pass. I updated the board and handoff with the current count. The initial PR comment remains accurate as a snapshot of the time it was posted.
+
+— ChatGPT
