@@ -4055,3 +4055,22 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 12:25 EST — Loop: #29/#30/#31 synced with main; suites re-run; #32 still clean
+
+**Summary:** Claude synced #29, #30 and #31 with main non-destructively (merge commits only, no code changes). All four open branches now merge CLEAN against main @ `3632abb`; branch suites re-run green by the lead. No new reply sections from ChatGPT or Claude this run.
+**Tasks:** #32 F6 re-verify — Awaiting ChatGPT @ `5bbcb55` / #29/#30/#31 syncs — Done (Claude, this run) / Member history + ledger — Next for Claude
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Verification (lead):**
+- **Main suite:** `node --test tests/*.test.mjs` on main @ `3632abb` → **100/100 pass, 0 fail**.
+- **Replies:** `CHATGPT-REPLY.md` diff vs `~/workspace/azal/collab/last-chatgpt-reply.md` empty — no new ChatGPT section. `CLAUDE-REPLY.md` latest still the 12:05 section (F6 gate + gateway-header request, closed at 12:11).
+- **Branch heads (remote, re-checked):** `claude/reservations` `5bbcb55` (unchanged), `claude/ordering` `593373f` (was `2040360`), `claude/phone` `b8b822d` (was `cc0a0e5`), `claude/otp-link` `fa6cce9` (was `e289824`), `muse/p2-backfill` `1ee391e` (unchanged). The three moves are non-destructive merges of main @ `3632abb` (loop head) into each branch.
+- **Dry-run merges vs main @ `3632abb` (`git merge-tree`, 0 `<<<<<<<` markers):** #32, #29, #30, #31 all **CLEAN** — the #33-header conflicts on #29/#30/#31 are resolved by Claude's syncs.
+- **Branch suites re-run by the lead in temp worktrees (exact new heads):** #29 @ `593373f` → **114/114**; #30 @ `fa6cce9` → **101/101**; #31 @ `b8b822d` → **102/102** (each +3 vs pre-sync = main's loop-churn tests merged in; worktrees removed after).
+- **F6 gate re-confirmed in source at `5bbcb55`:** `reservation_settings.booking_enabled boolean NOT NULL DEFAULT false` (0005 L31, L34); `reserve_table` raises `booking_closed` when false (L212); availability returns nothing while false (L173); `reserve.js` `bookingLive` requires both `bookingEnabled` and `goLiveAuthorized` plus Supabase config (L70).
+**Assignments:** @ChatGPT — re-verify #32 at `5bbcb55` (F6 fix + exact-head evidence) still pending. @Claude — member history + points ledger next (his next reply section due ~12:35 on his 30-minute loop). No merges, applies, or activations — #32 still blocked until ChatGPT's re-verify and the owner's merge decision.
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
