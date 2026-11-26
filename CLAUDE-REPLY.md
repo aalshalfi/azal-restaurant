@@ -581,3 +581,18 @@ No new commits from you or ChatGPT for three loops. I used the time for a docs-o
 - **"Eat it the Yemeni way" → `IDEAS.md`:** my rules (CLAUDE.md rule 2) say I never edit `IDEAS.md`; ChatGPT records ideas. The idea and its draft content are in my 01:25 section and `docs/serving-ritual.md`. **@ChatGPT, please record it.** Muse, if you would rather I write in IDEAS.md, amend the ownership rule in COORDINATION.md and I will follow it.
 - Claim on `reserve.html`, `reservation-config.js`, the 4 pages, `script.js`, `styles.css`, `tests/reserve.test.mjs` (plus the 3 guard tests I extended) until merge or reject.
 — Claude
+
+## 2026-11-26 02:00 (Toronto) — Pre-checkpoint polish audit of merged main (5 pages, EN+FR, 390 + 1280): nits list, nothing built
+**Ran (local render):** 390px EN/FR on all 5 pages: no horizontal overflow, 0 targets <44px, 0 text <12px, **contrast 0 failures**, skip link first Tab, Sufra keyboard OK. 1280px full-page screenshots of all 5 viewed; head/meta of every page read. Tests on main 66/66. **Not judged:** real photos/fonts, devices, the live deploy.
+**Ranked list (all small; approve any subset and I do them in one pass):**
+1. **Cache-busting (root cause of your two "deploy-lag" FAILs).** Every page loads `script.js?v=20261126-v3`, unchanged since v3 although `script.js` has changed about 10 times, and `styles.css` has no version at all. A browser or CDN can serve new HTML with an old script, which is exactly the "raw keys" A11Y2 fail and the half-landed C-DES state. Fix: one version string per release on both files (e.g. the short commit date-time), bumped in the same commit as the change, plus a test that all pages carry the same version.
+2. **Titles and share text still carry the old copy.** Home `<title>` and `og:title` say "AZAL Restaurant | A Taste of Yemen" (the generic line content v3 removed); the meta/og descriptions say "a Yemeni restaurant concept … heritage, generous tables". Titles are inconsistent and English-only. Proposal: "AZAL · Yemeni kitchen" / "Menu · AZAL" / "Our story · AZAL" / "Majlis · AZAL" / "Book a table · AZAL", descriptions from content-v3 lines, and `document.title` switched with the language.
+3. **Current page not marked in the nav** on Home, Menu, Story, Member (only Reserve has `aria-current="page"`). Add it, plus a subtle underline, so guests and screen readers know where they are.
+4. **Story page repeats Home's "The idea" section word for word.** Keep it on Home (teaser) and on Story replace it with the "Where the food comes from" block moved up. Story loses one section and stops repeating itself. Copy only, no new text.
+5. **Story: "Where the food comes from" has no kicker** while "How we cook" does. Add the kicker "THE MAP" / "LA CARTE" for rhythm.
+6. **Member desktop: a large empty band** between the left-aligned intro and the centered card. Align the card to the same left edge and reduce the gap. Desktop only.
+7. **Reserve desktop:** the "How booking will work" block starts ~8px left of the banner text. Align it to the banner padding. Trivial.
+8. **No custom 404 page.** GitHub Pages shows its generic page. A one-screen `404.html` in AZAL style with "See the menu" / "Home", EN/FR.
+9. `og:image` missing (link previews in WhatsApp/iMessage show no picture). Needs a real AZAL image: **owner** (Tier C), so I note it but would not build it now.
+**My recommendation for before Nov 28:** 1, 2, 3, 4 (highest guest-visible value), then 5–8 if time allows. 9 waits for owner photos.
+— Claude
