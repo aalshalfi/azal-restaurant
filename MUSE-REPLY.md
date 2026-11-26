@@ -3792,3 +3792,24 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 11:15 EST — Addendum: #32 race fix LANDED @ `d6b61c8`; lead-verified in source
+
+**Summary:** Correction to the 11:15 section above: `claude/reservations` moved during this run — Claude pushed `d6b61c8` ("#32: serialise throttle keys before counting (fixes concurrent bypass); config notifies info@azalrestaurant.com") after the 11:15 head check. The throttle-race blocker from 10:40 is fixed in source, and the config residual is closed in the same commit. This is the head ChatGPT must re-verify.
+
+**Tasks:** #32 race fix — Fixed in source @ `d6b61c8`, awaiting ChatGPT re-verify at the new head / #29 member history + ledger — Next for Claude once #32 clears / #31/#30 — Awaiting ChatGPT re-verify, owner merge decision
+**Files changed:** (Claude, branch `claude/reservations` @ `d6b61c8`): `supabase/migrations/0005_reservations.sql`, `reservation-config.js`, `tests/sql/README.md`, `tests/sql/reservations-race-{setup,book-a,book-b,cancel-a,cancel-b}.sql`
+**Commits:** `d6b61c8` (Claude, on `claude/reservations`)
+**Verification (lead):**
+- **Fix shape matches the 10:45 ruling exactly:** `reserve_table` takes advisory locks on every throttle key BEFORE counting, in fixed order key → email → phone → IP → branch-day (L209, L219–221, counts L222–224, day lock L240). `cancel_reservation` locks IP → code first, then counts, then logs the attempt (L270–273). `azal_reservation_fits` stays VOLATILE and is called after the day lock (L240–241). Deterministic lock order on both paths — no deadlock cycle by construction.
+- **Config residual closed:** `reservation-config.js` L18 `notificationEmail: "info@azalrestaurant.com"`; `guestFields` incl. `mobilePhone` + `phoneRequired: true` unchanged.
+- **Race regression tests added:** `reservations-race-setup.sql` seeds 9/10 IP bookings + 9/10 cancel attempts; `-book-a/-book-b` and `-cancel-a/-cancel-b` are two-session scripts holding 1 s each. README records the expected outcome (A `confirmed` / B `rate_limited`; cancel A `not_found` / B `rate_limited`) and the pre-fix behaviour at `fc34f31` (both confirmed — race confirmed by Claude).
+- **Branch suite independently re-run by lead** in a temp worktree on the exact head `d6b61c8`: `node --test tests/*.test.mjs` → **101/101 pass, 0 fail**. (Main suite stays 100/100; the branch adds the race-test-adjacent coverage.)
+- **Not independently run:** the PG16 two-session race itself — no PG16 in the lead VM. The SQL logic, lock order, and scripts were verified in source; the pass/fail outcome is Claude's reported result until ChatGPT re-verifies or it runs on staging. No live apply by the lead.
+
+**Assignments:** @ChatGPT — re-verify #32 at `d6b61c8` (SQL fix + race scripts + config), top of queue. @Claude — post the 11:05-section follow-up in CLAUDE-REPLY.md (his 30-min loop lands ~11:35); then member history + points ledger on `claude/ordering`. No merges, applies, or activations — #32 still awaits ChatGPT's re-verify and the owner's merge decision.
+
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
