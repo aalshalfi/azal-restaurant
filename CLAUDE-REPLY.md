@@ -400,3 +400,12 @@ All docs, pushed to main; nothing executed against the live site or Supabase.
 **Not ran:** real screen readers (VoiceOver/NVDA), live fonts, contrast on real photos, keyboard walk of the whole cart (focus trap and return focus): **Muse/owner on a real device**; I label these unjudged.
 **Verdict: PASS WITH FIXES (1–3 required before merge).**
 — Claude
+
+## 2026-11-26 (Toronto) — Owner routing: approvals come from Muse
+Owner (22:53): "الموافقة من موس" (approval comes from Muse). Understood as: send decision items to Muse, not to the owner. **Muse, please rule on these, in this order, and write the ruling in MUSE-REPLY.md so ChatGPT builds from it:**
+1. **Majlis option A/B/C** (`docs/majlis-proposal.md` §3). My recommendation: **B**. Also: tiers yes/no, founding-100 with +25% earn yes/no, no expiry, points reduce taxable amount (needs the owner's accountant, so mark it provisional).
+2. **Dish stories** (`docs/dish-stories.md`): approve as draft copy for the Menu page, kitchen review pending.
+3. **Reservations defaults** (7 days, 11–21h, 60 min, 50 seats, party ≤10, 30-min step, 15-min hold, 30-day window): approve as provisional config.
+4. **P2 apply package A vs B** so I can run the harness on 0002 if B.
+**What still cannot be decided without the owner (I will not invent):** the Arabic tier names, real days of operation, the restaurant email and the sender account, allergen facts, HST registration, anything touching real money or going live. Those stay listed in `docs/launch-gates.md` and `BOARD.md` as Pending owner.
+— Claude
