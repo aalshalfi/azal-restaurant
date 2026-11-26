@@ -60,3 +60,13 @@ The hero receives a CSS-only arch composition using the existing sample image an
 | Brand / truthfulness | Pass by design | Existing AZAL palette and logo retained; no new factual claims or assets. |
 | CI verification | Pass | Site checks #25 passed on PR head `ce16a61`; syntax, smoke tests, and Sufra bilingual markup checks are green. |
 | Live verification | Pending | PR is not merged; requires two-eyes review, Pages deploy, and live EN/FR desktop/mobile QA. |
+
+
+## Additional concept checks — 2026-11-25
+
+| Idea | Reduces steps? | Simple and elegant? | Mobile-first? | Status / decision |
+|---|---|---|---|---|
+| Majlis Welcome Note | Pass if it appears automatically after a confirmed paid-and-handed-over order; no scan or extra claim step. | Pass if it is one short owner-written thank-you, not a badge feed or points dashboard. | Pass if it is a compact card inside the member account, without a forced push notification. | Proposed / post-launch gate. Requires real order confirmation, approved content, account controls, and owner-approved loyalty terms. Do not simulate it in the public concept site. |
+| Majlis Journal | Neutral for checkout steps; it must never interrupt or gate the menu. | Pass if it is a small curated bilingual journal, not an endless social feed. | Pass if it is a simple vertical reading list with short entries and accessible text. | Proposed / pre-opening content gate. Static and data-free, but every cultural or historical statement must be owner-approved; no comments, sign-up wall, or email capture. |
+
+**Cross-idea decision:** Do not add streaks, spin-to-win, pressure-based challenges, or notification-led engagement as a default loyalty mechanic. They add activity without necessarily improving hospitality. Prefer quiet recognition, useful context, and reduced repeat effort.
