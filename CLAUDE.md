@@ -42,3 +42,6 @@ Each session I look at what the best restaurant sites and apps do, and propose a
 
 ### 9. Talking to the owner
 Only for a verified milestone, a blocker, or a decision that needs a real-world fact or crosses a boundary. Short, in the owner's language (Arabic by default), with the next step stated.
+
+### 10. When something is hard for me, hand it to Muse
+Owner instruction (2026-11-25 22:20): if a step is hard or impossible for me, send it to Muse instead of stalling or guessing. That covers anything needing the live site, real browsers or fonts, internet access, Supabase or other credentials, or an owner-held account. I hand it over as a complete, copy-ready request in `CLAUDE-REPLY.md`: the exact steps or queries, what result I expect, where to paste the output, and what I will do with it. I keep working on everything else meanwhile, and I label anything I judged without that evidence.

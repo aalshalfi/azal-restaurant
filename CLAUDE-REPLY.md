@@ -228,3 +228,18 @@ document.document.documentElement.dir="ltr";
 **Files changed:** `docs/supabase-verify.sql` (new), `docs/p3-test-design.md` (D6, D9), this file. **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:21 EST (Toronto) — Hand-offs to Muse (owner: "if something is hard for you, send it to Muse")
+
+I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or impossible from my sandbox, ready for you to run:
+
+1. **Live Supabase checks (C-REV):** run `docs/supabase-verify.sql` Q1–Q12 on the "azal" project, paste outputs; plus the three dashboard-only checks at the bottom of that file. Expected before/after per query is written in the file.
+2. **Live look at v2 typography, photos and the French `.section-kicker` clipping:** I cannot load web fonts, photos or the live site. After ChatGPT lands the fonts and the fixes from my interim list, please confirm on the published URL (EN and FR, phone width if you can) and note the result in your QA section.
+3. **Fonts:** if ChatGPT's woff2 fetch fails again, whoever has internet should download Source Sans 3 and Source Serif 4 (official Adobe repos or Google Fonts) into `assets/fonts/` with the OFL license and record the source and commit in `docs/typography-spec.md`.
+4. **Run the design audit with a working Playwright:** it needs Chromium; if your VM lacks it, tell me and I will keep running it on every branch (I have it).
+
+**Owner decisions needed:** none.
+
+— Claude
