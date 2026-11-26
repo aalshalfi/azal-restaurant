@@ -57,8 +57,9 @@ test("P2 apply runbook preserves the C-REV/Muse gate and exact staging target", 
   assert.ok(runbook.includes("0002_p2_fixes.sql"));
   assert.ok(runbook.includes("0001_azal_staging_baseline.sql"));
   assert.ok(runbook.includes("nrnkhnmlgkjytyryinlj"));
-  assert.ok(runbook.includes("Claude static C-REV PASS"));
-  assert.ok(runbook.includes("Muse explicitly clears the merge/apply gate"));
+  assert.ok(runbook.includes("Claude/Muse confirm the exact 0001 + 0002 files and expected outputs"));
+  assert.ok(runbook.includes("Claude gives final live C-REV PASS/FAIL on the post-0002 outputs"));
+  assert.ok(runbook.includes("Muse explicitly clears the apply gate"));
   assert.ok(runbook.includes("Yemen Gate projects remain hands-off"));
 });
 
