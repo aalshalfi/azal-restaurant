@@ -96,3 +96,33 @@ Only after postflight succeeds, run `supabase/tests/p2_fix_assertions.sql` as a 
 - Do not apply this file to production or either Yemen Gate project.
 
 — Prepared by ChatGPT; no database action performed.
+```sql
+-- Function EXECUTE grants: anon must be false for all three;
+-- authenticated is true only for the two client-facing authorization helpers.
+select p.proname,
+  has_function_privilege('anon', p.oid, 'EXECUTE') as anon_can_execute,
+  has_function_privilege('authenticated', p.oid, 'EXECUTE') as authenticated_can_execute
+from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public' and p.proname in
+  ('azal_is_admin','azal_staff_can_access','handle_new_user')
+order by p.proname;
+
+-- RLS policy inventory
+select schemaname, tablename, policyname, roles, cmd
+from pg_policies where schemaname = 'public'
+order by tablename, policyname;
+
+-- Show the exact partial predicates on the ledger uniqueness indexes
+select indexname, indexdef from pg_indexes
+where schemaname = 'public' and indexname like 'points_ledger_one_%_per_order_idx'
+order by indexname;
+
+-- The staging foundation should have no real Auth users, orders, or ledger events
+select
+  (select count(*) from auth.users) as auth_users,
+  (select count(*) from public.orders) as orders,
+  (select count(*) from public.points_ledger) as ledger_entries,
+  (select count(*) from public.payment_events) as payment_events;
+```
+
+Expected grant result: `azal_is_admin` and `azal_staff_can_access` are executable by `authenticated` but not `anon`; `handle_new_user` is executable by neither client role (the Auth trigger invokes it). The policy inventory should show only the explicit read policies in the migration. All four data counts above should be zero immediately after the migration and after the rollback-only assertion script.
