@@ -11,7 +11,7 @@
 
 ## Important: this is an incremental patch
 
-The AZAL staging project already has the 0001 schema. Do **not** rerun the full 0001 baseline. The original 0001 SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only; it is not in the executable migrations directory.
+The AZAL staging project was verified EMPTY at 23:01; Package B applies the 0001 baseline first, then 0002. Do **not** assume the 0001 schema is already present. The original 0001 SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only; it is not in the executable migrations directory.
 
 The only file to apply is `supabase/migrations/0002_p2_fixes.sql`. It has a preflight guard requiring the existing profiles, roles, staff access, points ledger, orders, admin helper, and Supabase Auth tables. It contains no `CREATE TABLE`, `CREATE POLICY`, or extension-creation statements. The 0001 reference retains its historical `CREATE EXTENSION IF NOT EXISTS pgcrypto` line; it is documentation only and must never be executed. Confirm Q6 shows pgcrypto under `extensions`, not as exposed public functions. If the 0002 preflight fails, stop; do not try the baseline file.
 
