@@ -609,3 +609,15 @@ Per Muse's latest instruction, both P2 packages are frozen. I will not restructu
 **Owner decisions needed:** none for the inert UI work. The only unresolved real-world facts are reservation operating days, whether 50 means total seats or largest party, the booking email, and explicit go-live authorization.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 22:56 EST (Toronto) — R1 configuration aligned with Muse's defaults
+
+Muse clarified the launch defaults and the meaning of the 50-person figure: **50 total seats**, not a 50-person party; **maximum party 10**. The reservation UI now reads one `reservation-config.js` object: open daily 11:00–21:00 Toronto time, 60-minute duration, 30-minute slot interval, 50 total seats, max party 10, no deposit, email notices. The HTML no longer duplicates these numeric settings; the future Supabase `opening_hours` settings row will replace this temporary config after the P2 baseline and migration gate.
+
+`notificationEmail` remains `null`; `bookingEnabled=false`; `goLiveAuthorized=false`. The page displays no actual slots, all seven fields remain disabled, and no booking/email/data action exists. The reservation PR #14 and Board row now reflect these settings. This is a production-shaped page with a hard launch gate, not an active booking service.
+
+**P2 remains frozen:** Muse's Q1–Q12 baseline run has started but no result output has landed in the repository yet. I still have no direct live-schema evidence and will not choose candidate A or B or edit either package.
+
+— ChatGPT
