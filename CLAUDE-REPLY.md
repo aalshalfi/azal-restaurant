@@ -848,6 +848,60 @@ It stays a Draft until the owner's end-to-end path is complete.
 
 No merge, apply, config change or activation by me.
 
+## 2026-11-26 11:05 EST — #32 residuals, #29 synced with main, #33 automated geometry test
+| PR | New exact head | What changed | Tests I ran |
+|---|---|---|---|
+| #32 | `fc34f31d845e3491925b9dd73c0db5e2206e1575` | The three residuals: spec doc table-only (pre-order + item 14 removed); config lists the owner's fields, phone required; README baseline ref → `muse/p2-backfill` @ `181e967`. Also the static step-2 copy. | node 101/101; browser 18/18 (PG unchanged since `a1a9dee`: 61/61) |
+| #29 | `204036068cc248b76ce47d3a41e3f7ac4cae248f` | **Non-destructive merge of main** (no rebase/force). Conflicts were only in docs: BOARD from main; CLAUDE-REPLY as the union of sections. 0004 is byte-identical to main. PR description refreshed to match the code (guest + member test-card checkout, kitchen screen, exact tests, what's left). Stays Draft. | node 111/111; checkout browser 20/20; staff browser 7/7; PG ordering 80/80; CI static-checks success; GitHub `mergeable=true` |
+| #33 | `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc` | `tests/header.browser.mjs`: all 6 pages at 320 + 390. Checks that the logo and 4 controls are visible, ≥44×44, ordered and non-overlapping, the header is 64px, there is no overflow, and desktop at 1280 is unchanged. No CSS/markup change. | 13/13; node 100/100 |
+
+Unchanged: #30 `e289824`, #31 `cc0a0e5`.
+
+**Next:** member order history + points ledger on `claude/ordering`.
+
+## 2026-11-26 11:35 EST — #32 throttle race fixed and proven; #32 synced with main after #33
+- **#32 @ `42c812e4d0d0922ab1fde54d7955e841143aa9fb`** (CI success, clean/mergeable). PR body is refreshed to this head.
+  - **Changed:**
+    - `0005_reservations.sql`: throttle keys are locked before counting, in the fixed order key → email → phone → ip → branch-day; cancel locks ip → code.
+    - `reservation-config.js`: `notificationEmail: "info@azalrestaurant.com"`. It is config/display only, and the sender is still not built.
+    - New `tests/sql/reservations-race-*.sql` and README steps.
+    - A non-destructive merge of main (#33 header): pages take main's header plus the reserve script/copy; both CSS blocks are kept; release `v=20261126-1620`.
+  - **Ran:**
+    - Two-session races. At the old head `fc34f31`, the race reproduced: 11/10 bookings and 11/10 cancel attempts from one IP. Now B is `rate_limited` in both (10/10).
+    - Reservations 61/61, ordering 80/80, capacity race with 1 winner.
+    - Node 104/104; reserve browser 18/18; header browser 13/13.
+  - **Live booking still needs:** the outbox sender (owner SMTP), a gateway flood rule, PR #27 baseline on main, and an apply on staging.
+- **Other branches:** syncing with new main is next. #29 conflicts in the pages/styles after #33; #31 is a version-only bump; #30 is pages plus `auth.js`/`script.js`. I will use non-destructive merges only.
+- **Next loop:** sync #29/#30/#31 with main, then member history + points ledger.
+
+## 2026-11-26 12:05 EST — #32 go-live gate (DB + page) and trusted IP header; request to Muse
+**#32 @ `5bbcb556e761151c3a520ac697243637d9c00524`.**
+- **Changed:** `0005_reservations.sql`, `reserve.js`, `tests/sql/reservations-behaviour.sql`, `tests/sql/reservations-race-setup.sql`, `tests/sql/reservations-concurrency-setup.sql`, `tests/sql/README.md`, `tests/reserve.test.mjs`, `tests/reserve.browser.mjs`, and the 6 pages (version `20261126-1700`).
+- **Ran:** reservations 66/66, ordering 80/80, both throttle races (B `rate_limited`), capacity race (1 winner), node 105/105, reserve browser 19/19.
+- **Gate:**
+  - `booking_enabled` is false by default in the database, so even direct anon calls are refused.
+  - The page needs both reservation flags set to `true`.
+  - Cancelling still works while booking is closed.
+
+**@Muse: one read-only check on staging, needed before booking go-live** (handing it over because it needs the live gateway, which I can't reach). In the SQL editor this runs as `postgres` without request headers, so use a temporary function called over REST:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. From any browser or terminal, call:
+   ```
+   curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "x-forwarded-for: 6.6.6.6"
+   ```
+2. **Expect:** `cf-connecting-ip` holds your real IP, and `x-forwarded-for` shows `6.6.6.6, <real ip>` (or lacks the spoof).
+3. **Paste:** the key names and whether the spoof appears first. Mask IPs to /24.
+4. Then: `drop function public.zz_echo_headers();`
+
+What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I switch `azal_request_ip()` to whichever header the gateway sets.
+
+**Next loop:** sync #29, #30 and #31 with main (non-destructive), then member history and the points ledger.
+
 ## ## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
 - **Done:** `supabase/seed/staging-sample-menu.sql` on `claude/ordering`. It adds the 9 illustrative sample dishes and prices from the public preview to the existing fixture branch `ottawa`, in 4 categories, with provisional hours of 11:00–21:00 every day. It uses fixed uuids `a2a10000-…-00000000000N`, which map to the site's product ids 1–9. It is idempotent and labelled staging-only. None of it is a real menu, price or hours (Tier C).
 - **Ran:** a fresh PG16 harness with stub → 0001 → 0002 → 0003 → 0004 → seed → seed again, with no errors. The counts were 9 active items, 9 available `ottawa` items and 7 open days. A member `place_order` (2× Lamb Mandi + 1× Sahawiq, tomorrow 12:00) returned `total_cents = 6325`, which equals 5597 + HST 13% half-up. That is correct.
