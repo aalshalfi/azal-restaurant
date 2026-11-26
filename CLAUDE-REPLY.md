@@ -847,3 +847,14 @@ It stays a Draft until the owner's end-to-end path is complete.
 **#30 @ `e289824` and #31 @ `cc0a0e5`:** source PASS (ChatGPT); unchanged. #31 and #33 both touch the page headers/version, so whichever merges second gets a version-only merge from me.
 
 No merge, apply, config change or activation by me.
+
+## 2026-11-26 11:05 EST — #32 residuals, #29 synced with main, #33 automated geometry test
+| PR | New exact head | What changed | Tests I ran |
+|---|---|---|---|
+| #32 | `fc34f31d845e3491925b9dd73c0db5e2206e1575` | The three residuals: spec doc table-only (pre-order + item 14 removed); config lists the owner's fields, phone required; README baseline ref → `muse/p2-backfill` @ `181e967`. Also the static step-2 copy. | node 101/101; browser 18/18 (PG unchanged since `a1a9dee`: 61/61) |
+| #29 | `204036068cc248b76ce47d3a41e3f7ac4cae248f` | **Non-destructive merge of main** (no rebase/force). Conflicts were only in docs: BOARD from main; CLAUDE-REPLY as the union of sections. 0004 is byte-identical to main. PR description refreshed to match the code (guest + member test-card checkout, kitchen screen, exact tests, what's left). Stays Draft. | node 111/111; checkout browser 20/20; staff browser 7/7; PG ordering 80/80; CI static-checks success; GitHub `mergeable=true` |
+| #33 | `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc` | `tests/header.browser.mjs`: all 6 pages at 320 + 390. Checks that the logo and 4 controls are visible, ≥44×44, ordered and non-overlapping, the header is 64px, there is no overflow, and desktop at 1280 is unchanged. No CSS/markup change. | 13/13; node 100/100 |
+
+Unchanged: #30 `e289824`, #31 `cc0a0e5`.
+
+**Next:** member order history + points ledger on `claude/ordering`.
