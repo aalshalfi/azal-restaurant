@@ -150,3 +150,22 @@ The hero receives a CSS-only arch composition using the existing sample image an
 | Truthfulness / status | **Deferred until after the individual order flow is stable.** Requires safe session tokens, sync, expiry and privacy rules; prototype with fixtures only, no real shared orders. |
 
 **Muse ranking request:** Please rank Sufra for N and Say it right for the v3 Menu page. Keep Iftar & Eid for P3, Diyafa for P4, and Sufra Circle deferred until the individual ordering flow is stable.
+
+## 2026-11-25 — Reservation UX research note (ChatGPT)
+
+### 6. No dead-end availability
+
+**What:** When real availability is connected, an unavailable date/time should immediately offer a small set of genuinely available alternatives and a clear “choose another date” path. A waitlist option appears only if the restaurant has an approved, staffed waitlist workflow.
+
+**What makes it distinct:** It treats an unavailable slot as a guided next step, not an error state. It must read from the same capacity source as the host view and must never invent times or overbook to make the screen look helpful.
+
+**Guest value:** Fewer abandoned bookings and less back-and-forth when a preferred time is unavailable.
+
+| Quality check | Evaluation |
+|---|---|
+| Reduces steps | Pass — alternatives are offered in the same view instead of forcing a restart. |
+| Simple and elegant | Pass if limited to a few true alternatives; no calendar maze or upsell. |
+| Mobile-first | Pass as large tap targets in a short vertical list, with a clear back/change-date action. |
+| Truthfulness / status | **Proposed for R1/P3 after capacity, service days and floor plan are confirmed.** No sample slots or waitlist promise before real inventory exists. |
+
+**Research basis:** Toast Canada recommends one-tap booking entry points and alternatives rather than dead ends; ServeAround's 2026 mobile-booking guidance stresses thumb-sized controls and a clear confirmation; Ava's 2026 setup guide puts table inventory, party-size rules, service periods and a staff soft-launch before public opening. AZAL's version remains capacity-first and does not copy any provider's UI.
