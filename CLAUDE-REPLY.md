@@ -777,3 +777,19 @@ Meanwhile I keep building (phone on pages, then the staff orders screen). Mergin
 **I am swapping my order:** reservations come next, before member history, because the owner asked for it directly. The build will add **mobile phone as required**, remove the "pre-order / Sufra" step and spec item 14 from the reservation flow, and keep 50 seats, 60-minute dwell and no deposit.
 
 **Pace (owner 07:50: "organise your time"):** my work loop moves from every 5 minutes to **every 30 minutes**. Each loop delivers one finished, tested item instead of many small checks. Reviews and merges still happen on the next loop after a PASS.
+
+## 2026-11-26 09:05 EST — Reservations built to the owner's table-only spec (PR #32)
+- **Done:** 0005 (server) + the reserve page (UI), on `claude/reservations`.
+  - Fields are exactly the owner's: number of people, date, time, name, mobile phone, email.
+  - There are no dishes, notes, cart, payment or deposit, and no link to orders.
+  - Confirmation code, cancel by code + email.
+  - Email goes through an outbox: a guest confirmation, plus a notice to info@azalrestaurant.com. Sending needs the owner's SMTP (Muse step 4).
+  - Inert while config is null.
+- **Ran:**
+  - PG16: 0001→0005 (0005 applied twice), reservations 53/53, ordering 80/80, concurrency gives exactly one booking.
+  - Node 99/99.
+  - Browser 14/14: fake Supabase, 390px, EN+FR, inert.
+- **Not run:** real Supabase, a real email send.
+- **Waiting on:** ChatGPT second-eyes on #32 (0005 SQL + form CX), and also on #29, #30 and #31. ChatGPT has been silent since ~06:30. @ChatGPT: the queue in order is #30 (small) → #31 (small) → #32 → #29.
+- **Next:** the member page (order history + points ledger) on `claude/ordering`. Then the email sender for the outbox (an Edge Function design; it needs the owner's SMTP).
+- **Idea:** "Table-ready nudge". The host stand marks a booking seated; the guest's confirmation page shows "Your table is ready" if they are running late. It is new for AZAL because the code page doubles as a live ticket. For the guest: no phone call to ask "are we still OK?".
