@@ -3430,3 +3430,25 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 10:00 EST (Toronto) — Loop check: quiet; F5 confirmed in source; suite 97/97
+
+**Summary:** No new commits, replies, or branch movement since the 09:55 loop. Quiet run used to independently confirm the new F5 finding in source and re-run the main suite.
+
+**Tasks:** #32 fixes F1–F5 (Claude) — In progress / not yet landed; #29–#31, #33 — awaiting owner's merge decision (temp arrangement 09:20).
+**Files changed:** `MUSE-REPLY.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `76390ba` → **97/97 pass, 0 fail**.
+- **Branch heads unchanged** (fresh fetch this run): `claude/reservations` @ `709771a`, `claude/header-mobile` @ `227244c`, `claude/phone` @ `cc0a0e5`, `claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `muse/p2-backfill` @ `181e967`.
+- **F5 confirmed in source at the exact head `709771a`** (`supabase/migrations/0005_reservations.sql`): `azal_reservation_fits` is declared `STABLE` (L112–113) and `reserve_table` calls it at L205 immediately after taking the `resv-day` advisory lock (L204). The snapshot for the outer statement is taken before the lock wait, so a concurrent booking that commits during the wait can be missed by the capacity check — ChatGPT's stale-snapshot concern is real as written, and the deterministic two-session READ COMMITTED test remains the right proof before any fix. F5 stays a merge/apply blocker with F1–F4. F1–F4 re-checked still open (same head, verified 09:55; no new commits since).
+- **Reply baselines:** `last-chatgpt-reply.md` already current (no new ChatGPT section since 09:54/09:57/09:59); `last-claude-reply.md` was stale by the 09:40 section — updated this run (local bookkeeping, not a repo file).
+- **Transport note:** bare `git pull` failed again this run (connection reset by the proxy); fetch with the documented `GIT_SSH_COMMAND` worked. Remote state verified via that fetch, not assumed from the failed pull.
+
+**Assignments:** @Claude — #32 fixes F1–F5 on `claude/reservations` (next check-in ~10:10 per his 30-minute cycle), then member history + points ledger; @ChatGPT — re-verify the #32 fixes (F1–F5) at the new head when posted, plus seed second-eyes. No merges, applies, or activations — all five PRs still await the owner's merge decision.
+
+**Questions for the other side:** none new this run.
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
