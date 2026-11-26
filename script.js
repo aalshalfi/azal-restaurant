@@ -21,7 +21,7 @@ const translations = {
   visitKicker:"COME TOGETHER",visitTitle:"We look forward",visitTitle2:"to welcoming",you:"you.",
   visitText:"AZAL is a restaurant concept in development. Location, contact details and opening hours will be shared once confirmed.",
   visitCard:"VISIT AZAL",visitCardTitle:"One location.",visitCardTitle2:"One warm welcome.",locationLabel:"Location",toAnnounce:"To be announced",
-  addressLabel:"Address",comingSoon:"Coming soon",hoursLabel:"Hours",footerTagline:"A Taste of Yemen, Like No Other.",footerLegal:"AZAL RESTAURANT · CONCEPT PREVIEW",
+  addressLabel:"Address",comingSoon:"Coming soon",hoursLabel:"Hours",footerTagline:"A Taste of Yemen, Like No Other.",footerLegal:"AZAL RESTAURANT · CONCEPT PREVIEW",photoCreditsLabel:"Illustrative photo credits — not AZAL food photography:",
   cartKicker:"YOUR SELECTION",cartTitle:"Your order",subtotal:"Subtotal",cartDisclaimer:"Demo checkout only. No payment or restaurant order will be submitted.",
   checkoutButton:"Continue to demo checkout",demoOnly:"DEMO ONLY",checkoutTitle:"Almost there.",
   checkoutText:"This is a website preview. Your order will not be sent to AZAL and no payment will be taken.",
@@ -52,7 +52,7 @@ const translations = {
   visitKicker:"RÉUNISSONS-NOUS",visitTitle:"Nous avons hâte",visitTitle2:"de vous accueillir",you:".",
   visitText:"AZAL est un concept de restaurant en développement. L’emplacement, les coordonnées et les heures d’ouverture seront communiqués lorsqu’ils seront confirmés.",
   visitCard:"VISITER AZAL",visitCardTitle:"Un seul lieu.",visitCardTitle2:"Un accueil chaleureux.",locationLabel:"Emplacement",toAnnounce:"À annoncer",
-  addressLabel:"Adresse",comingSoon:"À venir",hoursLabel:"Heures d’ouverture",footerTagline:"Le goût du Yémen, comme nulle part ailleurs.",footerLegal:"RESTAURANT AZAL · APERÇU DU CONCEPT",
+  addressLabel:"Adresse",comingSoon:"À venir",hoursLabel:"Heures d’ouverture",footerTagline:"Le goût du Yémen, comme nulle part ailleurs.",footerLegal:"RESTAURANT AZAL · APERÇU DU CONCEPT",photoCreditsLabel:"Crédits des photos illustratives — photos non issues de la cuisine AZAL :",
   cartKicker:"VOTRE SÉLECTION",cartTitle:"Votre commande",subtotal:"Sous-total",cartDisclaimer:"Paiement de démonstration uniquement. Aucune commande ne sera transmise au restaurant et aucun paiement ne sera effectué.",
   checkoutButton:"Continuer vers le paiement démo",demoOnly:"DÉMONSTRATION UNIQUEMENT",checkoutTitle:"Presque terminé.",
   checkoutText:"Ceci est un aperçu du site. Votre commande ne sera pas transmise à AZAL et aucun paiement ne sera prélevé.",
@@ -92,12 +92,12 @@ const products = [
 {id:1,name:"Lamb Mandi",category:"Rice",type:"Rice & meat",price:24.99,description:"Fragrant Yemeni rice with slow-cooked tender lamb.",image:"https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=900&q=80",tag:"Signature"},
 {id:2,name:"Chicken Mandi",category:"Rice",type:"Rice & meat",price:18.99,description:"Aromatic mandi rice served with seasoned roasted chicken.",image:"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=900&q=80",tag:"Popular"},
 {id:3,name:"Lamb Haneeth",category:"Rice",type:"Rice & meat",price:26.99,description:"Traditional slow-roasted lamb, tender and full of spice.",image:"https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80",tag:"Traditional"},
-{id:4,name:"Yemeni Fahsa",category:"Traditional",type:"Traditional",price:19.99,description:"A rich traditional stew served bubbling hot with bread.",image:"https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80",tag:""},
+{id:4,name:"Yemeni Fahsa",category:"Traditional",type:"Traditional",price:19.99,description:"A rich traditional stew served bubbling hot with bread.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/%D8%AE%D8%A8%D8%B2_%D9%85%D9%84%D9%88%D8%AD.jpg?width=900",tag:""},
 {id:5,name:"Yemeni Saltah",category:"Traditional",type:"Traditional",price:17.99,description:"A comforting Yemeni favourite with a savoury, spiced broth.",image:"https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&q=80",tag:""},
 {id:6,name:"Sahawiq & Fresh Bread",category:"Sides",type:"Sides",price:5.99,description:"Freshly baked bread with a bright Yemeni chilli relish.",image:"https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=900&q=80",tag:""},
-{id:7,name:"Hummus",category:"Sides",type:"Sides",price:7.99,description:"Creamy chickpea dip finished with olive oil.",image:"https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=900&q=80",tag:""},
-{id:8,name:"Adeni Chai",category:"Drinks",type:"Drinks",price:3.99,description:"Yemeni-style spiced milk tea, fragrant and warming.",image:"https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=900&q=80",tag:""},
-{id:9,name:"Fresh Mango Juice",category:"Drinks",type:"Drinks",price:5.49,description:"A refreshing sweet mango drink.",image:"https://images.unsplash.com/photo-1622597467836-f3285f2131b8?auto=format&fit=crop&w=900&q=80",tag:""}
+{id:7,name:"Hummus",category:"Sides",type:"Sides",price:7.99,description:"Creamy chickpea dip finished with olive oil.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/HummusLebanese.jpg?width=900",tag:""},
+{id:8,name:"Adeni Chai",category:"Drinks",type:"Drinks",price:3.99,description:"Yemeni-style spiced milk tea, fragrant and warming.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Chai_In_Sakora.jpg?width=900",tag:""},
+{id:9,name:"Fresh Mango Juice",category:"Drinks",type:"Drinks",price:5.49,description:"A refreshing sweet mango drink.",image:"https://commons.wikimedia.org/wiki/Special:FilePath/Mango_juice.JPG?width=900",tag:""}
 ];
 const cart = new Map();
 const $ = id => document.getElementById(id);
