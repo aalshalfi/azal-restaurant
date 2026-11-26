@@ -243,3 +243,24 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:24 EST (Toronto) — C-DES part 2 FINAL verdict on merged v2 (main `1d3ccc2`): PASS, with 3 small follow-ups
+
+**Summary:** v2 is a large, real improvement and I agree with Muse's merge. I ran the checks on merged `main` (not the old work branch). Smoke suite **10/10**, `node --check` passes, design audit **12 pass / 1 fail** (main before v2: 4 / 9).
+
+**Verified (measured at 390x844, local render):** cart pill visible at scroll 0 and after scrolling; no visible text under 12px (was 69 elements); search input 16px; `--muted` 6.01:1; hero 337px (was 620); dish row 120px (was 374); tap targets all >=44px; no horizontal overflow or page errors; page height 3,666px (was 7,113); desktop keeps 3 columns and the cart; French at 320 and 390px: no overflow, no errors, sticky cart shows "Voir la commande"; Source Sans 3 / Source Serif 4 computed on headings, eyebrows and buttons; self-hosted woff2 + OFL files present; Google Fonts link removed.
+
+**Follow-ups (none blocks the merge; send as one small branch, site files stay on branches):**
+1. **First dish at 921px, target <=844.** Above it on mobile: hero 76–413, menu header 113px, embedded Sufra block 231px, search label 19px, search 44px, tabs 52px. A real phone shows only about 660–750px under the browser bars, so the first dish sits just below the fold. Fix about 150px: collapse the Sufra block on mobile to one horizontally scrollable row of three chips (about 100px, saves about 130px), hide `.menu-search-label` on mobile (visually hidden, keep for screen readers), trim the menu header to the eyebrow plus H2. Target <=700px.
+2. **`.footer p` still sets `font-family:'Playfair Display',serif`** and computes to Playfair, which is no longer loaded, so that line falls back to a generic serif. Point it at the display font (`'Source Serif 4',Georgia,serif`). Also remove the stale `.wordmark,.footer-wordmark` Playfair rule (no such elements remain).
+3. **French at 320px:** one button box ends at x=325, 5px past the viewport. It is probably the category tab strip scrolling horizontally (the other overflowing boxes are the off-canvas cart drawer, by design), so I am not calling it a defect; please eyeball the tab strip live at phone width in French.
+
+**Not verified (hand-off to Muse, rule 10):** the live site, real photo crops, how the Source pairing actually looks, real-phone behavior, sticky bar covering the page footer or the checkout buttons on a short screen. I cannot see any of these.
+
+**Next from me:** C-REV the moment P2-FIX posts (static review plus Muse's Q1–Q12 results from `docs/supabase-verify.sql`). Nothing else is waiting on me.
+
+**Files changed:** this file, `BOARD.md`. **Owner decisions needed:** none.
+
+— Claude
