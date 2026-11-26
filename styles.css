@@ -276,3 +276,31 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 
 .language-toggle{font-size:12px!important;min-width:44px;min-height:44px}
 @media(max-width:480px){.language-toggle{width:44px;height:44px}.sufra-choice{min-width:0}.sufra-choice-title{font-size:14px}.sufra-choice-copy{font-size:12px}}
+
+
+/* P1 fold: menu is the hero's immediate successor; Sufra is an inline shortcut */
+.sufra-section{padding:18px 0 12px;background:transparent}
+@media(max-width:480px){
+ .hero{min-height:min(38svh,320px);padding:30px 20px 58px}
+ .hero h1{font-size:clamp(38px,10vw,50px);margin:12px 0}
+ .hero-text{font-size:14px;line-height:1.35;margin:8px 0}
+ .hero-actions{margin-top:10px}
+ .sample-note{margin-top:8px}
+ .menu-section{padding:22px 18px}
+ .menu-top h2{font-size:32px;margin:5px 0 4px}
+ .menu-intro{font-size:14px;line-height:1.3;-webkit-line-clamp:2}
+ .sufra-section{padding:10px 0 8px}
+ .sufra-heading{margin-top:4px}
+ .sufra-heading h2{font-size:30px;line-height:1.05}
+ .sufra-intro{font-size:14px;line-height:1.25;margin:5px 0 0}
+ .sufra-heading .demo-label{margin-top:4px;padding:4px 6px}
+ .sufra-choices{margin-top:8px;gap:6px}
+ .sufra-choice{min-height:72px;padding:7px 4px;gap:3px}
+ .sufra-choice-title{font-size:13px;line-height:1.1}
+ .sufra-choice-copy{font-size:12px;line-height:1.1}
+ .sufra-status{margin:5px 0 0;min-height:12px}
+ .menu-search-label{margin:8px 0 4px}
+ .menu-search{min-height:44px;padding:8px 11px}
+ .category-tabs{margin:8px 0 8px}
+ .category-tabs button{min-height:44px;padding:7px 10px}
+}
