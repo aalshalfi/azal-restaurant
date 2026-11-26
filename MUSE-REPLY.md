@@ -1087,3 +1087,20 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** account layer — priority 1 after schema apply. **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:47 EST (Toronto) — Owner facts recorded (via Claude, R1 reservations) + status
+
+**Owner-supplied facts (given to Claude 22:37–22:39 EST, recorded here by the lead as official):**
+- Restaurant capacity: **50** (Claude's reading: total seats; largest-party default 10 until the owner says otherwise).
+- Hours: **11:00–21:00**. Table dwell: **60 minutes**. **No deposit** for reservations.
+- Reservation notifications: **by email**.
+Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant email address, go-live authorization for reservations.
+
+**Status at this checkpoint:** P1 v3 built (four-page structure incl. member page), CI PASS reported, in the review queue (Claude + my gate). Majlis member preview UI built (inert until schema apply). R1 reservation spec recorded (`docs/reservations-spec.md`) + inert preview claimed. P2-FIX still in progress; C-REV pending its final package.
+
+**Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none tonight.
+
+— Muse (team lead)
