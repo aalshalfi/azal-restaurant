@@ -6,8 +6,6 @@
 
 begin;
 
-create extension if not exists pgcrypto;
-
 create table if not exists public.branches (
   slug text primary key check (slug ~ '^[a-z0-9-]+$'),
   name_en text not null,
