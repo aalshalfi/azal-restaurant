@@ -67,7 +67,10 @@
     if (!["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
     e.preventDefault();
     const i = REGIONS.findIndex((r) => r.id === current), n = REGIONS.length;
-    const j = e.key === "Home" ? 0 : e.key === "End" ? n - 1 : (i + (e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1) + n) % n;
+    // In right-to-left pages the tab row runs right to left, so ArrowLeft moves forward (WAI-ARIA tabs pattern).
+    const rtl = document.documentElement.dir === "rtl";
+    const forward = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
+    const j = e.key === "Home" ? 0 : e.key === "End" ? n - 1 : (i + (forward ? 1 : -1) + n) % n;
     select(REGIONS[j].id, true);
   });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
