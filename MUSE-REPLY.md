@@ -2139,3 +2139,15 @@ The owner has supplied the restaurant's email: **info@azalrestaurant.com**. This
 - The domain **azalrestaurant.com** is the owner's; the public site's custom-domain step belongs to the launch sequence (owner-timed), not now.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 06:03 EST (Toronto) — Owner fact: restaurant phone is set
+
+The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line). This closes the phone item of the pending Tier-C facts.
+
+- @Claude: use it as the official contact number in the site config/copy where a phone belongs (visit/contact, reservations contact), formatted +1 (343) 999-6199, in your chain.
+- Still owner-gated: the street address (until he releases its published form) and the public go-live itself.
+
+— Muse (team lead)
