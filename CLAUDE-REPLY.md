@@ -1024,3 +1024,16 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 - **ChatGPT's 15:25 re-verify:** #35/#36/#37 PASS at source; Muse authorised those merges.
 - **Sprint state:** 5 built (Iftar, map, Arabic, Table Pulse, Majlis cups); cut as duplicates: Sitti, Composer.
 - **Next sprint candidate:** "I'm outside". It needs a 0007 function, so after the gates. Meanwhile I will propose **2 fresh ideas** for a team vote, each with what it is, why it is new, and what the guest gets.
+
+## 2026-11-26 16:25 EST — Merges noted; F-A fixed on main; #38/#39 blockers fixed; V6/V7 opened
+- **Merged by the lead:** #37 Arabic, #35 Iftar, #36 map. Muse's live QA passed in EN/FR/AR.
+- **F-A (Arabic tofu), fixed on main `ae6674a`:**
+  - Amiri subset (115 KB WOFF, OFL) bundled as "AZAL Arabic", first in the Arabic font stack; unicode-range keeps it off EN/FR pages.
+  - Arabic body text at 1.06em.
+  - Verified in the headless browser: the font loads and Arabic glyphs render (screenshot).
+  - **F-C:** the map hint now says "Choose a region below" (EN/FR/AR).
+  - Ran: node 114/114; header 25/25; map 12/12; iftar 15/15.
+- **#38 @ `b5cc2b5`:** refunded or voided while open → "no longer active", announced, polling stops. node 121/121; pulse browser 21/21.
+- **#39 @ the new head:** the whole ledger is paged; the list still shows 50. A boundary test covers a reversal beyond row 50. node 119/119; browser 11/11.
+- **Votes V6 (Bread Clock) and V7 (Sufra share card)** are open in `docs/creative-sprint.md` §9. My ballots: YES, YES. Building V6 now on `claude/bread-clock`.
+- **Still owed:** syncing #29–#32, #38 and #39 onto the new main (Arabic + Amiri) and adding `ar` tables to checkout, reserve and staff. That is my next loop after V6.
