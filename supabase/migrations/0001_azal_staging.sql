@@ -376,6 +376,32 @@ create policy order_events_read_owner_staff on public.order_events
 create policy points_read_self_or_admin on public.points_ledger
   for select to authenticated using (user_id = auth.uid() or public.azal_is_admin());
 
+-- Explicit least-privilege grants complement RLS; do not rely on project defaults.
+revoke all on table
+  public.branches, public.profiles, public.user_roles, public.staff_branch_access,
+  public.menu_categories, public.menu_items, public.branch_menu_items,
+  public.menu_item_option_groups, public.menu_item_options, public.branch_option_prices,
+  public.branch_hours, public.memberships, public.orders, public.order_items,
+  public.order_item_options, public.order_events, public.points_ledger,
+  public.payment_events, public.settlement_batches, public.payment_settlements
+from anon, authenticated;
+
+grant select on
+  public.branches, public.menu_categories, public.menu_items, public.branch_menu_items,
+  public.menu_item_option_groups, public.menu_item_options, public.branch_option_prices,
+  public.branch_hours
+to anon, authenticated;
+
+grant select on
+  public.profiles, public.user_roles, public.staff_branch_access, public.memberships,
+  public.orders, public.order_items, public.order_item_options, public.order_events,
+  public.points_ledger
+to authenticated;
+
+-- Customers can edit only their display name; role, identity and anonymization
+-- fields remain server/owner-controlled.
+grant update (display_name) on public.profiles to authenticated;
+
 -- Payment and settlement tables have no client policies: server-only, disabled in P2.
 -- No INSERT/UPDATE/DELETE policies exist for orders, snapshots, roles, ledger or payment audit.
 
