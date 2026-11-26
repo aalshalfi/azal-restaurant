@@ -324,7 +324,6 @@ The owner has now given both of us the same direction directly: do not be execut
 
 — Muse (team lead)
 
-
 ---
 
 ## 2026-11-25 20:00 EST (Toronto) — Owner's first review; lead decisions (design elevation is now top priority)
@@ -2849,6 +2848,33 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Assignments (unchanged):**
 - **@ChatGPT:** the same five items, now ~106 min silent (since 06:14): OTP-link CX @ `e289824` (the `redirect_to` question is answered — query param is the official-client behaviour, see MUSE-REPLY 07:15; branch suite lead-confirmed 98/98), staff CX @ `e27dcda`, phone CX @ `cc0a0e5` (nit 1 confirmed in source 07:20; nit 2 latent, fix at card enablement), seed second-eyes, reservations CX vs the binding spec when Claude's branch lands. No merge, apply or activation moves until your verdicts land.
 - **@Claude:** (1) reservations wiring — binding table-only spec + MUSE-REPLY 07:50 rulings 1–4; (2) HDR-MOB mobile-header fix, spec sharpened above; (3) member order history + points ledger (spec refined 07:05/07:00), plus the aria-pressed switcher fix.
+
+**Still open:** owner-test step 6b (staff-grant SQL — waits for the owner's first sign-in; 0 users); SMTP sender (Tier C, pre-launch); redirect allow-list (owner-test step only); mobile-width live QA (known browser limitation). Claude's 06:22 account-side steps 2–5 stay staged for the owner-test step — the test itself is still gated behind ChatGPT's CX verdicts and the OTP-link merge.
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
+
+---
+
+## 2026-11-26 08:05 EST (Toronto) — Loop check: quiet; suite green; desktop header cleared for HDR-MOB
+
+**Summary:** No new commits or replies since the 08:00 loop — main still @ `f17e564` (the 08:00 loop's own commit); `CHATGPT-REPLY.md` unchanged vs baseline (diff empty); `CLAUDE-REPLY.md` unchanged since the 07:55 swap section. No reservations-wiring branch yet — Claude's item is named and queued, and on his 30-minute pace it is not due until ~08:25. Quiet-run work: re-ran the main suite and source-checked the desktop header, the one open question on the HDR-MOB fix spec ("desktop unchanged unless the same imbalance exists there").
+
+**Verification (lead):**
+- **Main suite green:** `node --test tests/*.test.mjs` on main @ `f17e564` → **97/97 pass, 0 fail**.
+- **Remote branch heads unchanged:** `claude/otp-link` @ `e289824`, `claude/ordering` @ `e27dcda`, `claude/phone` @ `cc0a0e5`, `claude/auth-wiring` @ `d598bf9`.
+- **Config still inert:** `supabase-config.js` ships `url: null, anonKey: null` — no account feature live, sign-ups OFF.
+- **404 title fix intact:** single `data-title-key` on `404.html`.
+- **HDR-MOB — desktop header cleared (source):** above 800px `.menu-toggle` is `display:none` and `.nav` is a visible flex row (gap 36px; 12px at 801–1100px), so the header's three children are brand left / nav centre / cart right — balanced, no stranded element, no orphaned hamburger. The `.cart-open` bordered box exists at desktop too, but C9 already verified it at 1920px (single line, no wrap or overlap), so it is not the same defect. **Ruling: the HDR-MOB fix stays mobile-only (≤800px); desktop header unchanged.** The fix spec from 08:00 stands for the mobile header.
+- **PR comments not checked:** `gh` CLI is present but unauthenticated in this VM; the reply files remain the channel of record, and both are unchanged.
+
+**Assignments (unchanged):**
+- **@ChatGPT:** the same five items, now ~111 min silent (since 06:14): OTP-link CX @ `e289824` (the `redirect_to` question is answered — query param is the official-client behaviour, see MUSE-REPLY 07:15; branch suite lead-confirmed 98/98), staff CX @ `e27dcda`, phone CX @ `cc0a0e5` (nit 1 confirmed in source 07:20; nit 2 latent, fix at card enablement), seed second-eyes, reservations CX vs the binding spec when Claude's branch lands. No merge, apply or activation moves until your verdicts land.
+- **@Claude:** (1) reservations wiring — binding table-only spec + MUSE-REPLY 07:50 rulings 1–4; (2) HDR-MOB mobile-header fix, desktop now cleared — mobile-only; (3) member order history + points ledger (spec refined 07:05/07:00), plus the aria-pressed switcher fix.
 
 **Still open:** owner-test step 6b (staff-grant SQL — waits for the owner's first sign-in; 0 users); SMTP sender (Tier C, pre-launch); redirect allow-list (owner-test step only); mobile-width live QA (known browser limitation). Claude's 06:22 account-side steps 2–5 stay staged for the owner-test step — the test itself is still gated behind ChatGPT's CX verdicts and the OTP-link merge.
 
