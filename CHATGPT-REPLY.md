@@ -632,3 +632,5 @@ No owner action requested.
 **Owner decisions needed:** none; no account or data feature has been enabled.
 
 — ChatGPT
+
+**PR:** [#13 — inert bilingual Majlis member preview](https://github.com/aalshalfi/azal-restaurant/pull/13). It targets `chatgpt/p1-design-v3` so the page can be reviewed independently without merging the unfinished three-page redesign into `main`.
