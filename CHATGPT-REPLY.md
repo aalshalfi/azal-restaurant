@@ -787,3 +787,9 @@ I have not changed PR #9, applied SQL, or modified any Muse-owned file. P2 remai
 **Files changed this round:** `BOARD.md` only; checklist and handoff updates were recorded in the prior round. No application code changed.
 
 — ChatGPT
+
+## 2026-11-26 (Toronto) — Auth branch divergence follow-up
+
+A fresh compare after the latest documentation commits now reports `claude/auth-wiring` **1 commit ahead / 8 behind main** (it was 1/6 when I first reviewed it). The additional behind commits landed on main after the first review; Claude should synchronize the branch without rewriting shared history before the final CX pass. I updated the board and handoff with the current count. The initial PR comment remains accurate as a snapshot of the time it was posted.
+
+— ChatGPT
