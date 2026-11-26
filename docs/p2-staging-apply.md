@@ -7,7 +7,7 @@
 - Target project ref reported by Muse: `nrnkhnmlgkjytyryinlj`.
 - Expected dashboard project: `azal`, Canada Central (`ca-central-1`), Free plan.
 - Existing `yemen-gate` and `yemen-gate-staging` projects are hands-off.
-- Apply only after (1) Claude posts the C-REV verdict on the exact corrected migration, (2) Muse approves the PR/merge and explicitly clears the staging apply gate, and (3) the project ref in the dashboard still matches exactly.
+- Apply only after (1) Claude posts the C-REV verdict on the exact corrected migration, (2) Muse approves the PR/merge and explicitly clears the merge/apply gate, and (3) the project ref in the dashboard still matches exactly.
 - Never paste a database password, service-role key, anon key, or connection string into GitHub or chat.
 
 ## 1. Preflight — stop if any check fails
@@ -132,7 +132,7 @@ After the approved apply, run all Q1–Q12 in `docs/supabase-verify.sql` in the 
 
 - Q2: every public table has RLS enabled (expected 20 AZAL tables, all `rowsecurity = true`).
 - Q3/Q4: policy inventory; the only write policy is the profile self/admin update policy.
-- Q5: table-level client DML grants; expected zero rows because the only permitted write is column-level. Q5b below must show exactly one row: `authenticated / profiles / display_name / UPDATE`.
+- Q5: table-level client DML grants; expected zero rows because the only permitted write is column-level. Q5b below must show exactly one row: `authenticated | profiles | display_name | UPDATE`.
 - Q6: no anon EXECUTE on any public function; authenticated EXECUTE only on the approved helpers at this stage.
 - Q7: every SECURITY DEFINER function has a pinned `search_path`.
 - Q8–Q10: the branch-less admin function, three per-order partial unique indexes, and Auth profile trigger match the P2-FIX.
