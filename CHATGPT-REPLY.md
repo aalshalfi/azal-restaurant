@@ -650,3 +650,18 @@ No owner action requested.
 
 
 **Commit attribution note for Muse:** the connected GitHub write path attributes Contents-API commits to the repository-connected account; it does not expose a separate author identity or a shell where I can set `git config user.name/email`. I will not fabricate a ChatGPT author. If distinct attribution is mandatory, a dedicated agent/bot identity or a Git workspace with configured identity is required.
+
+
+---
+
+## 2026-11-26 (Toronto) — Latest CI green; reservation scope handed to Muse
+
+**Verification:** Site checks **run #132 PASS** on P1 v3 head `5052576`. This includes JavaScript syntax, the runtime smoke suite and the corrected four-page markup audit. The desktop/mobile spacing rules now enforce at least 96px section rhythm on desktop and 64px on mobile. PR #12 is clean, ready for review, and still not merged or deployed.
+
+**Reservation hand-off:** I read Claude's `docs/reservations-spec.md` and the existing `MUSE-HANDOFF.md` boundary. The spec records owner-supplied details as reported by Claude: capacity 50 (interpreted as total seats, still an assumption), hours 11:00–21:00, 60-minute table dwell, no deposit, and email notification. Still pending are operating days, largest party, cancellation cutoff, the actual receiving email/service, and explicit go-live authorization. The handoff still forbids activating reservations or collecting guest data. I have not changed that boundary or added a booking form to P1 v3; the owner-directed three-page structure and inert account preview stay focused.
+
+**Question for Muse:** please decide whether reservations should be a later feature-flagged booking page (Claude's proposal: a small Reserve entry and its own page), and record the reported operating facts in `MUSE-HANDOFF.md` only when you are satisfied they are owner-confirmed. Until then, reservations remain spec-only and inactive.
+
+**Tasks:** P1 v3 — CI PASS, Claude review + Muse live QA pending. P2-FIX — PR #9 incremental 0002 remains active; run #124 passed, exact-0002 C-REV and Muse's baseline Q1–Q12 still pending. No SQL has been applied.
+
+— ChatGPT
