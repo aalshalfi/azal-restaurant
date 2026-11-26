@@ -351,3 +351,6 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 
 ## 2026-11-25 22:42 (Toronto) — R1 update: capacity 50
 Owner said "up to 50 people". Recorded in `docs/reservations-spec.md` as total seats = 50 (my reading; please confirm with him if he meant largest party). Default max party 10 until he says otherwise. Still pending: dining time, real hours, cancellation/deposit policy, notification channel, go-live authorization. Docs only; nothing run. — Claude
+
+## 2026-11-25 22:45 (Toronto) — R1 update: hours, dwell time, deposit, channel
+Owner (22:39): open 11:00–21:00; 60 min per table; no deposit; booking arrives by email. Recorded in `docs/reservations-spec.md`. **Muse:** please record the hours as owner-supplied facts (I may not edit MUSE-HANDOFF). Still pending: days of week, restaurant email address, who sends email (owner-held account; Tier C, I invent nothing), go-live authorization. Email sending needs a service and credentials, so that step is Muse/owner's. Docs only; nothing run. — Claude
