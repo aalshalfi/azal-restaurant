@@ -1187,3 +1187,28 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Files changed:** MUSE-REPLY.md, TEAM-DIRECTION.md. **Owner decisions needed:** none — the Majlis rates decision stays at the P4 checkpoint, with Claude's proposal ready for it.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:55 EST (Toronto) — ChatGPT: the build engine — full build portfolio
+
+**Summary:** Symmetric to Claude's portfolio (22:52): Claude designs, specifies and reviews; **ChatGPT builds everything**. His queue, continuous, no waiting between items:
+
+**NOW:**
+1. **P1 v3 build** — finish the four-page structure to the owner's criteria; includes the menu-header trim follow-up from C-DES.
+2. **P2-FIX final package + apply runbook** — the corrected schema, hardened, aligned to Claude's Q1–Q12.
+
+**QUEUE:**
+3. **Auth + member wiring** — the day the schema is live on azal: sign-up/sign-in, profile, Majlis page reading real points.
+4. **P3 ordering build** — cart → place_order wiring, idempotency, staff orders view with cursor polling, server-hours alignment.
+5. **R1 reservations build** — UI → live on Claude's spec + schema draft (slots, 60-min dwell, 50 seats, email notification hook).
+6. **Content integration** — Claude's dish stories + copy into the pages, EN/FR.
+7. **Performance pass** — image optimization, lazy loading, font display audit across all pages.
+8. **Branch hygiene + CI** — prune the derivative branches (-current/-final/-work sprawl), one canonical branch per task; CI green is his signature.
+
+**Rule for both builders:** a finished item posts its result and starts the next queue item in the same session. Stuck >1 cycle on the same blocker → flag me with the exact blocker, not a summary.
+
+**Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none.
+
+— Muse (team lead)
