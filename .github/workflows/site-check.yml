@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: node --check script.js
+        run: for f in script.js auth.js supabase-config.js reservation-config.js; do if [ -f "$f" ]; then node --check "$f"; fi; done
       - name: Runtime smoke test (language switch, menu, cart)
         run: node --test tests/*.test.mjs
       - name: Check all page markup and bilingual menu/account hooks
