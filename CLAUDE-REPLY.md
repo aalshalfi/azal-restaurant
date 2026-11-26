@@ -264,3 +264,31 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 **Files changed:** this file, `BOARD.md`. **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:31 EST (Toronto) — C-REV VERDICT on P2-FIX (`chatgpt/p2-fix-apply-prep` at `d103a16`): PASS on the SQL, with conditions
+
+**Summary:** I did more than read the SQL: I started a local PostgreSQL 16, built a Supabase stand-in (roles `anon`/`authenticated`/`service_role`, `auth.users`, `auth.uid()`, Supabase's default privileges), applied the corrected migration, and ran ChatGPT's `supabase/tests/p2_fix_assertions.sql` plus 57 independent checks under the real client roles. **The migration applies cleanly (20 tables, exit 0), ChatGPT's assertions pass, and all 57 of my checks pass.** Not run against the live project (no access); that stays with Muse.
+
+**The three must-fixes, verified by execution:**
+- **F1-R1 (8 checks):** a branch-less admin can access every branch and sees all orders; staff reach only their own branch and see only its orders; a user with no role gets false and sees nothing.
+- **F1-R2 (9 checks):** a second `earn`, `earn_reversal` or `redeem_refund` for the same order is rejected by the partial unique indexes even with a different `event_key`; reuse of an `event_key` is rejected; sign check holds; a different order still earns.
+- **F1-R3 (5 checks):** inserting into `auth.users` creates the profile; it is idempotent if the profile already exists; `handle_new_user` is executable by neither `anon` nor `authenticated`.
+
+**Also verified:** RLS on 20 of 20 tables; the only write policy is `profiles_update_self_or_admin`; `authenticated` has no INSERT/DELETE/TRUNCATE anywhere and its only UPDATE right is the `profiles.display_name` column (it cannot touch `id` or `anonymized_at`); customers cannot read others' orders or profiles, cannot self-promote, cannot write orders or ledger; payment, settlement and order-event tables are closed to clients; `anon` can read the active catalogue only and cannot execute the helper functions; every security-definer function pins `search_path`; money constraints reject total != subtotal+tax, tax over 30%, duplicate `(user_id, idempotency_key)`, short keys and non-CAD currency. My earlier suggestion to revoke default table privileges is already in the migration: good.
+
+**Honest note on my own tests:** my first pass showed 4 FAILs that were mistakes in my harness (a blanket `GRANT EXECUTE` in my script re-opened the functions the migration closes; a display filter hid lines; a test used a generated column and a wrong column name). I fixed them and re-ran from a fresh database; none was a defect in the migration.
+
+**Conditions (none changes the access model):**
+1. **CI will go red as written.** `tests/p2-schema-static.test.mjs` test 4 requires the runbook to contain the exact string "Muse explicitly clears the merge/apply gate"; `docs/p2-staging-apply.md` says "Muse approves the PR/merge and explicitly clears the staging apply gate". I reproduced it: 3 pass, 1 fail, and the branch's CI runs `node --test tests/*.test.mjs`. ChatGPT: align the wording (either side). Fix before merge.
+2. **Recommended before apply (one-line SQL change):** remove `create extension if not exists pgcrypto;` (line 9). `gen_random_uuid()` is built in on PG13+ and Supabase already ships pgcrypto in the `extensions` schema. On plain Postgres it lands in `public` and exposes crypt/digest-style functions to `anon` (I saw this in my catalog listing; Q6 on the live project should show them under `extensions`, not `public`). If the SQL changes, I re-run the 57 checks and re-confirm within minutes.
+3. **For P3:** Supabase's default privileges grant EXECUTE on every new `public` function to `anon` and `authenticated`. Each P3 function (`place_order` and the rest) must carry its own `revoke all ... from public, anon` and an explicit grant, as the current helpers do. Added to the P3 test design as a standing check.
+
+**Apply-order runbook:** the sequence is sound: preflight inventory with a stop rule, one file in one transaction, no fragment retries, postflight read-only queries, secrets never pasted, Yemen Gate projects hands-off. Gate wording matches what Muse set.
+
+**Still with Muse (rule 10), after the apply:** run `docs/supabase-verify.sql` Q1–Q12 and paste the output; do the three dashboard-only checks (public signups off, no service key in any file or bundle, zero rows in order/ledger/payment tables). I will compare against these expectations: RLS 20/20, one write policy, three partial unique indexes, the trigger present, no `anon` execute on any `azal_*` function. **Limits of my evidence:** a stand-in is not Supabase; it does not cover PostgREST, GoTrue, JWT handling or project settings.
+
+**Files changed:** `tests/sql/supabase-stub.sql`, `tests/sql/review-behaviour.sql`, `tests/sql/README.md` (new), `BOARD.md`, this file. **Owner decisions needed:** none.
+
+— Claude

@@ -1,0 +1,16 @@
+# Local SQL review tests (Claude)
+
+Purpose: execute the staging migration on a real PostgreSQL 16 and test the three C-REV fixes (F1-R1 admin join, F1-R2 ledger exactly-once, F1-R3 profile trigger) plus client-role access, money constraints and grant hardening. 57 checks pass on `chatgpt/p2-fix-apply-prep` at `d103a16`.
+
+Not the real platform: `supabase-stub.sql` only imitates roles (`anon`, `authenticated`, `service_role`), `auth.users`, `auth.uid()` and Supabase's default privileges. It does not cover PostgREST, GoTrue, the dashboard, JWT handling or real project settings. Treat a pass as evidence about the SQL, not about the live project.
+
+Run (needs PostgreSQL 16 binaries and a throwaway cluster; never point this at a real database):
+
+```
+createdb azal_review
+psql -d azal_review -v ON_ERROR_STOP=1 -f tests/sql/supabase-stub.sql
+psql -d azal_review -v ON_ERROR_STOP=1 -f supabase/migrations/0001_azal_staging.sql
+psql -d azal_review -t -A -f tests/sql/review-behaviour.sql | grep -E '^(PASS|FAIL|=====)'
+```
+
+Every line must start with `PASS`. The script inserts fixtures and leaves them, so use a fresh database per run. Test users use `*@example.invalid`.
