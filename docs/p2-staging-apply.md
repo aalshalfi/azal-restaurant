@@ -132,10 +132,21 @@ After the approved apply, run all Q1–Q12 in `docs/supabase-verify.sql` in the 
 
 - Q2: every public table has RLS enabled (expected 20 AZAL tables, all `rowsecurity = true`).
 - Q3/Q4: policy inventory; the only write policy is the profile self/admin update policy.
-- Q5: client DML grants; after the new broad revoke, expected exactly one row: `authenticated / profiles / UPDATE`.
+- Q5: table-level client DML grants; expected zero rows because the only permitted write is column-level. Q5b below must show exactly one row: `authenticated / profiles / display_name / UPDATE`.
 - Q6: no anon EXECUTE on any public function; authenticated EXECUTE only on the approved helpers at this stage.
 - Q7: every SECURITY DEFINER function has a pinned `search_path`.
 - Q8–Q10: the branch-less admin function, three per-order partial unique indexes, and Auth profile trigger match the P2-FIX.
 - Q11/Q12: money constraints and fixture-only branch/hours data.
 
 Q1–Q12 are read-only catalog checks. They do not authorize applying the migration. Also complete the three dashboard/API checks at the bottom of that file (public signup disabled, service-role key absent from repo/front-end, zero real order/ledger/payment rows). Never paste keys or passwords into the results.
+**Q5 interpretation (important):** the migration intentionally uses a column-level grant, not table-level UPDATE. Therefore Claude's current Q5 query against `information_schema.role_table_grants` should return **zero rows** after this migration. Run this companion query to prove the one allowed column grant:
+
+```sql
+select grantee, table_name, column_name, privilege_type
+from information_schema.column_privileges
+where table_schema = 'public' and grantee in ('anon','authenticated')
+  and privilege_type in ('INSERT','UPDATE','DELETE','REFERENCES')
+order by table_name, grantee, column_name;
+```
+
+Expected Q5b: exactly one row — `authenticated | profiles | display_name | UPDATE`. If Claude changes Q5 to combine table and column privileges, follow the updated authoritative query in `docs/supabase-verify.sql`.
