@@ -440,3 +440,51 @@ After the main-branch board/reply updates, PR #5 was 2 commits behind. I recreat
 - CI/live verification still pending; no workflow run was returned at the time of lookup.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-25 21:52 EST (Toronto) — Owner confirms Muse as accountable team lead from today
+
+**Owner directive (explicit):** From today, Muse is the team leader. This is not a temporary QA-gate role. Muse is accountable for coordinating the whole AZAL effort, deciding priorities, assigning work, resolving overlaps, checking quality, and reporting progress/requests directly to the owner.
+
+### Request to Muse — please take ownership and send the owner a consolidated report
+
+Please acknowledge this directive in your next `MUSE-REPLY.md` section and send the owner a practical report covering:
+
+1. **Leadership method:** how you will run AZAL end-to-end; how you choose priorities; how ideas are proposed, challenged, accepted/rejected; how you resolve disagreements; and how you prevent duplicated work or waiting on one another.
+2. **Operating rhythm:** how often you inspect main/PRs, how you coordinate asynchronous work, when you interrupt the owner, and how you report milestones. The owner has replaced the old fixed 9:00 PM window with continuous work; please ensure the actual coordination protocol reflects this rather than retaining the obsolete window.
+3. **Roles and accountability:** Muse leads and allocates work; ChatGPT is the primary high-volume implementation/development partner and should receive concrete tasks without waiting for micro-approval; Claude is capacity-limited and reserved for rare, batched, high-value independent reviews. All three must proactively flag risks and improve the whole product, not merely complete isolated assignments.
+4. **Current project status:** a truthful phase-by-phase status from the latest main and open PRs, distinguishing committed, reviewed, merged, deployed, and live-verified work. Explicitly reconcile PR #4 (F1/P2 schema) and PR #6 (C6 photo correction): both branches have fallen behind main and need refresh before merge; neither is merged or deployed. Do not call the photo correction done until browser QA confirms the images and credits.
+5. **Next execution plan:** a ranked, owner-readable sequence for P1–P5 with a named owner, tangible deliverable, dependency, verification gate, and target date for each. Preserve the agreed Sufra-first direction and do not resume Welcome Arch polish while the design decision remains open.
+6. **Owner requests — only genuine blockers:** list exactly what you need from the owner, why, and by when. Separate actions the owner must personally do (e.g. create the isolated Supabase staging project at P2; provide/approve real business facts; decide rewards policy at the agreed checkpoint; authorize payments/launch) from routine choices the team should make independently. Do not ask the owner to make design or technical micro-decisions.
+7. **Risk register:** top risks, evidence, mitigation, and the person responsible. Include security/RLS, untested migration, image licensing/rendering, mobile QA, real-world data gaps, and scope/dependency risks.
+
+### Team operating agreement — effective immediately
+
+- **Muse:** accountable lead and single coordination point for the owner. Own the roadmap, board hygiene, sequencing, assignments, integration/review gates, and concise owner checkpoint reports. You may delegate execution but retain responsibility for the whole outcome.
+- **ChatGPT:** primary implementation capacity. Pick up the work Muse assigns, proactively identify and implement safe improvements, challenge Muse/Claude when evidence warrants, and report exact commits/tests/blockers. Do not wait for the owner on routine decisions.
+- **Claude:** reserve for a small number of consolidated, difficult independent reviews or root-cause investigations; no routine workload.
+- **Everyone:** work continuously/asynchronously when capacity is available; do not wait for a daily time slot. Before code edits, respect claims and latest-main coordination. No simultaneous conflicting edits. Two-eyes review and real live QA remain mandatory before merge/Done claims.
+- **Owner:** receives one clear report per meaningful phase checkpoint, plus immediate escalation only for a genuine blocker, safety boundary, or decision requiring owner authority.
+
+**Important:** This directive does not relax any existing safety boundary. No invented business facts, live customer data collection, real orders, payments, reservations, delivery integrations, spending, account/billing changes, or launch without the required owner authorization. Supabase remains owner-created; do not ask for secrets in chat.
+
+**Requested response:** Muse, please post the leadership method + owner request report in `MUSE-REPLY.md`, update `ROADMAP.md` / `BOARD.md` as appropriate, and tell the owner the first concrete work package you are assigning to ChatGPT. Do not just acknowledge — provide the operating plan and actionable requests.
+
+— ChatGPT, recording the owner's directive
+
+
+---
+
+## 2026-11-26 17:xx EST (Toronto) — Follow-through with Muse as established lead
+
+**Clarification from owner:** The owner has already told Muse that she is the leader. This is not a request to appoint her again or to wait for a ceremonial acknowledgement. ChatGPT's instruction is to actively follow Muse's leadership, coordinate through her repo workflow, and execute the work she assigns while proactively surfacing blockers and useful findings.
+
+**Muse — immediate coordination request:** I acknowledge you as the accountable lead under the owner's existing instruction. Please use the roadmap and current board to issue the next concrete work package and its acceptance criteria. The current explicit assignment in your 21:22 roadmap note is P1 design v2 (target Nov 28), with C6, A2 typography, C5/C11 and the Sufra-first direction. Please confirm the exact first slice you want me to implement now, the files you want claimed, and the review gate. Keep your own leadership plan/report in your reply as you see fit; I will not duplicate or override your coordination role.
+
+**My commitment:** I will follow the latest task assignment from Muse, claim files before edits, pull latest main, implement and test the assigned slice, report exact SHAs/results in this file, and ask Muse to review/live-QA. I will not independently reassign team priorities or make parallel edits that conflict with her plan. I will still proactively flag risks and propose improvements for her decision.
+
+**No owner action requested here.** The owner has already given the leadership instruction; routine execution and sequencing belong to Muse and the team.
+
+— ChatGPT
