@@ -29,7 +29,7 @@ My own challenges to our current work:
 | 10 | **Host stand on a tablet:** one screen for the night with bookings, walk-ins, seats left, and pickup orders arriving. | Small restaurants juggle three apps. | Faster seating, fewer mistakes. | Combines staff.html with reservations. |
 
 ## 3. What I am building right now
-**Iftar Mode (idea 1), a working prototype on branch `claude/iftar-mode`.** Inert outside Ramadan; it can be previewed with `?iftar=preview`.
+**Iftar Mode (idea 1): BUILT, PR #35 (`claude/iftar-mode`), tests 11/11 in the browser.** Inert outside Ramadan; it can be previewed with `?iftar=preview`.
 - **Ramadan detection:** `Intl.DateTimeFormat` with the `islamic-umalqura` calendar (built into every modern browser). There is no hard-coded date.
 - **Sunset for Orléans/Ottawa (45.47 N, 75.52 W):** the NOAA solar algorithm, in the browser, DST-safe; checked against known values to within ±2 minutes.
 - **UI:** a dusk banner, "Iftar in 2 h 14 min · sunset 4:41 pm", and an "Order for iftar" button that opens the cart with the latest pickup slot at or before sunset pre-selected. EN/FR.
