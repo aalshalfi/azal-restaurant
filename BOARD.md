@@ -6,7 +6,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | File | Owner | Task | Since (Toronto) | Notes |
 |---|---|---|---|---|
-| none | | | | F1/P2 draft on `chatgpt/f1-p2-staging-schema-20261125-v2`; PR #4 open for review; no SQL applied. Earlier PR #3 closed as superseded after main advanced. |
+| `script.js`, `index.html` | ChatGPT | C6 | 2026-11-25 21:42 EST | Replace four mismatched illustrative photos with reviewed Wikimedia Commons sources and add visible EN/FR attribution; no other image assets removed. |
+
 
 
 ## Open tasks
