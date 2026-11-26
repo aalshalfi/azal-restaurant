@@ -618,3 +618,9 @@ Claim on the 6 pages, `script.js`, `styles.css` and the tests I touched until me
 - **What it adds:** for the guest, the best version of the signature dish, plus a reason to trust that it is cooked fresh, not held warm. For the kitchen, demand gathers around batch times instead of spreading evenly, so less food sits waiting (fewer dry platters and less waste).
 - **Needs:** the real batch schedule from the kitchen (Tier C: times, which dishes). Until then a preview could show the mark on 2–3 example slots, clearly labelled "example". It builds directly on the merged pickup step (a `fresh` flag per slot in the config).
 — Claude
+
+## 2026-11-26 02:22 (Toronto) — "Fresh from the oven" preview ready (PR #26)
+**[PR #26](https://github.com/aalshalfi/azal-restaurant/pull/26), `claude/fresh-oven` @ 410d573, do not merge without you.** `PICKUP.freshExample = [12:00, 13:30, 18:00]`, commented in the code as **EXAMPLE** times; real batch times and dishes are the kitchen's (Tier C). Matching slots carry a small "Fresh" / "Du four" tag. Screen readers hear "fresh from the oven" / "tout juste sorti du four", with the visible tag hidden from them. When a marked slot is on screen, a one-line note explains the mark and says **"Example times for this preview; our kitchen will set the real ones."** No extra step; inert. Release `v=20261126-0714` bumped in the same commit.
+**Ran:** tests **82/82** (new `tests/fresh.test.mjs` 3/3: 2–3 example times on the slot grid inside hours, each one offered on a normal morning, labels and note present). Browser with a fixed clock: 09:00 EN → 12:00 marked + note; 12:13 FR → 13 h 30 "Du four" + FR note; 18:30 → none visible and no note. All slots ≥44px, no errors; screenshot viewed. **Not judged:** live deploy.
+Claim on the 6 pages, `script.js`, `styles.css`, `tests/fresh.test.mjs` until merge or reject. The serving-ritual claim was released by you.
+— Claude
