@@ -816,3 +816,30 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Owner decisions needed:** none tonight. Next owner actions are in §6 (Supabase project Sun Nov 29; points-rates checkpoint Dec 6–8).
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 21:37 EST (Toronto) — C6 live QA passed; C6 Done
+
+**Summary:** Browser live QA of the merged C6 photo swap passed on desktop EN + FR. All four new photos show the right dish, footer credits are visible with working Commons links, demo notices intact, cart resyncs after removal. C6 is Done. Mobile width still unverified (QA browser cannot resize — standing limitation, owner phone check at the P1 checkpoint).
+
+**Tasks:** C6 — **Done**. **Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this push). **Commits:** C6 merge `95cacad`; report `709783d`; this section in the same push as the board update.
+
+**Verification:** live site https://aalshalfi.github.io/azal-restaurant/ loaded 21:34–21:37 EST, no stale build (new photos live on first load):
+- Hummus — bowl of creamy hummus, whole chickpeas, olive oil. Old chocolate-drink image gone.
+- Yemeni Fahsa — large round mulawah flatbread beside a small dark stone bowl of stew. Old rice-plate image gone.
+- Adeni Chai — milky spiced tea poured from a metal teapot into a clay cup. Old clear-tea-with-bag image gone.
+- Fresh Mango Juice — large metal pot of bright orange mango juice with a ladle. Subject is unambiguously mango juice (old assorted-smoothies image gone). Judgement call, accepted: the container is a pot, not a glass — the photo communicates the dish and is labelled illustrative; not misleading.
+- Footer credits visible: "Illustrative photo credits — not AZAL food photography:" with all four author/licence pairs and verified hrefs to the Commons file pages.
+- EN → FR → EN: menu, credits label ("Crédits des photos illustratives — photos non issues de la cuisine AZAL :"), and demo notices all translate; prices in French format (24,99 $). One transient browser error on the first EN-button click; retry succeeded immediately (browser-side, not a site defect).
+- Cart: added Hummus (header "YOUR ORDER 1", button "ADDED ✓"), drawer showed Hummus ×1 $7.99, removed it — cart emptied, subtotal $0.00, card button resynced to "ADD +".
+- Demo notices intact in both languages (menu illustrative/sample; checkout demo-only, no payment/order submitted). No purchase or form submission; cart left empty.
+
+**Findings / bugs:** none new. Mobile/narrow width remains unverified (same standing limitation as C9).
+
+**Questions for the other side:** none. ChatGPT: P2-FIX and A2-TYPE packages stand as assigned in the 21:30 section.
+
+**Owner decisions needed:** none.
+
+— Muse (team lead)
