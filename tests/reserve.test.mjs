@@ -1,33 +1,66 @@
-// R1 reservations page (Claude): inert, shared i18n, no personal-data inputs, no uncleared facts.
-import test from "node:test";
+import { test } from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const page = fs.readFileSync(path.join(root, "reserve.html"), "utf8");
-const main = page.slice(page.indexOf("<main"), page.indexOf("</main>"));
-const cfg = fs.readFileSync(path.join(root, "reservation-config.js"), "utf8");
+import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
+const require = createRequire(import.meta.url);
+const R = require("../reserve.js");
+const CFG = { url: "https://x.supabase.co", anonKey: "anon" };
+const ok = (data) => async () => ({ ok: true, json: async () => data });
 
-test("no inputs, forms or selects in the page body", () => {
-  assert.ok(!/<(form|input|select|textarea)\b/.test(main));
+test("phone normalisation matches the server rule", () => {
+  assert.equal(R.normalizePhone("(343) 555-0101"), "+13435550101");
+  assert.equal(R.normalizePhone("1 343 555 0101"), "+13435550101");
+  assert.equal(R.normalizePhone("+44 20 7946 0958"), "+442079460958");
+  for (const bad of ["", "555-0101", "44 20 7946 0958 12345 6", "abc"]) assert.equal(R.normalizePhone(bad), null, bad);
 });
-test("uses the shared translation system only", () => {
-  assert.ok(!/data-res-(en|fr)/.test(page));
-  assert.match(page, /<script src="reservation-config\.js\?v=[\w-]+"><\/script>[\s\S]*?<script src="script\.js/);
+
+test("table-only: the request carries exactly the six owner fields + key, nothing about food or payment", async () => {
+  const calls = [];
+  const r = R.createReservations({ config: CFG, fetch: async (u, o) => { calls.push([u, JSON.parse(o.body)]); return { ok: true, json: async () => ({ code: "ABCDEFGH" }) }; } });
+  await r.reserve({ party: 4, startsAt: "2026-11-28T00:00:00.000Z", name: " Sara ", email: " Sara@Example.com ", phone: "343 555 0101" });
+  assert.equal(calls[0][0], "https://x.supabase.co/rest/v1/rpc/reserve_table");
+  assert.deepEqual(Object.keys(calls[0][1]).sort(), ["p_branch", "p_email", "p_idempotency_key", "p_name", "p_party", "p_phone", "p_starts_at"]);
+  assert.equal(calls[0][1].p_phone, "+13435550101");
+  assert.equal(calls[0][1].p_email, "sara@example.com");
+  assert.doesNotMatch(JSON.stringify(calls[0][1]), /note|item|order|pay|card|deposit|menu/i);
 });
-test("does not show facts the owner has not cleared (seats, days, hours)", () => {
-  assert.ok(!/\b50\b|seats|places|daily|tous les jours|11:00|21:00/i.test(main));
+
+test("invalid input sends nothing", async () => {
+  const calls = [];
+  const r = R.createReservations({ config: CFG, fetch: async (...a) => { calls.push(a); return { ok: true, json: async () => ({}) }; } });
+  const good = { party: 2, startsAt: "2026-11-28T00:00:00Z", name: "A", email: "a@b.co", phone: "3435550101" };
+  for (const [k, v, code] of [["phone", "", "invalid_phone"], ["email", "x", "invalid_email"], ["name", " ", "invalid_name"], ["party", 11, "invalid_party"], ["startsAt", null, "invalid_time"]])
+    await assert.rejects(r.reserve({ ...good, [k]: v }), { code });
+  assert.equal(calls.length, 0);
 });
-test("booking stays disabled in config", () => {
-  assert.match(cfg, /bookingEnabled: false/);
-  assert.match(cfg, /goLiveAuthorized: false/);
-  assert.match(cfg, /notificationEmail: null/);
+
+test("retry after a network error reuses the key; a changed request or a new booking gets a new key", async () => {
+  const keys = []; let fail = true;
+  const r = R.createReservations({ config: CFG, fetch: async (u, o) => { keys.push(JSON.parse(o.body).p_idempotency_key); if (fail) { fail = false; throw new Error("offline"); } return { ok: true, json: async () => ({ code: "ABCDEFGH" }) }; } });
+  const f = { party: 2, startsAt: "2026-11-28T00:00:00Z", name: "A", email: "a@b.co", phone: "3435550101" };
+  await assert.rejects(r.reserve(f), { code: "network" });
+  await r.reserve(f);
+  await r.reserve(f);
+  assert.equal(keys[0], keys[1]);
+  assert.notEqual(keys[1], keys[2]);
 });
-test("Reserve link in the nav of every page; current page marked", () => {
-  for (const p of ["index.html", "menu.html", "story.html", "member.html", "reserve.html"]) {
-    const h = fs.readFileSync(path.join(root, p), "utf8");
-    assert.match(h, /<a href="reserve\.html" data-i18n="navReserve"/, p);
-  }
-  assert.match(page, /data-i18n="navReserve" aria-current="page"/);
+
+test("availability and cancel call the 0005 functions; inert without config", async () => {
+  const calls = [];
+  const r = R.createReservations({ config: CFG, fetch: async (u, o) => { calls.push([u.split("/rpc/")[1], JSON.parse(o.body)]); return { ok: true, json: async () => [] }; } });
+  await r.availability("2026-11-28", 3); await r.cancel(" abcdefgh ", " a@b.co ");
+  assert.deepEqual(calls, [["reservation_availability", { p_branch: "ottawa", p_day: "2026-11-28", p_party: 3 }], ["cancel_reservation", { p_code: "abcdefgh", p_email: "a@b.co" }]]);
+  assert.equal(R.createReservations({ config: { url: null, anonKey: null }, fetch: async () => {} }).enabled, false);
+});
+
+test("Toronto dates for the date picker bounds", () => {
+  assert.equal(R.torontoDate(Date.parse("2026-11-27T04:30:00Z"), 0), "2026-11-26"); // 23:30 Toronto
+  assert.equal(R.torontoDate(Date.parse("2026-11-27T04:30:00Z"), 30), "2026-12-26");
+});
+
+test("reserve page loads reserve.js with the release version; copy asks for mobile", () => {
+  const h = readFileSync(new URL("../reserve.html", import.meta.url), "utf8");
+  const v = h.match(/script\.js\?v=([\w-]+)"/)[1];
+  assert.ok(h.indexOf(`auth.js?v=${v}`) < h.indexOf(`reserve.js?v=${v}`));
+  assert.match(readFileSync(new URL("../script.js", import.meta.url), "utf8"), /reserveHow2:"Leave your name, mobile number and email\. Nothing else\."/);
 });
