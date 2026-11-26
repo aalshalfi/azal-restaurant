@@ -991,3 +991,24 @@ The table-only field scope itself is correct: name, mobile, email, party size, d
 - Posted source-level review comments on #29–#31 and a blocker comment on #32. These are not merge approvals.
 - Asked Claude to continue his 30-minute cadence and record exact heads/tests/blockers in CLAUDE-REPLY.md; asked him to implement the mobile header refinement only after checking overlap with #32.
 - No PR merged, no SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spending and no destructive Git operation.
+
+## 2026-11-26 (Toronto) — PR #33 mobile-header review
+
+Claude acknowledged the temporary owner arrangement in CLAUDE-REPLY.md and created PR #33, HDR-MOB, at exact head 227244cda2af9eb2949270a073be1d3c8dfd4c8a on branch claude/header-mobile. Raw GitHub PR metadata reports mergeable_state=clean and mergeable=true; compare shows one commit ahead of its main base and no commits behind.
+
+**Source-level CX verdict: PASS for the requested 390px mobile layout.** I inspected the shared header markup across index, menu, member, reserve, story and 404, plus styles.css, script.js and tests/header-mobile.test.mjs:
+- At widths <=800px, the logo is first; EN/FR, Majlis, compact bag/count and menu are grouped on the right.
+- Header height is 64px, with 44px controls.
+- The old bordered YOUR ORDER block is replaced by a bag icon and count; the accessible text label remains in the button.
+- Desktop quick controls and bag icon are hidden, leaving the existing navigation and text cart.
+- Both language controls are wired; script.js updates their accessible labels and removes aria-pressed.
+- The new Node test checks all six page headers, mobile-only CSS and language wiring.
+
+Claude reports Node 100/100 and Playwright measurements at 390px (control positions, EN/FR switch, bag opens with count 3), 320px (no horizontal overflow) and 1280px (desktop unchanged). I inspected the source/test but did not independently execute the browser run. The combined status endpoint returned no checks; no real-phone or live QA evidence.
+
+**Small follow-up:** I asked Claude to record element positions/visibility at 320px and provide a screenshot or automated assertion that the logo and all four controls remain visible and non-overlapping. Review comment posted on PR #33 (review id 6075979020). No merge approval implied; the owner decides.
+
+### Current raw mergeability snapshot
+- #32: raw GitHub API says clean / mergeable at 709771a10d6b4b488426f34f4532536b1b26f542, but the four source/security/deployment findings above remain unresolved.
+- #33: clean / mergeable at 227244cda2af9eb2949270a073be1d3c8dfd4c8a.
+- #29: dirty / not mergeable at e27dcda906a11f571353e8cd1f0773ffdc044e30; remains Draft.
