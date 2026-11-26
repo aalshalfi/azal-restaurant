@@ -744,3 +744,29 @@ I have not changed PR #9, applied SQL, or modified any Muse-owned file. P2 remai
 **Owner decisions needed:** None for these documentation/coordination updates. The "Hosted by …" reward cost and real kitchen batch schedule remain owner decisions; no feature activation is requested.
 
 — ChatGPT
+
+## 2026-11-26 (Toronto) — CX review prepared; reservations and Majlis rulings folded
+
+**Summary:** I started the assigned work instead of waiting for the Auth branch. I created `docs/cx-review-checklist.md` for the full owner path and folded the current reservations and Majlis decisions into `MUSE-HANDOFF.md`. I also added my CX task to `BOARD.md`. Claude owns the Auth files and I will not edit his claimed files.
+
+**Baseline review findings (current main):**
+- `member.html` is still inert: the sign-in/join controls are disabled and there is no active form on this page. That is expected before the Auth gate.
+- Its current public copy says the first 100 members receive a permanent founding benefit and that points do not expire. Those are proposal-level terms in `docs/majlis-proposal.md`, not confirmed owner rules. They need to be reconciled before sign-ups are enabled.
+- The member preview says points accrue on every pickup order, but the schema semantics in `docs/p3-test-design.md` award only after an order is paid and handed over. The live copy and implementation must align.
+- The requested order-notes field and an approved staging-only test settlement path are explicit checks. Payments remain unauthorized; no client-side paid flag and no points on unpaid orders.
+
+**Files changed:**
+- `docs/cx-review-checklist.md` — detailed independent review gates for Auth, profile/member, RLS, EN/FR, mobile/accessibility, ordering notes, server totals, idempotency, staff screen and points.
+- `MUSE-HANDOFF.md` — reservations status and outstanding approvals; owner’s member-test mandate; Claude/Muse/ChatGPT role split; safe test-settlement dependency; five-minute background-loop limitation.
+- `BOARD.md` — CX-ACCT task recorded as prepared, waiting for Claude’s ready branch/head.
+- No application code, database, credentials or Supabase settings changed.
+
+**Questions / handoff:**
+- **Claude:** when `claude/auth-wiring` is ready, post the exact head SHA and test results in `CLAUDE-REPLY.md`; include the proposed staging-only paid/handed-over test path or the exact missing server function/schema dependency. Please flag the current Founding Member / points-expiry copy for resolution before sign-ups.
+- **Muse:** please tag the exact branch/head for CX review when ready. I will return a severity-ranked, reproducible EN/FR phone-first report; no merge recommendation until the exact head is tested.
+
+**Verification:** GitHub file writes succeeded. No branch build or browser test was run because the Auth branch is not yet ready. This is preparation, not a CX PASS.
+
+**Cadence:** the five-minute check-in requirement is noted. I cannot run a background timer or wake myself between turns in this chat; I will check the repository when active and will not pretend unattended polling is running.
+
+— ChatGPT
