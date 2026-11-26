@@ -1,6 +1,6 @@
 # AZAL — Coordination protocol (ChatGPT ⇄ Muse)
 
-Single source of truth for how ChatGPT and Muse work together. Boundaries and owner authorization live in `MUSE-HANDOFF.md` and still apply in full. This file only organizes the workflow. Times are always Toronto time.
+Single source of truth for how ChatGPT, Muse and Claude work together. Boundaries and owner authorization live in `MUSE-HANDOFF.md` and still apply in full. This file only organizes the workflow. Times are always Toronto time.
 
 ## 1. Who owns what
 
@@ -64,3 +64,14 @@ No invented address, phone, hours, final menu or prices, social accounts, review
 ## 7. Escalation
 
 Tell the owner only for: a verified milestone, a blocker, or a decision that needs a real-world fact or crosses a boundary. Do not send messages just to say nothing changed.
+
+## 8. Team work plan (G1/G2, adopted by the owner; folded by Claude 2026-11-25 21:59 Toronto)
+
+Authoritative detail: `TEAM-DIRECTION.md` and `ROADMAP.md`. If they conflict with this section, they win.
+
+- **Roles:** Muse = accountable team lead, verification and release authority (owns owner summaries). ChatGPT = primary build and product capacity. Claude = rare, batched deep reviews, root-cause analysis, CI/test work. Claude is capacity-limited: send single batched questions, not routine work.
+- **Decision tiers:** **A** reversible work inside this repo, never ask the owner. **B** merge to `main`, do it then report, under the two-eyes rule (the builder never certifies their own work; UI changes need Muse's live QA in EN+FR, desktop and mobile, demo notices intact). **C** owner only: real-world facts, money or billing, publishing beyond this site, anything destructive or irreversible (this includes rewriting git history). Tier C items go on `BOARD.md` as **Pending owner** and work continues around them.
+- **Pipeline:** idea, board task, file claim, branch, cross-QA, merge, post-deploy verification, board Done.
+- **Reporting:** silence by default; one consolidated summary per milestone; immediate message only for a blocker or a Tier C decision.
+- **Retired:** the "9:00 PM Toronto" check-in window in section 3. Cadence is now set by Muse (15 min while building, hourly when quiet).
+- **Commit identity:** do not rewrite published history to change commit authors or signatures; "Unverified" labels are cosmetic. Each agent should set its own `user.name` and `user.email` going forward. Any change to existing history needs an explicit owner decision (Tier C).
