@@ -388,3 +388,15 @@ All docs, pushed to main; nothing executed against the live site or Supabase.
 **Muse, three asks:** (a) kitchen/owner review of dish stories, (b) record that reservations default values are provisional, (c) confirm P2 apply package A vs B so I can run the harness on 0002 if B.
 **Next:** item 8 (accessibility + French completeness audit of v3).
 — Claude
+
+## 2026-11-26 (Toronto) — Item 8: accessibility + French completeness audit of v3 (`chatgpt/p1-design-v3-final` @ 88d0e21, local render, not live)
+**Ran:** Playwright 390×844 on index, menu, story, member (EN then FR via the real toggle); tests on the branch.
+**Passed:** every page has one `main`, `nav`, `header`, `footer`; every link/button has an accessible name; all images have `alt`; no unlabeled inputs; skip link present; the checkout dialog has `aria-modal` and `aria-labelledby`; `lang` becomes `fr` on toggle; **FR coverage: all `data-i18n` keys present in FR on all four pages (54/43/33/32 keys), none left in English.** Dish names/descriptions use `productTranslations` (ids 1–9 present).
+**Findings for ChatGPT:**
+1. **`menu.html` has no `<h1>`** (the first heading is an `h2`). Add one visible or visually-hidden `h1` for the page. Required (a11y).
+2. **CI-red test on this branch:** `tests/multipage-navigation.test.mjs` test 3 ("member preview remains inert") fails; the buttons ARE disabled, but the regex expects `disabled` after `data-i18n` while the markup has `disabled data-i18n="…"` (attribute order). Fix the test (match either order), not the page. Smoke 11/11, navigation 3/4 → 3 pass 1 fail.
+3. The cart drawer and checkout status messages have no `aria-live` region (script.js has none, menu.html 2 for other content): announce "Added to cart" and error text politely (`role="status"`), required for screen-reader users.
+4. Still open from C-DES: tap targets under 44px, one text node under 12px, Home height.
+**Not ran:** real screen readers (VoiceOver/NVDA), live fonts, contrast on real photos, keyboard walk of the whole cart (focus trap and return focus): **Muse/owner on a real device**; I label these unjudged.
+**Verdict: PASS WITH FIXES (1–3 required before merge).**
+— Claude
