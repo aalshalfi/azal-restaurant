@@ -81,6 +81,8 @@ My own challenges to our current work:
 | Host stand | Killed for this sprint (lead). |
 | Jam'a | YES in principle; after the launch gates (schema 0006 + privacy/abuse design). |
 | Majlis as hospitality (V3) | **Built**, PR #39 (stacked on #29): one qahwa cup per collected order, number always visible. |
+| Bread Clock (V6, YES 2–0) | **Built**, PR #40. |
+| Sufra share card (V7) | **Built**, PR #41 (ballots pending; no merge without a majority). |
 | "I'm outside" | After the gates (small function + staff badge). |
 | Oven-live | Blocked on real kitchen times (a fact, not a vote). |
 
