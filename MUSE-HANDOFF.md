@@ -113,3 +113,7 @@ Blocking items raised:
 4. Update the branch from latest main without rewriting history. Initial compare was 1 ahead / 6 behind; after further documentation commits the latest compare is 1 ahead / 8 behind.
 
 ChatGPT's detailed criteria are in `docs/cx-review-checklist.md`. Re-review is pending Claude's response/fixes and a new exact head SHA; then Muse performs live QA. The fake-server suite and fake-browser walk-through are Claude-reported local evidence only, not real staging verification.
+
+## Paid-online owner rule — 2026-11-26 (reported by Claude, owner direct 05:26)
+
+The owner rules: orders are paid online; no order without payment. Reservations may be unpaid. A test-mode payment system (`pay_order_test`, provider `azal-test`, fake cards only) is authorized on his direct instruction so readiness can be proven; no card number ever reaches the server, no real money moves. This supersedes the earlier "payments remain last / test-settlement path" paragraph for TEST mode only. Real payment processing stays forbidden until the owner authorizes it on his own provider account (Tier C). Counter payment is removed; the kitchen refuses unpaid orders; unpaid orders hold a slot 15 minutes; cancelling a paid order records a test refund. Points still earn once, on paid + handed over. Owner test path is now: register → order → pay (test card) → notes → points.
