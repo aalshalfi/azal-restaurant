@@ -857,3 +857,42 @@ A fresh compare after the latest documentation commits now reports `claude/auth-
 **Board updated:** commit `a69f5657080ac9a836e1c16037c1e87d87727642` records the current 0004 review and OTP/payment-mode gates.
 
 **Verification boundary:** Claude reports PG16 74/74 plus concurrency test and regression 50/50. I inspected source and test design only; I did not independently execute PostgreSQL, apply migrations, merge PRs, enable signup, or enable test payments on staging. No real payment provider or card data is connected.
+
+
+## 2026-11-26 (Toronto) — Muse's latest handover: OTP + 0004 re-review
+
+Read Muse's latest `MUSE-REPLY.md` section (05:44–06:10). She confirms Claude fixed the two 0004 findings (payment mode default off; previous-day attribution for overnight hours), OTP landed, and assigns ChatGPT final CX review on OTP plus second-eyes review of the fixed 0004. She also reports the 0003 apply task is running; the reply tail contains no completed Q1–Q13 + Q13b evidence for that apply yet, so I do not mark 0003 live.
+
+**Auth / OTP review at PR #28 head `57e0cd05f9df7cbe861d1dd02d735988392624e8`:** source contains `/auth/v1/otp` request with `create_user:true`, `/auth/v1/verify` with `type:'email'`, primary code UI, one-time-code autocomplete, resend delay, change-email, EN/FR copy, and password fallback. Fake-server tests cover OTP request, invalid/valid verification, rate limit and guest-claim RPC. Config remains null/inert in repository. **Blocker:** `claimGuestPoints()` catches every RPC error and returns 0, so a failed claim is indistinguishable from no pending claims. Asked Claude to surface an error/retry state and test it; email field validity should also be checked before request. PR comment: https://github.com/aalshalfi/azal-restaurant/pull/28#issuecomment-7190147379. No final CX PASS yet; no configured browser, real email delivery or staging verification performed.
+
+**0004 / ordering re-review:** current PR #29 head `c194f051aa27ed8bc7154897a848fa0733107678` includes the fail-closed `payments_mode='off'` default and previous-day overnight-window check; the seed script and `checkout.js` are present. The original five SQL findings and the two follow-up findings are addressed in the current source. Claude reports PG16 80/80, concurrency false/true with one order, regression 50/50, and clean reapply; these are Claude-reported local results, not independently executed by ChatGPT. **Checkout CX blocker:** the cart drawer still displays “Preview only: nothing is sent or charged” when configured live test checkout is active. Requested accurate TEST MODE / no-real-money copy or hiding the stale disclaimer in EN/FR. PR comment: https://github.com/aalshalfi/azal-restaurant/pull/29#issuecomment-7190148064.
+
+**Branch status:** PR #28 is open and no longer draft at head `57e0cd0`; PR #29 remains draft at `c194f05`, based on #28. `claude/ordering` currently compares to main as 14 ahead / 6 behind; sync main without rewriting history before final merge review. The menu's checkout path is being built, but staff orders screen and reservation wiring remain future queue items; the owner's full “everything works” acceptance path is not complete.
+
+**Board updated:** `BOARD.md` commit `d94d51ca45ccc14d52563e491058bb0ad2dd9fb2` records the current status and blockers. No DB apply, merge, signup activation, test payment activation, or live customer-data collection performed.
+
+
+## 2026-11-26 (Toronto) — Latest checkpoint: PR #28 / #29 and menu wording
+
+### PR #28 — OTP final CX re-check at exact head `57e0cd05f9df7cbe861d1dd02d735988392624e8`
+- The PR remains open, non-draft, based on `main`. The head has not changed since the prior review.
+- OTP request/verify endpoints and primary code UI are present; the checked-in Supabase config remains null/inert.
+- **Still BLOCKED for final CX PASS:** `claimGuestPoints()` catches every RPC error and returns `0`. A real zero-claim result is therefore indistinguishable from a failed claim (e.g. migration missing/network/server error). The current auth tests cover success and zero/missing-session behavior but do not prove a visible failure/retry state. Email input is also in a `novalidate` form and requestCode does not validate its format before sending.
+- No configured Supabase browser run, real email delivery test, merge, or signup activation performed.
+
+### PR #29 — 0004 second-eyes source re-review at current PR head `d9e9d6755ef024f4ab4cec70210c4c352fcb98a0`
+- PR remains **Draft**, open, based on `claude/auth-wiring`; its current head includes the checkout work and subsequent documentation update.
+- **0004 SQL re-review: PASS for the previously identified blockers in source.** The migration inserts `payments_mode='off'`; the payment RPC fails closed unless staging is separately set to `test`; overnight lookup checks the previous day's window before today's and handles close times crossing midnight. Guest claim/paid hand-over logic, idempotency lock, validation and empty `search_path` hardening remain present from the prior review.
+- Claude reports PG16 80/80, concurrency replay, regression 50/50 and clean re-apply. These are Claude-reported results; ChatGPT did not independently execute PostgreSQL. This is not approval to apply SQL or enable test payments.
+- **Checkout CX remains BLOCKED:** `menu.html` still renders the cart drawer disclaimer “Preview only: nothing is sent or charged.” `checkout.js` can create an order and call test payment when configured, so the disclaimer is false in that state. Replace it with explicit TEST MODE / no real money wording or conditionally hide it, in EN and FR. The checkout modal itself already has test-mode wording.
+- Staff orders screen, reservation wiring and full owner end-to-end path are not yet evidenced as complete.
+
+### Menu intro wording review (Claude's 06:05 proposal)
+- Stage 1 preview wording is clear and appropriately honest.
+- Stage 2 EN is clear. FR is understandable; prefer **« aucun paiement réel n’est effectué »** over **« aucun argent réel n’est débité »** for a more natural, precise guest-facing statement.
+- Stage 3 EN currently says “Pay online, and it’s ready when you arrive.” This promises readiness on arrival without a demonstrated ready-time guarantee. Recommended: **“Pay online and pick up your order at the restaurant.”** FR: **« Payez en ligne et récupérez votre commande au restaurant. »** This is direct, mobile-friendly and does not promise a preparation time.
+
+### Staging apply status
+- Muse's latest report says 0003 apply was launched, but the current reply file still contains no completed 0003 post-apply Q1–Q13 + Q13b result set. Treat 0003 as **pending verification**, not live/complete. Do not re-run it; Muse explicitly owns the apply and said not to re-apply.
+
+No merge, SQL apply, config activation, signup activation, test-payment activation or live customer-data collection performed.
