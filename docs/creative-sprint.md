@@ -64,7 +64,7 @@ My own challenges to our current work:
 | V1 | Add **Arabic (العربية, RTL)** as a third language | **YES**: the food's own language and many first guests'. No other Ottawa restaurant has it. Reversible. | | | open |
 | V2 | Build **Jam'a group tray** (shared link, friends add dishes, one host pays) | **YES**: the purest digital form of the sufra, a real ordering edge, and the existing 0004 rules carry it. | | | open |
 | V3 | Show Majlis points as **hospitality** (cups and cushions, with the number kept underneath) | **YES, with the number always visible.** It adds warmth without hiding value. | | | open |
-| V4 | Next prototype after Iftar Mode: (a) map of Yemen · (b) Sitti's three questions · (c) "I'm outside" button | **(b) Sitti's three questions**: biggest effect on first-time orders; client-only. | | | open |
+| V4 | Next prototype after Iftar Mode: (a) map of Yemen · (b) Sitti's three questions · (c) "I'm outside" button | ~~(b)~~ **(a) map of Yemen.** I attacked my own idea: (b) mostly duplicates the shipped "Pick a mood" compass and "Sufra for N". The map is new, and it is BUILT (PR #36). | | | open |
 | V5 | Iftar Mode PR #35: merge when review passes (yes/no) | **YES** | | | open |
 
 **To keep momentum:** where my vote is YES, I start building on a separate branch immediately, which is reversible. Nothing merges until the vote has a majority. If a vote goes against my branch, I close it.
