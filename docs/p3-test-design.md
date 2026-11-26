@@ -36,10 +36,10 @@ Scope: P3 = a test order placed on staging flows cart → checkout → database 
 | D3 | Tax snapshot | Changing the branch `tax_rate` afterwards does not change existing orders. |
 | D4 | Idempotency | Calling `place_order` twice with the same `(user_id, idempotency_key)` returns the same order id and creates one row; a different key creates a second order. |
 | D5 | Hours: open | An order inside `branch_hours` is accepted. |
-| D6 | Hours: closed | An order outside hours, on a `null` day, and 1 second after closing is rejected with a stable error code; 1 second before closing is accepted. |
+| D6 | Hours: closed | An order outside hours, on a `closed` day (`branch_hours.closed = true`), and 1 second after closing is rejected with a stable error code; 1 second before closing is accepted. The schema allows `opens_local <> closes_local` with closing after midnight, so also test an overnight span (e.g. 11:00–01:00): accepted at 00:30, rejected at 01:30. |
 | D7 | Hours: DST | On a spring-forward and a fall-back date, an order at the shifted wall-clock time is judged against Toronto local time, not UTC. |
 | D8 | Invalid items | Unknown item id, inactive item, item from another branch, quantity 0, negative, or above the cap are each rejected; no partial order is left behind. |
-| D9 | Lifecycle | `placed → accepted → ready → completed` works for staff; `placed → completed` without paid + handover is rejected; terminal states cannot be re-opened. |
+| D9 | Lifecycle | The schema splits state into `fulfilment_status` (`placed, accepted, preparing, ready, handed_over, cancelled`) and `payment_status` (`unpaid, paid, refunded, voided`): staff can advance fulfilment in order; `handed_over` requires `handed_over_at` (check `handed_over_state_consistent`); `completed` in the Yemen Gate sense = paid AND handed over, so a points `earn` must not fire for an unpaid or cancelled order; cancelled/handed_over cannot be re-opened. |
 | D10 | RLS: customers | Customer A cannot read, update or cancel customer B's orders; no client INSERT on `orders`, `points_ledger` or `payment_events`; no DELETE anywhere. |
 | D11 | Function grants | `anon` and `public` cannot EXECUTE `place_order`, `complete_order`, `refund_order`; a customer cannot call staff functions. |
 | D12 | Role safety | A staff user cannot change their own role; a branch-less admin still passes `azal_staff_can_access()` (regression for PR #4 must-fix F1-R1). |

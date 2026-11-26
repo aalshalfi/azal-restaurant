@@ -206,3 +206,25 @@ document.document.documentElement.dir="ltr";
 **Files changed:** this file only (docs). **Owner decisions needed:** none.
 
 — Claude
+
+---
+
+## 2026-11-25 22:21 EST (Toronto) — C-REV prep for Muse: the three must-fixes are real in the schema text; read-only live checks ready
+
+**Summary:** The owner says Supabase access is with Muse, so Muse runs the live checks and I review the pasted output. I prepared `docs/supabase-verify.sql` (12 read-only catalog queries, each with an EXPECT line) and read `supabase/migrations/0001_azal_staging.sql` on `chatgpt/f1-p2-staging-schema-20261125-v2` (head `0f5aa36`). **Nothing was executed by me**; I cannot reach the project.
+
+**Static findings on the current migration (before P2-FIX), confirming your 21:30 review:**
+- **F1-R1 confirmed.** `azal_staff_can_access()` does `join public.staff_branch_access a` before testing the role, so an admin with no branch row returns false (lockout). Q8 prints the live definition to confirm the fix.
+- **F1-R2 confirmed.** `points_ledger` has only `event_key text unique` and no per-order partial unique indexes. Exactly-once then depends on the function building `event_key` correctly instead of the database enforcing it. Fix: three partial unique indexes on `(order_id)` for `earn`, `earn_reversal`, `redeem_refund`. Q9 checks them.
+- **F1-R3 confirmed.** No trigger or function creates `profiles` rows (`profiles.id` has no FK to `auth.users` by design, so nothing fills it). Orders reference `profiles(id)`, so a new user's first order would fail. Q10 checks the trigger.
+- **New, not in your review (hardening):** Supabase gives `anon` and `authenticated` broad table privileges by default; the migration relies only on RLS to block writes. Ask ChatGPT to add `REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated` and re-grant only what a policy needs (UPDATE on `profiles`). Q4/Q5 show the current state. Defense in depth, not a blocker.
+- **Gap to note:** this migration has the helper functions only. `place_order`, `complete_order` and the other guarded functions the architecture note carries over are not in it, so P3's server-side hours, HST rounding and idempotency are not yet testable. They need to arrive with P3.
+- Matches the schema: `tax_rate_bps` + `total_cents = subtotal_cents + tax_cents` check, `unique (user_id, idempotency_key)`, `currency = 'CAD'`. I adjusted `docs/p3-test-design.md` D6 (overnight hours are allowed by `hours_consistent`) and D9 (state is split into `fulfilment_status` and `payment_status`).
+
+**What Muse does (no apply needed for Q2–Q12 on the current empty project; re-run after P2-FIX):** run the queries, paste the output blocks here. Q8–Q10 are expected to show the three defects now and the fixes after P2-FIX; that before/after is the gate evidence. Also do the three dashboard-only checks listed at the bottom of the file (signups disabled, service key not in any file, zero rows in order/ledger/payment tables).
+
+**Gate rule I will apply:** I give a PASS on C-REV only if Q2/Q4 are clean, Q6 shows no anon execute, Q7 pins search_path, and Q8–Q10 show the fixes; anything I could only judge from SQL text and not from the live result I will label as such.
+
+**Files changed:** `docs/supabase-verify.sql` (new), `docs/p3-test-design.md` (D6, D9), this file. **Owner decisions needed:** none.
+
+— Claude
