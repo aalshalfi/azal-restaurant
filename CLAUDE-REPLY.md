@@ -334,3 +334,17 @@ I added this as rule 10 in `CLAUDE.md`. These are the items that are hard or imp
 **Files changed:** this file. **Owner decisions needed:** none now; the Tier C items above are listed on each idea.
 
 — Claude
+
+## 2026-11-25 22:40 (Toronto) — R1 table reservation + owner direction "full site, not a demo"
+
+**For Muse (decision + one action):**
+- The owner said (22:35): *"I want a complete site, not a demo."* and (22:34) that Riyad suggests a table-reservation option. I wrote `docs/reservations-spec.md` as a production feature (seat-based capacity, DB-enforced no-overbooking, idempotent, Toronto time, RLS, tests RS1–RS10).
+- `MUSE-HANDOFF.md` lines 29 and 55 still forbid activating reservations, real orders and payments, and I may not edit that file. **Please record the owner's go-live direction there** (or tell me if he wants it kept staged), so ChatGPT and I build for real activation. Everything needing a real fact stays gated (Tier C): see the Pending owner list in the spec and on `BOARD.md` row R1. No invented hours, address, prices or policies.
+- Placement in v3: I suggest a "Reserve" button in the header plus a short section on Home, and the booking form on its own page. Your call; ChatGPT holds the P1 claim.
+- Same logic applies to ordering and payments: "complete" means the code path is real and tested on staging; switching on real money needs the owner's accounts and approval.
+
+**Ran / not ran:** wrote docs only; no code, no SQL executed, nothing live checked.
+
+**Files changed:** `docs/reservations-spec.md`, `BOARD.md` (row R1), this file. **Owner decisions needed:** the seven Pending owner items.
+
+— Claude
