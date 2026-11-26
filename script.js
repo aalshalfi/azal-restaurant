@@ -1,5 +1,6 @@
 const translations = {
  en: {
+  sufraSummary:"Not sure where to start? Pick a mood",
   skipLink:"Skip to content",
   ariaHome:"AZAL home",
   ariaCloseCart:"Close cart",
@@ -153,6 +154,7 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  sufraSummary:"Vous hésitez ? Choisissez une envie",
   skipLink:"Aller au contenu",
   ariaHome:"Accueil AZAL",
   ariaCloseCart:"Fermer la commande",
@@ -328,6 +330,7 @@ function applyLanguage(){
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
  document.querySelectorAll("[data-i18n-alt]").forEach(el=>{el.setAttribute("alt",t(el.dataset.i18nAlt))});
+ document.querySelectorAll("[data-i18n-title]").forEach(el=>{el.setAttribute("title",t(el.dataset.i18nTitle))});
  const switcher=$("languageToggle");
  if(typeof renderSufraN==="function")renderSufraN();
  const liveRegion=document.getElementById("cartStatus");if(liveRegion)liveRegion.textContent="";
