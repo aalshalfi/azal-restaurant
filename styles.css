@@ -489,3 +489,29 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .product-info p.say-it{display:flex;gap:6px;align-items:baseline;margin:2px 0 6px;font-size:13px;line-height:1.3;color:var(--muted)}
 .say-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--clay)}
 .say-sound{font-weight:600;letter-spacing:.02em}
+
+/* C-DES v3 final (Claude, ruled 00:52) */
+/* 1: mood guide collapsed, same pattern as the Sufra card */
+.sufra-collapsible{margin:0 0 12px;background:var(--cream);border:1px solid #dfcfbb;padding:0}
+.sufra-collapsible summary{cursor:pointer;min-height:48px;display:flex;align-items:center;padding:12px 18px;font-weight:600;font-size:16px;list-style:none}
+.sufra-collapsible summary::-webkit-details-marker{display:none}
+.sufra-collapsible summary::after{content:"+";margin-left:auto;font-size:20px;color:var(--clay)}
+.sufra-collapsible[open] summary::after{content:"−"}
+.sufra-body{padding:0 18px 18px}
+.sufra-collapsible .sufra-heading h2{font-size:24px;line-height:1.2;margin:4px 0 6px}
+/* 2: menu type scale = 12 / 14 / 16 + one display step for dish names */
+.menu-section .menu-intro{font-size:16px}
+.menu-section .product-info p,.menu-section .product-info p.dish-story,.menu-section .product-info p.say-it,.menu-section .say-sound,.menu-section .sufra-intro,.menu-section .sufra-choice-title{font-size:14px}
+.menu-section .product-price,.menu-section .sfn-intro,.menu-section .sfn-sizes button,.menu-section .menu-search,.sufra-n summary{font-size:16px}
+.menu-section .product-info h3{font-size:21px}
+.menu-section .sufra-arrow{font-size:16px}
+@media(min-width:801px){.menu-section .sufra-collapsible .sufra-choice-title{font-size:21px}}
+/* 3: demo badge directly under the intro */
+.menu-top{display:block}
+.menu-top .demo-label{display:inline-block;margin-top:12px}
+/* 4: Read our story inside The idea */
+.welcome-copy .story-teaser-link{padding-inline:0;margin-top:18px}
+/* 5: Visit one column while the card is hidden */
+.visit:has(.visit-card[hidden]){grid-template-columns:1fr}
+.visit:has(.visit-card[hidden])>div:first-child{max-width:560px}
+@media(min-width:801px){.visit{padding-top:96px}}
