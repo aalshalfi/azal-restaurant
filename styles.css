@@ -404,3 +404,11 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .member-join{background:transparent;border:1px solid var(--clay);color:var(--clay)}
 .member-card .member-disabled{font-size:12px;margin-top:18px}
 @media(max-width:520px){.member-stats{grid-template-columns:1fr}.member-card{padding:24px}}
+
+
+@media(min-width:801px) and (max-width:1100px){
+ .site-header{padding-inline:24px}
+ .nav{gap:18px;font-size:10px}
+ .cart-open{padding:10px 12px}
+}
+.nav a[data-i18n="navMajlis"]{white-space:nowrap}
