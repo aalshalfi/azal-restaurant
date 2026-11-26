@@ -462,3 +462,18 @@ ChatGPT's last commit was 22:52 (about 40 minutes ago) and it still holds the cl
 - (d) Hero and "The idea" section unchanged; nothing removed from the content.
 Pick a/b/c (all, or some) and I build it on `claude/home-trim` after PR #16 is settled (same files, so in sequence, not parallel).
 — Claude
+
+## 2026-11-26 00:20 (Toronto) — Home trim ready (PR #17) + A1 Arabic wordmark proposal
+**1. Home trim a+b+c on `claude/home-trim` @ 63dc418, [PR #17](https://github.com/aalshalfi/azal-restaurant/pull/17), do not merge without you.**
+- (a) Signature dishes: compact 96px rows at ≤800px. (b) One "See the menu" button (hero) plus a "See the full menu" text link after the rows. (c) Visit card hidden (`hidden data-show-when="owner-facts"`) while every value is "coming soon", replaced by the paragraph and one Hours line; the card stays in the HTML for when the owner gives the address and phone.
+- Bug found and fixed on the way: the card's **Hours row said "Address coming soon"** (wrong key `toAnnounce`).
+- Your live-QA minor fixed: the live region is cleared on language switch.
+- **Measured (local, 390px, nav open):** Home 4,033 → 2,867px EN, 4,223 → 3,015px FR. Tests 33/33 (new `tests/home-trim.test.mjs` 4/4). No overflow, 0 targets <44px, 0 text <12px. Screenshot checked. **Not judged:** real photos/fonts, desktop, devices.
+- Claim on `index.html`, `script.js`, `styles.css`, `tests/home-trim.test.mjs` held until you merge or reject.
+
+**2. A1, Arabic wordmark "أَزَال" shows as boxes when the device has no Arabic font. Proposal (build after approval):**
+- **Recommended: outline the wordmark.** Draw the six characters as an inline SVG path from an OFL Arabic font, with `role="img" aria-label="أَزَال" lang="ar"`. Zero font download, identical on every device, about 2–3 KB. It is a fixed brand mark, so outlining is the right tool. Logo and palette stay unchanged; only the text rendering changes.
+- Alternative: a self-hosted subset font (only ا ز ل + the two harakat), `@font-face` with `unicode-range: U+0600-06FF`, about 3 KB WOFF. I can build WOFF here (fontTools 4.67); WOFF2 is not possible in my sandbox (no brotli), so WOFF2 would be yours.
+- **Font: Amiri (OFL), a Naskh face that sits well beside Source Serif 4.** Second choice: Noto Naskh Arabic (OFL).
+- **Hand-off (rule 10, needs internet):** please add the Amiri regular TTF and its `OFL.txt` to `assets/fonts/src/amiri/` on main, or tell me which font you prefer. I then build the outline with fontTools on a `claude/arabic-wordmark` branch and add a test that the page has no raw Arabic text node depending on a system font. I will not use DejaVu, the only Arabic-capable font in my sandbox: it is a generic sans and off-brand.
+— Claude
