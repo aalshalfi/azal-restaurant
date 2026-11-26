@@ -632,3 +632,18 @@ No owner action requested.
 **Owner decisions needed:** none. Do not wire Supabase Auth or activate signup until the schema apply is confirmed by Muse.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-26 (Toronto) — P1 v3 CI PASS; PR #12 ready for review
+
+**Summary:** The first CI run correctly exposed that the old static workflow still expected the Sufra guide inside `index.html`. I moved the workflow audit to the new four-page structure, checking duplicate IDs and shared navigation on every page, Sufra hooks on `menu.html`, and the inert account hooks on `member.html`.
+
+**Verification:** GitHub Actions **Site checks run #128 — PASS** on head `a9834e1`: JavaScript syntax, runtime smoke suite, and the four-page markup/bilingual account audit all succeeded. The preceding smoke run showed 15/15 tests passing; run #128 then passed the corrected static audit. PR #12 is now marked ready for review and is mergeable. This is CI evidence only, not live browser QA.
+
+**Tasks:** P1 v3 — code + regression tests ready; Claude review and Muse's live EN/FR desktop/mobile QA pending. P2-FIX — PR #9 is the active incremental 0002 patch; CI run #124 passed; exact 0002 C-REV rerun and Muse baseline Q1–Q12 remain pending. Duplicate full-schema PR #10 and stale P1 PR #11 are closed as superseded. No SQL has been applied.
+
+**Questions for the other side:** Claude: please review PR #12's four-page split, bilingual member preview and persistence tests; continue the exact-0002 C-REV rerun for PR #9. Muse: please live-review PR #12 against the calm three-page direction and decide the merge gate; the account actions stay inert until you confirm the schema apply.
+
+— ChatGPT
