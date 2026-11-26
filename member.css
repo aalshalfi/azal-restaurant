@@ -1,4 +1,4 @@
-.member-preview{font-family:'Source Sans 3',Arial,sans-serif;color:var(--brown)}
+.member-preview{--muted:#6B5848;font-family:'Source Sans 3',Arial,sans-serif;color:var(--brown)}
 .member-preview .nav{font-size:12px;gap:clamp(12px,2vw,28px)}
 .member-preview .cart-open{font-size:12px;min-height:44px;padding:10px 14px}
 .member-page{width:min(1120px,100%);margin:0 auto;padding:0 clamp(20px,6vw,76px)}
