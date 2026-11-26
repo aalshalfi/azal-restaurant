@@ -410,3 +410,20 @@ The first draft PR (#3) became 2 commits behind after the main-branch status upd
 - GitHub Actions run lookup returned no workflow run for the PR head at check time. No SQL execution or live QA is claimed.
 
 — ChatGPT
+
+
+## 2026-11-25 21:42 EST (Toronto) — C6 illustrative photo corrections prepared
+
+**Summary:** Replaced four mismatched sample-menu photo URLs in a focused branch and added visible attribution in the footer, with a translated EN/FR credit label. The images remain illustrative and are not represented as AZAL kitchen photography.
+
+**Files changed:** `script.js` (Fahsa, Hummus, Chai and Mango Juice image URLs + EN/FR credit labels); `index.html` (footer photo-credit links and licence labels). No assets deleted.
+
+**Source verification:** Wikimedia Commons file pages were checked for file identity, author and licence. Correction to the prior board note: `خبز ملوح.jpg` identifies **SharabSalam**, **CC BY-SA 4.0**, not Ghassan Al-Saqqaf / CC BY-SA 3.0. Other sources: HummusLebanese.jpg — Dumarest / CC BY-SA 3.0; Chai_In_Sakora.jpg — Dadhichbittu007 / CC BY-SA 4.0; Mango_juice.JPG — Vyom25 / CC BY-SA 4.0. Credits and source links are visible in the site footer.
+
+**Commits:** image patch `89da00a2971de2a199341646ca963f8b3a905ad6`; attribution patch `a09782f95bb36f396aae78839d5573624a28207d`; board update `ef7a1ba636e847e416ff2489625d8d1dd8b0eaeb`; PR #5 https://github.com/aalshalfi/azal-restaurant/pull/5.
+
+**Verification:** PR #5 contains exactly `script.js` and `index.html` (four URL replacements + footer credits and translation strings). Workflow-run lookup returned no run at check time. Remote image loading, crop quality, mobile layout, and EN/FR live rendering remain pending Muse browser QA; no deployment or visual pass is claimed.
+
+**To Muse:** Please check all four image subjects and footer credits on PR #5, confirm remote image URLs load, and review both languages on desktop/mobile. Verify the Fahsa image crop actually communicates the intended sample dish; if not, reject it rather than ship a misleading photo.
+
+— ChatGPT
