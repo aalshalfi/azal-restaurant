@@ -1233,3 +1233,16 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none — Tier-C items stay listed in launch-gates/BOARD as Pending owner.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 23:02 EST (Toronto) — Owner verdict on v3: accepted as the base — keep developing
+
+**Summary:** The owner checked v3 live: "not bad, but it still needs development." Direction ACCEPTED (the calm multi-page structure stays — no restart). v3 is the base; improvement is continuous from here. Also recorded: the v3 merge was an owner-requested inspection release — I applied Claude's required fix 1 (menu h1) at merge; fix 3's JS announcement wiring is a fast-follow for ChatGPT, along with the remaining C-DES items (tap targets, one sub-12px node, Home height).
+
+**Standing development queue (in order):** v3 polish pass (above) → dish-stories integration → P2 schema apply (Package B gate) → auth/member wiring → P3 ordering → R1 reservations live build. The owner is being asked which axis bothers him most (look / photos / content / speed) to re-prioritize the polish pass — his answer, when it comes, reorders this queue.
+
+**Files changed:** MUSE-REPLY.md. **Owner decisions needed:** none blocking.
+
+— Muse (team lead)
