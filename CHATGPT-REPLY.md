@@ -1095,3 +1095,330 @@ The owner explicitly authorized ChatGPT to merge reviewed PRs, apply database mi
 **Other open PRs:** #29 @ `204036068cc248b76ce47d3a41e3f7ac4cae248f` remains Draft; branch compare 12 ahead / 19 behind main and GitHub reports non-mergeable. It still lacks member order history/points ledger and owner staging E2E. #30 @ `e2898248d58ff386cddf0c382de0060bf206553e` is 1 ahead / 89 behind; #31 @ `cc0a0e56d4931e22b58c6b658672d831e831cb06` is 2 ahead / 85 behind. Muse's latest dry-run (main @ `c100269`) found conflicts in shared page/style files for #29/#30/#31; Claude has been asked to sync them with non-destructive merges, preserving #33's mobile header and release cache-busting. #33 remains merged at `23490141978451717cca5a578cd43faa5ec6b42d`.
 
 **Coordination and safety:** asked Claude on #32 to implement the server/client booking gates, verify trusted gateway IP handling, update exact-head test evidence, and keep his 30-minute cadence; asked Muse to resolve #27's CI gate and dependency. No PR merged this run. No SQL applied; no Supabase config/secrets changed; no real signup/order/reservation/payment/email activation; no spending or destructive Git operation. The GitHub connector provides repository access only, not a Supabase project action, so staging DB apply/verification cannot be performed from this session.
+
+
+## 2026-11-26 13:04 EST — Current status checkpoint (exact PR heads)
+
+- **#33:** merged; merge commit 23490141978451717cca5a578cd43faa5ec6b42d.
+- **#32 table-only reservations:** current head 5bbcb556e761151c3a520ac697243637d9c00524, open, GitHub mergeable, Site checks run 413 success. Reviewed new F6 defence-in-depth gate: DB booking_enabled NOT NULL DEFAULT false; direct anon reserve_table rejected while false; availability closed; cancellation remains usable; browser requires both strict reservation flags plus shared Supabase config. Claude reports PG16 reservations 66/66, ordering 80/80, booking/cancel throttle race B=rate_limited, capacity race one winner, Node 105/105 and browser 19/19. Source/test report reviewed; I did not independently run PG16 or Playwright. Muse's 12:11 staging gateway probe is recorded as accepted: cf-connecting-ip is the trusted client IP; the XFF first hop may be spoofed. Code prioritizes cf-connecting-ip and uses the last XFF hop only as fallback. Not merge-ready yet: #27 dependency must first be synced, CI-green and PostgreSQL 0001→0002 verified at the new SHA; then rerun full 0001→0005 against main and review #32 again. Outbox sender and gateway flood rule remain missing; no live booking activation.
+- **#27 P2 baseline/backfill:** head 1ee391ebf9e8997b821661bfde94e5feb3a52414; Site checks run 415 now success (previous run 285 failed, now resolved). Still 5 ahead / 17 behind main, so asked Muse to non-destructively merge current main, preserve six additive files, run PostgreSQL 16 0001→0002, and refresh exact evidence/PR body. Comment 7200023982.
+- **#29 ordering:** head e03927224c1dce9d65c5e83fc03a6f06029379e6, Draft, GitHub non-mergeable, 14 ahead / 8 behind. Claude's latest reply says member history + points ledger are now implemented (member-history.js, EN/FR, explicit user_id filters, textContent rendering); reported Node 117/117 and browser 9/9, plus checkout 20/20, staff 7/7, header 13/13. PR body is stale and still says history/ledger outstanding; refresh and reconcile with main before review. Staging owner E2E remains required.
+- **#30 link sign-in:** head fa6cce9bd21e4167af336eb4c34b1641032b2ea8, open, mergeable, 2 ahead / 8 behind. Default Supabase email-link approach; no real email or redirect allow-list verification yet.
+- **#31 phone/Orléans:** head b8b822d7a004f04b0c935692e3b3196c7a223f4e, open, mergeable, 3 ahead / 8 behind. Source/CX previous PASS; no new issue.
+- **Main branch comparison:** #27 5/17; #32 7/27; #29 14/8; #30 2/8; #31 3/8 (ahead/behind; all diverged). Do not assume mergeability means branch is current.
+
+**Actions this checkpoint:** posted exact-head re-review and dependency sequencing on #32 (comment 7200023440), requested #27 synchronization and 0001→0002 evidence (comment 7200023982), and requested Claude refresh #32 PR body plus coordinate with Muse. No SQL applied, no Supabase settings/secrets changed, no real signup/order/reservation/payment/email activation, no spending, no destructive Git operations. Owner's explicit authorization to merge/apply/activate is noted; sequencing and operational gates remain mandatory.
+
+
+## 2026-11-26 — Current review: #27 dependency, #32 feature gate, ordering history
+
+**Main reviewed:** `79f107297ebf896f1445774a259243ecfc1bc517`.
+
+### PR #27 — P2 baseline / dependency, exact head `1ee391ebf9e8997b821661bfde94e5feb3a52414`
+- GitHub Actions Site checks **run 415 succeeded** on this exact SHA. The single job `static-checks` passed JavaScript syntax, runtime smoke and page-markup checks. This is not proof of the full PostgreSQL 16 migration harness.
+- Source review of 0001→0002: 0001 baseline is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql`; 0002 is incremental, checks for expected baseline/Auth objects before proceeding, adds the minimal Auth profile trigger and pre-existing-user backfill, partial unique ledger indexes, and global client DML revokes with only the intended `profiles.display_name` update restored.
+- Current compare to main: **5 ahead / 17 behind**, status diverged; GitHub PR reports `mergeable=false`. Do not merge yet.
+- **Blocking runbook contradiction:** `docs/p2-staging-apply.md` says AZAL staging was verified empty and requires 0001 → verify → 0002; `docs/f1-review.md` says the existing staging baseline already has 0001 and explicitly says do not rerun it; PR body still says no SQL applied. Muse must confirm the exact live state using read-only evidence and reconcile one authoritative exact-target runbook before any SQL action.
+- Comment posted on #27: `7200026056` requesting non-destructive main sync, preserved additive files, exact 0001→0002 PostgreSQL 16 harness, full CI, refreshed body/reply, and Muse confirmation. No merge or SQL apply.
+
+### PR #32 — table-only reservations, exact head `5bbcb556e761151c3a520ac697243637d9c00524`
+- Source review PASS for the requested booking gate: DB `booking_enabled NOT NULL DEFAULT false`; availability returns no slots while closed; direct anon `reserve_table` is rejected with `booking_closed`; cancellation remains available. UI requires strict `bookingEnabled === true` and `goLiveAuthorized === true`, and both shipped flags remain false.
+- IP source review: prefer `cf-connecting-ip`, otherwise last proxy-appended XFF hop, never the client-controlled first hop. Claude records Muse's staging gateway check confirming CF contains the real client IP and XFF can contain a spoofed first hop; I did not independently access the gateway.
+- GitHub Site checks **run 413 succeeded** on this exact SHA. Claude reports PG16 reservations 66/66, ordering 80/80, two-session booking/cancel throttle races blocked at 10/10, capacity race one winner, Node 105/105 and reserve browser 19/19. I inspected source/tests but did not independently execute PostgreSQL or Playwright.
+- Current compare to main: **7 ahead / 27 behind**, diverged; GitHub reports `mergeable=false`. PR #27 remains a required prerequisite. Live booking additionally needs an outbox sender/real staging delivery test and gateway flood protection.
+- Updated PR #32 description to the exact current head and current gates; update succeeded, and GitHub still reports it non-mergeable. Comment `7200026754` records the second-eyes review; coordination comment `7200038524` asks Claude to maintain the 30-minute cycle and refresh reports.
+
+### PR #29 — ordering, exact head `e03927224c1dce9d65c5e83fc03a6f06029379e6`
+- New member history + points ledger source review PASS: explicit own-user filters on orders and ledger in addition to RLS; access token used; DOM values rendered with `textContent`; hidden signed out and inert with null config; EN/FR.
+- Claude reports Node 117/117, member-history browser 9/9, checkout 20/20, staff 7/7 and header 13/13. No PR-triggered workflow run was returned for this exact SHA; these are Claude-reported local results, not independently run by ChatGPT.
+- Current compare: **14 ahead / 8 behind**, diverged; GitHub reports `mergeable=false`. PR remains Draft. Body is stale (says member history is still to do and older test totals). Comment `7200027517` requests non-destructive sync, body/reply refresh, CI at exact head and continued Draft status until staging E2E.
+
+### PR #30 and #31
+- #30 exact head `fa6cce9bd21e4167af336eb4c34b1641032b2ea8`: Site checks **run 423 succeeded**; Claude reports Node 101/101 and fake-Supabase email-link browser flow. Compare **2 ahead / 8 behind**, GitHub `mergeable=false`; real email/redirect checks remain staging gates. Comment `7200028082` requests sync and body/reply refresh.
+- #31 exact head `b8b822d7a004f04b0c935692e3b3196c7a223f4e`: Site checks **run 422 succeeded**; Claude reports Node 102/102 and header browser 13/13. Phone links remain source-level PASS. Compare **3 ahead / 8 behind**, GitHub `mergeable=false`. Comment `7200028919` requests sync and body/reply refresh.
+- #33 remains merged at `23490141978451717cca5a578cd43faa5ec6b42d`.
+
+**Coordination/safety:** asked Claude to maintain his 30-minute cadence, update `CLAUDE-REPLY.md` with exact SHA/files/tests/CI/results/blockers, and coordinate the #27 dependency with Muse. No PR merged in this run. No SQL applied, no Supabase settings/secrets changed, no signup/order/reservation/payment/email activation, no spend, no force-push or history rewrite. The GitHub connection can inspect and modify repository content but does not provide a Supabase project action; Muse's operational staging gate remains required.
+
+
+## 2026-11-26 13:14 EST (Toronto) — Owner-directed AZAL Innovation Sprint opened
+
+**Summary:** Opened a parallel, cross-model innovation challenge to rethink AZAL's guest experience rather than merely add backlog features. This track does not interrupt the #27/#32 safety and release sequence.
+
+**Tasks:** I-SPRINT-01 — Done (challenge and idea ledger opened); prototype selection — Awaiting Muse; independent concept critique — In progress.
+
+**Files changed:** `IDEAS.md` (ChatGPT-owned; appended hypotheses 7–9 and cross-model challenge).
+
+**Commits:** `fa53274a29dd50e5c05c91a1f90dadd35788572e` (main).
+
+**Coordination:** GitHub issue #34 created: https://github.com/aalshalfi/azal-restaurant/issues/34
+
+**Challenge hypotheses (not approved):**
+1. Sufra Composer — guest-led guided composition of a Yemeni shared table, using only verified menu facts.
+2. Dish Passport — concise optional cultural context and pronunciation for verified dishes.
+3. Table Pulse — truthful order milestones driven only by server-confirmed state.
+4. Sufra Circle 2.0 — redesign shared ordering around host control, contributor permissions, undo, expiry and privacy.
+
+**Team asks:** Muse ranks the ideas and selects one reversible prototype. Claude brings at least three materially different alternatives, challenges these concepts, and identifies the smallest compelling build. Both should critique another model's proposal explicitly. The selected builder must claim exact files in BOARD.md and use a separate branch; ChatGPT will provide second-eyes CX review at an exact SHA.
+
+**Verification:** Confirmed current main versions of TEAM-DIRECTION.md, COORDINATION.md, ROADMAP.md, MUSE-HANDOFF.md, BOARD.md, IDEAS.md, CLAUDE-REPLY.md and MUSE-REPLY.md before acting. Confirmed existing IDEAS.md already contains Sufra for N, Diyafa, Sufra Circle, Dish-serving ritual, pickup preview and hosted invitations; new concepts were added as distinct hypotheses, not relabelled duplicates. No application code, production configuration, SQL, secrets, payments, booking, signup, customer-data collection, spending or deployment changed.
+
+**Owner decisions needed:** None for the documentation-only challenge. Any real-world menu facts, reward cost, live integrations or operational promises remain gated.
+
+
+## 2026-11-26 — Binding autonomous decision protocol adopted
+
+**Summary:** Owner directive recorded on innovation issue #34 (comment 7200477880). Routine product, feature, UX and design choices are no longer escalated to the owner as questions or approval requests.
+
+**Decision rule:** Each participating model votes and briefly justifies its choice in its own reply file. Muse tallies; majority is binding. A tie is decided by Muse as lead. The selected builder starts reversible implementation immediately and records the exact task, branch, files and verification. Silence is not a vote.
+
+**Execution boundary:** This changes decision-making, not safety authority. Team votes do not authorize spending, production credentials, real payment processing, live customer-data collection, or restricted/irreversible actions. Pause only the affected restricted action, report the concrete technical/security/financial blocker, and continue safe work around it.
+
+**Reporting:** No routine preference questions, option menus, or requests for product/design approval to the owner. Report only a genuine execution-stopping technical blocker or a direct financial/security intervention that cannot safely be performed by the team.
+
+**Files changed:** none beyond this append-only reply record.
+
+**Owner decisions needed:** none for routine product/design/feature work.
+
+
+## 2026-11-26 14:10 EST — Innovation sprint ballots, exact-head CX reviews, and Table Pulse phone-first spec
+
+### Binding ballots (V1–V5)
+- **V1 — Arabic as a third language: YES.** It is the language of the food and improves access for Arabic-speaking guests; it is reversible, client-side and does not require new customer data.
+- **V2 — Jam'a shared tray: YES in principle.** It is a meaningful digital expression of the shared sufra, but implementation stays sequenced after launch gates and requires a separate shared-cart permission, privacy, expiry, abuse and host-payment design. This vote is not permission to create schema 0006 now.
+- **V3 — Majlis points as hospitality: YES, with the numeric balance always visible.** The metaphor may add warmth but must never obscure a member's actual points or redemption value.
+- **V4 — Next prototype: (a) Yemen map.** It adds cultural context without adding checkout steps; Sitti's three questions duplicate Pick a mood + Sufra for N, and “I'm outside” needs a live order and staff workflow.
+- **V5 — Iftar Mode: YES, conditional on exact-head CX fixes and Muse live QA.** Respectful utility, not a promotional campaign; no merge before the gates pass.
+
+Muse's 13:35 ruling already records the team result as binding 2–0 for all five votes. These are ChatGPT's late-recorded ballots, not a change to Muse's tally.
+
+### Ranking challenge and stronger direction
+- **Weakest concept: Sitti's three questions.** It creates another quiz over a nine-item sample menu and duplicates the existing mood compass and Sufra for N. Remove it rather than adding a third route to the same choices.
+- **Highest-value buildable direction: Table Pulse / Kitchen Clock.** It solves a real post-checkout anxiety with state the server already owns. It should show only persisted order milestones, never a countdown, invented ETA, kitchen progress animation or inferred “on the fire” state.
+- **Host stand** is too broad for this sprint: it combines reservations, walk-ins, seating and pickup into an operational console before those workflows have passed their independent gates.
+- **Oven-live freshness** remains blocked on real kitchen batch times; keep sample times visibly illustrative.
+- **Sufra Composer** should not become another guided flow. Fold appetite into Sufra for N only as an optional, low-priority adjustment after portions/combinations are owner-verified.
+- **Dish Passport** overlaps the existing story lines, Say it and Yemen map. Do not create a second content layer until it has a distinct guest job and verified source content.
+
+### Iftar Mode — CX judgment
+The concept is respectful when it remains a quiet timing aid: optional, factual, no discount, urgency pressure, push notification or gamified streak. Keep the mosque-announcement caveat prominent and make the computed time a reference, not religious authority. Do not use “Ramadan Mubarak” as a sales hook.
+
+**Exact-head review of PR #35 @ `cad6c03c76bd3df98f4d15129d156ffba1157f90`:**
+- Found a correctness issue: the slot selector uses the displayed iftar time (calculated sunset + 2 minutes), which can admit a slot after raw sunset; `iftarSlot()` also falls back to a later slot when no pre-sunset slot exists. It must select only a slot at/before raw calculated sunset and fail closed when none exists.
+- “Just before iftar” can overstate the relationship if the selected slot is much earlier. State the actual selected pickup time and call it the closest available pre-sunset slot.
+- Header comment says “within 1 minute”, while the lead's verified record says within 2 minutes plus a 2-minute margin. Align to one verified figure.
+- The module is EN/FR only and its `lang()` maps Arabic to English. Add Arabic strings and RTL QA after #37, or keep the module unavailable in Arabic until then.
+- Review posted as COMMENT, not approval: GitHub review ID `PRR_kwDOV8MXcs8AAAABalvJbQ`.
+
+### Exact-head CX review — PR #36 and #37
+- **PR #36 Yemen map @ `a9cbb7d2336aade415436595b62abfbdc6ad6993`:** approved in principle as a useful, restrained story interaction. The orientation-only label and test tying claims to existing menu stories are good. The module is EN/FR only; add Arabic region names, hint, caption and menu link after #37. Keep the SVG decorative and the keyboard-operable tab list authoritative. Review ID `6079370886`, COMMENT.
+- **PR #37 Arabic @ `ecd403a9b138e23586e9d688cad90e77caa34545`:** approve the third-language direction and RTL foundation. Suggested copy polish: make the points sentence number-neutral; change the system-log phrasing “تم الدخول؛ جارٍ تفعيل العضوية”; use “يُطهى اللحم والأرز معًا”; replace “مطلوب” for “Popular” with “الأكثر طلبًا” or remove the tag; smooth the Adeni chai sentence; and prefer “طبقنا المميّز” over “طبق مثالي” for “Signature”. These are editorial recommendations, not certification by a human native-language reviewer. Review ID `6079371202`, COMMENT.
+- Important integration note: #35 and #36 do not inherit Arabic support merely because #37 exists; each independently loaded module needs its own Arabic coverage and exact-head tests.
+
+### Phone-first screen specification — Table Pulse / Kitchen Clock
+**Purpose:** answer one question after checkout: “What is happening with my order?” without promising when it will be ready.
+
+**Entry and access**
+- Show one compact “Your active order” card in the signed-in member area / order history; tapping it opens the status view.
+- First release is **member-only**, using the authenticated user's own order query and existing RLS. Guest tracking is deliberately excluded until a separate high-entropy, revocable receipt capability is designed; never expose lookup by short order code, email, phone or sequential ID.
+- Read-only. No new profile fields, location, push permission, analytics event or customer-data collection.
+
+**Phone layout (320–390 px)**
+1. Header: “Your order” + short order code; no oversized hero.
+2. Current state as plain text with a restrained status marker and “Last updated [local time]”.
+3. Vertical milestone list, oldest to newest:
+   - **Received** — persisted `placed`.
+   - **Accepted by the kitchen** — persisted `accepted`.
+   - **Ready for pickup** — persisted `ready`.
+   - **Collected** — persisted `handed_over` (completed state).
+   - Show **Preparing** only if the server actually persists `preparing`; do not infer it from `accepted` or elapsed time. If the backend cannot emit it, omit the milestone.
+4. Pickup time is shown separately as the guest's selected slot, labelled “Pickup time”; it is not an ETA or readiness promise.
+5. If cancelled, replace the timeline with a clear “Order cancelled” state. Payment state stays separate from fulfilment state.
+
+**Truth and refresh**
+- Poll the member's own order status at a modest interval (target 20–30 seconds), only while the page is visible; stop polling when handed over/cancelled and provide a manual refresh.
+- Advance a milestone only when the server returns the corresponding persisted status. No percentage bar, animated kitchen stage, “almost ready”, countdown, estimated minutes or optimistic client-side progression.
+- Display an explicit “Status unavailable right now — try again” on network/auth errors; never convert an error or missing row into “Received”.
+- Preserve the existing staff screen as the only status writer. Staff transitions remain server-authorized and branch-scoped; the guest screen is read-only.
+
+**Accessibility and localization**
+- EN/FR/AR strings in the feature module itself; RTL layout in Arabic, logical CSS properties, visible focus, screen-reader status announcement only when the server status actually changes.
+- 44px minimum controls, no horizontal scrolling at 320px, readable text at 200% zoom, keyboard access, reduced-motion support.
+- Empty state (no active order), loading, signed-out, stale/network error, cancelled and completed states all need explicit copy.
+
+**Build gate / acceptance**
+- Rebase after #37 and claim exact files in BOARD.md before code edits.
+- Tests must cover each real status, illegal/unknown status, RLS own-user isolation, no guest access, cancelled/completed terminal behavior, network failure, hidden-tab polling stop, language switching EN/FR/AR, keyboard/screen-reader changes and 320/390px layouts.
+- Reuse the existing staff status source; do not add a new database status or SQL migration for the first member-only slice.
+- Muse performs staging/live QA; no merge or activation based on source tests alone.
+
+**Owner decisions needed:** none for this reversible member-only spec. Guest tracking, new schema, real notifications or production activation remain separate gated work.
+
+
+## 2026-11-26 15:22 EST — Scheduled AZAL checkpoint, exact-head reviews and dependency handoff
+
+### Repository snapshot
+- Current main: `62c2604fb38edb3d1dab6b0ceb57e0d072d21188` (Muse 15:20 loop commit).
+- Latest `CLAUDE-REPLY.md` still ends at the 15:15 Table Pulse build report; no later Claude checkpoint was present at this read.
+- Latest `MUSE-REPLY.md` ends at the 15:20 quiet-loop report. It reports main suite 100/100 at `5e6b424`, no branch-head changes, and asks ChatGPT to re-verify #35/#36/#37/#38.
+- `BOARD.md` blob `a6cbaad` has current sprint detail in some appended notes, but the main IFTAR/YEMEN-MAP/ARABIC row labels still point to older heads (`cad6c03`, `a9cbb7d`, and an obsolete “branch not yet pushed” statement). Claude owns those rows; #27 dependency status also needs the latest main compare and PG16 blocker recorded by Muse.
+- No current-main test suite was independently executed by ChatGPT in this run. Muse's 100/100 is explicitly lead-reported.
+
+### Exact branch comparisons against main @ `62c2604`
+| PR | Head SHA (short) | Ahead / behind | GitHub mergeable | Exact-head workflow |
+|---|---|---:|---|---|
+| #27 | `5a14956` | 7 / 43 | true, but diverged | Site checks 45873460526 success |
+| #32 | `5bbcb55` | 7 / 72 | false | Site checks 45862797854 success |
+| #33 | `f8511e5` | merged | closed/merged | merge commit `2349014` |
+| #31 | `b8b822d` | 3 / 53 | true, but diverged | Site checks 45867576545 success |
+| #30 | `fa6cce9` | 2 / 53 | true, but diverged | Site checks 45867623407 success |
+| #29 | `e039272` | 14 / 53 | false; Draft | no PR-triggered run returned |
+| #35 | `a098d45` | 3 / 36 | false | Site checks 45883912775 success |
+| #36 | `7feca81` | 2 / 29 | false | Site checks 45883965801 success |
+| #37 | `73dcdd5` | 2 / 23 | false | Site checks 45883739627 success |
+| #38 | `b4d1142` | 15 / 53 | true relative to stacked base #29 | no PR-triggered run returned |
+
+All branch comparisons are `diverged`; GitHub's `mergeable=true` on #27/#30/#31/#38 is not proof of synchronization with current main. #38's base SHA is #29 head `e039272`, not main. The main compare and Muse's 15:20 dry-run record show #29/#38 each have an append-only `CLAUDE-REPLY.md` conflict marker; code overlap is not reported as a conflict, but it still requires a deliberate non-destructive documentation merge.
+
+### Priority critical path
+**Owner's current order:** #27 prerequisite → #32 → #33 (already merged) → #31 → #30 → #29. This supersedes Muse's earlier pause on routine #29–#32 work.
+
+**#27 — not merge-ready**
+- Exact-head Site checks pass (45873460526), but no exact-head PostgreSQL 16 0001→0002 harness run is evidenced.
+- The PR body remains stale (88/88 and “No SQL applied”).
+- Source docs remain contradictory: `docs/p2-staging-apply.md` line 3 says “PREPARED ONLY — DO NOT APPLY YET” while its reconciliation note says the 0001+0002 apply completed at 05:35 and the runbook is historical; lower Package B sections still read like a future apply sequence. `docs/f1-review.md` still describes the earlier pre-apply state (only 0002, do not rerun 0001).
+- The 0002 source is incremental and fails closed if the baseline is absent; the test file checks the runbook gates. I inspected these sources at exact #27 head, but did not run PG16.
+- Requested non-destructive merge of current main into `muse/p2-backfill`, byte-identical preservation of all six additive P2 files, one unambiguous historical runbook, exact-head PG16 harness, PR body refresh, and exact SHA/commands/output/CI evidence in `CLAUDE-REPLY.md`. No SQL apply.
+
+**#32 — source-level feature-gate PASS, but blocked**
+- Exact head `5bbcb556e761151c3a520ac697243637d9c00524`: server `booking_enabled boolean NOT NULL DEFAULT false`; availability returns no slots while false; direct anonymous `reserve_table` call fails closed; cancellation remains available.
+- UI strictly requires `bookingEnabled === true` and `goLiveAuthorized === true`, in addition to Supabase config; shipped flags remain false.
+- IP trust code uses `cf-connecting-ip`, otherwise last proxy-appended XFF hop, never the client-controlled first hop. Muse's staging gateway probe is lead-reported evidence, not independent ChatGPT access.
+- Site checks run 45862797854 succeeded. Claude-reported PG16 66/66 reservations + 80/80 ordering, throttle race results, one-winner capacity race, Node 105/105 and browser 19/19 are historical reports at this unchanged head; ChatGPT did not independently run PG16/Playwright.
+- Still blocked by #27 and 7/72 divergence. After #27 merges, sync non-destructively and rerun complete 0001→0005 PG16, both throttle races, capacity race, Node/browser and CI at the resulting exact SHA. Outbox sender and gateway flood protection remain live-use blockers.
+
+**#31 / #30 / #29**
+- #31 phone source/CX pass still stands; current head CI 45867576545 success, but branch is 3/53 diverged and body still reports Node 99/99 instead of latest branch report 102/102 + header browser 13/13.
+- #30 email-link adoption source review still stands; current head CI 45867623407 success, but branch is 2/53 diverged and body still reports Node 98/98 instead of latest report 101/101. No real email delivery or redirect allow-list proof; sign-ups stay OFF.
+- #29 remains Draft, 14/53 diverged, and has no PR-triggered workflow at exact head. Latest Claude report says member history/ledger is built (Node 117/117, history browser 9/9, checkout 20/20, staff 7/7, header 13/13), but the PR body is stale. Keep Draft until Muse's isolated-staging E2E (signup → test order → test-card payment → staff hand-over → points/history). #38 is stacked on this PR.
+
+### Sprint CX re-reviews
+- **#35 @ `a098d45c0178e0f4b99234e973c02db3ea99ac22`: source-level PASS** for previous blockers: slot selection uses raw sunset, no later-slot fallback, fail-closed no-slot message, actual selected-time copy, aligned 2-minute statement, Arabic strings, hide-for-day. Unit/browser test source covers raw sunset and no-slot/Arabic/hide paths. Exact Site checks 45883912775 success. PR body is stale (EN/FR and 105/105 + 11/11 instead of Arabic and latest 106/106 + 15/15 report). Review ID `6080123008`, COMMENT.
+- **#36 @ `7feca810684e005a5b70a6090fa1446937574785`: source-level PASS** for Arabic region names/hint/caption/menu link, decorative SVG and tab-only control. Test source checks provenance, bounds, no innerHTML, AR render and pointer-events none. Exact Site checks 45883965801 success. Asked for an RTL-specific arrow-key assertion; PR body still says EN/FR. Review ID `6080123368`, COMMENT.
+- **#37 @ `73dcdd51842f3bb541c4b455eb6ec6c91f62ada1`: structural/source-level PASS** for complete Arabic keys and dishes, RTL/Latin-digit locale, and the regression guard against `مثالي`. Exact Site checks 45883739627 success. Remaining copy recommendations: replace `طبق للعرض` with `طبقنا المميّز` or `طبق مميّز`; make the points sentence number-neutral (“أضفنا {points} إلى رصيد نقاطك من طلباتك السابقة.”). PR body needs current test counts and module coverage refreshed. Review ID `6080123727`, COMMENT.
+- **#38 @ `b4d11424c9b03361410f05a01e9dafb3b8b690d4`: core design/source is directionally sound**, member-only/RLS/user_id, paid active order, persisted statuses, 25s visible-only polling, terminal stop, EN/FR/AR, no ETA. But the UI says “Last updated” while setting `lastAt = new Date()` and ignoring the selected server `updated_at`; asked to use server timestamp or label “Last checked”. Browser test's cancelled case starts with a cancelled order that the active query excludes, so it does not test the required active→cancelled transition. Asked for that regression. No PR-triggered CI returned for this SHA; 120/120 and 14/14 are Claude/Muse-reported, not independently run by ChatGPT. The branch is stacked on #29 and must remain unmerged. Review ID `6080125014`, COMMENT (GitHub rejected REQUEST_CHANGES because the PR is authored by the repository owner).
+
+### Coordination comments posted
+- #27 dependency checkpoint + exact PG16/runbook requests: comment `7202657822`.
+- #32 gate/dependency checkpoint and queue: `7202658475`.
+- #31 sync/body/CI checkpoint: `7202659254`.
+- #30 sync/body/CI + email safety checkpoint: `7202659872`.
+- #29 Draft/body/CI/staging E2E checkpoint: `7202660613`.
+- Issue #34: instructed Claude to continue 30-minute cadence, update exact SHA/files/tests/CI/compare/blockers in `CLAUDE-REPLY.md`, refresh #35–#37 descriptions/BOARD rows, fix #38 findings; asked Muse to reconcile #27 docs and update dependency row: `7202663219`.
+
+### Safety
+No PR merged. No SQL applied. No sign-up, order, booking, payment, email or production service activated. No secrets accessed or disclosed. No force-push or history rewrite.
+
+
+## 2026-11-26 — Scheduled AZAL follow-up: exact-head reviews and owner-priority handoff
+
+**Latest observed main commit:** `8a0ab20e79636451c594ccf0f2b4fe05e3b9b79d` (Muse's 15:45 loop record). Main's latest recorded Node suite is Muse-reported **100/100 at `56eed87`**; ChatGPT did not independently execute that suite. I fetched current PR metadata, timelines, changed-file lists, exact-head source/test files, branch comparisons and workflow runs. No source code was changed by ChatGPT in this pass.
+
+### Current branch comparisons against main
+All listed open branches compare as **diverged**; GitHub's `mergeable=true` flag is not treated as a substitute for synchronization or exact-head review.
+
+| PR | Exact head | Ahead / behind | Exact-head CI |
+|---|---|---:|---|
+| #27 | `5a1495606a8940a43657524d86c975b53026b847` | 7 / 50 | Site checks 45873460526 success |
+| #32 | `5bbcb556e761151c3a520ac697243637d9c00524` | 7 / 79 | Site checks 45862797854 success |
+| #33 | merged | — | Merged 2026-11-26 |
+| #31 | `b8b822d7a004f04b0c935692e3b3196c7a223f4e` | 3 / 60 | Site checks 45867576545 success |
+| #30 | `fa6cce9bd21e4167af336eb4c34b1641032b2ea8` | 2 / 60 | Site checks 45867623407 success |
+| #29 | `e03927224c1dce9d65c5e83fc03a6f06029379e6` | 14 / 60 | No PR-triggered run returned |
+| #38 | `7d119a36e75dee2896e6b62f0286370ec577255c` | 16 / 60 | No PR-triggered run returned |
+| #39 | `c3a209dea21f64720f7f617ca20c45cc1ae5465c` | 15 / 60 | No PR-triggered run returned |
+| #35 | `a098d45c0178e0f4b99234e973c02db3ea99ac22` | 3 / 43 | Site checks 45883912775 success |
+| #36 | `7feca810684e005a5b70a6090fa1446937574785` | 2 / 36 | Site checks 45883965801 success |
+| #37 | `7c2bba55faaad25ca3e374ca100935ba15212a9d` | 3 / 30 | Site checks 45892146612 success |
+
+### #27 — P2 dependency: still blocked
+At exact head `5a1495606a8940a43657524d86c975b53026b847`, I inspected:
+- `supabase/migrations/0002_p2_fixes.sql`: incremental preflight requires the existing 0001 objects/Auth schema; admin/staff access is separated; partial unique indexes enforce one earn, reversal and redemption refund per order; Auth trigger creates only a minimal profile; pre-existing Auth users are backfilled; broad client DML is revoked and only the intended display-name column update is restored.
+- `tests/p2-schema-static.test.mjs`: source assertions cover the above; these are not a PostgreSQL execution harness.
+- `docs/p2-staging-apply.md` and `docs/f1-review.md`: the runbook still begins “PREPARED ONLY — DO NOT APPLY YET” while its reconciliation note says 0001+0002 were applied at 05:35 and 0003/0004 followed. The lower Package B instructions still read as a future executable apply. The PR body also still says “No SQL applied”, contradicting the runbook's claimed isolated-staging history.
+- Exact-head Site checks are green, but **no exact-head PG16 0001→0002 harness run is evidenced**.
+
+This is not merge-ready. I posted a fresh dependency comment asking Claude/Muse to make the runbook unambiguously historical/non-executable, reconcile the PR body with the staging record, and supply the exact-head PG16 command/output and CI. Comment ID `7203052410`. No SQL apply was requested.
+
+### #32 — table-only booking: source gates PASS, dependency blocks merge
+At exact head `5bbcb556e761151c3a520ac697243637d9c00524`, I re-inspected the migration, UI, config and test sources:
+- `reservation_settings.booking_enabled boolean NOT NULL DEFAULT false`.
+- `reservation_availability` returns no slots while disabled; direct anonymous `reserve_table` calls fail with `booking_closed`; cancellation of an existing booking remains available.
+- `reserve.js` requires strict `bookingEnabled === true` and `goLiveAuthorized === true`, plus the Supabase config; both shipped flags remain false.
+- `azal_request_ip()` prefers `cf-connecting-ip`; SQL assertions cover XFF spoof-first behaviour and CF precedence. Muse's 12:11 lead report says the isolated staging gateway supplied the real client IP in `cf-connecting-ip`, while XFF contained the spoofed first hop; the temporary probe function was dropped. This is lead-reported live evidence, not independent ChatGPT access.
+- Site checks 45862797854 succeeded. Claude's PG16 66/66 reservations + 80/80 ordering, concurrency races, Node 105/105 and browser 19/19 remain attributed to Claude; ChatGPT inspected source/assertions and did not independently run PG16/Playwright.
+
+**Source-level gate review: PASS. Merge remains blocked by #27.** After #27 is reviewed/merged, #32 must be non-destructively synced to current main and the full 0001→0005 PG16, concurrency, browser and CI suites rerun at the resulting exact SHA. Outbox delivery and gateway flood protection remain live-use gates. Comment ID `7203052887`.
+
+### #29 / #30 / #31 / #33
+- **#33:** already merged. No further work required for this PR.
+- **#31:** confirmed phone links remain `tel:+13439996199`, Orléans copy does not invent a street address. Exact-head Site checks pass. PR body still says Node 99/99 while Claude's latest branch report says 102/102 + header browser 13/13. Fresh compare 3/60. Comment `7203057509`.
+- **#30:** email-link source review remains valid; exact-head Site checks pass. PR body still says 98/98 while Claude's latest report says 101/101 plus fake-Supabase link-adoption checks. No real email delivery or redirect allow-list verification is evidenced; sign-ups stay OFF. Fresh compare 2/60. Comment `7203056904`.
+- **#29:** remains Draft, 14/60 diverged, and no PR-triggered run was returned for exact head `e039272`. Claude reports member history/ledger built (Node 117/117, history browser 9/9, checkout 20/20, staff 7/7, header 13/13), but the PR body still says this work is outstanding. Keep Draft until description/CLAUDE reply are refreshed, exact-head CI/tests run after non-destructive sync, and Muse records isolated-staging E2E. Comment `7203056419`.
+
+### #38 — Table Pulse: prior fixes verified; one remaining payment-state edge
+At exact head `7d119a36e75dee2896e6b62f0286370ec577255c`:
+- The earlier timestamp issue is fixed: copy says “Last checked”, and the client poll time is labelled honestly.
+- The cancellation regression now starts with an active visible order, changes it to cancelled, verifies the cancelled state/announcement and polling stop.
+- I inspected `pulse.js`, `tests/pulse.test.mjs`, and `tests/pulse.browser.mjs`. Claude reports Node 120/120 and pulse browser 18/18; ChatGPT did not execute these tests.
+- **New finding:** `active()` filters `payment_status=eq.paid`, but subsequent `byId()` polling filters only by user and order ID. If payment changes to refunded/voided while the page is open, the timeline can still present it as an active paid order. Preserve the paid predicate or explicitly handle non-paid status, with a paid→refunded/voided regression.
+- No exact-head PR workflow run was returned. It is stacked on #29 and 16/60 diverged.
+
+Review posted as COMMENT at the exact SHA: review ID `6080322049`. No merge.
+
+### #39 — Majlis qahwa cups: full-ledger count blocker
+At exact head `c3a209dea21f64720f7f617ca20c45cc1ae5465c`, I inspected `member-history.js` and its unit/browser tests. The visual concept is restrained and keeps the numeric points balance visible, but:
+- the points-ledger query is capped at `limit=50`;
+- `cupsFrom()` counts earns minus reversals only from those 50 returned rows;
+- the balance is also summed from the same limited page.
+Members with more than 50 ledger events can therefore have undercounted cups and a balance that is not the complete ledger balance. Current browser coverage exercises 15 earns, not pagination or a reversal beyond the first page.
+
+Requested pagination to exhaustion or a server-authoritative aggregate and a >50-event test with an earn/reversal across the page boundary. Claude reports Node 118/118 and member-history browser 11/11; I inspected tests but did not run them. No exact-head CI run was returned; branch is stacked on #29 and 15/60 diverged.
+
+Review posted as COMMENT at the exact SHA: review ID `6080322268`. No merge.
+
+### #35 / #36 / #37 and the sprint merge queue
+- #35 and #36 remain at the previously reviewed exact heads; their Site checks are green and prior source/CX findings are fixed. Their current branches still diverge 3/43 and 2/36.
+- #37 moved from the previously reviewed `73dcdd5` to `7c2bba5`. I rechecked the one-line Arabic points-copy change, placeholder parity, RTL wiring, Arabic key/dish coverage and the `مثالي` regression guard. The English `signatureLabel` is `EXAMPLE DISH`, so «طبق للعرض» is correct and should not be changed to a quality claim. Exact-head Site checks 45892146612 succeeded. No native-speaker certification is claimed.
+- #37 exact-head source review PASS posted as COMMENT, review ID `6080321806`; this is not merge authorization.
+- Muse's 15:45 loop assigned #37→#35→#36 merges to ChatGPT. **The owner's latest priority instruction supersedes that sprint queue:** #27 prerequisite → #32 → #33 (already merged) → #31 → #30 → #29. Do not merge #37/#35/#36 ahead of this queue. The board records prior sequential dry-run conflicts in shared stylesheet/page-version files; those merges need a fresh exact-head conflict-free sync when their turn arrives.
+
+### Coordination and comments
+- #27 comment: `7203052410`; #32 comment: `7203052887`.
+- #31 comment: `7203057509`; #30 comment: `7203056904`; #29 comment: `7203056419`.
+- Issue #34 handoff to Claude and Muse: `7203058147`. It explicitly restates the owner's queue, asks Claude to keep the 30-minute follow-up cadence and update `CLAUDE-REPLY.md` with full SHA/files/actual commands and outputs/CI IDs/divergence/conflict results/blockers, and asks Muse to refresh the relevant BOARD rows.
+- `CLAUDE-REPLY.md` latest section is 15:45 EST (Table Pulse fixes + V3 build). `BOARD.md` still has older status text for the #38/#39 sprint rows and its I-SPRINT row does not yet reflect the owner's new priority. Muse was asked to reconcile it. `CHATGPT-REPLY.md` now records this exact-head review.
+
+### Safety
+No PR merged. No SQL applied. No production or staging settings changed by ChatGPT. No sign-ups, orders, bookings, payments or real email enabled. No secrets accessed or disclosed. No force-push, rebase or history rewrite.
+
+## 2026-11-26 — Post-loop refresh after Muse 15:50
+
+Latest observed main commit before this addendum: `c0d090bb86bc329735933b25b150a1f5faa0bd27` (Muse 15:50 loop; main suite reported 100/100 at `8a0ab20`). PR heads remained unchanged on a fresh metadata fetch. Refreshed comparisons against that main tip:
+
+| PR | Ahead / behind | GitHub mergeable | Notes |
+|---|---:|---|---|
+| #27 | 7 / 52 | false | exact-head PG16 0001→0002 still absent |
+| #32 | 7 / 81 | false | source gate PASS; blocked by #27 |
+| #31 | 3 / 62 | false | exact-head Site checks green; body stale |
+| #30 | 2 / 62 | false | exact-head Site checks green; body stale |
+| #29 | 14 / 62 | false | Draft; no exact-head CI; #38/#39 depend on it |
+| #38 | 16 / 62 | true | true only against stacked base #29; not independently mergeable to main |
+| #39 | 15 / 62 | true | true only against stacked base #29; not independently mergeable to main |
+| #35 | 3 / 45 | — | previously reviewed head unchanged; Site checks green |
+| #36 | 2 / 38 | — | previously reviewed head unchanged; Site checks green |
+| #37 | 3 / 32 | — | exact-head source re-review PASS; Site checks green |
+
+Fresh metadata shows #27/#29/#30/#31/#32 all report `mergeable=false`. #38/#39 report true against `claude/ordering` at #29's SHA, not against main; do not interpret that as merge readiness.
+
+The 15:50 Muse loop still reports no new Claude reply section since 15:45 and repeats the #37→#35→#36 merge assignment. ChatGPT's owner-priority supersession comment was posted after that loop; no Claude/Muse response is present yet. The owner's #27 → #32 → #31 → #30 → #29 queue remains controlling. No merge or activation was performed.

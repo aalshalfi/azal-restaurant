@@ -142,7 +142,7 @@ test("script loads and renders the sample menu", () => {
   assert.equal(cards, 9, "expected 9 sample dish cards");
 });
 
-test("EN/FR switch runs without throwing and translates the page", () => {
+test("EN → FR → AR (V1) switch runs without throwing, translates the page and sets RTL for Arabic", () => {
   const { documentElement, evalIn } = boot();
   const toggle = byId.get("languageToggle");
   assert.ok(toggle, "languageToggle button is missing from index.html");
@@ -154,7 +154,7 @@ test("EN/FR switch runs without throwing and translates the page", () => {
   fire(toggle, "click"); // would throw on the document.document typo
   assert.equal(evalIn("language"), "fr");
   assert.equal(documentElement.lang, "fr");
-  assert.equal(toggle.textContent, "EN", "button should offer the way back to English");
+  assert.equal(toggle.textContent, "ع", "after French the button offers Arabic");
   assert.ok(
     grid.innerHTML.includes(productTranslations[1].name),
     "menu should show the French dish name after switching",
@@ -168,8 +168,17 @@ test("EN/FR switch runs without throwing and translates the page", () => {
   assert.equal(probe.textContent, translations.fr[probe.dataset.i18n], "page copy was not translated");
 
   fire(toggle, "click");
+  assert.equal(evalIn("language"), "ar");
+  assert.equal(documentElement.lang, "ar");
+  assert.equal(documentElement.dir, "rtl");
+  assert.equal(toggle.textContent, "EN", "after Arabic the button offers the way back to English");
+  assert.equal(probe.textContent, translations.ar[probe.dataset.i18n], "page copy was not translated to Arabic");
+  assert.ok(grid.innerHTML.includes(clone(evalIn("productTranslationsAr"))[1].name), "menu should show the Arabic dish name");
+
+  fire(toggle, "click");
   assert.equal(evalIn("language"), "en");
   assert.equal(documentElement.lang, "en");
+  assert.equal(documentElement.dir, "ltr");
   assert.equal(toggle.textContent, "FR");
   assert.equal(probe.textContent, translations.en[probe.dataset.i18n]);
 });
