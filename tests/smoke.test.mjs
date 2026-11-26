@@ -274,3 +274,14 @@ test("Source font families are self-hosted and licensed in the repository", () =
     "assets/fonts/OFL-Source-Serif-4.txt",
   ]) assert.ok(fs.existsSync(path.join(root, file)), `missing self-hosted font asset: ${file}`);
 });
+
+
+test("P1 mobile CSS closes the interim C-DES size and tap-target gaps", () => {
+  const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  assert.ok(css.includes(".hero-bottom,.hero-bottom span{font-size:12px!important"), "hero meta spans must meet the 12px floor");
+  assert.ok(css.includes(".product-category{font-size:12px!important"), "product category labels must meet the 12px floor");
+  assert.ok(css.includes(".product-tag{font-size:12px!important"), "product tags must meet the 12px floor");
+  assert.ok(css.includes(".add-button{min-height:44px;height:44px"), "add buttons must be at least 44px tall");
+  assert.ok(css.includes(".section-kicker{white-space:normal"), "long French section kickers must wrap");
+  assert.ok(css.includes("-webkit-line-clamp:2"), "mobile dish descriptions must be clamped to two lines");
+});
