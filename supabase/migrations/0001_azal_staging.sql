@@ -443,7 +443,8 @@ grant select on
 to authenticated;
 
 -- Customers can edit only their display name; role, identity and anonymization
--- fields remain server/owner-controlled.
+-- fields remain server/owner-controlled. Clear any inherited column grant first.
+revoke update (display_name) on table public.profiles from anon, authenticated;
 grant update (display_name) on public.profiles to authenticated;
 
 -- Payment and settlement tables have no client policies: server-only, disabled in P2.
