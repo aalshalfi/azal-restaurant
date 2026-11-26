@@ -8,8 +8,9 @@ const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponen
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = await chromium.launch(); const base = `http://localhost:${srv.address().port}`;
 const SEL = [".brand", ".language-quick", ".majlis-quick", ".cart-open", ".menu-toggle"];
-for (const page_ of ["index", "menu", "member", "reserve", "story", "404"]) for (const w of [320, 390]) {
+for (const lang of ["en", "ar"]) for (const page_ of ["index", "menu", "member", "reserve", "story", "404"]) for (const w of [320, 390]) {
   const page = await b.newPage({ viewport: { width: w, height: 640 } });
+  await page.addInitScript((l) => localStorage.setItem("azal-language", l), lang);
   await page.goto(`${base}/${page_}.html`); await page.waitForTimeout(150);
   const r = await page.evaluate((sel) => sel.map((s) => { const e = document.querySelector(s), b = e.getBoundingClientRect(), cs = getComputedStyle(e); return { s, l: b.left, r: b.right, t: b.top, bt: b.bottom, w: b.width, h: b.height, vis: cs.display !== "none" && cs.visibility !== "hidden" && b.width > 0 }; }), SEL);
   const hh = await page.evaluate(() => document.querySelector(".site-header").getBoundingClientRect().height);
@@ -17,8 +18,8 @@ for (const page_ of ["index", "menu", "member", "reserve", "story", "404"]) for 
   const allVis = r.every((x) => x.vis && x.l >= 0 && x.r <= w && x.t >= 0 && x.bt <= hh + 0.5);
   const sizes = r.slice(1).every((x) => Math.round(x.w) >= 44 && Math.round(x.h) >= 44);
   let overlap = false; for (let i = 0; i < r.length; i++) for (let j = i + 1; j < r.length; j++) if (r[i].l < r[j].r - 0.5 && r[j].l < r[i].r - 0.5) overlap = true;
-  const order = r.every((x, i) => i === 0 || x.l >= r[i - 1].r - 0.5);
-  ok(allVis && sizes && !overlap && order && !ovf && Math.round(hh) === 64, `${page_} @${w}: logo + 4 controls visible, 44x44, in order, no overlap, header 64px, no overflow`);
+  const order = lang === "ar" ? r.every((x, i) => i === 0 || x.r <= r[i - 1].l + 0.5) : r.every((x, i) => i === 0 || x.l >= r[i - 1].r - 0.5); // RTL mirrors the row
+  ok(allVis && sizes && !overlap && order && !ovf && Math.round(hh) === 64, `${lang} ${page_} @${w}: logo + 4 controls visible, 44x44, in order, no overlap, header 64px, no overflow`);
   await page.close();
 }
 {

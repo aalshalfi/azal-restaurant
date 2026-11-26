@@ -58,13 +58,20 @@
       accept: "Accepter", ready: "Prête", hand_over: "Remettre", asap: "Dès que possible", member: "Membre",
       s_placed: "Nouvelle", s_accepted: "Acceptée", s_preparing: "En préparation", s_ready: "Prête à emporter",
       updated: "Mis à jour à {time}", refresh: "Actualiser", working: "Un instant…", e_network: "Problème de connexion. La liste va réessayer.", e_error: "Ça n’a pas marché. Actualisez et réessayez.",
-      e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale." }
+      e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale." },
+    ar: { title: "طلبات المطبخ", inert: "تعمل شاشة الطلبات عند ربط الموقع بنظام أزال.", signIn: "سجّل الدخول أولاً ببريد الموظف من صفحة المجلس.", signInLink: "اذهب لتسجيل الدخول",
+      notStaff: "هذا الحساب غير مُعدّ كموظف في هذا الفرع.", empty: "لا طلبات مدفوعة بالانتظار. تظهر الطلبات الجديدة هنا تلقائياً.",
+      accept: "قبول", ready: "جاهز", hand_over: "تسليم", asap: "في أقرب وقت", member: "عضو",
+      s_placed: "جديد", s_accepted: "مقبول", s_preparing: "قيد التحضير", s_ready: "جاهز للاستلام",
+      updated: "حُدّث {time}", refresh: "تحديث", working: "لحظة…", e_network: "مشكلة في الاتصال. ستُعاد المحاولة.", e_error: "لم ينجح ذلك. حدّث وحاول مرة أخرى.",
+      e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع." },
   };
-  const lang = () => (document.documentElement.lang === "fr" ? "fr" : "en");
+  const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
+  const locOf = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
   const L = (k, v) => { let s = S[lang()][k] || S.en[k] || k; for (const x in v || {}) s = s.replace("{" + x + "}", v[x]); return s; };
   const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const tf = (d, o) => new Intl.DateTimeFormat(lang() === "fr" ? "fr-CA" : "en-CA", Object.assign({ hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }, o)).format(d);
-  const money = (c) => new Intl.NumberFormat(lang() === "fr" ? "fr-CA" : "en-CA", { style: "currency", currency: "CAD" }).format(c / 100);
+  const tf = (d, o) => new Intl.DateTimeFormat(locOf(), Object.assign({ hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }, o)).format(d);
+  const money = (c) => new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100);
 
   let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null;
 

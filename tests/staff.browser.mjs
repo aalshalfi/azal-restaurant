@@ -40,5 +40,7 @@ async function open({ staff = true, session = true }) {
 }
 { const { page } = await open({ staff: false }); await page.waitForSelector(".staff-note"); ok(/not set up as staff/.test(await page.textContent("#staffRoot")), "non-staff account sees a clear message, no orders"); await page.close(); }
 { const { page } = await open({ session: false }); await page.waitForSelector("a[href='member.html'].button"); ok(true, "signed out: sent to sign-in"); await page.close(); }
+{ const { page } = await open({}); await page.waitForSelector(".staff-order"); await page.evaluate(() => { document.documentElement.lang = "ar"; }); await page.waitForTimeout(100);
+  ok(/طلبات المطبخ/.test(await page.textContent("#staffRoot")) && /قبول/.test(await page.textContent("#staffRoot")), "Arabic kitchen screen"); await page.close(); }
 { const page = await b.newPage(); await page.goto(`http://localhost:${port}/staff.html`); await page.waitForTimeout(300); ok(/turns on when the site is connected/.test(await page.textContent("#staffRoot")), "inert with shipped null config"); await page.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);

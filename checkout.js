@@ -128,12 +128,26 @@
       e_item_unavailable: "Un article de votre commande n’est plus disponible.", e_rate_limited: "Trop de commandes non payées. Patientez quelques minutes.",
       e_payment_window_expired: "Cette commande a expiré avant le paiement. Recommencez.", e_payments_not_in_test_mode: "Les paiements sont désactivés pour l’instant. Rien n’a été débité.",
       e_note_too_long: "La note est trop longue (500 caractères max.).", e_network: "Problème de connexion. Vérifiez votre connexion et réessayez : vous ne serez pas débité deux fois.",
-      e_error: "Un problème est survenu. Rien n’a été débité. Veuillez réessayer." }
+      e_error: "Un problème est survenu. Rien n’a été débité. Veuillez réessayer." },
+    ar: { kicker: "وضع التجربة", title: "طلبك", text: "الدفع في وضع التجربة: استخدم بطاقة تجريبية أدناه. لا تُنقل أي أموال حقيقية.",
+      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", signedAs: "تطلب باسم {email}",
+      note: "ملاحظة للمطبخ (اختياري)", notePh: "حساسية، حار أقل، خبز إضافي…",
+      card: "رقم البطاقة (بطاقات تجريبية فقط)", cardHelp: "بطاقات تجريبية: 4242 4242 4242 4242 تدفع · 4000 0000 0000 0002 تُرفض · 4000 0000 0000 9995 رصيدها غير كافٍ.",
+      pay: "ادفع {total}", payPlain: "اطلب وادفع", working: "لحظة…",
+      paid: "تم الدفع. جاهز الساعة {time}. أظهر الرمز {code} عند الكاشير.", paidGuest: "انضم بالبريد {email} لتحصل على نقاط هذا الطلب.",
+      declined: "رُفضت البطاقة. طلبك محفوظ 15 دقيقة: جرّب بطاقة تجريبية أخرى.", insufficient: "الرصيد غير كافٍ. طلبك محفوظ 15 دقيقة: جرّب بطاقة تجريبية أخرى.",
+      e_not_test_card: "تعمل هنا أرقام البطاقات التجريبية المعروضة فقط.", e_name: "اكتب اسمك.", e_email: "تحقّق من بريدك الإلكتروني.",
+      e_slot_full: "امتلأ هذا الوقت للتو. اختر وقتاً آخر.", e_closed: "الطلبات مغلقة في هذا الوقت. اختر وقتاً آخر.", e_too_soon: "هذا الوقت صار قريباً جداً. اختر وقتاً آخر.",
+      e_item_unavailable: "شيء في طلبك لم يعد متاحاً.", e_rate_limited: "طلبات غير مدفوعة كثيرة. انتظر بضع دقائق.",
+      e_payment_window_expired: "انتهت مهلة هذا الطلب قبل الدفع. ابدأ من جديد.", e_payments_not_in_test_mode: "الدفع متوقف الآن. لم يُخصم شيء.",
+      e_note_too_long: "الملاحظة طويلة جداً (500 حرف كحد أقصى).", e_network: "مشكلة في الاتصال. تحقّق وحاول مرة أخرى: لن يُخصم منك مرتين.",
+      e_error: "حدث خطأ. لم يُخصم شيء. حاول مرة أخرى." },
   };
-  const lang = () => (document.documentElement.lang === "fr" ? "fr" : "en");
+  const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
+  const locOf = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
   const L = (k, vars) => { let s = S[lang()][k] || S.en[k] || k; for (const v in vars || {}) s = s.replace("{" + v + "}", vars[v]); return s.replace(/\.\./g, "."); };
-  const money = (c) => new Intl.NumberFormat(lang() === "fr" ? "fr-CA" : "en-CA", { style: "currency", currency: "CAD" }).format(c / 100);
-  const timeOf = (iso) => new Intl.DateTimeFormat(lang() === "fr" ? "fr-CA" : "en-CA", { hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }).format(new Date(iso));
+  const money = (c) => new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100);
+  const timeOf = (iso) => new Intl.DateTimeFormat(locOf(), { hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }).format(new Date(iso));
 
   // Stage 2 (staging test): every "preview / nothing is sent" line becomes the honest test-mode line, in EN and FR.
   for (const [from, to] of [["cartDisclaimer", "cartDisclaimerTest"], ["menuIntro", "menuIntroTest"]]) {
