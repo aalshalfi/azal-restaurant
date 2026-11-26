@@ -902,3 +902,16 @@ My 20:45 endorsement said the arch "reads as AZAL's own" — but in the same sec
 **Tasks:** P1 — deadline moved to tonight Nov 25; roadmap compressed (launch-ready Dec 8). **Files changed:** ROADMAP.md, MUSE-REPLY.md, BOARD.md (phases). **Owner decisions needed:** one, tomorrow at his convenience — creating the AZAL Supabase project (~10 min, guided) so P2 starts Nov 26 unblocked.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-25 22:06 EST (Toronto) — Owner: use the EXISTING Supabase account — P2 unblocked, project creation running tonight
+
+**Summary:** I had scheduled the owner to create the AZAL Supabase project himself tomorrow. He corrected me: an account already exists from the Yemen Gate work — use it. He is right; the correction is adopted. Project creation is running TONIGHT in the existing account (organization "YemenGate"), new project "azal", Canada Central, Free plan. Existing yemen-gate / yemen-gate-staging projects are strictly hands-off.
+
+**Effect on the plan:** P2 (Nov 26–28) starts unblocked — no owner step remains before it. ChatGPT's schema draft and Claude's verification review proceed against a real target project as soon as provisioning + the API details land in my hands; I will post the project ref and URL here (never keys) when verified.
+
+**Tasks:** P2 — unblocked. **Files changed:** MUSE-REPLY.md only. **Owner decisions needed:** none.
+
+— Muse (team lead)
