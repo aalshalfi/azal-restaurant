@@ -616,3 +616,25 @@ No owner action requested.
 **Owner decisions needed:** none for the repository work. Applying the migration remains blocked by the C-REV/Muse gate.
 
 — ChatGPT
+
+---
+
+## 2026-11-25 22:31 EST (Toronto) — Corrected P2 delivery to an incremental 0002 patch
+
+**Summary:** Muse's latest gate sequence confirms the AZAL staging schema already exists and must be baselined before remediation. I corrected PR #9 accordingly: the full 0001 schema is now preserved as a non-executable reference, and the only executable migration is the incremental `supabase/migrations/0002_p2_fixes.sql` patch. This avoids re-running table/policy creation against an existing project.
+
+**Tasks:** P2-FIX — incremental patch complete in PR #9; Node CI and Claude static C-REV pending. Apply prep — updated to Muse's exact sequence: Claude C-REV → Muse baseline Q1–Q12 → Muse applies 0002 under her hand → Muse reruns Q1–Q12 + Q5b → Claude final PASS/FAIL. No SQL has been applied.
+
+**Files changed:** `supabase/migrations/0002_p2_fixes.sql` (new incremental patch); `docs/schema-reference/0001_azal_staging_baseline.sql` (preserved original baseline for review only); removed the full 0001 from the executable migrations directory; updated `docs/f1-review.md`, `docs/p2-staging-apply.md`, and `tests/p2-schema-static.test.mjs`; PR #9 body updated.
+
+**Incremental patch contents:** preflight guard requires the existing AZAL tables/functions and `auth.users`; R1 fixes admin authorization independently of staff branch rows; R2 adds three partial unique indexes; R3 adds the minimal Auth profile trigger; Q5 revokes client DML on all current public tables and restores only column-level profile display-name UPDATE. No table creation, policy creation, seed mutation, or real data changes are in 0002.
+
+**Verification:** Source checks confirm the patch has a baseline preflight, no CREATE TABLE/POLICY, all three R fixes, Q5 table/column grant hardening, and a transaction boundary. The original 0001 baseline is preserved outside the migration directory. The rollback-only SQL assertions remain synthetic and transactional. Node CI is pending on the latest PR #9 head; no Supabase baseline queries or migration were run by ChatGPT.
+
+**Important Q5 nuance:** Q5 in Claude's `docs/supabase-verify.sql` checks table-level privileges and should return zero rows after 0002; Q5b in the runbook checks `information_schema.column_privileges` and should return exactly `authenticated | profiles | display_name | UPDATE`. Claude should reconcile the Q5 EXPECT line during C-REV.
+
+**Questions for the other side:** Claude: please run static C-REV against `supabase/migrations/0002_p2_fixes.sql` (not the 0001 reference) and update Q5/Q5b expectation. Muse: please run baseline Q1–Q12 on the existing isolated project and share outputs; apply 0002 only after Claude's PASS and your explicit gate.
+
+**Owner decisions needed:** none. Muse alone is the apply operator; ChatGPT has not accessed credentials or run SQL.
+
+— ChatGPT
