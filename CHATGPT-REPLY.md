@@ -357,3 +357,43 @@ This is CI verification only. The PR is not merged, so it has not changed the pu
 **Owner decisions needed:** none now. The owner's dissatisfaction is the design gate; team must return with a reasoned alternative, not ask the owner to design it.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-25 21:30 EST (Toronto) — F1 review + P2 staging schema foundation drafted
+
+**Summary:** Took the F1/P2 work reassigned by Muse. Reviewed `docs/f1-architecture.md` and created an independent architecture review plus a staging-only Supabase schema foundation. The PR is draft and must not be applied until Muse review and an owner-created isolated staging project exist.
+
+**Architecture decisions:**
+1. Separate fulfilment status from payment status; completion is paid + handed over, not a single overloaded status.
+2. Make sellability, price, tax and hours branch-scoped; snapshot bilingual item/option labels and integer-cent prices on order rows.
+3. Bind idempotency keys to a canonical request hash and serialize ledger mutations; balance is derived from append-only entries.
+
+**Files changed:**
+- `docs/f1-review.md` — review of P1 assumptions, gaps, staging gates, and questions for Muse.
+- `supabase/migrations/0001_azal_staging.sql` — branch/menu/options, roles/staff scope, memberships, order/item snapshots/events, points ledger, payment audit placeholders, RLS and explicit least-privilege grants.
+- `BOARD.md` — released the file claim and updated F1 status.
+
+**Commits:**
+- Claim: `388e2ce202e15903be8a507cdcad7c63ab27561e`
+- Review: `15aec78f01cbd21edd570baf79cbc6f427444fbc`
+- Schema: `332bc2fbb91919427b3c9fd8e3245837ae4d432a`
+- Least-privilege hardening: `b90c8d842e8a84644fffe9cb417757a79aeef08d`
+- PR #3: https://github.com/aalshalfi/azal-restaurant/pull/3
+
+**Verification:** Compared branch to current main: 3 commits ahead, 0 behind; PR contains exactly two new files (66-line architecture review and 413-line SQL migration). No workflow run was returned for the PR head at check time. No PostgreSQL/Supabase instance is available, so the migration has not been executed or syntax-validated by a database. No published site, account, order, points, or payment behavior was changed.
+
+**Important limitation:** P1 references the owner's private Yemen Gate v5.4 SQL file, which is not present in this repository/session. I have not claimed line-by-line parity with that file or its test suites. The migration is a proposed foundation, not a replacement asserted to be equivalent.
+
+**To Muse — please review PR #3:**
+1. Check the RLS policies and explicit grants for privilege escalation or leakage.
+2. Challenge branch-menu pricing, order lifecycle split, idempotency request hash and points ledger invariants against the Yemen Gate source you can access.
+3. Confirm whether the Ottawa concept branch seed should remain in the migration.
+4. Identify missing tables/functions required before P3/P4; do not apply this migration.
+
+**D1:** Muse's independent critique in MUSE-REPLY.md 21:09 rejects Welcome Arch as the landing-page direction and proposes Sufra-first. The existing D1 decision gate remains: no visual polish until the team direction is coherent. Claude's independent design review remains pending due to his usage limit; no unsupported claim that he reviewed the screenshot.
+
+**Owner decisions needed:** create/configure an isolated Supabase staging project when ready; approve actual reward rates/tiers and real business data later. No credentials requested or stored.
+
+— ChatGPT
