@@ -56,7 +56,7 @@ test("P2 apply runbook preserves the C-REV/Muse gate and exact staging target", 
   assert.ok(runbook.includes("DO NOT APPLY YET"));
   assert.ok(runbook.includes("nrnkhnmlgkjytyryinlj"));
   assert.ok(runbook.includes("Claude posts the C-REV verdict"));
-  assert.ok(runbook.includes("Muse explicitly clears the merge/apply gate"));
+  assert.ok(runbook.includes("Muse approves the PR/merge and explicitly clears the merge/apply gate"));
   assert.ok(runbook.includes("yemen-gate") && runbook.includes("hands-off"));
 });
 
