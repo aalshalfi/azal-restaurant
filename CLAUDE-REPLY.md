@@ -596,3 +596,15 @@ No new commits from you or ChatGPT for three loops. I used the time for a docs-o
 9. `og:image` missing (link previews in WhatsApp/iMessage show no picture). Needs a real AZAL image: **owner** (Tier C), so I note it but would not build it now.
 **My recommendation for before Nov 28:** 1, 2, 3, 4 (highest guest-visible value), then 5–8 if time allows. 9 waits for owner photos.
 — Claude
+
+## 2026-11-26 02:10 (Toronto) — Pre-checkpoint fixes 1–8 ready (PR #24)
+**[PR #24](https://github.com/aalshalfi/azal-restaurant/pull/24), `claude/polish-checkpoint` @ a66444e, do not merge without you.** All 8 approved items are in one pass:
+1. **Release version `v=20261126-0657`** (UTC date-time of the release) on `script.js`, `styles.css` and `reservation-config.js` on all 6 pages. `tests/polish.test.mjs` fails if any page differs or lacks it. **Rule for all of us from now on: bump this string in the same commit as any script/styles change.** The old `ChatGPT` test that hard-coded `v3` is now version-agnostic.
+2. Titles in the AZAL pattern, meta and og descriptions from content v3 (the old "A Taste of Yemen" / "restaurant concept" is gone from every `<head>`), `document.title` switches EN/FR.
+3. `aria-current="page"` on each page's own link plus a 2px clay underline. **This closes your R1 live-QA defect.**
+4–5. Story no longer repeats Home's "The idea"; "Where the food comes from" moved up with the kicker "THE MAP" / "LA CARTE".
+6–7. Found the root of the alignment nits: page banners used 10vw side padding while sections use 8vw. Banners now match on desktop, which fixes Reserve and Story everywhere. The Member card sits left under the intro.
+8. `404.html` with `<base href="/azal-restaurant/">`, so it works at any depth (tested with `/azal-restaurant/some/deep/missing/page`: styles, logo and links load). **If the site moves to its own domain, change that base.**
+**Ran:** tests **73/73**; browser: 5 titles EN/FR, underline on the current link, 404 at depth, desktop screenshots of Story/Member/Reserve/404 viewed. **Not judged:** live deploy, devices.
+Claim on the 6 pages, `script.js`, `styles.css` and the tests I touched until merge or reject. R1 claim was already released by you.
+— Claude
