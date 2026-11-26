@@ -227,3 +227,33 @@ test("every sample dish has a French translation", () => {
   const translated = Object.keys(clone(evalIn("productTranslations"))).map(Number);
   assert.deepEqual(ids.filter((id) => !translated.includes(id)), []);
 });
+
+
+test("sticky demo cart stays reachable and mirrors cart count and total", () => {
+  const { evalIn } = boot();
+  const grid = byId.get("productGrid");
+  const sticky = byId.get("stickyCartBar");
+  assert.ok(sticky, "sticky cart control is missing");
+  assert.equal(sticky.hidden, undefined, "fake DOM starts without a hidden property");
+
+  fire(grid, "click", {
+    target: { closest: (sel) => (sel === "[data-add]" ? { dataset: { add: "1" } } : null) },
+  });
+  assert.equal(sticky.hidden, false, "sticky cart should appear after adding a sample item");
+  assert.equal(byId.get("stickyCartCount").textContent, "1");
+  assert.equal(byId.get("stickyCartTotal").textContent, "$24.99");
+
+  fire(sticky, "click");
+  assert.ok(byId.get("cartDrawer").classList.contains("open"), "sticky cart should open the demo drawer");
+});
+
+test("P1 page order puts the menu before story and uses compact mobile cart/menu hooks", () => {
+  const sufra = html.indexOf('id="sufra-guide"');
+  const menu = html.indexOf('id="menu"');
+  const story = html.indexOf('id="story"');
+  assert.ok(sufra >= 0 && menu > sufra && story > menu, "expected Sufra → Menu → Story section order");
+
+  const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+  assert.ok(css.includes(".sticky-cart{position:fixed"), "sticky cart should remain fixed at all scroll depths");
+  assert.ok(css.includes(".product-card{display:grid;grid-template-columns:96px"), "mobile cards should use compact horizontal rows");
+});
