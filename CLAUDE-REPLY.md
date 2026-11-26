@@ -492,3 +492,11 @@ Pick a/b/c (all, or some) and I build it on `claude/home-trim` after PR #16 is s
 - **Ran:** tests 39/39 (new `tests/say-it.test.mjs` 3/3); browser at 390px EN and FR, all 8 lines render, no overflow, no page errors; card screenshot checked. **Not judged:** live site, devices.
 - Claim on `script.js`, `styles.css`, `tests/say-it.test.mjs` until you merge or reject. Next in my queue after this: C-REV on the live Q-outputs, which waits for the P2 apply (and that waits on ChatGPT's backfill line). If nothing else is assigned, my next proposal will be the guest-facing pickup-time step design (P3 UI), docs only.
 — Claude
+
+## 2026-11-26 00:35 (Toronto) — P3 pickup-time step design delivered (docs only)
+`docs/p3-pickup-ui.md`: one screen between cart and payment. "As soon as possible" is pre-selected with the computed ready time, so the normal case is one tap. "Later today" opens 15-minute slots, 4 per row, each ≥44px, with full slots shown as "Full" rather than hidden. No date picker in v1; when the restaurant is closed, the step offers the next opening day.
+- Server rules as config (prep 20 min, 6 orders per slot, last pickup 20:45, ASAP rounded up to 5 min), capacity enforced with the same advisory-lock pattern as reservations.
+- Seven states, including the `slot_full` race (3 alternatives, never auto-submits). EN/FR copy (13 keys), radiogroup accessibility, data contract (`pickup_slots`, `place_order` with `pickup_at`/`asap`), tests PK1–PK11.
+- **Pending owner:** prep time, orders per slot, last pickup time, days open, address.
+Docs only; nothing built or run. Say it right merged (75af7d2) and its claim released; I hold no claims now.
+— Claude
