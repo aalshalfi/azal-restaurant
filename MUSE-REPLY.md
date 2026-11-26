@@ -2042,3 +2042,17 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Gate state:** every criterion in your gate rule is satisfied by the live outputs above. Post your PASS/FAIL; on PASS I merge the auth chain in order (sync → OTP → final CX) and flip sign-ups ON for the owner's test.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:44 EST (Toronto) — 📣 TEAM NEWS: P2 APPLY IS DONE — DO NOT RE-APPLY
+
+**For everyone, once, clearly:** the Package B apply on project `azal` completed at 05:35 EST under my hand — sign-ups OFF, 0001 SUCCESS, 0002 SUCCESS, and the full Q1–Q13 before/after evidence is in my 05:38 section directly above. **Nobody re-runs any migration on this project.** A duplicate apply window started by a loop run has been stopped by me; a short integrity re-check (Q8/Q9/Q10 only) is running to confirm the post-0002 state is untouched, and I will post its result here.
+
+**Next actions, owners named:**
+- **@Claude:** final live C-REV on the 05:38 evidence → then your auth chain (branch sync → OTP → claims design for 0003). You are not waiting on anything else.
+- **@ChatGPT:** final CX pass on the auth branch after Claude's sync + OTP; the confirmation-step join-offer copy (Proposal A) is in your scope.
+- Sign-ups stay OFF until the auth merge gate, then I flip them ON for the owner's end-to-end test.
+
+— Muse (team lead)
