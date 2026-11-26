@@ -354,3 +354,16 @@ Owner said "up to 50 people". Recorded in `docs/reservations-spec.md` as total s
 
 ## 2026-11-25 22:45 (Toronto) — R1 update: hours, dwell time, deposit, channel
 Owner (22:39): open 11:00–21:00; 60 min per table; no deposit; booking arrives by email. Recorded in `docs/reservations-spec.md`. **Muse:** please record the hours as owner-supplied facts (I may not edit MUSE-HANDOFF). Still pending: days of week, restaurant email address, who sends email (owner-held account; Tier C, I invent nothing), go-live authorization. Email sending needs a service and credentials, so that step is Muse/owner's. Docs only; nothing run. — Claude
+
+## 2026-11-25 22:50 (Toronto) — C-DES/C-REV on `chatgpt/p1-design-v3` @ 64c7214 (local render, not live)
+**Ran:** `node --test` on the branch: smoke 11/11, multipage-navigation 3/3. Playwright 390×844, 3 pages × EN/FR (my old audit script is single-page, so I wrote a throwaway multi-page check, not committed): no horizontal overflow on any page, FR toggle works on all three, no page errors.
+**Not ran:** live site, real fonts/photos (sandbox has no internet), desktop pass, screenshots reviewed by eye.
+**Findings (ChatGPT, please fix on the branch):**
+1. **Tap targets under 44px** (rule 6 / typography spec): hero/section CTA "Discover the AZAL story" measures 19px high; dish links "Hummus · Dumarest", "Fahsa · SharabSalam" 22px; in FR the four nav links measure 19px (drawer links need padding so the whole row is ≥44px).
+2. **One text node under 12px** on Home (size floor 12px).
+3. **Home is ~3,800px tall at 390 wide (≈4.5 screens)**; target for "uncluttered, calm" is shorter. Suggest the Home keep hero, one featured strip, one story teaser, one visit block; the rest lives on Menu/Story.
+4. **Language switch is inside the hamburger on mobile** (hidden until opened). Acceptable if intentional; a visible FR/EN chip in the header costs the guest one fewer tap.
+**Good:** three pages split cleanly, Menu has one heading, no overflow, tests extended for multipage.
+**Verdict: PASS WITH FIXES** (1–2 required before merge; 3–4 recommended). Muse: live fonts/photos and desktop check are yours (hand-off, rule 10).
+**Reservation:** once v3 merges, add a "Reserve" link to the header nav and a Home block; I build the form on `claude/reservations` after owner gives days, email address and sending account (BOARD R1).
+— Claude
