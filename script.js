@@ -1,5 +1,15 @@
 const translations = {
  en: {
+  sfnSummary:"Ordering for a group? Build a spread",
+  sfnTitle:"How many at the table?",
+  sfnIntro:"In Yemen a meal is set out to share. Pick the number of guests and we suggest a full spread from the menu. Change anything before you add it.",
+  sfnGroup:"Number of guests",
+  sfnGuests:"guests",
+  sfnNote:"A suggestion from the example menu; portions are illustrative.",
+  sfnTotal:"Spread total",
+  sfnAdd:"Add the spread to my order",
+  sfnAdded:"Added the spread for {n}: {count} items.",
+  sfnEmpty:"Nothing left in the spread. Pick a table size to start again.",
   navHome:"Home",
   navMenu:"Menu",
   navStory:"Our story",
@@ -127,6 +137,16 @@ const translations = {
   memberHow3:"Use points on a later order. They do not expire."
  },
  fr: {
+  sfnSummary:"Vous commandez pour un groupe ? Composez une sufra",
+  sfnTitle:"Combien êtes-vous à table ?",
+  sfnIntro:"Au Yémen, le repas se partage. Choisissez le nombre de convives et nous proposons une table complète tirée du menu. Modifiez ce que vous voulez avant de l’ajouter.",
+  sfnGroup:"Nombre de convives",
+  sfnGuests:"personnes",
+  sfnNote:"Une suggestion tirée du menu d’exemple ; les portions sont indicatives.",
+  sfnTotal:"Total de la sufra",
+  sfnAdd:"Ajouter la sufra à ma commande",
+  sfnAdded:"Sufra pour {n} ajoutée : {count} articles.",
+  sfnEmpty:"Il ne reste rien dans la sufra. Choisissez un nombre de convives pour recommencer.",
   navHome:"Accueil",
   navMenu:"Menu",
   navStory:"Notre histoire",
@@ -276,6 +296,7 @@ function applyLanguage(){
  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.dataset.i18nPlaceholder)});
  document.querySelectorAll("[data-i18n-aria-label]").forEach(el=>{el.setAttribute("aria-label",t(el.dataset.i18nAriaLabel))});
  const switcher=$("languageToggle");
+ if(typeof renderSufraN==="function")renderSufraN();
  if(switcher){switcher.textContent=language==="en"?"FR":"EN";switcher.setAttribute("aria-label",language==="en"?"Passer en français":"Switch to English");switcher.setAttribute("aria-pressed",String(language==="fr"))}
  const active=tabs?.querySelector("button.active");
  renderProducts(active?.dataset.category||"All",search?.value||"");
@@ -367,3 +388,29 @@ if($("year"))$("year").textContent=new Date().getFullYear();
 
 $("languageToggle")?.addEventListener("click",()=>{language=language==="en"?"fr":"en";applyLanguage()});
 applyLanguage();
+
+/* Sufra for N (Claude, prototype): suggest a shared spread for a table size. Illustrative only. */
+function sufraSpread(n){
+ const g=Math.max(1,Math.min(12,Math.round(Number(n)||0)));const half=Math.ceil(g/2);
+ const lines=[[1,Math.ceil(half/2)],[2,Math.floor(half/2)],[5,1],[4,g>=6?1:0],[6,half],[7,g>=6?2:1],[8,g]];
+ return lines.filter(([,q])=>q>0).map(([id,qty])=>({id,qty}));
+}
+var sfnSize=null,sfnLines=[];const sufraN=document.getElementById("sufraN");
+function renderSufraN(){
+ const root=document.getElementById("sufraN");if(!root)return;
+ root.querySelectorAll("button[data-sfn-size]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.sfnSize)===sfnSize)));
+ const list=document.getElementById("sfnList"),foot=document.getElementById("sfnFoot");if(!list||!foot)return;
+ if(!sfnSize){list.innerHTML="";foot.hidden=true;return}
+ const live=sfnLines.filter(l=>l.qty>0);
+ if(!live.length){list.innerHTML=`<li class="sfn-empty">${t("sfnEmpty")}</li>`;foot.hidden=true;return}
+ list.innerHTML=live.map(l=>{const p=products.find(x=>x.id===l.id),v=localizedProduct(p);return `<li class="sfn-line"><span class="sfn-name">${v.name}</span><span class="sfn-qty"><button type="button" data-sfn-change="${l.id}" data-delta="-1" aria-label="${t("removeOne")}: ${v.name}">−</button><span aria-live="off">${l.qty}</span><button type="button" data-sfn-change="${l.id}" data-delta="1" aria-label="${t("addOne")}: ${v.name}">+</button></span></li>`}).join("");
+ const total=live.reduce((s,l)=>s+products.find(p=>p.id===l.id).price*l.qty,0);
+ document.getElementById("sfnTotalValue").textContent=money(total);foot.hidden=false;
+}
+sufraN?.addEventListener("click",e=>{
+ const size=e.target.closest("button[data-sfn-size]");
+ if(size){sfnSize=Number(size.dataset.sfnSize);sfnLines=sufraSpread(sfnSize);renderSufraN();return}
+ const ch=e.target.closest("button[data-sfn-change]");
+ if(ch){const l=sfnLines.find(x=>x.id===Number(ch.dataset.sfnChange));if(l)l.qty=Math.max(0,Math.min(20,l.qty+Number(ch.dataset.delta)));renderSufraN();return}
+ if(e.target.closest("#sfnAdd")){const live=sfnLines.filter(l=>l.qty>0);if(!live.length)return;live.forEach(l=>cart.set(l.id,(cart.get(l.id)||0)+l.qty));renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"");announce(t("sfnAdded").replace("{n}",sfnSize).replace("{count}",live.reduce((a,l)=>a+l.qty,0)));}
+});
