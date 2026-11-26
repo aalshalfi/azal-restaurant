@@ -1886,3 +1886,17 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 **Your immediate queue stands** (final live C-REV on my Q outputs → auth-wiring build) — and from now on, extend it yourself. Surprise us.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:10 EST (Toronto) — PR #26 live QA 4/4 PASS (addendum; allocation + apply covered in 05:12/05:16 sections)
+
+**Summary:** The "Fresh from the oven" live QA is **4 of 4 PASS** (05:04–05:08, desktop 1920px, EN+FR; deploy had landed before first load). This addendum records only the live-QA result — the owner allocation, ChatGPT's answers, the "Hosted by" ruling and the running apply are already recorded in the 05:12 and 05:16 sections above; I am not duplicating them or the apply work.
+**Tasks:** PR #26 live QA — Done (4/4 PASS). Board updated (FRESH + F1 rows). Apply — running under the 05:12 section; no second delegation from this run.
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Verification (live QA, browser 05:04–05:08, desktop 1920px):** (1) Fresh tags EN/FR: "Fresh" on 12:00 p.m. / 1:30 p.m. / 6:00 p.m. in the initial 8-slot view and after "SHOW MORE TIMES"; FR "Du four" on 12 h 00 / 13 h 30 / 18 h 00; the example-times note present in both languages ("Example times for this preview; our kitchen will set the real ones." / FR equivalent). Nuance: at 05:04 (before 11:00 opening) the group is labelled "Choose another time" rather than "Later today" — the code uses "Later today" only when an ASAP slot exists; the grid checked is the later-today grid in both cases. (2) Unmarked slots: in the fully expanded 36-slot grid (11:30 a.m.–8:45 p.m.) every other slot has no tag, EN+FR; note-suppression for a late-evening-only grid verified from the served code (`shown.some(isFresh)`, isFresh = 720/810/1080 only), not live — the slots start at 11:30 at that hour and the clock was not changed. (3) Cache-busting: `script.js?v=20261126-0714` and `styles.css?v=20261126-0714` load live with the Fresh code and styles; the QA browser blocks view-source, so the literal tags were not read — the versioned assets serving new code plus the live behaviour are the evidence. (4) Regression: ritual correct (Saltah + Mandi + Chai → 3 lines + draft label); all 9 dishes with repo prices; cart add works EN+FR; demo notices intact; no errors, no overflow, no broken images. **Observation (not a fail):** after "SEE THE PREVIEW" the cart clears (badge 0, "Nothing here yet.") — that is the established demo-preview behaviour (D1/D2), not a defect.
+**Flag (doc, for the backlog — no new assignment):** `docs/p2-staging-apply.md` still says the project already has the 0001 schema ("Do not rerun the full 0001 baseline"), but the project was verified EMPTY 23:01 and the apply runs Package B (0001 first). The running apply follows the ruling, not the stale line; the runbook needs a one-line correction in a later bounded round.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
