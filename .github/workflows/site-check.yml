@@ -23,7 +23,7 @@ jobs:
         run: node --check script.js
       - name: Runtime smoke test (language switch, menu, cart)
         run: node --test tests/*.test.mjs
-      - name: Check Sufra guide markup and translations
+      - name: Check all page markup and bilingual menu/account hooks
         run: |
           python - <<'PY'
           from collections import Counter
@@ -40,14 +40,20 @@ jobs:
                   if "id" in values:
                       self.ids.append(values["id"])
 
-          html = Path("index.html").read_text(encoding="utf-8")
-          parser = MarkupAudit()
-          parser.feed(html)
-          duplicates = [key for key, count in Counter(parser.ids).items() if count > 1]
-          if duplicates:
-              raise SystemExit(f"Duplicate HTML ids: {duplicates}")
+          pages = ("index.html", "menu.html", "story.html", "member.html")
+          for page_name in pages:
+              html = Path(page_name).read_text(encoding="utf-8")
+              parser = MarkupAudit()
+              parser.feed(html)
+              duplicates = [key for key, count in Counter(parser.ids).items() if count > 1]
+              if duplicates:
+                  raise SystemExit(f"{page_name}: duplicate HTML ids: {duplicates}")
+              for token in ('id="languageToggle"', 'id="cartOpen"', 'id="cartDrawer"', 'href="member.html"'):
+                  if token not in html:
+                      raise SystemExit(f"{page_name}: missing shared site hook: {token}")
 
-          required_markup = (
+          menu = Path("menu.html").read_text(encoding="utf-8")
+          required_menu = (
               'id="sufraCompass"',
               'id="sufraStatus"',
               'data-sufra-category="Traditional"',
@@ -55,19 +61,27 @@ jobs:
               'data-sufra-category="Sides"',
               'data-i18n-aria-label="sufraGroup"',
           )
-          for token in required_markup:
-              if token not in html:
-                  raise SystemExit(f"Missing Sufra markup hook: {token}")
+          for token in required_menu:
+              if token not in menu:
+                  raise SystemExit(f"Missing Menu Sufra hook: {token}")
+
+          member = Path("member.html").read_text(encoding="utf-8")
+          for token in ('data-i18n="memberStatusValue"', 'data-i18n="memberPointsValue"', 'data-i18n="memberSignIn" disabled', 'data-i18n="memberJoin" disabled'):
+              if token not in member:
+                  raise SystemExit(f"Missing inert member preview hook: {token}")
+          if "<form" in member or "<input" in member:
+              raise SystemExit("Member preview must not collect credentials or personal data")
 
           js = Path("script.js").read_text(encoding="utf-8")
           required_translations = (
               "sufraKicker:", "sufraWarm:", "sufraRice:", "sufraSides:",
               "sufraStatusInitial:", "sufraStatusTraditional:",
-              "sufraStatusRice:", "sufraStatusSides:",
+              "sufraStatusRice:", "sufraStatusSides:", "navMajlis:",
+              "memberStatusValue:", "memberPointsValue:", "memberSignIn:", "memberJoin:",
           )
           for token in required_translations:
               if js.count(token) < 2:
                   raise SystemExit(f"Expected EN and FR translations for {token}")
 
-          print("HTML ids, Sufra controls, and bilingual translation hooks passed.")
+          print("Four page IDs, shared navigation, Sufra controls, and bilingual member hooks passed.")
           PY
