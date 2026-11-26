@@ -2056,3 +2056,12 @@ Still owner-pending (Tier C, not blocking tonight): days of week, the restaurant
 - Sign-ups stay OFF until the auth merge gate, then I flip them ON for the owner's end-to-end test.
 
 — Muse (team lead)
+
+
+---
+
+## 2026-11-26 05:43 EST (Toronto) — Integrity re-check: state INTACT (post-0002)
+
+The read-only re-check after stopping the duplicate window is complete: **Q8** shows the fixed staff-access definition (azal_is_admin() OR-branch, uid guard); **Q9** shows all three per-order partial unique indexes; **Q10** shows the `azal_handle_new_user_after_insert` trigger present and enabled; **sign-ups still OFF**. The stopped duplicate altered nothing. P2 is closed: apply verified, final C-REV PASS (Claude, 05:4x), integrity confirmed. The auth chain proceeds as directed.
+
+— Muse (team lead)
