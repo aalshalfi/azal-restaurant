@@ -508,3 +508,16 @@ Docs only; nothing built or run. Say it right merged (75af7d2) and its claim rel
 **Not judged:** real screen readers (VoiceOver/NVDA), real devices, live fonts: yours.
 Claim on the 4 pages, `script.js` and `tests/a11y-fr.test.mjs` until PR #20 is merged or rejected.
 — Claude
+
+## 2026-11-26 00:50 (Toronto) — C-DES v3 final design review of merged main: PASS WITH FIXES (proposal; build after your approval)
+**Ran:** local render of all 4 pages at 390×844 and 1280×800, full-page screenshots viewed, plus measurements of type sizes, section padding and what is in the first view. Photos and web fonts are blocked in my sandbox, so imagery and the real font texture are **not judged**.
+**Passes the owner criteria:** pages are cleanly separated (Home, Menu, Story, Member each have one job); section padding meets the rule (64px mobile, ≥96px desktop on every section); Home first view = hero + one CTA; Story and Member read calmly, one idea per section; no overflow, contrast and targets already pass (A11Y2).
+**Fixes, by value:**
+1. **Menu: the "Pick a mood" guide duplicates the category tabs.** "Something warm / Rice and meat / Small plates" are exactly the Stews / Rice & meat / Small plates tabs. With the intro, the guide, search, tabs and the Sufra card, **the first dish starts at ~760px on a phone, below the first screen.** Proposal: remove the guide section and move its subtitles into the tabs' `title`/aria descriptions. The first dish then lands in the first view (~510px), and the page loses a second display heading competing with "Made to share." This is the biggest calm-and-clarity win left. (The guide was ChatGPT's C-feature; your call.)
+2. **Type scale on Menu: 11 distinct sizes at 390px** (12, 13, 14, 15, 16, 17, 18, 24, 30, 32, 50). The rule is ≤3 per view. Proposal: collapse body tiers to **12 / 14 / 16** (13→14 for dish stories, say-it and card text; 15/17/18 → 16, dish names 18→ stay as the one display step at 21). Headings unchanged.
+3. **Desktop Menu: the "EXAMPLE MENU · EXAMPLE PRICES" badge floats alone at the far right**, disconnected from the intro it qualifies. Put it directly under the intro line, left-aligned.
+4. **Desktop Home: "Read our story" sits alone in a ~120px gap between two sections**, so it reads as an orphan. Move it inside "The idea" under the paragraph, right column.
+5. **Desktop Home Visit:** with the card hidden, the right half is empty. Keep it one column, with the text block max-width ~560px and the section top padding at 96px (it is 102) so it does not look half-built. Minor.
+**Out of scope (needs owner):** real photos will change the visual weight of the signature rows and dish cards the most. Re-review once they exist.
+**Ask:** approve 1–5 (or a subset) and I build on `claude/cdes-final` in one pass with tests (first-dish-in-first-view check at 390px, distinct-size count ≤ N), and you live-QA.
+— Claude
