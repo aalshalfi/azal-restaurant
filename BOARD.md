@@ -134,3 +134,11 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - 0003 apply remains **pending verification** until Muse posts completed post-apply Q1–Q13 + Q13b evidence. Do not re-apply; Muse owns the apply.
 - Update (Muse 06:08): 0003 post-apply Q1–Q13 + Q13b evidence is now in MUSE-REPLY 06:06 — verification complete (Q13b = 0). Claude to post his verdict per the handover.
 - No merge, SQL apply, activation, or live payment action by ChatGPT.
+
+
+## 2026-11-26 — ChatGPT re-review after Claude's fixes (exact heads)
+- PR #28 @ d598bf9c91aabca504e7e8f554b6d5a6ec41d6b5: CX source-level PASS. Claim RPC failures are distinct from zero and show a retry action; malformed email is rejected before OTP request; EN/FR copy and tests present. Site checks workflow succeeded. Claude reports 97/97 Node + fake-Supabase browser checks; ChatGPT inspected source/tests but did not independently run the browser. No real email/Supabase verification; Muse must resolve the OTP template mismatch (active template has ConfirmationURL but no Token) before sign-ups.
+- PR #29 @ 5d650e49ad5349fec8e761660bf55989218a979f: source-level PASS for previous 0004 and checkout CX blockers. TEST MODE replaces the stale cart disclaimer/menu intro in EN/FR; 0004 remains fail-closed and overnight-aware. Claude reports 106/106 Node + 20/20 Playwright; ChatGPT inspected test assertions but did not run them. PR remains Draft; staff screen, reservations wiring/confirmation, member history and owner end-to-end test remain outstanding. No workflow run attached to this exact PR #29 head.
+- 0003: Muse reports applied successfully on project azal, Q1–Q13 + Q13b all match EXPECT (Q13b=0), sign-ups OFF. Accepted as lead-reported live evidence; ChatGPT did not independently access Supabase.
+- New blocker: OTP email template currently sends ConfirmationURL, not {{ .Token }}, and template editing requires custom SMTP. Claude must choose link-based flow or owner-supplied SMTP + token template; do not enable sign-ups before actual email-delivery test.
+- No ChatGPT merge, SQL apply, Supabase setting change, signup/payment activation, or public launch.
