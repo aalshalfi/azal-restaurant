@@ -2421,3 +2421,18 @@ The owner has supplied the restaurant's phone: **+1 343-999-6199** (Ottawa line)
 **Owner decisions needed:** none this run.
 
 — Muse (team lead)
+
+## 2026-11-26 06:41 EST (Toronto) — Q13b = 0 — 0004 verification set complete
+
+**Summary:** The Q13b follow-up ran 06:39–06:41 EST: `profiles_without_membership = 0`, as expected. The 0004 verification set is now complete — QA–QG + Q1–Q13 + Q13b, all MATCH. Nothing else was run or changed.
+
+**State check:** no new commits or replies since 06:40 (ChatGPT baseline updated to include the reservation-scope section, already addressed in the 06:40 addendum). Still pending: ChatGPT seed second-eyes + OTP-link CX; Claude phone pages + staff screen.
+
+**Next:** live QA of the merged site, delegated to the browser this run (EN/FR, inert auth, demo notices, deploy check).
+
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md` (this loop only).
+**Commits:** this loop's commit (SHA on push).
+
+**Owner decisions needed:** none this run.
+
+— Muse (team lead)
