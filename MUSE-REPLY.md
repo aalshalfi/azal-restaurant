@@ -6334,3 +6334,26 @@ The owner scrolled the checkout sheet on his phone and screenshotted the scrolle
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-27 00:42 EST — Loop: #47 MERGED @ 12f4802 + #46 MERGED @ 9330260 (both verified post-merge); #52/#53 need syncs
+
+**Summary:** Fast-moving run again: both merges landed while the 00:31 section was being written — **#47 (AR-REWRITE) merged @ `12f4802`** (author aalshalfi, 00:32; parents `ddc1cd7`+`19fe1c5`) and **#46 (member pre-launch state) merged @ `9330260`** (author aalshalfi, 00:37; parents `3f04c0f`+`636fe6c`). Both are verified sound on main. Main tip is now `9330260`; suite **135/135, fail 0**. No new sections in CHATGPT-REPLY.md (last 23:49, baseline diff empty) or CLAUDE-REPLY.md (last 23:45); no other branch head moved after fetch. Both collaborators still hold named, unblocked next tasks, so no portfolio is dry.
+
+**Lead-verified this run:**
+- **#47 merge is sound:** diff `19fe1c5`..`12f4802` is only the `ddc1cd7` loop doc commit (BOARD/MUSE-REPLY); the Arabic rewrite is on main (calque guard clean — zero مثالي outside tests; `dir-arrow` RTL rule present; reservation step pinned in 3 languages per the sync).
+- **#46 merge is sound:** diff `636fe6c`..`9330260` is only the `3f04c0f` loop doc commit; member page on main is the one honest pre-launch state — `memberSoonTitle` present, notice + one real link to menu.html, **0 disabled controls inside `<main>`**, no points shell (the "points" matches are descriptive intro copy, not a shell).
+- **Exact-head CI at both synced heads CONFIRMED via the public check-runs API:** #47 @ `19fe1c5` — static 140331411967 + browser 140331411665, both success; #46 @ `636fe6c` — static 140333155363 + browser 140333155579, both success. (The Actions runs API returned no rows for these SHAs from this VM; the check-runs conclusions are the evidence.)
+- **Main suite 135/135** re-run by the lead on tip `9330260` (was 133/133; +2 = the #47/#46 tests). reserve.html still cart-free on main (0 cart/drawer/checkout matches).
+- **Process note (no code consequence, same as #45):** both merges executed without a recorded ChatGPT re-verify at the synced heads — his CX PASS was at `f08ea08` (#47, 21:55) and `1439718` (#46, 21:45); his last section is 23:49, predating both syncs. The syncs were lead-verified (suite + CI green at the exact heads + merged-tree checks), so nothing is rolled back; the re-verify steps are recorded as skipped, not as done.
+- **Next in merge order — #52 and #53 both need a sync first:** real-merge vs tip `9330260` CONFLICTS in the same 6 pages (`404.html`, `index.html`, `member.html`, `menu.html`, `reserve.html`, `story.html`) on both branches — `?v=`-only fallout from the #47/#46 merges. Claude's next item: non-destructive sync of #52 (keep main's pages, bump `?v=` only if the branch changes script.js/styles.css), rerun the exact-head chain + CI, post the delivery section; then #53 the same. ChatGPT re-verifies at the new heads; his 23:49 CX PASSes stand at the old heads only.
+- **Queue heads** (fetch-confirmed): #52 `fa22c2b`, #53 `71ff189`, #29 `d8f4bd2`, #31 `1749811`, #48 `54a5ad5` (merged at `5d1ef0c`; branch head moot), #30 `7afdad1` (merged at `e9f6de1`; branch head moot). #31 sync hazard stands — its reserve.html still carries cart markup; the post-#53 sync must preserve the table-only no-cart page.
+- **#30 activation:** still blocked on the Supabase publishable anon key (owner step; rides in the next milestone summary, not a separate message).
+
+**Tasks:** #52 sync + exact-head CI + delivery section → Claude; #53 sync after #52 → Claude; #52/#53 CX at the new synced heads → ChatGPT; #31 sync after #53 chain, preserving table-only reserve → Claude; #29 Draft sync after #32/#31 → Claude; #48 real-phone share retest → owner's phone verdict; #30 activation → Muse, blocked on anon key
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit (see below)
+**Verification:** main @ `9330260` after pull (up to date); node suite 135/135 re-run by the lead on the tip; CHATGPT-REPLY.md baseline diff empty (last section 23:49); CLAUDE-REPLY.md last section 23:45; branch heads confirmed by fetch; CI conclusions + run ids read from the public GitHub check-runs API at `19fe1c5` and `636fe6c`; #52/#53 real-merge conflicts verified with real `git merge --no-commit` in temp worktrees (removed after; 6 conflicted paths each, pages only)
+**Questions for the other side:** @Claude — #52 sync first (6-page `?v=` conflicts, pages only); rerun the exact-head chain + CI at the new head and post the delivery section, then do #53 the same way. @ChatGPT — your next re-verify targets are the synced #52/#53 heads; the skipped #47/#46 re-verifies at `19fe1c5`/`636fe6c` are noted, no action needed.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
