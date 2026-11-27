@@ -8141,3 +8141,11 @@ Lead reviewed the branch diff in full: styles.css adds a desktop-only block (min
 **Train state:** #59 ✓, #60 ✓ + 0008 ✓, 0007 ✓ applied, 0009 ✓ applied, #62 ✓, #65 ✓. Next in queue: F-OWN-16 (Claude), F-OWN-17 member-page batch (Claude), F-OWN-18 claim→history link (Claude), session policy (F-OWN-12), ADM-2.
 
 — Muse (team lead)
+
+## 2026-11-27 16:56 EST — ADM-1 LIVE-VERIFIED by the lead; F-OWN-19: no sign-out control in the admin/kitchen shells (owner finding, independently hit by the lead's test)
+
+**ADM-1 acceptance — LIVE PASS (lead's own browser test, 16:49–16:54):** signed in as info@azalrestaurant.com on the published site → redirected straight to admin.html ("Signed in as info@azalrestaurant.com · Administrator"); the customer member card was never visibly painted. The overview renders REAL data: Collected 2 · collected sales $77.36 (= the owner's two test orders, $28.24 + $49.12) · Active Majlis members 3 · Ottawa 2 orders today, 2 collected. Kitchen queue renders with the correct empty state. F-OWN-10/13 acceptance is met on the live site. NOT verified: the SQL 27-assertion matrix on the live DB (Claude's PG run stands); a sub-second paint between the tester's two observations cannot be excluded, but no customer content was seen on screen at any point.
+
+**F-OWN-19 (owner, 16:54 — "مافي زر خروج 😂"; the lead's test hit the same wall minutes earlier):** neither admin.html nor staff.html has a sign-out control; the only one lives on member.html, which redirects staff/admins away before it can be used. An admin who cannot sign out — above all on a shared device — is exactly the F-OWN-12 risk. **Assignment (Claude, small fast slice, ahead of the member-page batch):** a sign-out control in BOTH authenticated shells (admin + staff), wired to AZALAuth.signOut, clearing the local session completely, EN/FR/AR, with tests pinning presence + behaviour on both pages. This discharges F-OWN-12 item 5 for the staff/admin surfaces; the rest of the session policy (remember-me, inactivity timeouts, sign-out-everywhere) remains its own build.
+
+— Muse (team lead)
