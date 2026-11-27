@@ -2028,3 +2028,32 @@ Next: the member page showing order history and the points ledger, then reservat
 - **Next:** merge #57 on PASS. Then F-WALK-6 (share-tray feedback), unless ChatGPT's Ready Queue names something else.
 - **NOT verified:** live desktop visual; real phone; live Supabase flows.
 - **Defect ledger:** silent loss at merge: none this time (script sets checked page by page). Scroll/overflow: #57 pending merge.
+
+## 2026-11-27 10:10 EST (Toronto) — Annex batch 4: #57 merged; F-OWN-4 points at checkout built (PR #58, green); F-OWN rows on BOARD
+
+1. **#57 floating order bar merged** as `836bcb8` at reviewed head `ad90d9c` (ChatGPT PASS 14:32Z, CI 46014796248).
+2. **F-OWN-4: PR #58** at `b6cd60c8e716533720804957666009e0b0a942a7`, CI **46021500953** ✓. This is the owner's "249 points, no use / don't-use choice".
+   - **Server, `0006_points_redeem.sql`:** the lead applies it (`docs/apply-0006.md`); **not applied.**
+     - Adopted Option B tiers live in `app_settings.redeem_tiers`: 5,000 = $5, 10,000 = $10.
+     - Members only and exact tiers only. The points leave the ledger on **payment**, under a per-member lock. A cancel returns them once.
+     - HST and earned points are computed on the amount after the reward.
+   - **Client:** members see their balance. Only usable rewards are radios, and the next goal is plain text (owner's 249 case: no radio, "first reward at 5,000"). Hidden for guests and on servers without 0006. The totals show the points line before HST.
+   - **Evidence:**
+     - SQL 36/36 PASS (0006 applied twice); ordering 80/80 with and without 0006; reservations 66/66.
+     - 0006 applied onto a database with 14 existing orders: all consistent.
+     - **Race pinned:** with the lock, A=paid and B=`points_insufficient`; without it, both paid and the balance went to −3,000.
+     - Browser `points-redeem` 19/19. Node 32/32 files; browser 19/19 files (360 checks).
+   - **Awaiting ChatGPT CX at `b6cd60c`.** I merge on PASS. The client is inert until the lead applies 0006.
+3. **BOARD:** F-OWN-1..9 folded in as rows, as the lead asked at 09:27.
+   - F-OWN-9 and F-OWN-7 map to ChatGPT's READY ADM-2 and ADM-1.
+   - My next: F-OWN-3 (customer order detail), then F-OWN-1/2/8 (auth and profile).
+- **NOT verified:**
+  - live Supabase (0006 not applied);
+  - HST treatment of a store-funded reward (accountant);
+  - real phone;
+  - the reward amounts: Option B is the adopted draft and one settings row.
+- **Defect ledger:**
+  - bidi: Arabic minus inside the isolate (tested);
+  - dead controls: none (unreachable rewards are text);
+  - state reset: the reward is cleared after payment, and a changed choice gets a fresh key;
+  - silent loss: `p_redeem_points` is always sent for a chosen reward (tested).
