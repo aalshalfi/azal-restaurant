@@ -69,4 +69,35 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   ok(/مدير/.test(t) && /جديدة ومدفوعة/.test(t) && /⁦/.test(t), "Arabic overview, prices isolated");
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "Arabic at 320px: no horizontal scroll");
   await p.close(); }
+{ // ChatGPT #62 review: a sign-out in ANOTHER tab wipes the counts here at once
+  const ctx = await b.newContext({ viewport: { width: 390, height: 900 } });
+  await ctx.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
+  await ctx.route("https://fake.supabase.co/**", (r) => { const u = decodeURIComponent(r.request().url());
+    if (u.includes("/rpc/azal_is_admin")) return r.fulfill({ json: true });
+    if (u.includes("/rest/v1/user_roles")) return r.fulfill({ json: [{ role: "admin" }] });
+    if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: [] });
+    if (u.includes("/rest/v1/orders")) return r.fulfill({ json: ORDERS });
+    if (u.includes("/rest/v1/memberships")) return r.fulfill({ json: [], headers: { "content-range": "0-0/42", "access-control-expose-headers": "content-range" } });
+    return r.fulfill({ status: 404, json: {} }); });
+  await ctx.addInitScript(() => { if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded", "1"); if (!localStorage.getItem("azal-auth-v1") && !localStorage.getItem("signed-out")) localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T", refresh_token: "R", expires_at: 4e12, user: { id: "u1", email: "info@example.invalid" } })); } });
+  const a = await ctx.newPage(); await a.goto(`${base}/admin.html`); await a.waitForTimeout(500);
+  ok(/Collected sales today/.test(await a.textContent("#adminRoot")), "tab A shows the overview");
+  const t2 = await ctx.newPage(); await t2.goto(`${base}/index.html`);
+  await t2.evaluate(() => { localStorage.setItem("signed-out", "1"); localStorage.removeItem("azal-auth-v1"); });
+  await a.waitForTimeout(600);
+  const t = await a.textContent("#adminRoot");
+  ok(!/Collected sales|42|ottawa/.test(t) && /Sign in first/.test(t), "signed out in tab B: tab A drops every number and asks to sign in");
+  await ctx.close();
+}
+{ // an overview that answers after a sign-out is discarded
+  const { p } = await open("admin");
+  let release; const hold = new Promise((r) => (release = r));
+  await p.route("https://fake.supabase.co/rest/v1/orders**", (r) => hold.then(() => r.fulfill({ json: ORDERS })));
+  await p.evaluate(() => document.dispatchEvent(new Event("visibilitychange"))); await p.waitForTimeout(200);
+  await p.evaluate(() => { localStorage.removeItem("azal-auth-v1"); document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: "signed_out" } })); });
+  await p.waitForTimeout(200); release(); await p.waitForTimeout(500);
+  const t = await p.textContent("#adminRoot");
+  ok(!/Collected sales|ottawa/.test(t) && /Sign in first/.test(t), "late overview after sign-out: never painted");
+  await p.close();
+}
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");

@@ -153,12 +153,24 @@
   async function load() {
     const my = ++seq;
     try { acc = await adm.access(); } catch (e) { acc = { status: e.code === "signed_out" ? "signed_out" : "signed_in", role: "customer", email: "" }; }
-    if (my !== seq) return; paint();
+    if (my !== seq) return;
+    if (acc.role !== "admin") ov = null;
+    paint();
     if (acc.role === "admin") {
-      try { ov = await adm.overview(); failed = false; } catch { failed = true; }
-      if (my === seq) paint();
+      let o = null, bad = false;
+      try { o = await adm.overview(); } catch { bad = true; }
+      if (my !== seq) return; // invalidated while waiting: discard
+      ov = o; failed = bad; paint();
     }
   }
+  // ChatGPT #62 review: management data never outlives the session that fetched it. On a sign-out here, a sign-out or
+  // account switch in another tab (storage event on the session key), or when the page comes back into view, the
+  // counts are dropped at once, in-flight answers are discarded (seq), and the role is checked again.
+  function invalidate() { seq++; acc = null; ov = null; failed = false; paint(); if (adm.enabled) load(); }
+  const AUTH_KEY = "azal-auth-v1";
+  root.addEventListener("storage", (e) => { if (e.key === AUTH_KEY || e.key === null) invalidate(); });
+  document.addEventListener("azal:auth", (e) => { if (!e.detail || e.detail.status !== "signed_in") invalidate(); });
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && acc && acc.role === "admin") invalidate(); });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   if (adm.enabled) load(); else paint();
 })(typeof window !== "undefined" ? window : globalThis);
