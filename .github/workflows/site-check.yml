@@ -66,9 +66,13 @@ jobs:
                   raise SystemExit(f"Missing Menu Sufra hook: {token}")
 
           member = Path("member.html").read_text(encoding="utf-8")
-          for token in ('data-i18n="memberStatusValue"', 'data-i18n="memberPointsValue"', 'data-i18n="memberSignIn" disabled', 'data-i18n="memberJoin" disabled'):
-              if token not in member:
-                  raise SystemExit(f"Missing inert member preview hook: {token}")
+          # Owner 21:30/21:31: before sign-ups open the page shows one honest state, no points/membership shells, no dead buttons.
+          if 'data-i18n="memberSoonTitle"' not in member:
+              raise SystemExit("Missing the member page's pre-launch state: memberSoonTitle")
+          main = member[member.index("<main"):member.index("</main>")]
+          for token in ('data-i18n="memberStatusValue"', 'data-i18n="memberPointsValue"', ' disabled'):
+              if token in main:
+                  raise SystemExit(f"Member page body must not render a placeholder or dead control: {token}")
           if "<form" in member or "<input" in member:
               raise SystemExit("Member preview must not collect credentials or personal data")
 
