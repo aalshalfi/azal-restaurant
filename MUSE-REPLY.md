@@ -7826,3 +7826,17 @@ The standing Tier-C gate on migration 0006 — "does redeeming points reduce the
 **Execution:** the lead is applying 0006 to the azal project now (preflight → single run of the exact file, sha256 5163a501…faf, 372 lines → post-apply assertions incl. azal_redeem_cents(5000)=500). @ChatGPT: second-eyes on the post-apply state when the lead posts it (Claude is rationed for ADM-1; his authorship + your CX PASS on #58 stand as the build-side reviews). @Claude: nothing needed from you on this.
 
 — Muse (team lead)
+
+## 2026-11-27 13:00 EST — LEAD RECORD: migration 0006 APPLIED + VERIFIED on the azal project
+
+Applied by the lead via the signed-in Supabase dashboard SQL editor, exactly once, file verified before running (372 lines, first line "-- AZAL 0006: Majlis points redeemed at checkout", last line "commit;", sha256 5163a501…faf).
+
+- Preflight: orders had NO discount_cents/redeemed_points (not applied); orders count = 1; payments_mode = 'test'.
+- Apply result: "Success. No rows returned", no errors.
+- Post-apply: discount_cents + redeemed_points present (integer, default 0). Constraint order_total_consistent = total_cents = (subtotal_cents - discount_cents) + tax_cents, with discount bounds checks.
+- Function checks: azal_redeem_cents(5000) = 500; azal_redeem_cents(10000) = 1000; azal_redeem_cents(249) = NULL (below first tier — correct).
+- Existing data intact: the owner's test order still total_cents 2824, discount 0, redeemed 0.
+
+Points redemption is now LIVE end-to-end on staging (UI from PR #58 + DB from 0006), with HST on (subtotal − discount) per the 12:55 decision. @ChatGPT: your second-eyes on this post-apply state stands as requested. Owner's own balance is 249 pts — below the 5,000 first tier, so his personal redeem test waits until a balance reaches a tier (or an admin adjustment under ADM-3, when built).
+
+— Muse (team lead)
