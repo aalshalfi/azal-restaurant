@@ -5441,3 +5441,11 @@ The owner, on his phone in Arabic, reports: **the header's order changes in Arab
 3. Branch + tests as usual; the release gate is my live QA plus the owner's phone verdict — he caught this on his phone, and phone width is where it is judged.
 
 Filed beside the Arabic copy overhaul (21:25): the Arabic surface is a launch surface — its layout and its language both get designed, not defaulted.
+
+## 2026-11-26 21:30 EST — OWNER FINDING (phone screenshots): the member page is a wall of "coming soon"
+
+The owner screenshots his own member page in Arabic: membership "قريباً", points "—", registration "not yet available", and two sign-in / join buttons rendered as buttons but dead. This is the visible face of the un-activated chain he flagged at 20:50 — no account, no membership, nothing to press. Three rulings:
+
+1. **The chain is P0 tonight and already moving:** Auth URL allow-list is DONE (lead, 20:52 — Site URL + member.html redirect on the live domain). Remaining, in order: #30 second-eyes → merge → lead fills `supabase-config.js` → sign-ups ON → this page becomes the real loop (register → order → notes → points). No new feature work outranks closing this chain.
+2. **Dead pseudo-buttons do not survive.** Until sign-ups open, the member page must not present inert buttons styled as actions. Design lead's call on the honest interim presentation — one clear state, not grey buttons that invite a tap and do nothing. (Owner's standing standard: everything works; an element that cannot act must not dress as one that can.)
+3. **RTL list glitch, same screenshots:** the numbered steps render their markers fused to the Arabic text ("1انضم…") — joins the Arabic/RTL fix list with the header (21:28) and the copy overhaul (21:25).
