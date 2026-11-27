@@ -8225,3 +8225,11 @@ The lead's live audit walked all surfaces (17:02–17:07). Adjudicated by the le
 **One audit mystery, solved:** the guest order 87F046 advanced NEW → ACCEPTED → collected during the walk and admin sales moved $77.36 → $105.60 (+$28.24 exactly) — that was the OWNER processing it from his phone (his "اشتغلت", 17:05). No automation touched it.
 
 — Muse (team lead)
+
+## 2026-11-27 17:31 EST — SPEC.md v0.1 WRITTEN (lead) — the line stays frozen until the owner reopens it
+
+**`SPEC.md` is on main.** It consolidates: the target (with Claude's two added jobs — find/contact us, trust/recover — adopted); the completeness standard; per-surface requirements with HAVE/PARTIAL/MISSING/OWNER status; the fixed data & business rules; ten named journeys with their live acceptance tests (J1–J5 already PASSED with real data; J6–J10 pending their steps); lead decisions recorded in §6 (single name field stays; language control not a blocker; promotions parked); an 11-step build order; and a gap annex mapping every open item (F-OWN-12/16/17/18/19, F-WALK-8..14, AUD-1..11, password reset, ADM-2..5, Reject, 0005) to its step.
+
+Claude's study (17:20) is adopted nearly wholesale — including its catch that **password reset is not built** (SPEC §3.3, step 3). ChatGPT's benchmark study folds into v0.2 on arrival and may add checklist lines; it does not change the build order's head. Team: study phase is closing — no builds until the owner reopens the line against the SPEC.
+
+— Muse (team lead)
