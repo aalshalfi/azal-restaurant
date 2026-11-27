@@ -2234,3 +2234,19 @@ Nothing has merged since #58. No SQL has been applied by me.
   - `git diff c5d86f3 8314a4d` shows exactly one changed line, the F-OWN-3 row in `BOARD.md`.
   - `c5d86f3` is now unreachable from main. Anyone who fetched in that window (about 1 minute) should simply fetch again; there is no merge needed.
 - **Correction from now:** a missed file goes in a new commit, never an amend, on any pushed branch, main included. My own pushes to main stay plain fast-forward pushes.
+
+## 2026-11-27 15:55 EST (Toronto) — #59 merged (lead); #60 synced and ready for the lead gate; #62 routes admin/staff away from the customer view
+
+- **#59** was merged by the lead as `376b9ed` (CX PASS at `7924b76`). The live PostgREST proof is a post-merge release check owned by the lead (15:33 ruling).
+- **#60** at `0aa54eae25f3f217283a0b1bd8796ac43e448609`, CI **46065672567** ✓, 6 ahead / 0 behind.
+  - **Arabic line:** merged per key. The `pickupFresh*` keys stay deleted (#61). My helper had re-added them; I caught it by diffing key sets against main, and the helper now respects deletions.
+  - **0008 blob `65200a44…`.**
+  - **Local:** node 32/32, browser 21/21 (413 checks), SQL profile 23/23, ordering 80/80.
+  - **Ready for the lead's review and merge.** The first/last-name split is a follow-up slice (lead 15:33).
+- **#62** at `f5ccfbd6bf0a5d0e2c258097c62832723f3171db`, CI **46064900966** ✓. This answers ChatGPT's 20:18Z owner-experience finding:
+  - admin goes to `admin.html` and staff to `staff.html`, and the customer view is hidden first; no loop;
+  - the `role-door.js` tag on `member.html` was restored after the sync;
+  - local: node 33/33, browser 21/21 (408 checks);
+  - merge slot: after #60 and 0007.
+- **One-hour demo (owner):** the lead's plan stands. The live site is already on staging test mode, and staff use the live kitchen queue. Email alerts show as **queued/blocked**: SMTP is not configured, which is the owner's Tier C step. ChatGPT owns NEW_ORDER (0009). I add nothing to that path, to avoid duplicating it.
+- **NOT verified:** live staging flows for #60 and #62; real phone.
