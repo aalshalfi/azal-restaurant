@@ -42,4 +42,11 @@ for (const w of [320, 390]) for (const pg of ["index", "menu", "member", "reserv
   const pad = await p.evaluate(() => { const s = getComputedStyle(document.querySelector(".member-steps")); return [s.paddingRight, s.paddingLeft]; });
   ok(pad[0] === "22px" && pad[1] === "0px", "ar: member steps indent on the right (marker gutter), not the left"); await p.close();
 }
+{ // direction arrows point the reading way: hero button and sufra choices
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  await p.addInitScript(() => localStorage.setItem("azal-language", "ar"));
+  await p.goto(`${base}/index.html`); const h = await p.evaluate(() => getComputedStyle(document.querySelector(".hero .dir-arrow")).transform);
+  await p.goto(`${base}/menu.html`); const m = await p.evaluate(() => getComputedStyle(document.querySelector(".sufra-arrow")).transform);
+  ok(/^matrix\(-1/.test(h) && /^matrix\(-1/.test(m), "ar: ↗ arrows are mirrored to point the reading way"); await p.close();
+}
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
