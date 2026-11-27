@@ -97,19 +97,19 @@
       r_admin: "Administrator", r_staff: "Branch staff", r_customer: "Member", overview: "Today", since: "Since midnight, all branches",
       k_new: "New, paid", k_kitchen: "In the kitchen", k_ready: "Ready for pickup", k_collected: "Collected", k_cancelled: "Cancelled", k_unpaid: "Unpaid (never reach the kitchen)",
       sales: "Collected sales today: {amount}", members: "Active Majlis members: {n}", kitchen: "Kitchen orders screen", next: "Next in this area: order history and customers, then points adjustments, then staff access.",
-      branch: "{branch}: {orders} orders today, {collected} collected", error: "We couldn’t load the overview. Refresh to try again.", truncated: "Showing the first 1,000 orders of today." },
+      branch: "{branch}: {orders} orders today, {collected} collected", signOut: "Sign out", signingOut: "Signing out…", error: "We couldn’t load the overview. Refresh to try again.", truncated: "Showing the first 1,000 orders of today." },
     fr: { title: "Gestion", inert: "L’espace de gestion s’active quand le site est connecté.", signedOut: "Connectez-vous d’abord sur la page Majlis avec votre compte de gestion.", signIn: "Aller à la connexion",
       notAdmin: "Cet espace est réservé à la gestion d’AZAL. Votre compte n’y a pas accès.", staffGo: "Ouvrir l’écran des commandes de cuisine", signedAs: "Connecté : {email} · {role}",
       r_admin: "Administrateur", r_staff: "Personnel de succursale", r_customer: "Membre", overview: "Aujourd’hui", since: "Depuis minuit, toutes les succursales",
       k_new: "Nouvelles, payées", k_kitchen: "En cuisine", k_ready: "Prêtes à emporter", k_collected: "Récupérées", k_cancelled: "Annulées", k_unpaid: "Non payées (n’arrivent jamais en cuisine)",
       sales: "Ventes récupérées aujourd’hui : {amount}", members: "Membres Majlis actifs : {n}", kitchen: "Écran des commandes de cuisine", next: "Prochainement ici : historique des commandes et clients, puis ajustements de points, puis accès du personnel.",
-      branch: "{branch} : {orders} commandes aujourd’hui, {collected} récupérées", error: "Impossible de charger l’aperçu. Actualisez pour réessayer.", truncated: "Les 1 000 premières commandes d’aujourd’hui sont affichées." },
+      branch: "{branch} : {orders} commandes aujourd’hui, {collected} récupérées", signOut: "Se déconnecter", signingOut: "Déconnexion…", error: "Impossible de charger l’aperçu. Actualisez pour réessayer.", truncated: "Les 1 000 premières commandes d’aujourd’hui sont affichées." },
     ar: { title: "الإدارة", inert: "تعمل صفحة الإدارة عند ربط الموقع.", signedOut: "سجّل دخولك أولاً من صفحة المجلس بحساب الإدارة.", signIn: "اذهب لتسجيل الدخول",
       notAdmin: "هذه الصفحة لإدارة أزال فقط، وحسابك لا يملك صلاحية الدخول إليها.", staffGo: "افتح شاشة طلبات المطبخ", signedAs: "مسجّل باسم {email} · {role}",
       r_admin: "مدير", r_staff: "موظف فرع", r_customer: "عضو", overview: "اليوم", since: "منذ منتصف الليل، كل الفروع",
       k_new: "جديدة ومدفوعة", k_kitchen: "في المطبخ", k_ready: "جاهزة للاستلام", k_collected: "استُلمت", k_cancelled: "أُلغيت", k_unpaid: "غير مدفوعة (لا تصل إلى المطبخ)",
       sales: "مبيعات الطلبات المستلمة اليوم: {amount}", members: "أعضاء المجلس النشطون: {n}", kitchen: "شاشة طلبات المطبخ", next: "قريباً هنا: سجلّ الطلبات والعملاء، ثم تعديل النقاط، ثم صلاحيات الموظفين.",
-      branch: "{branch}: {orders} طلبات اليوم، استُلم منها {collected}", error: "تعذّر تحميل الملخص. حدّث الصفحة وحاول مرة أخرى.", truncated: "نعرض أول 1,000 طلب من طلبات اليوم." }
+      branch: "{branch}: {orders} طلبات اليوم، استُلم منها {collected}", signOut: "تسجيل الخروج", signingOut: "جارٍ تسجيل الخروج…", error: "تعذّر تحميل الملخص. حدّث الصفحة وحاول مرة أخرى.", truncated: "نعرض أول 1,000 طلب من طلبات اليوم." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k] || k; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
@@ -119,19 +119,32 @@
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const link = (href, text, cls) => { const a = el("a", cls || "text-link dark-link", text); a.href = href; return a; };
 
-  let acc = null, ov = null, failed = false, seq = 0;
+  let acc = null, ov = null, failed = false, seq = 0, signingOut = false;
+  // Sign-out ends the session (server logout + the local session key) and drops every number on this page at once,
+  // then lands on the member page, signed out. A later visit here finds no session and shows the signed-out state.
+  async function signOut() {
+    if (signingOut) return;
+    signingOut = true; seq++; ov = null; paint();
+    try { if (auth) await auth.signOut(); } catch {}
+    acc = { status: "signed_out" }; paint();
+    try { root.location.replace("member.html"); } catch {}
+  }
   function paint() {
     const h = el("h1", "admin-title", L("title"));
     if (!adm.enabled) return rootEl.replaceChildren(h, el("p", "admin-note", L("inert")));
     if (!acc) return rootEl.replaceChildren(h, el("p", "admin-note", "…"));
     if (acc.status !== "signed_in") return rootEl.replaceChildren(h, el("p", "admin-note", L("signedOut")), link("member.html", L("signIn"), "button button-gold"));
-    const who = el("p", "admin-who", L("signedAs", { email: acc.email || "", role: L("r_" + acc.role) }));
+    // T-01 / F-OWN-19: identity + sign-out on every signed-in state of this page.
+    const who = el("div", "admin-who-bar");
+    const out = el("button", "button admin-signout", L(signingOut ? "signingOut" : "signOut")); out.type = "button"; out.id = "adminSignOut"; out.disabled = signingOut;
+    out.addEventListener("click", signOut);
+    who.append(el("p", "admin-who", L("signedAs", { email: acc.email || "", role: L("r_" + acc.role) })), out);
     if (acc.role !== "admin") {
       const parts = [h, who, el("p", "admin-note", L("notAdmin"))];
       if (acc.role === "staff") parts.push(link("staff.html", L("staffGo"), "button button-gold"));
       return rootEl.replaceChildren(...parts);
     }
-    const out = [h, who];
+    const parts = [h, who];
     const sec = el("section", "admin-panel"); sec.setAttribute("aria-labelledby", "admOverview");
     const h2 = el("h2", null, L("overview")); h2.id = "admOverview"; sec.append(h2, el("p", "admin-since", L("since")));
     if (failed) sec.append(el("p", "member-history-error", L("error")));
@@ -145,10 +158,10 @@
       for (const [b, x] of Object.entries(ov.byBranch)) sec.append(el("p", "admin-line", L("branch", { branch: b, orders: num(x.orders), collected: num(x.collected) })));
       if (ov.truncated) sec.append(el("p", "admin-note", L("truncated")));
     }
-    out.push(sec, el("p", "admin-actions"));
-    out[out.length - 1].append(link("staff.html", L("kitchen"), "button button-gold"));
-    out.push(el("p", "admin-note", L("next")));
-    rootEl.replaceChildren(...out);
+    parts.push(sec, el("p", "admin-actions"));
+    parts[parts.length - 1].append(link("staff.html", L("kitchen"), "button button-gold"));
+    parts.push(el("p", "admin-note", L("next")));
+    rootEl.replaceChildren(...parts);
   }
   async function load() {
     const my = ++seq;
