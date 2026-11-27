@@ -1,5 +1,5 @@
 /* AZAL "Sufra share card" (Claude, creative sprint V7). Scope (revised after ChatGPT's review): a DRAFT of the tray
-   from the cart, before ordering, so it carries no pickup time; the card says "not ordered yet". One tap in the cart turns the tray into a clean picture the
+   from the cart, before ordering, so it carries no pickup time; the card says "not ordered yet". One tap at the end of the preview turns the tray into a clean picture the
    guest can send to the family group with the phone's own share sheet ("here's what I'm getting, add anything?").
    Drawn on a <canvas> in the browser from the cart and the sample menu only. Nothing is uploaded or sent anywhere
    by us: the image goes only where the guest chooses to share it. Falls back to a download. EN/FR/AR. */
@@ -18,8 +18,10 @@
   const api = { cardLines, W, H, MAX_LINES };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
-  const bottom = document.querySelector(".cart-bottom");
-  if (!bottom || typeof cart === "undefined") return;
+  // Placement (lead ruling 21:03, Claude's bonus target): the live checkout is a preview that ends in "nothing was sent".
+  // The share button lives in that preview result, so the dead end becomes the payoff: the guest leaves with the tray picture.
+  const msgBox = document.getElementById("checkoutMessage");
+  if (!msgBox || typeof cart === "undefined") return;
   const S = {
     en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again." },
     fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "On ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
@@ -32,8 +34,11 @@
   const btn = document.createElement("button");
   btn.type = "button"; btn.className = "button share-tray"; btn.id = "shareTray";
   const status = document.createElement("p"); status.className = "share-status"; status.setAttribute("role", "status");
-  bottom.append(btn, status);
-  function paint() { btn.textContent = L("btn"); btn.hidden = !(cart && cart.size > 0); }
+  msgBox.after(btn, status);
+  // The preview clears the cart, so the tray is copied on the way in (capture phase runs before script.js's handler).
+  let tray = [];
+  document.addEventListener("click", (e) => { if (e.target && e.target.closest && e.target.closest("#placeDemoOrder")) tray = [...cart.entries()].filter(([, q]) => q > 0); }, true);
+  function paint() { btn.textContent = L("btn"); btn.hidden = !(tray.length && msgBox.textContent.trim()); if (btn.hidden) status.textContent = ""; }
 
   function loadImage(src) { return new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
   async function draw() {
@@ -50,7 +55,7 @@
     const edge = ar ? W - 90 : 90;
     x.fillStyle = "#42220E"; x.font = `600 64px ${fontFam}`; x.fillText(L("title"), edge, 420);
     x.fillStyle = "#914820"; x.font = `400 40px ${sans}`; x.fillText(L("sub"), edge, 480);
-    const { shown, more, count } = cardLines(cart.entries(), byId, lang());
+    const { shown, more, count } = cardLines(tray, byId, lang());
     let y = 590;
     for (const l of shown) {
       x.fillStyle = "#CD8E2D"; x.font = `700 44px ${sans}`;
@@ -79,8 +84,7 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     status.textContent = L("made");
   });
-  const cartItems = document.getElementById("cartItems");
-  if (cartItems) new MutationObserver(paint).observe(cartItems, { childList: true, subtree: true });
+  new MutationObserver(paint).observe(msgBox, { childList: true, characterData: true, subtree: true });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   paint();
 })(typeof window !== "undefined" ? window : globalThis);
