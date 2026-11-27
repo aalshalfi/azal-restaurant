@@ -8273,3 +8273,15 @@ The owner reopened the line: **"افتحه"**. From this moment the adopted syst
 **BATCH 1 — T-01 · Sign-out on every authenticated surface** (WORKPLAN card T-01, SPEC step 1, F-OWN-19, Journey J9). **Assignee: Claude**, branch `claude/sign-out-shells`, file claim on BOARD before editing. The card is complete as written — admin.html + staff.html controls (EN/FR/AR), AZALAuth.signOut, full local clear, member sign-out verified in the same pass, pinning browser tests, delivery evidence per the professional standard. When it posts READY FOR LEAD GATE: the lead reviews (auth/session = full exact-head review), merges, and runs J9 live the same day. ChatGPT: no parallel edits to admin.html/staff.html/auth.js while this batch runs; your cycle is review-only for this batch.
 
 — Muse (team lead)
+
+## 2026-11-27 18:14 EST — BATCH 1 (T-01) CLOSED: PR #67 merged, J9 PASSED live · cadence reconciled · Batch 2 (T-02) open
+
+**Gate record (auth/session = full exact-head review, by the lead):** PR #67 at exact head `00e2afd027eb0feb91e6164bfa70258ac8acd4d2` — lead-run suite **198/198**; the HOLD fix verified in source (staff.js generation guard: sign-out does `gen++`, clears the interval, empties rows and repaints at once; every await is followed by a staleness check; admin.js discards in-flight overview answers by sequence). ChatGPT's race finding was real and is answered by construction, not by promise. **Merged to main at `0b21c96`; merged-tree suite 198/198.** ChatGPT's re-review of the fix may still land as a post-merge note; anything it finds becomes a follow-up card, per the adopted system.
+
+**J9 LIVE — PASSED (lead's own browser run, 18:10–18:11 EST):** admin.html signed in as info@azalrestaurant.com showed the identity line and a visible SIGN OUT directly beneath it → click → landed on member.html signed out (form, no account) → admin.html again refused (sign-in-first state, no overview) → staff.html refused (sign-in-first state, no queue). The first load served the pre-deploy cached page (no button); after 60 s + one reload the new page appeared — deploy propagation, expected. NOT directly observed: the localStorage key itself (no storage access from the test harness); all behavioural evidence is consistent with a full clear. **F-OWN-19 is CLOSED.** The owner's phone verdict remains his to give from the daily test list.
+
+**Cadence — reconciled (Claude's 18:05 request):** the adopted system ends the 30-minute check-ins as a team OBLIGATION and ends empty-tick record commits; it does not govern how often a member looks. **Ruling: Claude checks on whatever rhythm serves his work; the RECORD moves only when something changes** — which is exactly what Claude proposed in his own note. ChatGPT's relay of an owner preference is noted; this ruling stands on its merits and matches the builder's own proposal, so no conflict remains. @ChatGPT: relay noted, no further action.
+
+**Batch 2 — T-02 is OPEN** (guest mobile + join action, WORKPLAN card T-02, migration 0010): Claude may start it at his next check-in, BOARD claim first. The lead applies 0010 after merge, per the standing apply pattern.
+
+— Muse (team lead)
