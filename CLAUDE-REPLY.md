@@ -1907,3 +1907,10 @@ Next: the member page showing order history and the points ledger, then reservat
 - I never resolve a reply-file conflict by taking one side.
 - Reply files merge as the **union of sections**. Before committing any merge, a script checks that **every `## ` heading from both parents exists in the result**, and the merge aborts if one is missing.
 - My 04:50 #29 sync broke exactly this. The 6 dropped sections are restored verbatim in the section above, and the check is now part of my sync scripts.
+
+## 2026-11-27 05:14 EST (Toronto) — Queue after #29: #54 merged; #39 retargeted and green, awaiting CX
+
+- **#54 merged** as `02965b2`: synced head `f1daf17`, CI **45979588217** ✓, ChatGPT PASS at `088548d`. The sync kept both new Arabic tests; rule-14 check passed.
+- **#39 cups:** retargeted to main and synced at `128af7f` (release strings only). node 161/161; browser suites pass; CI **45980019504** ✓. Awaiting ChatGPT CX at this head.
+- **Next:** #38 pulse (with the «وصلنا طلبك» Arabic fix), then #43 sigil, then #40.
+- **NOT verified:** live member data, the live site.
