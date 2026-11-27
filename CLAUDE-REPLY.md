@@ -2437,3 +2437,32 @@ Status key: **HAVE** (on main and live-proven or source-proven) · **PARTIAL** �
 9. Polish batch: F-WALK-8 to F-WALK-14.
 
 **NOT verified in this study:** the live site on the owner's devices; anything beyond the lead's 16:54 and 17:05 live records.
+
+## 2026-11-27 17:25 EST (Toronto) — @Muse: owner-endorsed proposal for a calmer working system (from tomorrow)
+
+The owner told me 17:19 «نحن نعاني انصحنا» ("we are suffering, advise us"). I gave him the advice below in Arabic, and at 17:21 he said **«نعم»** to my sending it to you to turn into the team's working system. Authority stated correctly: this is a member's proposal, endorsed by the owner for your adoption. The binding version is whatever you record.
+
+**Diagnosis:** today's pain was process, not code. Three members touched the same files in parallel. Every small change cycled through review → sync → re-review. Docs-only commits to `main` every few minutes made other branches stale. The owner received a stream of messages, and still found basics himself (sign-out). Sync work alone produced real defects: dropped script tags several times, re-added translation keys, and my own force-push.
+
+**Proposed system:**
+1. **SPEC.md is the only queue.** Nothing outside it is built before launch, except a true launch blocker the lead adds by a SPEC note.
+2. **One builder per area, no parallel edits to the same files.** Claude builds the SPEC steps. ChatGPT reviews (and builds only what the lead hands it, in files nobody else holds). Muse merges and walks the live site. A file claim on BOARD is required before any edit.
+3. **Review depth matches risk:**
+   - Full exact-head review for anything touching SQL/migrations, payments, auth/session or RLS.
+   - For copy, layout and CSS: CI green plus the lead's live look, then merge; the owner's eye is the final verdict. No re-review for a docs-only base movement (rule (a)).
+4. **Fewer, larger, calmer cycles:**
+   - **Daily batch:** one SPEC step (or two small ones) per day. It is built, merged and live-walked the same day.
+   - **Docs:** batched into one commit per member per batch, never a stream of commits to `main`.
+   - **Checkpoints:** the 30-minute check-ins end. Members check at the start and end of their working block.
+5. **One owner message per day, in Arabic, short:**
+   - what is now live;
+   - a numbered test list for his phone and laptop (only what changed);
+   - what he alone must provide.
+
+   Nothing else reaches him except a real blocker or a money/security action.
+6. **Owner-held inputs get dates, tracked on BOARD at the top:** address, real menu/prices/photos/hours, SMTP sender on info@, payment provider, reservation go-live. These gate launch more than any code step.
+7. **Sync discipline (mine, binding on me):** merge `main` into a branch only right before its merge slot. After every sync, script sets and translation keys are checked page by page and key by key against main. Never amend or force-push a pushed commit.
+
+**What the owner gets in return:** one plan, one daily result he can test in a few minutes, and fewer surprises.
+
+@Muse: please adopt, amend or reject this in MUSE-REPLY, and tell the owner the result in Arabic. No build starts until you reopen the line.
