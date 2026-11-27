@@ -8,13 +8,14 @@ const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponen
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = nullConfig(await chromium.launch()); const base = `http://localhost:${srv.address().port}`;
 
-async function open({ lang = "en", signedIn = false, profile = { id: "u1", display_name: "Amal <b>S</b>", phone: "+13439990001" }, w = 390, hold = null } = {}) {
+async function open({ lang = "en", signedIn = false, profile = { id: "u1", display_name: "Amal <b>S</b>", phone: "+13439990001" }, w = 390, hold = null, failEmail = false } = {}) {
   const p = await b.newPage({ viewport: { width: w, height: 900 } }); const sent = [];
   const prof = profile ? { ...profile } : null;
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await p.route("https://fake.supabase.co/**", (r) => {
     const req = r.request(), u = decodeURIComponent(req.url()); let body = null; try { body = req.postDataJSON(); } catch {} sent.push({ u, m: req.method(), body });
     if (u.includes("/auth/v1/signup")) return r.fulfill({ json: { user: { id: "u2", email: body.email } } }); // confirmation on: no session
+    if (u.includes("/auth/v1/user") && req.method() === "PUT" && failEmail) return r.fulfill({ status: 422, json: { msg: "Email address is invalid" } });
     if (u.includes("/auth/v1/user") && req.method() === "PUT") return r.fulfill({ json: { id: "u1", email: "m@example.com", new_email: body.email } });
     if (u.includes("/rpc/update_my_profile") && hold) return hold.then(() => r.fulfill({ json: { display_name: body.p_name, phone: body.p_phone } }));
     if (u.includes("/rpc/update_my_profile")) { if (!/^\+1\d{10}$/.test(body.p_phone || "+10000000000")) return r.fulfill({ status: 400, json: { message: "invalid_phone" } }); prof.display_name = body.p_name; prof.phone = body.p_phone; return r.fulfill({ json: { display_name: body.p_name, phone: body.p_phone } }); }
@@ -93,6 +94,22 @@ const msg = (p) => p.evaluate(() => (document.getElementById("authMessage") || d
   await p.click("#authSignOut"); await p.waitForTimeout(300); release(); await p.waitForTimeout(400);
   const t = await p.textContent(".member-card");
   ok(!/Saved\.|Late Name/.test(t) && await p.locator("#authForm").count() === 1, "sign out during a save: the late answer is not shown; the sign-in form stays");
+  await p.close();
+}
+{ // lead B5: name/mobile and email are two outcomes; one failing does not hide the other
+  const { p, sent } = await open({ signedIn: true, failEmail: true });
+  await p.waitForSelector(".auth-dl"); await p.click("#authEditDetails");
+  await p.fill("#pfName", "Amal Saleh"); await p.fill("#pfEmail", "new@example.invalid"); await p.click("#pfSave"); await p.waitForTimeout(500);
+  const m = await p.textContent("#pfMessage");
+  ok(/Saved\./.test(m) && /email was not changed/.test(m) && await p.locator("#authDetailsForm").count() === 1, "name saved + email refused: both said, the form stays open to retry the email");
+  ok(sent.some((x) => x.u.includes("update_my_profile")) && sent.some((x) => x.m === "PUT"), "both calls were made independently");
+  await p.close();
+}
+{ // lead B4: the profile read names its columns
+  const { p, sent } = await open({ signedIn: true });
+  await p.waitForSelector(".auth-dl");
+  const u = sent.find((x) => x.u.includes("/rest/v1/profiles"));
+  ok(u && /select=id,display_name,phone&/.test(u.u) && !/select=\*/.test(u.u), "profile read is select=id,display_name,phone (no *)");
   await p.close();
 }
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");

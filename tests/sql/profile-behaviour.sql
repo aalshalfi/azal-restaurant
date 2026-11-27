@@ -8,11 +8,12 @@ grant execute on function public.zz_try(text), public.zz_eq(text,text,text) to a
 
 insert into auth.users(id,email,raw_user_meta_data) values
  ('00000000-0000-0000-0000-0000000000e1','e1@example.invalid','{"display_name":"  Amal Saleh  ","phone":"(343) 999-0001"}'),
- ('00000000-0000-0000-0000-0000000000e2','e2@example.invalid','{"display_name":"","phone":"12"}'),
  ('00000000-0000-0000-0000-0000000000e3','e3@example.invalid','{}'),
  ('00000000-0000-0000-0000-0000000000e4','e4@example.invalid','{"display_name":"x\u0007y","phone":"+44 20 7946 0958"}');
+select zz_eq('B3: sign-up with an empty name is refused as a whole', zz_try($$insert into auth.users(id,email,raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000e2','e2@example.invalid','{"display_name":"","phone":"3439990002"}')$$), 'invalid_profile');
+select zz_eq('B3: sign-up with a malformed mobile is refused as a whole', zz_try($$insert into auth.users(id,email,raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000e2','e2@example.invalid','{"display_name":"Huda","phone":"12"}')$$), 'invalid_profile');
+select zz_eq('B3: no user, profile or membership left behind by a refused sign-up', (select count(*) from auth.users where id='00000000-0000-0000-0000-0000000000e2')::text || (select count(*) from public.profiles where id='00000000-0000-0000-0000-0000000000e2')::text || (select count(*) from public.memberships where user_id='00000000-0000-0000-0000-0000000000e2')::text, '000');
 select zz_eq('sign-up metadata: name trimmed, mobile normalised to +1', (select display_name||'|'||phone from public.profiles where id='00000000-0000-0000-0000-0000000000e1'), 'Amal Saleh|+13439990001');
-select zz_eq('bad metadata is dropped, the account still exists', (select coalesce(display_name,'∅')||'/'||coalesce(phone,'∅') from public.profiles where id='00000000-0000-0000-0000-0000000000e2'), '∅/∅');
 select zz_eq('no metadata: plain profile + membership as before', (select count(*)::text from public.profiles p join public.memberships m on m.user_id=p.id where p.id='00000000-0000-0000-0000-0000000000e3'), '1');
 select zz_eq('control characters stripped; international +44 kept', (select display_name||'|'||phone from public.profiles where id='00000000-0000-0000-0000-0000000000e4'), 'xy|+442079460958');
 select zz_eq('DB refuses a malformed phone written directly', zz_try($$update public.profiles set phone='343-999' where id='00000000-0000-0000-0000-0000000000e3'$$), '23514');

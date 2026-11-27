@@ -40,6 +40,7 @@
           : /already registered|already exists/i.test(msg) ? "already_registered"
           : /signups? not allowed|signup.*disabled/i.test(msg) ? "signups_closed"
           : /password/i.test(msg) && /(short|weak|least|character)/i.test(msg) ? "weak_password"
+          : /^(invalid_name|invalid_phone|signed_out|no_profile)$/.test(msg) ? msg   // our own RPC codes, passed through
           : /expired|invalid.*(token|otp)|otp.*invalid/i.test(msg) ? "code_invalid"
           : res.status === 429 || /only request this after|rate limit/i.test(msg) ? "rate_limited" : "error";
         throw e;
@@ -146,7 +147,8 @@
         try {
           [profile, membership, rows] = await Promise.all([
             // select=* so the 0008 phone column comes along once it exists, and nothing breaks before.
-            q("/rest/v1/profiles?select=*&id=eq." + encodeURIComponent(uid)).then((r) => r[0] || null),
+            // B4: explicit columns; one fallback for a server without 0008 (no phone column -> 400).
+            q("/rest/v1/profiles?select=id,display_name,phone&id=eq." + encodeURIComponent(uid)).catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name&id=eq." + encodeURIComponent(uid)); throw e; }).then((r) => r[0] || null),
             q("/rest/v1/memberships?select=status,joined_at&user_id=eq." + encodeURIComponent(uid)).then((r) => r[0] || null),
             q("/rest/v1/points_ledger?select=delta_points&user_id=eq." + encodeURIComponent(uid))
           ]);
@@ -359,14 +361,20 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { say("authErrInvalidEmail"); g("pfEmail").focus(); return; }
       const save = document.getElementById("pfSave"); save.disabled = true;
       const who = last && last.email; // if the account changes or signs out meanwhile, the answer is not shown
-      try {
-        if (name !== (last.name || "") || (phone || null) !== (last.phone || null)) await auth.updateProfile(name, phone);
-        const emailChanged = email.toLowerCase() !== String(last.email || "").toLowerCase();
-        if (emailChanged) await auth.changeEmail(email, here());
-        const s2 = await auth.session(); if (!s2 || !last || last.email !== who) return;
-        editing = false; detailMsg = emailChanged ? tr("authEmailChangeSent").replace("{email}", email) : tr("authSaved");
-        await refresh(); document.getElementById("authEditDetails")?.focus();
-      } catch (err) { if (!last || last.email !== who) return; say(errorKey(err)); save.disabled = false; }
+      // B5 (ChatGPT audit, lead-accepted): name/mobile and email are two separate outcomes, reported separately.
+      const profChanged = name !== (last.name || "") || (phone || null) !== (last.phone || null);
+      const emailChanged = email.toLowerCase() !== String(last.email || "").toLowerCase();
+      let profOk = !profChanged, profErr = null, mailOk = !emailChanged, mailErr = null;
+      if (profChanged) { try { await auth.updateProfile(name, phone); profOk = true; } catch (err) { profErr = err; } }
+      if (emailChanged) { try { await auth.changeEmail(email, here()); mailOk = true; } catch (err) { mailErr = err; } }
+      const s2 = await auth.session(); if (!s2 || !last || last.email !== who) return; // signed out / switched meanwhile
+      const lines = [];
+      if (profChanged) lines.push(profOk ? tr("authSaved") : tr("authProfileFailed") + " " + tr(errorKey(profErr)));
+      if (emailChanged) lines.push(mailOk ? tr("authEmailChangeSent").replace("{email}", email) : tr("authEmailFailed") + " " + tr(errorKey(mailErr)));
+      if (!lines.length) lines.push(tr("authSaved"));
+      detailMsg = lines.join(" ");
+      if (profOk && mailOk) { editing = false; await refresh(); document.getElementById("authEditDetails")?.focus(); }
+      else { if (profOk) { await refresh(); } const m = document.getElementById("pfMessage"); if (m) m.textContent = detailMsg; const sv = document.getElementById("pfSave"); if (sv) sv.disabled = false; }
       return;
     }
     if (!e.target || e.target.id !== "authForm") return;

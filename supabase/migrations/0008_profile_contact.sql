@@ -3,7 +3,7 @@
 --  * profiles gains phone (+E.164, the same rule as reservations: 10 digits -> +1, 11 starting with 1 -> +,
 --    or '+' and 10-15 digits). display_name already exists (<= 80 chars).
 --  * Sign-up sends {display_name, phone} as user metadata; handle_new_user() copies them into the profile,
---    cleaned and validated. Bad or missing values are simply not stored (the account is still created).
+--    cleaned and validated. A sign-up that sends an INVALID name or mobile is refused as a whole (lead B3).
 --  * update_my_profile(p_name, p_phone): the member edits their OWN name and mobile, validated server-side.
 --    Email changes go through Supabase Auth itself (confirmation to the new address); nothing here.
 begin;
@@ -46,7 +46,16 @@ language plpgsql
 security definer
 set search_path = ''
 as $azal_handle_new_user$
+declare
+  m jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
 begin
+  -- Lead ruling B3 (2026-11-27 14:02): a sign-up that SENDS a name or mobile must send valid ones; otherwise the
+  -- whole sign-up fails (no silent partial profile). Accounts created without that metadata (the lead creating a
+  -- staff account in the dashboard) are unaffected.
+  if (m ? 'display_name' and public.azal_clean_name(m->>'display_name') is null)
+     or (m ? 'phone' and nullif(pg_catalog.btrim(coalesce(m->>'phone', '')), '') is not null and public.azal_phone(m->>'phone') is null) then
+    raise exception 'invalid_profile' using errcode = '22023';
+  end if;
   insert into public.profiles (id, display_name, phone)
   values (new.id,
           public.azal_clean_name(new.raw_user_meta_data->>'display_name'),
