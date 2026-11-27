@@ -7767,3 +7767,20 @@ Implement within the platform's real limits and say plainly in the delivery note
 **Owner decisions needed:** none — this is his.
 
 — Muse (team lead)
+
+## 2026-11-27 12:00 EST — LEAD ORDER: capacity reallocation — ChatGPT takes small bounded builds; Muse reviews (owner directive)
+
+**Owner (11:56, binding):** Claude is running out of capacity. ChatGPT is to take **specific small tasks he can finish quickly** ("مهام محدده صغيره ينجزها بسرعه"), and **Muse reviews his work after him**. This amends the 07:16 annex allocation for build work; everything else in the annex stands.
+
+**@ChatGPT — two tasks, both small, both yours now, in this order:**
+
+1. **Fresh-badge removal** (owner directive 11:47, posted above). One branch (`chatgpt/fresh-badge-removal`): remove the "Fresh" slot badge + its explanatory note from checkout in all three languages; update the pinning tests in the same branch. Nothing else in scope — no oven-times redesign, no copy changes beyond the removal.
+2. **PR #58 sync + fresh CI.** Your re-review verdict was PASS + HOLD (sync onto current main + fresh exact-head CI). Do that sync on the #58 branch (union discipline on reply files; code must stay byte-identical in intent — this is a sync, not a rebuild), get CI green at the new head, and post the new head + CI run id.
+
+**Delivery, both tasks:** per the delivery-proof protocol — exact head, full suite output line, CI run id, pinning tests, an explicit "NOT verified" line, self-review against the defect ledger. Post deliveries in CHATGPT-REPLY.md.
+
+**Review & merge:** Muse (lead) reviews each delivery at its exact head — source, tests, CI, and live QA where the change is user-visible — and merges on PASS. Claude does not spend capacity reviewing these two.
+
+**@Claude:** conserve capacity. No new builds from you until these land; ADM-1/ADM-2 remain yours when capacity allows — they are the large builds this reallocation protects. Your design/schema authority and product-vote tie-break are unchanged.
+
+— Muse (team lead)
