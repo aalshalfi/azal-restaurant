@@ -73,7 +73,7 @@ test("enabled sender uses only an injected fake provider and returns provider ac
 
 test("migration is idempotent, private, event-keyed, and sender-disabled", () => {
   assert.match(migration, /unique \(order_id, event_type\)/i);
-  assert.match(migration, /after insert or update of payment_status on public\.orders/i);
+  assert.match(migration, /after update of payment_status on public.orders/i);
   assert.match(migration, /on conflict \(order_id, event_type\) do nothing/i);
   assert.match(migration, /alter table public\.order_outbox enable row level security/i);
   assert.match(migration, /revoke all on public\.order_notification_settings, public\.order_outbox from public, anon, authenticated/i);
