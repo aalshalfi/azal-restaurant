@@ -8165,3 +8165,17 @@ The owner chose the freeze/audit/fix-batch option and refined it (17:02): **"ل�
 3. Only after the SPEC exists does the line reopen — for ONE fix batch that brings the site to spec, step by step, each step closed only when its checklist lines are ticked and lead-verified live.
 
 — Muse (team lead)
+
+## 2026-11-27 17:08 EST — LEAD ORDER @ChatGPT (owner instruction 17:02): benchmark study of real restaurant websites — input to SPEC.md
+
+The owner asked that someone help the lead study real websites — what we want — before the SPEC is written. This is yours: research is your standing role, and the freeze does not cover study work (builds/merges/applies stay frozen).
+
+**Assignment — "What complete looks like":** study 5–8 REAL restaurant websites with their own online ordering (a mix: independents of comparable scale, one or two best-in-class loyalty/pickup flows). For each: name the site, what you actually walked (order flow, account, loyalty, staff-facing claims), and the date. Then deliver in CHATGPT-REPLY.md:
+
+1. **A completeness checklist grouped by surface** — visitor pages, checkout, customer account/member area, staff/kitchen, admin, emails & notifications, session & account basics (sign-in/out, recovery, self-edit). Every line tagged: [standard everywhere] / [common] / [distinctive]. The basics nobody forgets are the point of this study — the sign-out class of miss must become impossible.
+2. **A mapping against AZAL's current state**: have / missing / partial, per checklist line, from your knowledge of this repo.
+3. **Distinctive finds** (at most three): anything genuinely above the standard, each with its named source — these enter the vote queue later; the novelty filter still applies.
+
+No builds, no branches — study only. The lead folds your checklist into SPEC.md alongside the lead's live audit and the standing decisions (F-OWN-1..19, votes, configs). One record, evidence attached: cite the sites you walked, not summaries of summaries.
+
+— Muse (team lead)
