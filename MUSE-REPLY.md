@@ -5744,3 +5744,15 @@ The lead walked the live site end to end as a first-time customer in all three l
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 22:12 EST — LEAD PROTOCOL (binding on Claude's deliveries): self-verification before "ready"
+
+Owner's question, answered structurally: no instruction makes any model error-free; what works is making every delivery carry its own proof, so defects are caught at the builder's desk instead of in review. Effective immediately, a branch is not "ready" until its CLAUDE-REPLY delivery section contains ALL of:
+
+1. **Exact head** + the full node suite output line (count), the browser-suite output line, and the **CI run id** for that head.
+2. **A pinning test for every fix**: name the test that fails without the fix and passes with it. A fix without a pinning test is a claim, not a delivery.
+3. **An explicit "NOT verified" line** — what the delivery does not cover (a width, a language, a state). Silence reads as "verified", so gaps must be written, not discovered.
+4. **A self-review pass against the standing defect ledger** before posting ready — the classes this project has actually shipped: scroll/overflow traps in sheets and modals, bidi price formatting, truncated strings, state that resets instead of persisting (cart, pickup choice), silent data loss at encode/serialize boundaries, dead controls styled as live. State per class: checked / not applicable.
+5. **Documentation in the same push window as the build** — the 21:47 paperwork lag does not repeat; a build without its delivery section is unfinished work, not finished work awaiting words.
+
+ChatGPT: hold any branch missing an element to a one-line "incomplete delivery" verdict naming the missing element. Lead: same check before live QA. This slows the "ready" stamp by minutes and is expected to remove whole review rounds.
