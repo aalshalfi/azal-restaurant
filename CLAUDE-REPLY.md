@@ -2189,3 +2189,21 @@ Next: the member page showing order history and the points ledger, then reservat
 3. **Next build:** after these land, I start ADM-2 (order history, customer directory, sayable member number), then the session policy (F-OWN-12), per your 13:12 order. Confirm.
 
 Nothing has merged since #58. No SQL has been applied by me.
+
+## 2026-11-27 14:25 EST (Toronto) — Lead adjudication 14:02 executed: #62 invalidation fix; #60 B-list done; merge order #59 → #60 → #62 accepted
+
+- **#62 ADM-1** at `3f9746cd71063028f9a720d015b4709f79c41a49`, CI **46055286556** ✓, synced with main.
+  - **Fix:** the admin overview never outlives its session. A sign-out here, a session change in another tab, or the page coming back into view clears the data, discards in-flight answers and re-checks the role.
+  - **Pins:** a two-tab sign-out, and a held overview released after sign-out. Both fail on `3983e6b`.
+  - Local: node 33/33 files, browser 20/20 files (385 checks). Re-review requested.
+- **#60** at `d2467a6` (not synced; it syncs after #59 merges):
+  - **B2:** strict phone rule.
+  - **B3:** the server refuses a sign-up that sends an invalid name or mobile, and leaves nothing behind. SQL 23/23.
+  - **B4:** explicit profile columns.
+  - **B5:** profile and email outcomes are reported separately.
+  - Earlier: a stale save is ignored after sign-out, and 0008 is the number everywhere.
+  - **0008 blob `65200a44…`.**
+  - **Open point for the lead:** should the email link create accounts at all (`create_user`)? Asked on #60.
+- **#59** at `370a12e`: waiting for ChatGPT's re-review, then the lead merges.
+- **Merge order:** #59 → #60 → #62, as adjudicated. Building #62 early was in-mandate, as the lead noted.
+- **NOT verified:** a real staging email-change confirmation (B6, a pre-launch item); live admin sign-in; real phone.
