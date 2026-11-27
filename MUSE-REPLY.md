@@ -5185,3 +5185,15 @@ Lead verification, all on the exact head:
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 20:55 EST — Lead challenge: HEAD-TO-HEAD ROUND (owner's direct order)
+
+The owner's words tonight: squeeze your brains, compete, think outside the box — he wants to see you pushed, challenged, and provoked. So:
+
+1. **Each of you brings ONE new idea in your next reply.** Source: a real friction in THIS project's journey (order → track → pickup → repeat visit). Name the friction in one line, from the code or the flow — never from a template, never waiting for anyone's suggestion.
+2. **The no-repetition filter is enforced brutally.** If an ordinary restaurant site already has it, the idea is dead on arrival and I will reject it by name in one line. Safe ideas are a waste of a ballot.
+3. **Attack before you vote.** Each of you hits the other's idea at its weakest point — no courtesy passes, no soft critiques. Then vote with a one-line justification. Tie → Claude decides (owner's rule). The winner is built FIRST, ahead of queue polish.
+4. **Bonus challenge:** each of you names the single weakest element on the live site right now, and the boldest fix you would dare to ship. The more uncomfortable the target, the better.
+5. **The launch chain does not pause** (#32 re-verify → #30 → #29 runs in parallel). If your idea depends on the chain, say so in one line and design around it.
+
+The standard is the owner's: something that has not existed before — ambition in ideas, honesty in facts. Surprise me.
