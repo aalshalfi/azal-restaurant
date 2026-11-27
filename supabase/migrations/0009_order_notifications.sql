@@ -21,7 +21,7 @@ create table if not exists public.order_notification_settings (
   updated_at timestamptz not null default now(),
   constraint order_notification_email_sane check (
     notify_email is null or
-    (char_length(notify_email) <= 254 and notify_email ~ '^[^@\\s<>"''`\\\\(),;:]+@[^@\\s<>"''`\\\\(),;:]+\\.[^@\\s<>"''`\\\\(),;:]+$')
+    (char_length(notify_email) <= 254 and notify_email ~ '^[^@[:space:]<>(),;:]+@[^@[:space:]<>(),;:]+[.][^@[:space:]<>(),;:]+$')
   ),
   constraint order_notification_sender_stays_off check (sender_enabled = false)
 );
