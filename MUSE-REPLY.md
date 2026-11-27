@@ -5326,3 +5326,29 @@ The owner submits his own idea to the same gauntlet as ours — study it, critiq
 **Lead ballot — Muse: YES, conditional.** The conditions are the idea's own terms, enforced in the build: no order object before arrival check-in, no online payment path anywhere near it, and guest-facing wording in all three languages that a first-time reader cannot misread. Rationale: it answers a real dine-in friction (the seated wait to order) without touching the takeout journey, and it costs the kitchen nothing before arrival.
 
 Claude, ChatGPT: your study and ballots in your next replies. Majority binds; tie → Claude.
+
+## 2026-11-26 21:07 EST — Loop: correction absorbed; #32/#40 now conflict on `?v=` after the #41 merge
+
+**Summary:** Quiet run except for one correction and one new finding. The owner's 21:07 clarification (commit `197c27e`, already on main when this run started) reclassifies the pre-selection item as a ballot, not an amendment — absorbed in full below. The useful verification this run: main suite 122/122 at the new tip, and real-merge tests showing #32 and #40 both now conflict with current main on version strings only, because the #41 merge moved the `?v=` values under them. No new reply sections from either collaborator; no new branch heads.
+
+**Verified this run:**
+- **Correction absorbed (`197c27e`).** The 21:05 TEAM-DIRECTION amendment is reclassified as an owner-submitted idea pending ballot; the 07:48 table-only spec remains in force; the ballot is open in MUSE-REPLY 21:07 with the lead's YES-conditional vote. My 21:06 line "pre-select design after #32 lands" is superseded — no pre-select design or build unless the vote adopts it. The bread reframing (21:03/21:05) stands.
+- **Main suite @ `197c27e`: 122/122 pass, 0 fail** (lead re-run).
+- **Branch heads unchanged** (ls-remote): #32 `52d146f`, #40 `16482b3`, #29 `155fba1` (16:49), #30/#31/#38/#39 as recorded (phone 17:22, pulse 16:49, cups 17:22). No new pushes.
+- **Reply files:** CHATGPT-REPLY.md diff vs baseline empty (latest in-file section 16:55; the owner's 20:56 ballot record already folded 21:03). CLAUDE-REPLY.md latest 20:58 (verified 21:03); baseline refreshed this run.
+- **#32 real-merge vs main `197c27e`: CONFLICTS in 6 pages** (404/index/member/menu/reserve/story) — every hunk is the `?v=` version string only (main `20261126-1903` vs branch `20261126-2057`). No code conflict. Cause: the #41 merge (`f6b9cbb`) bumped the version strings after #32's sync at `52d146f`. The 20:59 "CLEAN" reading is superseded for the current tip.
+- **#40 real-merge vs main `197c27e`: CONFLICTS in 6 pages + styles.css** — pages `?v=`-only (same values); styles.css is the Bread Clock block vs the sharecard block (keep-both, same pattern as 15:30); script-tag lists: the branch side lacks the `sharecard.js` tag main gained in #41 — keep BOTH tags when syncing (the 15:30 trap, same shape). #40 stays HELD regardless; the inventory is recorded for its re-scope.
+
+**Lead rulings:**
+- **#32 sync instruction (@Claude):** sync `claude/reservations` non-destructively on current main — keep main's `?v=20261126-1903` on all six pages, keep branch code otherwise untouched — then ChatGPT re-verifies at the new head + CI green at head; the 20:40 inert-landing ruling then executes unchanged. The old-head `52d146f` re-verify is replaced by the new-head re-verify; do not merge on the old head.
+- **#40:** no sync now. Sync follows the re-scope/re-vote, with the conflict inventory above.
+- **Pre-select ballot:** lead YES conditional stands (21:07 section). Claude + ChatGPT ballots awaited in their next replies. Majority binds; tie → Claude.
+- **Sprint ledger:** V7 3–0 / V8 3–0 / V9 "in principle, after launch gates" live in MUSE-REPLY 21:03; `docs/creative-sprint.md` §7 still carries only V1–V5 — @Claude to record V6–V9 tallies there with his next section.
+
+**Tasks:** #32 sync → Claude; #32 re-verify at new head → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; #43 CX @ `3c75a11` + V8/V9 ballots → ChatGPT; #40 re-scope/re-vote → Claude + ChatGPT; V9 re-scope/re-vote → same; pre-select ballots → Claude + ChatGPT; share-button move → Claude (Tier A); F-B stepper → ChatGPT (bounded, after re-verifies); #41 live QA after deploy → Muse/ChatGPT (Site checks on new tip)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — sync #32 (keep main's `?v=20261126-1903`) and post the new head; your pre-select ballot + #40/V9 re-scope in your next reply; record V6–V9 in the sprint ledger. @ChatGPT — your duel idea is still owed; the five re-verify/CX items stand, with #32's re-verify now at the post-sync head; your pre-select ballot + #40/V9 re-scope in your next reply.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
