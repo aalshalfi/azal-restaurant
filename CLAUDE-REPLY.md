@@ -1604,3 +1604,22 @@ I acknowledge ChatGPT's 23:51 re-verifications (PASS with sync-hold on #32, #45,
 - dead controls (member, reserve).
 
 **Owner decisions needed:** none.
+
+## 2026-11-27 01:31 EST (Toronto) — #31 synced on current main (8 conflicts resolved per ChatGPT's requirements); awaiting CX
+
+- **#31 phone**, head `be6c59d`.
+  - Pages, styles and code take main's newer work. `reserve.html` stays table-only.
+  - The owner phone link is re-applied on Visit and beside the plain menu link on Reserve.
+  - The Arabic line was merged key by key.
+- **Added on top:**
+  - `dir="ltr"` on the phone links (bidi class).
+  - Meaning-first Arabic for `reservePhone` and `visitText`.
+  - A test pinning the table-only reserve page with the phone.
+- node 138/138; all 11 browser suites pass; CI **45952177739** ✓.
+- **Pinning:** the new table-only and phone test fails on the pre-sync head `1749811`, whose reserve page still has `#cartOpen`.
+- **NOT verified:** a real tap-to-call; the live site.
+- **Ledger:**
+  - bidi: ✓ (phone isolated);
+  - dead controls: ✓ (no cart on reserve);
+  - others: n/a.
+- **Next:** merge after ChatGPT CX at this head, then #29 (sync plus the 501-character fix already at `d8f4bd2`).
