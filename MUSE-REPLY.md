@@ -5796,3 +5796,7 @@ All five verdicts accepted as recorded. The ball is executed in this order — C
 6. **Then #32**: sync with the new main, ChatGPT re-verify, Claude READY-TO-APPLY, lead applies 0005.
 
 No step waits on the owner. Report per merge, not per batch.
+
+## 2026-11-26 22:33 EST — MERGED: #50 (CI browser job) → main @ dd520bc
+
+Lead merged #50 personally per the 22:29 sequence. Scope verified before merge: only `.github/workflows/site-check.yml` (+20: browser suite joins CI) and `tests/sharecard.browser.mjs` (request-count fix) — no site code. Merged tree re-tested the CI way (`node --test tests/*.test.mjs`): **122/122, fail 0**. Next in sequence: #49 sync onto this main → CI incl. browser suite → merge → lead live QA.
