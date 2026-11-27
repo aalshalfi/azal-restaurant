@@ -176,3 +176,10 @@ test("F-OWN-2/8: 0008 writes the phone only through validated paths", () => {
   assert.match(sql, /public\.azal_clean_name\(new\.raw_user_meta_data->>'display_name'\)/);
   assert.match(sql, /insert into public\.memberships \(user_id\)/, "the 0003 membership step is kept in the trigger");
 });
+
+test("ChatGPT #60 review: phone edge cases are refused, never silently cleaned", () => {
+  const { normalizePhone: n } = require("../auth.js");
+  const cases = { "343abc9990001": null, "++1 343 999 0001": null, "+1+3439990001": null, "٣٤٣٩٩٩٠٠٠١": null, "343 999 0001 ext 2": null,
+    "+123456789012345": "+123456789012345", "+1234567890123456": null, " (343) 999-0001 ": "+13439990001", "343.999.0001": "+13439990001", "": null };
+  for (const [raw, want] of Object.entries(cases)) assert.equal(n(raw), want, JSON.stringify(raw));
+});

@@ -162,8 +162,12 @@
   }
 
   // Same mobile rule as reservations and 0008 azal_phone(): 10 digits -> +1, 11 starting with 1 -> +, or + and 10-15 digits.
+  // Only ASCII digits, spaces, dots, dashes, brackets and ONE leading "+" are accepted (ChatGPT #60 review): letters,
+  // a second "+", or non-ASCII digits make the number invalid rather than being silently dropped.
   function normalizePhone(raw) {
-    const s = String(raw || ""), d = s.replace(/\D/g, "");
+    const s = String(raw || "");
+    if (!/^\s*\+?[0-9 ().-]+$/.test(s)) return null;
+    const d = s.replace(/[^0-9]/g, "");
     if (/^\d{10}$/.test(d)) return "+1" + d;
     if (/^1\d{10}$/.test(d)) return "+" + d;
     if (/^\s*\+/.test(s) && /^[1-9]\d{9,14}$/.test(d)) return "+" + d;
@@ -354,13 +358,15 @@
       if (rawPhone && !phone) { say("authErrPhone"); g("pfPhone").focus(); return; }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { say("authErrInvalidEmail"); g("pfEmail").focus(); return; }
       const save = document.getElementById("pfSave"); save.disabled = true;
+      const who = last && last.email; // if the account changes or signs out meanwhile, the answer is not shown
       try {
         if (name !== (last.name || "") || (phone || null) !== (last.phone || null)) await auth.updateProfile(name, phone);
         const emailChanged = email.toLowerCase() !== String(last.email || "").toLowerCase();
         if (emailChanged) await auth.changeEmail(email, here());
+        const s2 = await auth.session(); if (!s2 || !last || last.email !== who) return;
         editing = false; detailMsg = emailChanged ? tr("authEmailChangeSent").replace("{email}", email) : tr("authSaved");
         await refresh(); document.getElementById("authEditDetails")?.focus();
-      } catch (err) { say(errorKey(err)); save.disabled = false; }
+      } catch (err) { if (!last || last.email !== who) return; say(errorKey(err)); save.disabled = false; }
       return;
     }
     if (!e.target || e.target.id !== "authForm") return;

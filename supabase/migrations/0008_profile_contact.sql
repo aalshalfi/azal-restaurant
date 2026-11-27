@@ -25,6 +25,8 @@ exception when duplicate_object then null; end $c$;
 create or replace function public.azal_phone(p_phone text)
 returns text language sql immutable set search_path = '' as $p$
   select case
+    -- ASCII digits, spaces, dots, dashes, brackets and one leading '+' only; anything else is invalid, never stripped.
+    when coalesce(p_phone, '') !~ '^\s*\+?[0-9 ().-]+$' then null
     when d ~ '^[0-9]{10}$' then '+1' || d
     when d ~ '^1[0-9]{10}$' then '+' || d
     when coalesce(p_phone, '') ~ '^\s*\+' and d ~ '^[1-9][0-9]{9,14}$' then '+' || d

@@ -17,6 +17,11 @@ select zz_eq('no metadata: plain profile + membership as before', (select count(
 select zz_eq('control characters stripped; international +44 kept', (select display_name||'|'||phone from public.profiles where id='00000000-0000-0000-0000-0000000000e4'), 'xy|+442079460958');
 select zz_eq('DB refuses a malformed phone written directly', zz_try($$update public.profiles set phone='343-999' where id='00000000-0000-0000-0000-0000000000e3'$$), '23514');
 
+select zz_eq('edge: letters mixed in are refused, not stripped', coalesce(public.azal_phone('343abc9990001'),'∅'), '∅');
+select zz_eq('edge: two plus signs refused', coalesce(public.azal_phone('++1 343 999 0001'),'∅'), '∅');
+select zz_eq('edge: non-ASCII digits refused', coalesce(public.azal_phone('٣٤٣٩٩٩٠٠٠١'),'∅'), '∅');
+select zz_eq('edge: 15-digit international kept, 16 refused', coalesce(public.azal_phone('+123456789012345'),'∅') || '/' || coalesce(public.azal_phone('+1234567890123456'),'∅'), '+123456789012345/∅');
+select zz_eq('edge: same answers as the browser for the common forms', public.azal_phone(' (343) 999-0001 ') || '/' || public.azal_phone('343.999.0001'), '+13439990001/+13439990001');
 set role anon;
 select zz_eq('anon cannot update a profile', zz_try($$select public.update_my_profile('A','3439990001')$$), '42501');
 reset role;

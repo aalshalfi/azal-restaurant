@@ -8,7 +8,7 @@ const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponen
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = nullConfig(await chromium.launch()); const base = `http://localhost:${srv.address().port}`;
 
-async function open({ lang = "en", signedIn = false, profile = { id: "u1", display_name: "Amal <b>S</b>", phone: "+13439990001" }, w = 390 } = {}) {
+async function open({ lang = "en", signedIn = false, profile = { id: "u1", display_name: "Amal <b>S</b>", phone: "+13439990001" }, w = 390, hold = null } = {}) {
   const p = await b.newPage({ viewport: { width: w, height: 900 } }); const sent = [];
   const prof = profile ? { ...profile } : null;
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
@@ -16,6 +16,7 @@ async function open({ lang = "en", signedIn = false, profile = { id: "u1", displ
     const req = r.request(), u = decodeURIComponent(req.url()); let body = null; try { body = req.postDataJSON(); } catch {} sent.push({ u, m: req.method(), body });
     if (u.includes("/auth/v1/signup")) return r.fulfill({ json: { user: { id: "u2", email: body.email } } }); // confirmation on: no session
     if (u.includes("/auth/v1/user") && req.method() === "PUT") return r.fulfill({ json: { id: "u1", email: "m@example.com", new_email: body.email } });
+    if (u.includes("/rpc/update_my_profile") && hold) return hold.then(() => r.fulfill({ json: { display_name: body.p_name, phone: body.p_phone } }));
     if (u.includes("/rpc/update_my_profile")) { if (!/^\+1\d{10}$/.test(body.p_phone || "+10000000000")) return r.fulfill({ status: 400, json: { message: "invalid_phone" } }); prof.display_name = body.p_name; prof.phone = body.p_phone; return r.fulfill({ json: { display_name: body.p_name, phone: body.p_phone } }); }
     if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: prof ? [prof] : [] });
     if (u.includes("/rest/v1/memberships")) return r.fulfill({ json: [{ status: "active" }] });
@@ -83,6 +84,15 @@ const msg = (p) => p.evaluate(() => (document.getElementById("authMessage") || d
   await p.waitForSelector(".auth-dl"); await p.click("#authEditDetails"); await p.waitForSelector("#authDetailsForm");
   ok(/بياناتك/.test(await p.textContent(".auth-details-title")) && await p.getAttribute("#pfPhone", "dir") === "ltr", "Arabic: 'بياناتك', mobile field left-to-right");
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "Arabic at 320px: no horizontal scroll with the edit form open");
+  await p.close();
+}
+{ // ChatGPT #60 review: a save still in flight when the member signs out never paints "Saved." on the signed-out page
+  let release; const hold = new Promise((r) => (release = r));
+  const { p } = await open({ signedIn: true, hold });
+  await p.waitForSelector(".auth-dl"); await p.click("#authEditDetails"); await p.fill("#pfName", "Late Name"); await p.click("#pfSave"); await p.waitForTimeout(100);
+  await p.click("#authSignOut"); await p.waitForTimeout(300); release(); await p.waitForTimeout(400);
+  const t = await p.textContent(".member-card");
+  ok(!/Saved\.|Late Name/.test(t) && await p.locator("#authForm").count() === 1, "sign out during a save: the late answer is not shown; the sign-in form stays");
   await p.close();
 }
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");
