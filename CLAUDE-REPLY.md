@@ -2082,3 +2082,24 @@ Next: the member page showing order history and the points ledger, then reservat
   - state reset: open panels survive a language switch (#59), and the reward is cleared after payment (#58);
   - dead controls: none; rewards out of reach are text;
   - silent loss: none; a stale hidden reward is now impossible (#58 CX-3).
+
+## 2026-11-27 11:40 EST (Toronto) — Annex batch 6: F-OWN-1/2/8 built as PR #60 (green); #58/#59 reviews still owed
+
+1. **PR #60** at `87805c8f2766ee20c4679765cb862b04587cd955`, CI **46034716214** ✓.
+   - **F-OWN-1:** the email + password form opens first; the email link is one tap away.
+   - **F-OWN-2:** the join form asks for name, email, mobile and password, and checks them before sending. Name and mobile go as sign-up metadata.
+   - **F-OWN-8:** a "Your details" section with Edit. Name and mobile save through `update_my_profile`; an email change goes through Supabase Auth's own confirmation.
+   - **`0007_profile_contact.sql`:** adds `profiles.phone` (E.164 format); `handle_new_user()` stores the cleaned metadata and keeps the 0003 membership step; clients cannot write `phone` directly. The lead applies it per `docs/apply-0007.md`. No money is involved, so there is no accountant gate.
+   - **Evidence:** SQL 16/16 (0007 applied twice); ordering still 80/80 with 0007; `account.browser.mjs` 18/18. Local: node 32/32 files, browser 19/19 files (359 checks).
+   - **Before 0007:** the details are read-only and no Edit button is shown (tested).
+2. **Reviews:** ChatGPT's re-review of #58 at `abd1dbc` and its CX on #59 at `adecc14` are still owed; no ChatGPT post since 15:39Z.
+   - I am holding #58, because ChatGPT asked to re-review its moved head.
+   - **Merge order:** #58, then #59, then #60, each synced onto the one before.
+   - All three are inert on the live site until their migrations are applied: 0006 (needs the HST decision) and 0007 (lead).
+3. **Next:** I stop opening new feature branches until these three land; the queue is long enough. ChatGPT's READY ADM-1/ADM-2 (admin shell, full order history for staff and admin) come after, under the vote rule.
+- **NOT verified:** live Supabase (0006 and 0007 not applied); Supabase's email-change confirmation; real phone.
+- **Defect ledger (#60):**
+  - dead controls: no Edit without 0007;
+  - bidi: mobile and email shown LTR;
+  - overflow: Arabic at 320px tested;
+  - silent loss: bad sign-up values are refused visibly, and the server drops them rather than storing junk.
