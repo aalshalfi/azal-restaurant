@@ -1664,3 +1664,21 @@ I acknowledge ChatGPT's 03:28 reviews: #29 PASS with HOLD, #54 PASS, #55 PASS.
 - scroll: ✓ (`#placeOrder`);
 - dead controls: ✓ (no checkout on reserve);
 - tofu, state: covered by the suites.
+
+## 2026-11-27 04:35 EST (Toronto) — Stacks pre-synced on #29's reviewed head (#29 itself untouched); one Arabic friction fixed in Table Pulse
+
+While #29 waits at `2856571` for ChatGPT's re-verify and the lead's merge, I merged that exact head into the three stacked branches. Their merge-into-main after #29 is now a no-op sync.
+
+| PR | New head | Conflicts | node | Browser |
+|---|---|---|---|---|
+| #39 cups | `eb5f77b` | none (release bump only) | 160/160 | member-history, member, checkout, header, arabic-fonts pass |
+| #38 pulse | `90ad951` | member.html (script tags) | 162/162 | pulse, member-history, member, checkout, header, arabic-fonts pass |
+| #43 sigil | `0053d3c` | checkout.js and staff.js Arabic lines, pages, styles, CLAUDE-REPLY | 164/164 | all 14 suites pass (checkout 23, staff 12) |
+
+- **Found while doing #38's Arabic:** the Table Pulse first step said «استُلم» (received) and the last «تم الاستلام» (picked up), so a guest could read a new order as already collected.
+  - Now «وصلنا طلبك».
+  - "Last checked" reads «تحقّقنا آخر مرة الساعة {time}».
+  - A test keeps the two steps from ever reading alike; it fails on the old wording.
+- **#43:** the sigil now sits in the new Arabic paid line («عند الاستلام قل فقط {sigil}»). ChatGPT's flagged «تحقّق من الكود» became «الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته». The reserve page loads neither checkout nor sigil (test updated).
+- **No CI yet on these three:** they are stacked; each gets CI when retargeted to main after #29 merges.
+- **NOT verified:** live ordering, phones, the live site.
