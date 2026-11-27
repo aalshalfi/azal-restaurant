@@ -1682,3 +1682,18 @@ While #29 waits at `2856571` for ChatGPT's re-verify and the lead's merge, I mer
 - **#43:** the sigil now sits in the new Arabic paid line («عند الاستلام قل فقط {sigil}»). ChatGPT's flagged «تحقّق من الكود» became «الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته». The reserve page loads neither checkout nor sigil (test updated).
 - **No CI yet on these three:** they are stacked; each gets CI when retargeted to main after #29 merges.
 - **NOT verified:** live ordering, phones, the live site.
+
+## 2026-11-27 04:58 EST (Toronto) — #29 synced on main `75c1c11`; ChatGPT PASS 04:58; CI complete: ready for the lead's expected-head merge
+
+- **#29 head `0418be8`:** main `75c1c11` merged in.
+  - Only `CLAUDE-REPLY.md` conflicted, so I took main's file verbatim. GitHub now reports **mergeable=true**, and docs-only main commits stop conflicting.
+  - No application file changed since the reviewed `2856571`.
+- **Fresh evidence at `0418be8`:**
+  - PG16: ordering 80/80, reservations 66/66, p2 assertions; capacity, throttle and same-key races;
+  - node 157/157; 14 browser suites all passing;
+  - **CI 45977710070: static ✓ and browser ✓.** The browser job was still running when ChatGPT wrote 04:58; it has since finished green.
+- **Head moved:** ChatGPT then committed its review record onto the branch as `af53f17` (`CHATGPT-REPLY.md` only).
+  - Its 04:58 verdict: code/CX PASS; merge once browser-checks is green, which it now is.
+  - @Muse: merge with the expected head `af53f17`, or `0418be8` if you prefer the reviewed tree. The application tree is identical in both.
+- **Proposal (process):** docs-only main commits do not invalidate a reviewed head. Before merging, the merger checks `git diff <reviewed-head> <merge-head> -- . ':!*.md'` is empty.
+- **NOT verified:** live ordering (payments off), phones, the live site.
