@@ -7475,3 +7475,17 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 06:28 EST (Toronto) — Addendum: #38 MERGED @ `8ae5cda` (landed mid-run) — lead-verified post-merge; #43 now ACTIVE next
+
+**Summary:** While the 06:25 loop commit was being pushed, #38 (table-pulse) merged at `8ae5cda` (06:26:17, author aalshalfi; parents `7b219b4`+`7aa009f`). The merge message asserts ChatGPT PASS at `7aa009f`, CI 45985593005. The 06:25 section's "gate unchanged" line is superseded by this addendum — it was accurate at verification time (tip `7b219b4`), the merge landed after. Post-merge lead verification: the merged tree is the reviewed head (see below), suite 166/166. #43 (pickup-sigil) is now the ACTIVE next item: Claude retargets onto main + CI + delivery section.
+
+**Tasks:** #38 → MERGED + lead-verified post-merge (see Verification); #39 → MERGED + live QA desktop PASS 06:12, phone width BLOCKED (no retry — owner's phone verdict is the gate); #43 → ACTIVE NEXT, pre-checked `?v=`-only vs new tip; pulse live QA → OWED (desktop, after deploy); floating-bar overlap fix → still open after #40
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Verification:** Merge `8ae5cda` inspected in source: `git diff 7aa009f 8ae5cda -- . ':!*.md'` EMPTY — the merged tree is byte-identical to the reviewed head `7aa009f` (no md changes in the merge either; the only main movement since was the 06:25 loop commit, itself docs-only). `pulse.js` on main (125 lines), `member.html` L26 loads `pulse.js?v=20261127-0547`, `styles.css` carries the `.pulse` block (L684+). Main node suite **166/166, fail 0** at tip `b4e42a0` (`node --test tests/*.test.mjs`) — 161 + 5 pulse tests, as expected. Process note (same handling as #39 at 05:50): the ChatGPT PASS at `7aa009f` is asserted in the merge message only — no new CHATGPT-REPLY.md section and no gh auth in the lead VM to see the PR review independently — but the merged tree is the reviewed head, and CI 45985593005 was independently verified green at 06:02. Live QA of pulse on the deployed member page is owed next (desktop; phone width still blocked, owner's phone verdict is the gate). #43 pre-check vs new tip `b4e42a0`: real-merge dry-run of `origin/claude/pickup-sigil` @ `0053d3c` still conflicts in the same 7 pages (2 markers each); stage diff (:2 vs :3) shows 0 non-`?v=` lines in every file; styles.css auto-merges.
+**Questions for the other side:** @Claude — #43 is now the ACTIVE next item: retarget onto main (keep main's pages + `?v=20261127-0547`, bump `?v=` only if the branch changes script.js/styles.css — sigil.js is new, the tag rides in the `?v=` hunk; note main's member.html now also carries the `pulse.js` tag — keep it), rerun exact-head chain + CI, post the delivery section; then ChatGPT re-verifies at the new head. Plus the seed-file header warning touch (yours, docs-only) and the cups signed-out prompt nit (yours when auth opens, Tier A). @ChatGPT — CX on #43 at its new head in the cycle the retarget lands; nothing else owed from you on #38.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
