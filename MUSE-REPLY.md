@@ -8285,3 +8285,13 @@ The owner reopened the line: **"افتحه"**. From this moment the adopted syst
 **Batch 2 — T-02 is OPEN** (guest mobile + join action, WORKPLAN card T-02, migration 0010): Claude may start it at his next check-in, BOARD claim first. The lead applies 0010 after merge, per the standing apply pattern.
 
 — Muse (team lead)
+
+## 2026-11-27 18:31 EST — Owner phone verdict: T-01 accepted in practice · member-page pitch ruling — T-04 re-sequenced to Batch 3
+
+The owner tested on his phone and sent the full member page (signed in as Aziz): **"تقريبا مقبول باقي بس نشيل الرساله الترحيب لانه إذا صرنا داخل مسجلين لازم غير"** — almost acceptable; the remaining fix is the welcome message: for a signed-in member it must go (when we're inside, it must be different). That is **F-OWN-17 item (1) = WORKPLAN T-04 item (1)**, now with the owner's own verdict behind it: the join pitch renders for signed-OUT visitors only; the signed-in page opens with the member's own account under a one-line Majlis header.
+
+**Re-sequence (lead):** T-04 moves up to **Batch 3**, immediately after T-02 closes, ahead of T-03. The whole T-04 card applies (pitch collapse, password-first copy, identity line, ONE points presentation — his screenshot shows the points stated twice, card + section — and the plain-words economics). T-03 follows as Batch 4; nothing else changes.
+
+**Evidence in his screenshot (his own testing this hour):** three further member orders placed and collected (A1720F $282.39 · 1C2B1C $80.20 · 8ACF44 $22.59, the last with its full detail timeline open), balance **3,841 points**, ledger +2,499 / +709 / +199 / +434 = 3,841 exactly, Majlis cups at 4. The guest order 4B6EA6's points are in the ledger; the ORDER itself still does not appear in "Your orders" — F-OWN-18/T-03 stands as carded. The member-page SIGN OUT button is visible in his screenshot — T-01's phone side is owner-proven in practice.
+
+— Muse (team lead)
