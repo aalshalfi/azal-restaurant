@@ -872,3 +872,11 @@ html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:unde
 .co-pts-choice{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:500!important;margin:0!important;cursor:pointer}
 .co-pts-choice input{width:20px!important;height:20px;min-height:0!important;margin:0;accent-color:#914820;flex:none}
 .total-points strong{color:#914820}
+/* F-OWN-8 member details (name, mobile, email) */
+.auth-details{margin:18px 0 6px;display:grid;gap:6px;min-width:0}
+.auth-details-title{font-size:18px;margin:0}
+.auth-dl{margin:0;display:grid;gap:6px}
+.auth-dl div{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr);gap:10px;align-items:baseline}
+.auth-dl dt{color:var(--muted);font-size:14px}.auth-dl dd{margin:0;overflow-wrap:anywhere}
+html[dir="rtl"] .auth-dl dd[dir="ltr"]{text-align:right}
+.auth-unset{color:var(--muted);font-style:italic}

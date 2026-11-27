@@ -40,7 +40,7 @@ test("sign in stores the session; requests carry apikey and bearer", async () =>
   await a.signIn("a@example.invalid", "secret123");
   assert.ok(JSON.parse(st.getItem(KEY)).access_token === "A1");
   const state = await a.state();
-  assert.deepEqual(state, { status: "signed_in", email: "a@example.invalid", name: "Amal", membership: "active", points: 279 });
+  assert.deepEqual(state, { status: "signed_in", email: "a@example.invalid", name: "Amal", phone: null, hasPhoneField: false, membership: "active", points: 279 });
   const q = s.calls.find((c) => /points_ledger/.test(c.url));
   assert.equal(q.init.headers.apikey, "anon-test");
   assert.equal(q.init.headers.Authorization, "Bearer A1");
@@ -104,7 +104,7 @@ test("shipped config is null or publishable-only; no secret-looking keys; member
 test("email code: request then verify stores a session; bad code maps to code_invalid", async () => {
   const st = mem();
   const s = server([
-    [/\/auth\/v1\/otp$/, (u, init) => { const b = JSON.parse(init.body); return b.create_user === true && b.email ? json(200, {}) : json(400, {}); }],
+    [/\/auth\/v1\/otp$/, (u, init) => { const b = JSON.parse(init.body); return b.create_user === false && b.email ? json(200, {}) : json(400, {}); }],
     [/\/auth\/v1\/verify$/, (u, init) => JSON.parse(init.body).token === "123456" ? json(200, tok()) : json(403, { msg: "Token has expired or is invalid" })]
   ]);
   const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
@@ -154,4 +154,42 @@ test("emailed link: requestCode passes redirect_to; adoptLink stores the session
   assert.equal((await a.session()).access_token, "LA");
   assert.deepEqual(await a.adoptLink("#error=access_denied&error_code=otp_expired"), { error: "link_invalid" });
   assert.equal(await a.adoptLink("#menu"), null);
+});
+
+test("F-OWN-2: mobile rule matches reservations and 0008 azal_phone(); sign-up needs name, email, mobile, password", () => {
+  const { normalizePhone: n, signUpProblem: p } = require("../auth.js");
+  assert.deepEqual(["(343) 999-0001", "1 343 999 0001", "+44 20 7946 0958", "343-999", "+0 123 456 7890", "", null].map(n), ["+13439990001", "+13439990001", "+442079460958", null, null, null, null]);
+  const ok = { name: "Huda", email: "h@example.invalid", phone: "3439990002", password: "longenough" };
+  assert.equal(p(ok), null);
+  assert.equal(p({ ...ok, name: "  " }), "name");
+  assert.equal(p({ ...ok, name: "a".repeat(81) }), "name");
+  assert.equal(p({ ...ok, email: "nope" }), "email");
+  assert.equal(p({ ...ok, phone: "12345" }), "phone");
+  assert.equal(p({ ...ok, password: "short" }), "password");
+});
+
+test("F-OWN-2/8: 0008 writes the phone only through validated paths", () => {
+  const sql = fs.readFileSync(path.join(root, "supabase/migrations/0008_profile_contact.sql"), "utf8");
+  assert.match(sql, /check \(phone is null or phone ~ '\^\\\+\[1-9\]\[0-9\]\{9,14\}\$'\)/);
+  assert.match(sql, /revoke update \(phone\) on table public\.profiles from anon, authenticated;/);
+  assert.match(sql, /revoke all on function public\.update_my_profile\(text, text\) from public, anon;\s*grant execute on function public\.update_my_profile\(text, text\) to authenticated;/);
+  assert.match(sql, /public\.azal_clean_name\(new\.raw_user_meta_data->>'display_name'\)/);
+  assert.match(sql, /insert into public\.memberships \(user_id\)/, "the 0003 membership step is kept in the trigger");
+});
+
+test("ChatGPT #60 review: phone edge cases are refused, never silently cleaned", () => {
+  const { normalizePhone: n } = require("../auth.js");
+  const cases = { "343abc9990001": null, "++1 343 999 0001": null, "+1+3439990001": null, "٣٤٣٩٩٩٠٠٠١": null, "343 999 0001 ext 2": null,
+    "+123456789012345": "+123456789012345", "+1234567890123456": null, " (343) 999-0001 ": "+13439990001", "343.999.0001": "+13439990001", "": null };
+  for (const [raw, want] of Object.entries(cases)) assert.equal(n(raw), want, JSON.stringify(raw));
+});
+
+test("lead 14:47: the email link never creates an account; unknown and known emails get the same answer", async () => {
+  const bodies = [];
+  const mk = (status, payload) => createAuth({ config: CFG, storage: mem(), fetch: async (url, init) => { bodies.push(JSON.parse(init.body)); return { ok: status < 400, status, json: async () => payload }; } });
+  assert.equal(await mk(200, {}).requestCode("known@example.invalid"), true);
+  assert.equal(await mk(422, { msg: "Signups not allowed for otp" }).requestCode("unknown@example.invalid"), true, "unknown email: same neutral success, nothing created");
+  assert.ok(bodies.every((b) => b.create_user === false), "every link request says create_user:false");
+  await assert.rejects(mk(429, { msg: "For security purposes, you can only request this after 60 seconds" }).requestCode("x@example.invalid"), { code: "rate_limited" }, "rate limits still surface");
+  await assert.rejects(createAuth({ config: CFG, storage: mem(), fetch: async () => { throw new TypeError("x"); } }).requestCode("x@example.invalid"), { code: "network" });
 });

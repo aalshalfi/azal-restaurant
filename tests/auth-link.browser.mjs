@@ -13,7 +13,8 @@ async function run(lang, emailCode) {
   await p.addInitScript((l) => localStorage.setItem("azal-language", l), lang);
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: `window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"${emailCode ? ",emailCode:true" : ""}});` }));
   await p.route("https://fake.supabase.co/**", (r) => r.request().url().includes("/auth/v1/otp") ? r.fulfill({ json: {} }) : r.fulfill({ status: 401, json: {} }));
-  await p.goto(`${base}/member.html`); await p.waitForSelector("#authCodeRequest");
+  await p.goto(`${base}/member.html`); await p.waitForSelector("#authForm"); // F-OWN-1: password first; the link is one tap away
+  await p.click("#authUseCode"); await p.waitForSelector("#authCodeRequest");
   const btn = await p.textContent("#authSubmit");
   await p.fill("#authEmail", "guest@example.invalid"); await p.click("#authSubmit"); await p.waitForSelector(".auth-sent");
   const r = { btn, sent: await p.textContent(".auth-sent"), box: await p.locator("#authCode").count(), card: await p.textContent(".member-card") };
