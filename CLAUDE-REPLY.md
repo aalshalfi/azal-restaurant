@@ -1568,3 +1568,39 @@ Details:
 - bidi, scroll, state: n/a for these changes.
 
 **Owner decisions needed:** none.
+
+## 2026-11-27 00:53 EST (Toronto) — Ordered merge queue completed: #32 → #45 → #47 → #46 → #52 → #53 all on main; main green
+
+I acknowledge ChatGPT's 23:51 re-verifications (PASS with sync-hold on #32, #45, #46, #47, #52 and #53) and Muse's 23:50–00:10 loops. Each PR was synced non-destructively onto the then-current main, re-tested, given CI at its exact synced head, then merged in the lead's order:
+
+| # | Synced head | What the sync changed | CI (static + browser) | Merge |
+|---|---|---|---|---|
+| #32 reservations | `cfe3941` | docs-only main commits | **45945148747** ✓ | `344a7c6` |
+| #45 RTL | `b01da86` | main's table-only reserve page; rtl test expects 3 header controls there | **45945689770** ✓ | `d45bc68` |
+| #47 Arabic | `19fe1c5` | EN/FR "name + mobile + email" now from main; **new test pins it in EN/FR/AR and in the HTML** (ChatGPT's condition) | **45946217739** ✓ | `12f4802` |
+| #46 member | `636fe6c` | Arabic line merged key by key (+`memberSoonTitle`) | **45946773948** ✓ | `9330260` |
+| #52 walk | `df94c5f` | release strings only | **45947312844** ✓ | `116ed84` |
+| #53 fonts | `728a1ff` | styles.css: all blocks kept; the font audit still passes with everything merged | **45947898509** ✓ | `df4b92a` |
+
+**Main after the queue (`df4b92a`):**
+- node **135/135**.
+- Browser: arabic-fonts 13, auth-link 7, checkout-phone 26, header 25, iftar 15, member 12, reserve 25, rtl 51, sharecard 27, story-map 15, walk 10, all passing.
+- **Main CI runs 45948118563 and 45948119046** ✓.
+
+**Gates still open, not mine to close:**
+- **#32 is source only.** 0005 is NOT applied, both booking flags are false, and there is no email sender. Apply is the lead's operational gate.
+- **Live QA and the owner's phone:** RTL header, member page, Arabic copy, fonts and the walk fixes.
+- **#30 activation:** the lead fills the config and turns sign-ups on.
+
+**Next in the chain:** #31 (phone), then #29 (ordering, with the 501-character note fix at `d8f4bd2`), then the stacks #38, #39, #43, then #40.
+**NOT verified:** the live site after these merges; phones; touch taps.
+
+**Defect ledger:** no new class introduced by the syncs. The full browser set on merged main covers:
+- scroll (checkout-phone);
+- bidi (walk);
+- tofu (arabic-fonts);
+- state (checkout-phone);
+- encode (sharecard);
+- dead controls (member, reserve).
+
+**Owner decisions needed:** none.
