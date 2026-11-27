@@ -536,7 +536,9 @@ function persistCart(){try{localStorage.setItem("azal-demo-cart-v1",JSON.stringi
 const $ = id => document.getElementById(id);
 function announce(msg){const s=document.getElementById("cartStatus");if(!s)return;s.textContent="";if(typeof setTimeout==="function")setTimeout(()=>{s.textContent=msg},50);else s.textContent=msg;}
 const dishName=id=>localizedProduct(products.find(p=>p.id===id)).name;
-const money = n => new Intl.NumberFormat(locale(),{style:"currency",currency:"CAD"}).format(n);
+// F-WALK-3 (lead walk 22:05): in Arabic the bidi algorithm scrambled "24.99 CA$" into "$CA 24.99" in the sticky bar and
+// cart lines. Every price is now its own left-to-right isolate (LRI ... PDI), with Intl's leading RLM removed.
+const money = n => {const s=new Intl.NumberFormat(locale(),{style:"currency",currency:"CAD"}).format(n);return language==="ar"?"\u2066"+s.replace(/\u200f/g,"")+"\u2069":s};
 const productGrid=$("productGrid"), cartDrawer=$("cartDrawer"), backdrop=$("cartBackdrop"), cartItems=$("cartItems");
 const cartCount=$("cartCount"), cartTotal=$("cartTotal"), checkoutButton=$("checkoutButton");
 const stickyCartBar=$("stickyCartBar"),stickyCartCount=$("stickyCartCount"),stickyCartTotal=$("stickyCartTotal");
@@ -594,6 +596,7 @@ sufraCompass?.addEventListener("click",e=>{
  sufraCompass.querySelectorAll("button[data-sufra-category]").forEach(x=>{const active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active))});
  renderProducts(category,"");
  if(sufraStatus)sufraStatus.textContent=t("sufraStatus"+category);
+ const guide=document.getElementById("sufra-guide");if(guide&&guide.open)guide.open=false; // F-WALK-5: close on select, dishes in view
  const reducedMotion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
  $("menu")?.scrollIntoView({behavior:reducedMotion?"auto":"smooth",block:"start"});
 });
@@ -604,7 +607,7 @@ $("cartClose")?.addEventListener("click",closeCart);
 backdrop?.addEventListener("click",closeCart);
 checkoutButton?.addEventListener("click",()=>{if(checkoutModal){closeCart();pickupState.keep=pickupState.choice;pickupState.plan=null;pickupState.choice=null;pickupState.showAll=false;if(checkoutMessage)checkoutMessage.textContent="";if(typeof clearRitual==="function")clearRitual();renderPickup();checkoutModal.classList.add("open");document.body.classList.add("locked")}});
 $("modalClose")?.addEventListener("click",closeModal);
-$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(typeof ritualKeys==="function"){ritualIds=[...cart.keys()];renderRitual();}if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${count} ${t("items")}. ${typeof pickupLabel==="function"?pickupLabel()+" ":""}${t("notSent")}`.replace(/\.\./g,".");/* F-WALK-1: a preview never destroys the guest's tray */renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
+$("placeDemoOrder")?.addEventListener("click",()=>{const count=[...cart.values()].reduce((a,b)=>a+b,0);if(typeof ritualKeys==="function"){ritualIds=[...cart.keys()];renderRitual();}if(checkoutMessage)checkoutMessage.textContent=`${t("thankYou")}. ${t("demoContains")} ${itemsLabel(count)}. ${typeof pickupLabel==="function"?pickupLabel()+" ":""}${t("notSent")}`.replace(/\.\./g,".");/* F-WALK-1: a preview never destroys the guest's tray */renderCart();const active=tabs?.querySelector("button.active");renderProducts(active?.dataset.category||"All",search?.value||"")});
 checkoutModal?.addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeModal()});
 toggle?.addEventListener("click",()=>{const open=nav?.classList.toggle("open")||false;toggle.setAttribute("aria-expanded",String(open))});
 nav?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{nav.classList.remove("open");toggle?.setAttribute("aria-expanded","false")}));
@@ -653,6 +656,8 @@ function pickupPlan(nowMin,c){
 function torontoMinutes(d){try{const p=new Intl.DateTimeFormat("en-CA",{timeZone:PICKUP.tz,hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d);return Number(p.find(x=>x.type==="hour").value)*60+Number(p.find(x=>x.type==="minute").value)}catch{return d.getHours()*60+d.getMinutes()}}
 const oneDot=x=>x.replace(/\.\./g,".");
 function fmtMin(m){return new Intl.DateTimeFormat(locale(),{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(new Date(Date.UTC(2026,0,1,Math.floor(m/60),m%60)))}
+// F-WALK-7: real plurals instead of "1 article(s)" (Arabic: one / two / 3-10 / 11+ forms).
+function itemsLabel(n){if(language==="fr")return n<=1?`${n} article`:`${n} articles`;if(language==="ar"){let c="other";try{c=new Intl.PluralRules("ar").select(n)}catch{}return c==="one"?"صنف واحد":c==="two"?"صنفان":c==="few"?`${n} أصناف`:c==="many"?`${n} صنفاً`:`${n} صنف`}return n===1?"1 item":`${n} items`}
 var pickupState={choice:null,showAll:false,plan:null,keep:null};
 function renderPickup(){
  const box=document.getElementById("pickupOptions");if(!box)return;
