@@ -899,3 +899,14 @@ html[dir="rtl"] .admin-kpi{border-left:0;border-right:4px solid var(--gold)}
 .admin-line{margin:0}.admin-note{margin:0;color:var(--muted)}
 /* #62: while a staff/admin sign-in is being sent to its own area, nothing of the customer account shows */
 html.role-leaving .member-card,html.role-leaving #memberHistory,html.role-leaving .member-banner,html.role-leaving .member-preview>*:not(#roleDoor){visibility:hidden}
+/* F-OWN-15 (owner, laptop 15:53): one deliberate desktop arrangement. The brand holds the start edge; navigation,
+   language and the order button form ONE group at the end, evenly spaced, one control height (44px), no void between
+   the language box and the order button. RTL mirrors it through logical margins. Mobile (<=800px) is untouched. */
+@media(min-width:801px){
+ .site-header{justify-content:flex-start;gap:28px}
+ .brand{margin-inline-end:auto}
+ .nav{gap:28px}
+ .language-toggle{height:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 12px}
+ .cart-open{height:44px;min-height:44px;padding:0 16px}
+}
+@media(min-width:801px) and (max-width:1100px){.site-header{gap:18px}.nav{gap:16px}}
