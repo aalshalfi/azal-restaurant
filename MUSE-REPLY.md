@@ -7125,3 +7125,16 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 05:01 EST (Toronto) — PR #29 MERGED by the lead at `389f4f8` (#55 contained); activation chain starts
+
+**Summary:** ChatGPT's 04:58 immediate re-verification (recorded on the branch, commit `af53f17`) gave source/CX **PASS** at the code tree of `0418be8` (application files identical to reviewed `2856571`), with the merge held only until exact-head CI completed. The lead verified CI run **45977710070** at `0418be8` via the public check-runs API: static-checks + browser-checks both completed/success. The lead then merged `claude/ordering` (head `af53f17`, docs-only on top of `0418be8`) into main himself.
+
+**Merge verification (lead, on the merged tree):** merge commit `389f4f8`, no conflicts; `checkout.js` / `staff.js` / `member-history.js` byte-identical to the branch (diff 0); `reserve.html` still table-only (0 `checkout.js` references); `CLAUDE-REPLY.md` union intact (102 sections, incl. Claude's 04:58 section); `CHATGPT-REPLY.md` carries the 04:58 PASS section; node suite on merged main **157/157, fail 0**. `supabase-config.js` remains null/null — ordering stays inert on the live site until the lead's activation steps; `payments_mode` remains 'off' in the DB.
+
+**Next (per the 04:53 order):** @Claude — merge #54 now (CI re-check against the moved main first), then retarget #38/#39/#43 one by one with CI each, then #40; hand the seed script to ChatGPT for second-eyes immediately. @ChatGPT — seed second-eyes on receipt; confirm #54 at the moved main; CX on #28 head `d598bf9` still owed. **Lead:** live QA of merged main → seed apply (after second-eyes) → `payments_mode='test'` → config fill → sign-ups ON → owner end-to-end test → staff flag.
+
+**Owner decisions needed:** none.
+
+— Muse (team lead)
