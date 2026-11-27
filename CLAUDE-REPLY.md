@@ -2282,3 +2282,158 @@ Nothing has merged since #58. No SQL has been applied by me.
   2. the F-OWN-17 member-page batch: pitch collapse, password-first copy, one points block, identity line, earn rate in plain words, and the dead `items` strings;
   3. F-OWN-16 (guest mobile, 0010, and the join button).
 - **16:50 addendum:** #65 synced at `d88203cac677f67a111c22d5215c3c6b7abde4f5`, CI **46072004549** ✓; node 33/33, browser 22/22 (449 checks). It is ready for the lead gate after #62. F-OWN-16 stays queued behind the F-OWN-17 member-page batch, per the lead's order.
+
+## 2026-11-27 17:20 EST (Toronto) — STUDY INPUT for SPEC.md (lead 17:12 order): target critique + per-surface standard + honest gap assessment
+
+Study only: no builds, merges or applies during the freeze. Every "have" below is checked against `main` at `0ba1020` (source) and the lead's live record; anything I could not check is marked **NOT verified**.
+
+### A. Critique of the target draft (الراية)
+1. **Agree** with the four customer jobs (browse, order and pay for pickup, reserve, belong to Majlis), the restaurant's ability to run it, and "done = every visible control works, live-proven".
+2. **Add "find and contact us"** as a fifth customer job. Address, hours, phone and map are what a first-time guest looks for first. Today the address is an owner-held fact. The SPEC should list it as a **launch blocker**, not a nice-to-have.
+3. **Add a sixth job, "trust and recover":** sign-out everywhere, password reset, receipts/emails, and a visible way to reach the restaurant about an order. The sign-out miss (F-OWN-19) came from not having this class written down.
+4. **Make "proven live" concrete:** for each journey, one named live test with its account type (guest / member / staff / admin), its device (phone / laptop) and its language. The owner's verdict closes the visual items; the lead's walk closes the functional ones.
+5. **Name the owner-held inputs in the target itself**, so they are never mistaken for team gaps: address, real menu/prices/photos, custom SMTP sender, real payment provider, reservation go-live, and the accountant's HST ruling (already decided per ETA/CRA, lead 12:51).
+
+### B. Per-surface standard: what each surface must contain, then the gap
+Status key: **HAVE** (on main and live-proven or source-proven) · **PARTIAL** · **MISSING** · **OWNER** (an owner-held input).
+
+**1. Visitor pages (home, menu, story, reserve, 404)**
+- **Must have:**
+  - one header arrangement, correct on desktop and mobile in EN/FR/AR;
+  - a direct language choice;
+  - menu with names, descriptions, prices and an add-to-order control;
+  - dish stories;
+  - visit block: address, hours, phone, map;
+  - honest preview/test notices shown once;
+  - no stale "opening soon" copy once launched;
+  - accessible (44px targets, focus visible), no horizontal scroll at 320px, real photos.
+- **Gap:**
+  - **HAVE:** header (mobile #33/#45; desktop #65, awaiting the owner's verdict); menu and stories; phone link; RTL; 320px checks; bread steps; Yemen map.
+  - **PARTIAL:**
+    - the language control is a cycling button, not a choice (F-WALK-13, vote queue);
+    - preview disclaimers repeat (F-WALK-12);
+    - meta descriptions still say "Opening soon" / "Preview site";
+    - the story map is cropped (F-WALK-14).
+  - **OWNER:** street address, hours confirmation, real photos and prices.
+
+**2. Checkout (order + pay for pickup)**
+- **Must have:**
+  - itemised summary (lines, quantities, unit prices) above the totals;
+  - subtotal / points / HST / total exactly as the server computes;
+  - pickup time choice with real capacity;
+  - guest **name + email + mobile**, or a member's details pre-filled and editable for this order;
+  - kitchen note;
+  - test-card payment now (real provider later);
+  - a confirmation with order code, sigil, pickup time and next steps;
+  - for guests, a real **"Join & collect these points"** action;
+  - every error recoverable without losing the cart;
+  - the place-order button never covers a field.
+- **Gap:**
+  - **HAVE:** server pricing/HST; points redemption at 10,000 increments (0006 + 0007, live); pickup slots and capacity; idempotent placement; test payments; sigil confirmation; note limit; sheet scroll fix.
+  - **MISSING:**
+    - **guest mobile** (F-OWN-16, needs 0010);
+    - **join action** (F-OWN-16; the text is dead today, seen again at 17:05);
+    - **itemised list in the sheet** (F-WALK-11).
+  - **PARTIAL:** sticky button vs card field at the scroll end (F-WALK-8, ChatGPT); members' profile phone not shown at checkout.
+  - **OWNER:** real payment provider.
+
+**3. Customer account / Majlis (member.html)**
+- **Must have:**
+  - one sign-in door: password first, link for existing accounts, **password reset**, sign-out;
+  - join form: name, email, mobile, password, with email confirmation;
+  - signed-in state: a one-line Majlis header (no sales pitch); an identity line (name, email, phone, **member number**); one points presentation with the rules in plain words (10 pts per $1; 10,000 = $10); edit my details; order history with full detail; guest points attaching after sign-up.
+- **Gap:**
+  - **HAVE:**
+    - password-first sign-in, the link for existing accounts only, and the join form with server validation (0008, live);
+    - edit details (name and mobile via RPC; email via Auth confirmation);
+    - order list plus full detail (#59); qahwa cups;
+    - the guest-claim loop (434 pts attached, lead 17:05).
+  - **MISSING:**
+    - **password reset** (not in `auth.js`);
+    - **member number** (no data model; ADM-2 scope);
+    - **session policy**: remember-me, idle timeouts, sign-out everywhere (F-OWN-12).
+  - **PARTIAL:**
+    - the join pitch still tops the signed-in page;
+    - copy still says "join with your email";
+    - points are shown twice;
+    - the identity line lacks email and phone;
+    - no plain-words points rules (F-OWN-17 1–5).
+  - **Open owner/lead question for the SPEC:** a single name field (built) or first + last name (relayed by ChatGPT as the owner's wish). It must be decided in the SPEC, not by drift.
+
+**4. Staff / kitchen (staff.html)**
+- **Must have:**
+  - a sign-out control;
+  - signed-in identity and branch;
+  - the open paid queue by pickup time, with the sigil and the guest's **phone (tap to call)**;
+  - accept, ready, hand over, and **reject with a required reason that is shown to the customer**;
+  - every action server-checked;
+  - a closed-orders view for the day;
+  - an alert on a new order;
+  - the shorter staff session limit.
+- **Gap:**
+  - **HAVE:** the queue, accept/ready/hand-over through `staff_update_order`, the sigil, branch-scoped RLS (27/27 matrix), routing from the shared door (#62, live PASS 16:54).
+  - **MISSING:**
+    - **sign-out** (F-OWN-19);
+    - **reject with reason** (Copilot task, not built);
+    - **guest phone on the ticket** (needs 0010);
+    - **new-order alert delivered** (0009 outbox is live but the sender is off, waiting on owner SMTP);
+    - staff session limit.
+  - **PARTIAL:** no closed-orders view; the identity line is not shown.
+
+**5. Admin (admin.html)**
+- **Must have:**
+  - a sign-out control and an identity line;
+  - today's overview (built);
+  - all-status order history with filters and full detail;
+  - a customer directory (name, email, phone, member number, points, orders);
+  - audited points adjustment;
+  - staff and branch management;
+  - the email outbox status (queued / sent / failed);
+  - later: inventory (ADM-5).
+- **Gap:**
+  - **HAVE:** the protected shell and the server role; today's overview with real data (live PASS 16:54); invalidation on sign-out.
+  - **MISSING:**
+    - **sign-out** (F-OWN-19);
+    - ADM-2 (history and directory, plus the member number);
+    - ADM-3 (adjustments);
+    - ADM-4 (staff/branches);
+    - outbox status view;
+    - ADM-5 (inventory).
+
+**6. Emails and notifications**
+- **Must have:**
+  - account confirmation, password reset and email change (Supabase Auth, branded);
+  - order placed, accepted, rejected with reason, ready, handed over to the customer;
+  - new order to the restaurant;
+  - all through the outbox, idempotent, never claiming "sent" for a queued message.
+- **Gap:**
+  - **HAVE:** Supabase default confirmation (used live by the owner at 07:31); the 0009 outbox with NEW_ORDER (sender hard-off).
+  - **MISSING:** the customer lifecycle events; branded templates; a sender.
+  - **OWNER:** custom SMTP / sender domain (SPF, DKIM, DMARC).
+
+**7. Reservations**
+- **Must have:** a table-only booking flow (party, date/time, name, mobile, email) with a confirmation email, plus staff visibility of bookings.
+- **Gap:** the source is built (0005) and the page is honestly closed. 0005 is not applied, there is no sender, and staff have no booking view. **OWNER:** go-live decision.
+
+### C. Completeness standard I will build to (a rule set for every step)
+1. Every authenticated surface has **identity + sign-out**, tested on the page itself.
+2. Every visible control does its real job; a control that cannot work is **not rendered**. It is never rendered disabled-but-styled-live.
+3. Every money figure comes from the server, and in Arabic every price is one LTR isolate.
+4. Every page passes 320px / 390px / 1280px in EN/FR/AR with no horizontal scroll.
+5. Every async answer is discarded after a sign-out or account switch.
+6. Every fix carries a test that fails without it; every delivery carries the exact SHA, CI ID and a NOT-verified line.
+7. No sync drops a script tag or translation key: the check runs page by page and key by key against main.
+8. Nothing is "done" until the lead's live walk ticks it; visual items need the owner's verdict.
+
+### D. Proposed build order once the line reopens (for the lead's SPEC sequencing)
+1. **F-OWN-19 sign-out** on staff and admin (small, a basic, safety-relevant).
+2. **F-OWN-16:** guest mobile (0010) and the join action.
+3. **F-OWN-17:** member-page cleanup, plus password reset.
+4. **Reject with reason** (if Copilot stays blocked, I take it).
+5. **ADM-2,** including the member number.
+6. **F-OWN-12** session policy.
+7. Customer email lifecycle on the 0009 outbox, sender still off.
+8. **ADM-3 and ADM-4.**
+9. Polish batch: F-WALK-8 to F-WALK-14.
+
+**NOT verified in this study:** the live site on the owner's devices; anything beyond the lead's 16:54 and 17:05 live records.
