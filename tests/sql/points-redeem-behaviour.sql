@@ -35,7 +35,7 @@ select zz_eq('invalid redeem config is rejected', zz_try('update public.app_sett
 set role anon;
 select zz_eq('anon cannot read redeem options', zz_try($$select public.redeem_options()$$), '42501');
 select zz_eq('anon cannot call the balance helper', zz_try($$select public.azal_points_balance('00000000-0000-0000-0000-0000000000d1')$$), '42501');
-select zz_eq('guest cannot redeem', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'g-key-0000000000001','Amal','amal@example.invalid',5000)$$), 'redeem_members_only');
+select zz_eq('guest cannot redeem', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'g-key-0000000000001','Amal','amal@example.invalid',10000)$), 'redeem_members_only');
 select zz_eq('guest order without points still works (default 0)', public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'g-key-0000000000002','Amal','amal@example.invalid')->>'total_cents', '677');
 reset role;
 
@@ -57,10 +57,10 @@ select (public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-000
 select zz_eq('10,000 pts on $55.97: discount 1000, HST on 4597 = 598, total 5195', (:'o1'::jsonb->>'subtotal_cents')||'/'||(:'o1'::jsonb->>'discount_cents')||'/'||(:'o1'::jsonb->>'tax_cents')||'/'||(:'o1'::jsonb->>'total_cents'), '5597/1000/598/5195');
 select zz_eq('points not spent at placement (balance still 25000)', (select sum(delta_points)::text from public.points_ledger), '25000');
 select zz_eq('same key, same cart, same points replays', case when public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1},{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2}]',null,null,'m1-key-000000000004',null,null,10000)->>'order_id' = :'o1'::jsonb->>'order_id' then 'same' else 'diff' end, 'same');
-select zz_eq('same key, same cart, different points is a conflict', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004',null,null,10000)$$), 'idempotency_conflict');
+select zz_eq('same key, same cart, different points is a conflict', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004',null,null,20000)$), 'idempotency_conflict');
 select zz_eq('same key, same cart, no points is a conflict', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004')$$), 'idempotency_conflict');
 select zz_eq('a declined card spends nothing', (public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_declined')->>'outcome') || '/' || (select sum(delta_points)::text from public.points_ledger), 'declined/25000');
-select zz_eq('paid: charged 5195', public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_ok')->>'total_cents', '5760');
+select zz_eq('paid: charged 5195', public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_ok')->>'total_cents', '5195');
 select zz_eq('paid: one redeem row of -10000, balance 15000', (select count(*) filter (where entry_type='redeem')||'/'||sum(delta_points) filter (where entry_type='redeem')||'/'||sum(delta_points) from public.points_ledger), '1/-10000/15000');
 select zz_eq('replay after payment still replays (no false points_insufficient)', public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004',null,null,10000)->>'replayed', 'true');
 -- two unpaid orders each wanting 10,000 with 15,000 left: both may be placed, only the first payment succeeds.
@@ -84,7 +84,7 @@ select zz_eq('cancel paid order 2: refunded', public.staff_update_order((:'o2'::
 reset role;
 select zz_eq('earn on 4597 paid pre-tax = 459 pts (none on the $10 points discount)', (select delta_points::text from public.points_ledger where order_id = (:'o1'::jsonb->>'order_id')::uuid and entry_type = 'earn'), '459');
 select zz_eq('cancel returned exactly 10000 once', (select count(*)||'/'||sum(delta_points) from public.points_ledger where order_id = (:'o2'::jsonb->>'order_id')::uuid and entry_type = 'redeem_refund'), '1/10000');
-select zz_eq('refund event is the amount charged (2499-500 + HST 260 = 1694)', (select amount_cents::text from public.payment_events where order_id = (:'o2'::jsonb->>'order_id')::uuid and event_type = 'refund_succeeded'), '1694');
+select zz_eq('refund event is the amount charged (2499-1000 + HST 195 = 1694)', (select amount_cents::text from public.payment_events where order_id = (:'o2'::jsonb->>'order_id')::uuid and event_type = 'refund_succeeded'), '1694');
 select zz_eq('final balance 25000 - 10000 + 459 - 10000 + 10000 = 15459', (select sum(delta_points)::text from public.points_ledger where user_id = '00000000-0000-0000-0000-0000000000d1'), '15459');
 select zz_eq('DB refuses a discount without points', zz_try($$update public.orders set discount_cents = 100, total_cents = total_cents - 100 where id = '$$ || (:'o3'::jsonb->>'order_id') || $$'$$), '23514');
 select zz_eq('DB refuses an inconsistent total', zz_try($$update public.orders set total_cents = total_cents + 1 where id = '$$ || (:'o3'::jsonb->>'order_id') || $$'$$), '23514');
