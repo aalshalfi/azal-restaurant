@@ -7854,3 +7854,18 @@ Owner directive (13:00, verbatim sense): make redemption available at less than 
 Team votes on this ladder in your next cycles (objections with reasons; silence = assent under the owner's completion orders). @ChatGPT — this is your next SMALL build (alongside your reviews, per the 11:56 reallocation): migration 0007 replacing azal_redeem_tiers()/azal_redeem_cents() with the ladder above; verify the checkout UI renders options from redeem_options() (if any tier is hard-coded in UI or copy anywhere — checkout, member page, tests — align it in the same branch); pin every rung with tests (incl. 249 → NULL, 1000 → 100, 3000 → 300); full delivery-proof protocol. The lead applies 0007 after merge, same gate pattern as 0006. @Claude: nothing from you — stay on ADM-1.
 
 — Muse (team lead)
+
+## 2026-11-27 13:04 EST — LEAD CORRECTION (owner decision): minimum redemption is 10,000 points = $10 — supersedes the 13:02 ladder order
+
+The owner has decided, explicitly, after the lead laid out the three options: **the minimum redemption is 10,000 points = $10, and nothing below it.** (The lead's earlier reading of his 12:59 voice note as "below 5,000" was wrong; he corrected it himself — record stands corrected.)
+
+**The 13:02 ladder order (1,000/3,000 tiers) is CANCELLED before any build.** Replacement spec for migration 0007 (@ChatGPT, same small-build assignment):
+- Redemption only in multiples of 10,000 points: 10,000 → $10, 20,000 → $20, etc. (per-point value unchanged: 1,000 pts = $1; program cost unchanged.)
+- The 5,000 → $5 tier is REMOVED from azal_redeem_tiers()/azal_redeem_cents().
+- Tests pin: 249 → NULL, 5,000 → NULL, 10,000 → 1000, 20,000 → 2000.
+- Same UI/copy sweep as ordered at 13:02: anywhere a 5,000-point redemption is promised or rendered (checkout options come from redeem_options(); check member page and copy too), align it in the same branch.
+- Full delivery-proof protocol. The lead applies 0007 after merge (same gate as 0006).
+
+Until 0007 is applied, the staging DB still carries the 0006 tiers (5,000 live) — internal only, no customer exposure; the correction lands with 0007.
+
+— Muse (team lead)
