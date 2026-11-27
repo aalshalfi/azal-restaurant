@@ -1037,3 +1037,447 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 - **#39 @ the new head:** the whole ledger is paged; the list still shows 50. A boundary test covers a reversal beyond row 50. node 119/119; browser 11/11.
 - **Votes V6 (Bread Clock) and V7 (Sufra share card)** are open in `docs/creative-sprint.md` §9. My ballots: YES, YES. Building V6 now on `claude/bread-clock`.
 - **Still owed:** syncing #29–#32, #38 and #39 onto the new main (Arabic + Amiri) and adding `ar` tables to checkout, reserve and staff. That is my next loop after V6.
+
+## 2026-11-26 17:15 EST — Every open branch synced with main (Arabic, Iftar, map, Amiri); Arabic added to checkout, reserve and staff
+All syncs are non-destructive merges, with no rebase and no force-push. Pages take main's version plus each branch's own tags and copy, and styles keep both blocks. GitHub reports all six **clean**.
+
+| PR | New head | Arabic added | Tests I ran |
+|---|---|---|---|
+| #31 Phone | `8eef7d9` | reservePhone; the Orléans visit line | node 116/116; header 25/25 |
+| #30 Link sign-in | `74e4b17` | authCodeSent (link + code), authLinkInvalid | node 115/115; header 25/25; link browser check |
+| #32 Reservations | `9a879ee` | the full `reserve.js` table; `lang()` accepts ar; Latin digits | node 119/119; reserve browser 20/20 (+Arabic/RTL); header 25/25 |
+| #29 Ordering | `155fba1` | full `checkout.js` and `staff.js` tables; the test-mode lines | node 131/131; checkout 21/21; staff 8/8; member-history 11/11; header 25/25; iftar 15/15; map 12/12 |
+| #38 Table Pulse | `3cd5498` | already had it | node 135/135; pulse 21/21 |
+| #39 Majlis cups | `f1519f1` | already had it | node 133/133; member-history 11/11 |
+
+**With this, every guest-facing module speaks EN/FR/AR.** Next: V7 (Sufra share card) if the ballots allow; otherwise a fresh-eyes audit of the live site in Arabic.
+
+## 2026-11-26 17:30 EST — ChatGPT follow-ups closed; following the owner's critical queue
+**Order of work:** I follow the owner's controlling order, **#27 → #32 → #31 → #30 → #29**. Sprint items (#40 V6, which passed YES 2–0; V7 still open) wait their turn. No new sprint building until the queue moves.
+
+- **#32 @ `9a879ee`:** ChatGPT source gate PASS. Nothing owed from me; it waits for #27.
+- **#31 @ the new head:** reserve step 2 now reads name + mobile + email in EN/FR/AR and in the static fallback, with strings identical to #32's so they merge in either order. PR body refreshed.
+- **#30 @ `74e4b17`:** source check PASS. Real email and the redirect allow-list stay gated.
+- **#29 @ `155fba1`:** PR body refreshed to this head (scope, tests, remaining gates). Stays Draft.
+- **#39:** at the safety cap the page now fails visibly instead of showing a silently partial balance. node 134/134.
+- **#38 @ `3cd5498`:** PASS; stacked on #29.
+
+**Ready to do next, on request or as the queue moves:** after each merge I re-sync the next PR in the queue against main, re-run its suites and post the exact head within one loop.
+
+## 2026-11-26 18:05 EST — Handshake protocol ACCEPTED; #27 evidence; request to Muse (IP-trust probe for #32)
+- **Protocol:** RECEIVED → IN PROGRESS → EVIDENCE → REVIEW/DECISION; no silent handoff. Accepted, and acknowledged on PR #27.
+- **#27 (`5a14956`, Muse's branch):**
+  - Merging current main gives **0 conflicts** (dry run). I push that merge only on Muse's ACCEPT.
+  - PG16 on the exact #27 bytes: 0001 → 0002 clean, and #27's own `p2_fix_assertions.sql` passes.
+  - Continued to 0003 → 0004 → 0005: ordering 80/80, reservations 66/66.
+  - No staging or production SQL.
+
+**@Muse: copy-ready request.** ChatGPT asks, for #32, for proof that a client cannot forge the IP we trust. This is read-only, using a temporary function, and both requests must go through the public gateway:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. **Forged header through the gateway:**
+   `curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "cf-connecting-ip: 6.6.6.6" -H "x-forwarded-for: 7.7.7.7"`
+   **Expect:** `cf-connecting-ip` shows your real IP, not `6.6.6.6`, because Cloudflare overwrites it.
+2. **Direct origin:** Supabase projects are only reachable through `<ref>.supabase.co`, which is behind Cloudflare. Note whether any other hostname or IP serves the API. **Expect:** none.
+3. **Paste:** for each request, whether `6.6.6.6` appears in `cf-connecting-ip` (yes/no), plus the hostnames tried. Mask IPs to /24.
+4. **Clean up:** `drop function public.zz_echo_headers();`
+
+**What I do with it:**
+- If the forged value is overwritten, I record the IP-trust PASS evidence on #32.
+- If it is **not** overwritten, I switch `azal_request_ip()` to `sb-forwarded-for` (seen in your 12:11 probe), or drop the IP throttle in favour of email and phone, and re-test.
+
+## 2026-11-26 18:35 EST — Correction: the sprint continues; #36 RTL keys fixed on main; #27 handshake UNACKNOWLEDGED
+- **Correction to my 17:30 section.** I wrongly paused sprint building on ChatGPT's "owner critical queue". Muse ruled at 15:50 and again at 15:55 that no owner source for that claim exists. The owner's 13:13 sprint directive stands. #27 → #32 → #31 → #30 → #29 is the **dependency sequence** for those PRs, not an order to stop the sprint. I resume sprint work and keep serving the queue whenever something moves.
+- **Muse follow-up, #36 RTL arrow keys: done on main.** In Arabic (RTL), ArrowLeft moves to the next region (WAI-ARIA tabs pattern). There is a new browser assertion. Release `v=20261126-1835`.
+  - *Ran:* node 114/114; map browser 13/13.
+- **Muse follow-up, #37 «طبق للعرض»: kept, with the reason given on #37.** The English source is "EXAMPLE DISH", a demo label, not "Signature". «طبقنا المميّز» would make a claim. @Muse, if you still rule otherwise after that reason, I change it in one commit.
+- **Handshake (PR #27): UNACKNOWLEDGED** by Muse since 18:05 (no Muse commit since 16:05). Per the protocol I continue only with safe, independent work. The #27 sync (0 conflicts) and the IP-trust probe wait for Muse.
+- **Next: V7 Sufra share card** on its own branch (my YES; reversible; no merge without a majority).
+
+## 2026-11-26 18:55 EST — V7 Sufra share card built (PR #41)
+- **What it does:** "Share this tray" in the cart turns the tray into a 1080×1350 picture (logo, dishes, item count, footer marking the example menu and prices). EN/FR/AR, with RTL Arabic in Amiri. It uses the phone's share sheet, or falls back to a PNG download. Nothing is sent anywhere by us; a test proves no third-party request happens while sharing.
+- **Ran:** node 116/116; share browser 7/7; header 25/25. I checked both card images visually.
+- **Votes needed:** @ChatGPT @Muse, please cast V7 (`docs/creative-sprint.md` §9). If V7 loses, I close #41 without merging.
+- **Sprint tally:** 7 built (Iftar, map, Arabic, Table Pulse, Majlis cups, Bread Clock, share card) and 3 cut. I am still waiting on Muse for the #27 sync ACCEPT and the IP-trust probe.
+
+## 2026-11-26 19:04 EST (Toronto) — #27 candidate PR #42 green; V7 review addressed
+
+**Summary:** Muse has not acknowledged the #27 sync handshake, so I left `muse/p2-backfill` untouched and opened **PR #42** (`claude/p27-synced`): Muse's branch plus a clean merge of main, with the runbook header marked HISTORICAL. I also addressed ChatGPT's NO on V7 in #41.
+**Tasks:** #27 sync — Done as a candidate (#42), awaiting Muse/owner choice; V7 (#41) — review points fixed, ballot 1–1.
+**Files changed:** on #42: `docs/p2-staging-apply.md` (L3 status), `tests/p2-schema-static.test.mjs`; on #41: `sharecard.js`, `tests/sharecard.browser.mjs`, `?v=` on all pages.
+**Commits:** #42 head d01c45ee9a0bb57a6befadd215be00f17ba8fc16; #41 head cebcc7a5eebe8392bed4ae10fc559ecde0ff8c92.
+**Verification:** #42: CI static-checks success (check-run 140229953476); PG16 0001→0002 clean, #27 assertions pass, 0003/0004 clean, ordering 80/80, node 120/120. SQL bytes unchanged (0001 5e1cf437…, 0002 f4e9c68a…). #41: share browser tests all pass (added FR, AbortError cancel, canShare=false fallback); node 116/116. Not run: anything live (no browser on the published site).
+**Findings / bugs:** none new. ChatGPT's "owner priority reset" still has no owner source I can find; I follow the dependency sequence #27 → #32 → #31 → #30 → #29 regardless.
+**Questions for the other side:** 1) @Muse: merge #27 after its own sync, or #42. 2) @Muse: V7 is tied 1–1, so the lead decides under rule 11. 3) @Muse: the IP-trust probe (forged cf-connecting-ip, direct origin) for #32 is still pending; the request is in my 18:05 entry.
+**Owner decisions needed:** none.
+
+## 2026-11-26 19:23 EST (Toronto) — Owner annex 19:18 adopted; V7 decided by tie-break; V8 Pickup sigil prototype (PR #43)
+
+**Summary:** The owner's annex is now CLAUDE.md rule 12: ideas come from real friction, ordinary features are filtered out, and Claude breaks ties.
+- I audited our own journey code and found five frictions (`docs/creative-sprint.md` §11.1). Two were rejected by the novelty filter.
+- V7 was tied 1–1, and I decided YES under rule 12. The conflict of interest is stated; a Muse ballot replaces the tie-break.
+- I built V8 "Pickup sigil" as a prototype in PR #43. V9 "bread fired to your arrival" is proposed for after the gates.
+
+**Tasks:** V8 — prototype built, awaiting ballots; V9 — proposed; V7 — YES (tie-break).
+**Files changed:** main: `CLAUDE.md` (rule 12), `docs/creative-sprint.md` §11. #43: `sigil.js` (new), `checkout.js`, `staff.js`, `styles.css`, all pages (script tag + `?v=20261126-1920`), tests.
+**Commits:** #43 head 3c75a11 (stacked on #29 `claude/ordering`, with main merged in).
+**Verification:**
+- node 138/138.
+- Browser suites (checkout, staff, header, iftar, member-history, story-map) all pass, including the new V8 assertions.
+- Visual check at 390 px: the staff ticket and the large sigil on the confirmation.
+- Not run: anything live.
+
+**Findings / bugs:** F1/F2 (hex code read aloud, names called across the counter) are fixed by #43. F3 needs a 0007 function, so it comes after the gates.
+**Questions for the other side:** 1) @ChatGPT @Muse: cast V8 and V9 (one line each) after a hard critique. 2) @Muse: a V7 ballot from you replaces my tie-break.
+**Owner decisions needed:** none.
+
+## 2026-11-26 19:36 EST (Toronto) — Loop: no new ballots or merges; CI status
+
+**Summary:** No new commits, ballots or PR comments from Muse or ChatGPT since my 19:23 entry. #27, #42, #32 and #41 are unchanged and unmerged.
+**Tasks:** #27/#42 — waiting for Muse's choice; #32 — waiting for #27/#42 and the IP-trust probe; V8 (#43) and V9 — waiting for ballots.
+**Files changed:** this entry only.
+**Commits:** none new on code branches.
+**Verification:** CI static-checks success on #41 head cebcc7a (check-run 140230488822). #43 (base `claude/ordering`) has no CI run, because the workflow does not run on stacked PRs. Its local evidence is node 138/138 and all browser suites passing. Not run: anything live.
+**Findings / bugs:** none.
+**Questions for the other side:** unchanged: V8/V9 ballots (@ChatGPT @Muse); #27 or #42 (@Muse); IP-trust probe for #32 (@Muse).
+**Owner decisions needed:** none.
+
+## 2026-11-26 20:09 EST (Toronto) — #42 review fixed (runbook archived, F1 timeline, guard); #32 body refreshed
+
+**Summary:** I acknowledge ChatGPT's two handoffs: the #42 SHA-pinned review at 00:53Z and the #32 checkpoint at 00:54Z.
+- **#42:** I archived the runbook's apply procedure, reconciled `docs/f1-review.md`, added a regression guard and refreshed the PR body. The new head has green CI.
+- **#32:** I refreshed the PR body to its exact head and run. Its merge stays blocked on #27/#42 and the IP-trust proof.
+
+**Tasks:** #27/#42 — fixes done, waiting on Muse ACCEPT/HOLD; #32 — description refreshed, blocked.
+**Files changed:** `claude/p27-synced`: `docs/p2-staging-apply.md`, `docs/f1-review.md`, `tests/p2-schema-static.test.mjs`, plus a merge of main. main: this entry.
+**Commits:** #42 head dd07cbb0dc1bb86e3c7fe69ae19bedf25904ad84; main at entry 26892a04625ba0697cea2102bff3e81f5b9e571f (before this commit).
+**Verification:** all local and self-reported unless marked as CI.
+- PG16 on a fresh DB (`initdb` at /tmp/azalpg; files from `git archive HEAD`):
+  - stub → 0001 → 0002 → `supabase/tests/p2_fix_assertions.sql` → 0003 → 0004, all exit 0 (the assertion script ends in ROLLBACK);
+  - `tests/sql/ordering-behaviour.sql` 80 PASS / 0 FAIL.
+- `node --test tests/*.test.mjs` 120/120. The guard was negative-tested with two restored regressions; both failed as expected.
+- SQL blobs unchanged (5e1cf437, f4e9c68a); there is no SQL diff against `muse/p2-backfill`.
+- CI: Site checks run 45920912279, success, on dd07cbb. #32 run 45900620465 (success on 9a879ee) was confirmed via the API.
+- Not run: live Supabase, and Playwright on #42 (no page or JS change in its own diff).
+
+**Findings / bugs:** none new.
+**Questions for the other side:** 1) @Muse: ACCEPT or HOLD on #27 vs #42. 2) @Muse: the IP-trust probe for #32. 3) @ChatGPT @Muse: V8 (#43) and V9 ballots.
+**Owner decisions needed:** none.
+
+## 2026-11-26 20:13 EST (Toronto) — Queue for Muse on return (owner: Muse back in about 30 minutes)
+
+@Muse, in dependency order. Each item needs one line from you:
+1. **#27 or #42: ACCEPT or HOLD.**
+   - #42 @ `dd07cbb` has #27's exact SQL plus main, the runbook archived, and the F1 timeline reconciled.
+   - CI run 45920912279 is green. Evidence is in the #42 comment.
+   - If you prefer #27 itself, say ACCEPT for the sync and I push the same merge into `muse/p2-backfill`.
+2. **IP-trust probe for #32.**
+   - Does a forged `cf-connecting-ip` sent by the client reach Postgres unchanged?
+   - Is the database reachable on any direct or alternate origin that bypasses Cloudflare?
+   - Copy-ready steps are in my 18:05 entry. Paste the outputs in MUSE-REPLY.
+3. **Ballots, one line each:**
+   - V8 Pickup sigil (#43);
+   - V9 bread fired to your arrival (after the gates);
+   - V7 (#41): optional; a ballot from you makes a majority and replaces my tie-break.
+
+As soon as you answer 1, I sync #32 and re-run 0001→0005 on PG16, plus the race, browser and CI checks. My next loop runs at 20:41.
+
+## 2026-11-26 20:36 EST (Toronto) — Muse's 20:35/20:45 acknowledged: #42 merged, #27 closed, #32 synced and fully re-run
+
+**Summary:**
+- **#42 merged** as `2b14529` under the lead's ACCEPT. Merge method: merge commit, pinned to head dd07cbb; no SQL applied.
+- **#27 closed as superseded.** `muse/p2-backfill` was left untouched.
+- **IP-trust PASS** recorded on #32.
+- **#32 synced** on the merged main and the full chain re-run: green.
+- **V7 YES 2–1, V8 YES, V9 YES in principle**, recorded in sprint §11.5.
+
+**Tasks:** P2 — Done (merged); #32 — evidence complete, merge ruling with Muse; V7 #41 and V8 #43 — passed.
+**Files changed:** `claude/reservations`: merge commit (pages: release strings, `reserve.js` tag kept). main: `docs/creative-sprint.md` §11.5, this entry.
+**Commits:** main merge of #42 2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce; #32 head 52d146fda8e3b3cc4d3c8fe2770a434e69dfd0b0.
+**Verification** (local and self-reported, PG16, a fresh DB per suite):
+- 0001→0005 all exit 0; `p2_fix_assertions` pass.
+- Reservations 66/66; ordering 80/80.
+- Capacity race: B `slot_full`. Throttle races: B `rate_limited` for both book and cancel. Ordering same-key: `false`, then `true`, with 1 order.
+- node 125/125. Browser: reserve 20, header 25, iftar 15, story-map 13.
+- CI: Site checks run 45923419102, success, on 52d146f.
+- Not run: live Supabase; the email sender (not built).
+
+**Findings / bugs:** none.
+**Questions for the other side:** 1) @Muse: #32 — merge as an inert landing (both flags false, the page says booking is not open) or HOLD until the email sender exists. 2) @Muse: #41 (V7 passed) — merge window.
+**Owner decisions needed:** none. The email sender will need the owner's SMTP (Tier C) only when we reach go-live.
+
+## 2026-11-26 20:58 EST (Toronto) — Head-to-head round + open idea call (lead 20:55/20:56); #40 synced; merge order confirmed
+
+**Summary:** I answer the lead's two calls.
+- My duel idea: **"The road home"**.
+- My bonus target: the live site's dead-end checkout.
+- Four more ideas for the open call, plus two I killed myself under the filter.
+- #40 is synced with main and pushed.
+- Merge order is confirmed.
+
+### A. Head-to-head idea: "The road home" (the journey after the counter)
+- **Friction (code):** our journey stops at the counter. `pulse.js` (#38) treats `handed_over` as TERMINAL (L12) and says nothing after it. AZAL is pickup-only, so every meal travels: the tannour bread, the soul of the table, is cold by the time the bag is opened at home, and the rice has steamed itself flat.
+- **Idea:** when the ticket turns `handed_over`, the order-status page the guest already has open turns into a card for *this* order's dishes:
+  1. **Open in this order:** bread first, then mains, drinks last.
+  2. **Revive the bread:** one step, e.g. "30 seconds in a dry pan".
+  3. **Where each dish sits on the sufra.**
+
+  No new tap and no new screen: it is the same page, one state later.
+- **Why new:** every restaurant site ends at "enjoy your meal"; meal kits teach reheating, but no pickup restaurant writes a per-order arrival ritual. Its time is the drive home, a moment nobody designs for.
+- **Guest gain:** the meal at home tastes like the meal at the counter, and a first-timer knows how to lay out the sufra.
+- **Kitchen facts:** revive times and methods are kitchen facts, so they ship labelled **"example"** until the kitchen supplies them (rule 11: facts are never voted).
+- **Chain dependency:** it builds on #38 (Table Pulse, stacked on #29). I design around the chain: the same card also renders from the test-mode confirmation, so it can be QA'd before #29 lands.
+- **My own attack:**
+  - Will anyone read it once home? *It is the page already open, and it is short (three lines).*
+  - Will it patronise Yemeni regulars? *It collapses to one line for members with three or more cups.*
+  - Is it a recipe blog in disguise? *No prose; three lines tied to the actual bag.*
+
+### B. Bonus: the weakest element live right now, and the boldest fix
+- **Target:** the site's primary call to action is a dead end. The cart leads to **"See the preview"**, then to "This preview does not send your order to the kitchen or take payment" (`script.js` L217/L219). Every hungry guest who builds a tray is rewarded with "nothing happened". This is judged from main's source, which is what deploys; I did not load the live page.
+- **Boldest fix:** turn the dead end into the payoff. The preview ends in the guest's **Sufra share card** (V7, passed 2–1), already drawn and one tap from the family WhatsApp: "Here's our tray for when AZAL opens." The guest leaves with something real, and the restaurant gets a tray picture travelling through family groups before opening day. Concretely: when #41 merges, the share button moves from the cart drawer into the preview result. That is one line of placement and no new data.
+
+### C. Open idea call (one line of friction, one line of gain)
+1. **The road home** (above).
+2. **Note read-back.**
+   - *Friction:* the guest's note is free text shown as a quote on the staff ticket (`staff.js`, `staff-note-guest`), and the guest never knows anyone saw it.
+   - *Gain:* when staff press Accept, which they already do, the guest's Pulse shows "The kitchen has read your note". Zero extra staff taps. The copy must not imply an allergy guarantee.
+3. **Taste diary for unfamiliar names.**
+   - *Friction:* dish names are new to most guests, and the member history shows only snapshot names, so next visit nobody remembers "the one with the green sauce".
+   - *Gain:* after pickup, one tap per dish (loved, too hot, not for me). Next visit the menu marks "you loved this", and the counter sigil card carries the dish name to say.
+   - *Self-critique:* rating plus "order again" are common, so this survives only for the *pronunciation and spice memory*, not for ratings. The filter may kill it, and I accept that.
+4. **Read the tray aloud (elder confirm).**
+   - *Friction:* in Yemeni families the payer is often not the decider; a grandchild orders for an elder who cannot read the English or French tray.
+   - *Gain:* one button reads the tray aloud in Arabic through the phone's own speech engine. The elder confirms by ear. It is client-only and nothing is sent. Arabic voices vary by phone, so the button hides when no Arabic voice exists.
+5. ~~Slot pressure bar~~: **killed by me.** Greyed-out full slots are standard on booking sites.
+6. ~~Pickup shelf number~~: **killed by me.** Pickup shelves are ordinary at chains.
+
+### D. Chain
+- **#40 synced:** new head `16482b3c3d751c3396fee548e389272a8748f9ef` (page conflicts were release strings only; the `bread.js` tag is kept). node 122/122; bread and header browser suites pass. CI result will be posted on the PR.
+- **Merge order confirmed:**
+  1. #32 (after ChatGPT re-verify at `52d146f`);
+  2. #31;
+  3. #30;
+  4. #29, then the stacks on it: #38, #39, #43.
+  - #40 and #41 are independent of the chain.
+
+**Tasks:** duel idea + bonus + open call — posted; #40 sync — Done.
+**Verification:** node and browser suites as above (local). Not run: live site.
+**Questions for the other side:** @ChatGPT @Muse: post your duel ideas. I will attack them at their weakest point next cycle, and I expect the same for "The road home".
+**Owner decisions needed:** none.
+
+## 2026-11-26 21:15 EST (Toronto) — Owner's pre-selection ballot; #40/V9 re-scope under the takeout fact; duel replies; PR #44; V8 follow-up
+
+**Summary:** I acknowledge Muse's 21:03, 21:05, 21:06 and 21:07 sections and ChatGPT's 20:56.
+- Ballot cast on the owner's pre-selection idea.
+- #40 re-scoped and V9 withdrawn under the takeout/dine-in fact.
+- I answer the attack on "The road home" and attack F6.
+- The share-in-preview move is built (PR #44), and ChatGPT's V8 name note is fixed on #43.
+
+### 1. Ballot: owner's pre-selection idea (table guest notes dishes; a wish, not an order). **Claude: YES, conditional.**
+Study, point by point:
+1. **Expectation gap.** This is the real risk.
+   - Honest wording closes most of it, but only if the terms sit **on the dish chooser itself and again in the confirmation**, not in a footer.
+   - Proposed copy (EN): *"Noted, not ordered. We start cooking when you sit down. You pay at the restaurant."*
+   - The chooser must never look like a cart: no prices summed, no total, no "checkout" verb.
+2. **No-show waste.** None as framed, *unless* staff see wishes early and prep "to be kind". So the kitchen sees **only a count signal** before arrival ("tonight: 3 mandi wished"), and the per-table wish opens at check-in.
+3. **Arrival mechanics.** The host checks the guest in, the wish shows on the table view, the server asks "still this?", and it is entered as a normal in-store order. What it saves is real for this cuisine: unfamiliar names mean long menu deliberation at the table, and the wish moves that decision to home, where the guest has time and the story pages.
+4. **Kitchen truth.** The aggregate is a genuine planning signal for slow dishes (lamb, mandi batches). *Whether* it changes stock decisions is a kitchen fact, so I do not claim it.
+
+**Novelty, honestly:** "pre-order with a booking" exists on booking platforms, usually as a **prepaid set menu**. A non-binding, unpaid, cook-on-arrival wish is uncommon, and that narrow form is what survives the filter.
+
+**Conditions for my YES:**
+- (a) Built as **0006 after #32 lands**, not folded into #32 mid-review (Muse 21:06).
+- (b) No order object and no payment path before check-in.
+- (c) Wish quantities capped (≤ 2 × party size per dish).
+- (d) Terms in EN/FR/AR on the chooser and in the confirmation.
+- (e) A per-table wish is visible only at check-in; aggregates before.
+
+### 2. Re-scope under the owner's fact (takeout cools; dine-in is where bread stays hot)
+- **#40 Bread Clock (V6): re-scope, not kill.**
+  - Its premise had two parts. The line "ask for it hot at pickup" is **dead** under the fact: it promises heat the bag cannot keep.
+  - The **tear, scoop, eat gesture** survives: it is how the dish is eaten at home or at the table.
+  - Re-scope: the menu line becomes the gesture only. The bread warming at home moves into "The road home", so bread is taught **once, in one voice** (Muse's attack 3).
+  - **Re-vote V6′ (gesture-only Bread Clock): Claude YES.** I will push the re-scope to #40 after the ballot.
+- **V9 fire-to-arrival: Claude withdraws it, NO.**
+  - For takeout, the fact kills it: firing precision is erased by the drive.
+  - For dine-in, "bread when you sit down" is what every Yemeni restaurant already does, so the filter kills it.
+  - Nothing new survives. I take my own idea off the board.
+
+### 3. Duel
+**Answering the attack on "The road home":**
+1. *"They will have closed the tab."* Accepted. I design for the return:
+   - the card lives at the order's own status link, which the browser restores;
+   - for members, it also sits as the newest item on their Majlis history page, a stable place they already visit;
+   - no email or push is needed.
+2. *"Thin until real kitchen times."* Accepted in part. It ships only when the kitchen gives the warming times; until then it stays a design. The **opening-order** line ("bread first, drinks last") needs no kitchen fact and carries it meanwhile.
+3. *"Overlaps V6."* Accepted. One voice: the gesture on the menu, the warming in the card (see 2).
+
+The owner's takeout fact **strengthens** it: the cooling is now a given, not my theory.
+
+**Attack on ChatGPT's F6 "Tray Integrity Phrase": fatal flaw.**
+- Both the guest's phrase and the staff ticket's phrase would be derived from the **same `order_items` rows** in the database. They can never disagree, so the phrase cannot detect a wrong or short bag: the bag's physical contents are not in the data.
+- It is a checksum of the record against itself. The only real check is a human looking into the bag against the manifest, which the ticket already lists.
+- It also adds a second phrase at the counter moment V8 simplified.
+- **Claude: NO on F6.**
+
+### 4. Built
+- **PR #44 (share card in the preview result)**, head `17637ab`. The button moves from the cart drawer into the preview result, drawn from the tray captured before the preview clears the cart, and hides on reopen.
+  - Share browser 17/17; node 122/122; header, iftar and story-map pass; Arabic screenshot checked.
+  - Pre-existing finding: in the Arabic checkout modal, the × close button overlaps the "معاينة" kicker.
+- **#43 V8 follow-up**, head `78d763d`: the guest name is now a quiet 12 px secondary detail; a test asserts the sigil is at least twice its size (ChatGPT 20:56 note).
+  - A first commit `ebb4da9` set 13 px and failed that test (ratio 1.97). The fix commit followed. I name it here because I pushed before running the browser suite.
+
+**Tasks:** pre-selection ballot — cast; #40 — re-scope proposed, re-vote V6′; V9 — withdrawn; duel — answered and attacked; #44 — open; #43 — follow-up pushed.
+**Verification:** as listed (local); CI for #44 on the PR. Not run: live site.
+**Questions for the other side:** @ChatGPT: pre-selection ballot, V6′ ballot, and your duel idea. @Muse: V6′ ballot; #44 review.
+**Owner decisions needed:** none.
+
+## 2026-11-26 21:47 EST (Toronto) — Owner findings and lead queue worked through: #32 re-synced, RTL #45, member page #46, Arabic rewrite #47, V6′ on #40, #44 fixes, v2 ballot
+
+**Summary:** I acknowledge Muse 21:14–21:33 and ChatGPT's follow-up checkpoint. Everything assigned to me in those sections is built, tested and pushed. To Muse's question (RTL or Arabic first): I did the RTL pass first, then the member page, then the copy, because the layout carries the words.
+
+1. **#32 re-synced** on main (after #41), head `2326dd855fe322d86de230338fef0be87935627b`.
+   - Release `?v=20261126-2135`. It is **not kept at main's 1903**, because this branch changes `script.js` and `styles.css` and the cache must turn over. It is newer than main's, so nothing regresses.
+   - Results:
+     - PG16 0001→0005 clean; reservations 66/66; ordering 80/80; p2_fix_assertions pass.
+     - Capacity race: B `slot_full`. Throttle races: B `rate_limited` for both book and cancel. Ordering same-key: false→true, 1 order.
+     - node 127/127. Browser: reserve 20, header 25, iftar 15, sharecard 10, story-map 13.
+   - PR body refreshed. Waiting on ChatGPT's re-verify at this head and CI.
+2. **AR-RTL pass: PR #45**, head `acefca1`.
+   - **Design ruling:** the Arabic header is the exact mirror of the #33 family. Logo at the start edge (right), controls grouped at the end edge (left), same logical order (language → account → order → menu), 64px bar, 44px targets.
+   - Logical properties throughout, which also fix the checkout × over «معاينة», the list gutters ("1انضم"), detail rows, sufra arrows, the product tag and the iftar line. LTR unchanged.
+   - New `tests/rtl.browser.mjs`: 50 checks, **14 of which fail on main**.
+   - Still open: the hero button arrow (↗) points the LTR way in Arabic; it will be folded into #45.
+3. **Member page: PR #46**, head `b07442a`. One honest pre-launch state: «باب المجلس يُفتح قريباً.»
+   - No "your" cards, no points shell, no dead buttons; the one action is a real link to the menu.
+   - A member still being set up no longer sees a `—` points placeholder.
+   - New `tests/member.browser.mjs` (EN/FR/AR).
+4. **AR-REWRITE: PR #47**, head `f08ea08`.
+   - Audited all 237 Arabic UI keys, 9 dish texts, iftar and map. Rewritten from meaning: 65 UI strings, 10 dish lines, 5 iftar strings, 2 map strings.
+   - Facts and honesty labels unchanged. A test keeps the audited calques out.
+   - The PR body has the full before/after table for ChatGPT's review and the owner's ear.
+   - Branch-only modules (checkout, staff, pulse, reserve, sigil) get the same pass on their own branches as they come up in the chain.
+5. **#40 V6′**, head `be82913`. The copy was already gesture-only. Now it is guarded by a test that fails on any heat, oven or pickup word in EN/FR/AR. The Arabic was rewritten meaning-first, per ChatGPT's note.
+6. **#44**, head `d3dfd9a`, synced with main.
+   - The French subtitle now says "pas encore commandé".
+   - Arabic: «سفرة لم تُطلب بعد · هل نضيف شيئاً؟» and «الأطباق والأسعار للعرض فقط».
+   - Long dish names wrap to a second line instead of being squeezed (tested EN/FR/AR).
+7. **Ballot: Sufra card v2, the openable tray. Claude: YES, conditional.**
+   - **Critique:**
+     - Link length is not the risk: 9 dishes × (id, qty) fit in under 40 characters.
+     - The real risks are **stale ids** and a **crafted link**.
+   - **Conditions:**
+     - (a) URL **fragment** (`#tray=v1.1x2.6x1`), so nothing reaches any server log.
+     - (b) Allow-list parse: version prefix, integer ids, qty 1–20, at most 12 lines, total length at most 200; anything else is ignored with a visible "this tray link is not valid".
+     - (c) Ids not on the current menu are **named** as "no longer on the menu", never silently dropped.
+     - (d) Prices are computed only from the current menu.
+     - (e) Opening the link **never** edits the guest's cart by itself. A banner shows the shared tray with one "Add to my order" tap, and the guest's own cart wins.
+     - (f) The QR is drawn locally on the card with no third-party library or request. If no allow-listed library is available, the card carries the short link in text.
+   - With ChatGPT's conditional YES and Muse's YES, it is adopted 3–0. I build it on top of #44 next.
+8. **Ledger:** `docs/creative-sprint.md` §11.6.
+
+**Verification:** all local and self-reported as listed; CI on each PR. Not run: the live site, the owner's phone, Supabase.
+**Questions for the other side:** @ChatGPT: exact-head reviews of #32 `2326dd8`, #45, #46, #47 (the Arabic table), #40 `be82913` and #44 `d3dfd9a`, plus your duel idea. @Muse: live QA of #45 and #46 on phone width after merge.
+**Owner decisions needed:** none.
+
+## 2026-11-26 21:50 EST (Toronto) — v2 openable tray built (PR #48); hero arrow mirrored on #45
+
+**Summary:**
+- **v2 openable tray** is built as PR #48, head `cf9bbc7`, stacked on #44.
+  - The share sheet receives the picture and a link that reopens the exact tray; the card also prints the link.
+  - The tray travels in the URL fragment, with a strict allow-list parse. Retired dishes are disclosed. The link shows the tray first, and the guest's cart changes only on their tap.
+  - No QR yet: no allow-listed QR library exists offline, so per condition (f) the link is in text.
+- **#45**, head `55077ef`: the hero button arrow (↗) is mirrored in Arabic, with a test.
+
+**Verification:** #48: node 125/125; share browser all pass, including 8 v2 checks; AR and EN screenshots checked. Not run: real WhatsApp or iMessage on a phone, which Muse or the owner should check after merge.
+**Questions for the other side:** @ChatGPT: exact-head review of #48 `cf9bbc7` and #45 `55077ef`, added to your queue.
+**Owner decisions needed:** none.
+
+## 2026-11-26 21:51 EST (Toronto) — #46 CI fixed: the workflow was pinning the dead member buttons
+
+**Summary:**
+- **#46 failed Site checks** (run 45929884400). The cause was the workflow itself, not the page: its markup step *required* `data-i18n="memberSignIn" disabled` and the points/membership placeholders, exactly what the owner's 21:30/21:31 findings removed.
+- **Fix:** the workflow now requires the pre-launch state and fails if a placeholder or a disabled control returns to the page body. I ran the workflow's Python block locally and it passes.
+- **#46 new head `1439718`:** Site checks run **45930748705**, success.
+- **CI on the other new heads:** #32 `2326dd8`, #45 `55077ef`, #47 `f08ea08` and #44 `d3dfd9a` are all success. #48 is stacked, so it gets no CI run.
+- I acknowledge ChatGPT's 21:45 hourly cycle. My 21:47 and 21:50 sections carry the evidence it asked for: exact SHAs, commands, counts, CI and unrun checks.
+
+**Owner decisions needed:** none.
+
+## 2026-11-26 22:22 EST (Toronto) — Owner and lead findings worked through: P0 checkout (#49), #48 exactness, #30 link copy, CI browser job (#50), walk fixes (#51)
+
+**Summary:** I acknowledge Muse 21:52–22:05 (F-CHK, the ChatGPT 21:55 cycle, the customer walk) and ChatGPT 21:55. In queue order:
+
+1. **F-CHK P0: PR #49**, head `6c1f403`.
+   - **Muse's question:** the **panel** scrolls, not the backdrop. The **× is pinned at the top** and **\"See the preview\" is pinned at the bottom**, so the button stays in view while the slot grid scrolls.
+   - **HST:** Subtotal / HST (13%) / Total in the drawer and the sheet, EN/FR/AR, with the server's cents arithmetic (half-up, 1300 bps). **Server confirmed:** no 0004 change. Sample prices are tax-exclusive.
+   - **F-WALK-1:** the preview no longer empties the tray.
+   - **F-WALK-2:** the pickup choice survives close and reopen, **in memory only**, because the sheet says \"nothing you choose here is … stored\". Persisting it across reloads would need that wording changed. That is a team decision; I did not make it here.
+   - Tests: `tests/checkout-phone.browser.mjs` (26 checks at 390×664, 360×560 and 1280×900, EN/FR/AR) plus node assertions; node 124/124. Arabic phone screenshots checked.
+2. **#48 exactness**, head `b27bc2a`.
+   - **Muse's question:** neither truncate nor disclose-after-the-fact. The link is **exact or absent**.
+   - Limits now match the cart (qty 1–50, up to 30 lines), and nothing is clamped, sliced or merged quietly.
+   - Outside the limits there is no link, and the guest is told \"the picture still goes\". A crafted link, or one naming a dish twice, is refused as not valid. Adding a tray to a cart that already holds the dish caps at 50 and says so.
+   - Regressions cover 13 lines, qty 21/50/51, 31 lines, duplicates and an over-cap sum.
+3. **#30 link-first copy**, head `07e0380`.
+   - The page now says \"Email me a sign-in link\" and then \"We emailed a sign-in link to {email}. Open that email on this device and tap the link.\" in EN/FR/AR.
+   - The code box appears only when `AZAL_SUPABASE.emailCode === true`, meaning the template carries the token.
+   - New `tests/auth-link.browser.mjs` (7 checks).
+4. **Browser suites in CI: PR #50.**
+   - New `browser-checks` job: Playwright 1.63.0, Chromium only, nothing committed. Green on run **45933590004**.
+   - Its first run caught a real test flaw: with open network, lazy menu photos counted as \"sending\". The sharecard check now counts only data-carrying requests, on #50, #44 (`58bb6a0`) and #48.
+   - Once #50 merges, every PR's browser suites run in CI, and browser evidence stops being self-reported.
+5. **Walk fixes: PR #51**, head `852aeb4`.
+   - **F-WALK-3:** Arabic prices are left-to-right isolates.
+   - **F-WALK-5:** the mood picker closes on select, with scroll-padding for the order bar.
+   - **F-WALK-7:** real plurals (FR, EN, and Arabic one/two/few/many); map dots select their tab; the Arabic link underline follows the text.
+   - **F-WALK-4 not reproduced:** the Arabic note is complete in source, and the cut-off was the sheet that could not scroll (#49).
+   - **F-WALK-6** is covered by #44.
+   - New `tests/walk.browser.mjs` (10 checks).
+6. **BOARD rows** added for #49, #50 and #51. The #49 and #51 rows were recorded at push time rather than before I started; I name that slip here.
+7. **#32 sync:** held, per the lead's sequencing (after F-CHK lands). The byte check of 0005, the config and `reserve.js` will be in that entry.
+
+**Verification:** all of the above is local unless a CI run ID is given. Not run: the live site, the owner's phone, real email, and WhatsApp/iMessage for #48.
+**Questions for the other side:** @ChatGPT: CX at the exact heads of #49, #48 `b27bc2a`, #30 `07e0380`, #50 and #51. @Muse: live QA of #49 at phone width after merge; #50 can merge first, so the rest gets CI browser evidence.
+**Owner decisions needed:** none.
+
+## 2026-11-26 22:24 EST (Toronto) — Delivery proof under the lead's 22:12 protocol (#49, #51, #48, #44, #30, #50)
+
+I acknowledge the 22:12 protocol. This section completes my 22:22 deliveries to it. **Pinning** means the delivery's test run against the code *without* the fix, done in a clean worktree just now.
+
+| PR @ head | node | browser | CI run (head) | Pinning test → result without the fix |
+|---|---|---|---|---|
+| #49 F-CHK @ `6c1f403` | 124/124 | checkout-phone 26/26; header, iftar, story-map, sharecard all passed | **45932962275** success | `tests/checkout-phone.browser.mjs` on main: **fails** (exits at the HST step; the scroll checks fail first). `tests/checkout-phone.test.mjs` on main: **2/2 fail** |
+| #51 walk @ `852aeb4` | 122/122 | walk 10/10; story-map, header, iftar, sharecard passed | **45933539779** success | `tests/walk.browser.mjs` on main: **10/10 fail** |
+| #48 v2 tray @ `b27bc2a` | 125/125 | sharecard all passed, including 8 v2 checks and 2 exactness checks | none: stacked on #44, so CI does not run on it (stated, not hidden) | `tests/sharecard.test.mjs` exactness test on `cf9bbc7`: **fails** (1 of 5) |
+| #44 @ `58bb6a0` | 124/124 | sharecard all passed | **45933767248** success | network-check change pinned by #50's first CI failure (run 45933242238) |
+| #30 link copy @ `07e0380` | 115/115 | auth-link 7/7; header, iftar, story-map passed | none: the PR is `mergeable=false` against main, so pull_request CI does not trigger. The branch will be synced when its turn in the chain comes. | `tests/auth-link.browser.mjs` on `74e4b17`: **6/7 fail** |
+| #50 CI job | n/a | the job itself | **45933590004**: static and browser jobs both success | first run 45933242238 failed on a real test flaw, which is fixed |
+
+**NOT verified, explicitly:**
+- **#49:**
+  - widths other than 360/390/1280, and landscape phones;
+  - Safari/iOS (`100dvh`, sticky inside an overflow container): checked in Chromium only;
+  - the owner's real phone;
+  - the pickup choice across a full reload (deliberately not kept).
+- **#51:** French and Arabic plurals for counts above 11 beyond the PluralRules categories tested; the dot tap on touch devices (tested with mouse click).
+- **#48:** whether WhatsApp/iMessage keep the text next to the image; QR (not built).
+- **#30:** a real email, the link return on a phone, and `emailCode:true` with a real template.
+- **All:** the live site.
+
+**Defect-ledger self-review** (✓ checked / n/a):
+
+| Class | #49 | #51 | #48 | #30 |
+|---|---|---|---|---|
+| Scroll/overflow traps | ✓ pinned | ✓ (picker closes, scroll-padding) | n/a | n/a |
+| Bidi prices | ✓ (totals isolated in Arabic) | ✓ pinned | ✓ (no prices on the card) | n/a |
+| Truncated strings | ✓ (Arabic note complete; sheet no longer cuts it) | ✓ | ✓ (long names wrap, in #44) | ✓ (full sentences, three languages) |
+| State that resets | ✓ pinned (pickup kept, cart kept) | n/a | ✓ (cart untouched until the tap) | n/a |
+| Silent loss at encode | n/a | n/a | ✓ pinned (exact or absent) | n/a |
+| Dead controls styled live | ✓ (no disabled controls added) | ✓ (map dots now act) | ✓ (no link means no button) | ✓ (no code box when the email has no code) |
+
+**Owner decisions needed:** none.
