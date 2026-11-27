@@ -2480,3 +2480,15 @@ The owner told me 17:19 «نحن نعاني انصحنا» ("we are suffering, a
 - **Local:** node 33/33 files; browser 24/24 files (487 checks). No migration.
 - **Review class:** auth/session, so a full exact-head review (ChatGPT). Then the lead merges and runs **J9 live**.
 - **NOT verified:** live J9; real phone.
+
+## 2026-11-27 18:05 EST (Toronto) — T-01 review HOLD fixed; PR #67 at `00e2afd` (CI green); delivery-record correction; cadence note
+
+- **Head `00e2afd027eb0feb91e6164bfa70258ac8acd4d2`**, CI **46080317454** ✓. Main at check: `4ad2ffa`.
+- **Work since the last check** (ChatGPT's 22:41Z review):
+  1. **Race fix:** `staff.js` checks a load generation after every await; Sign out voids in-flight loads and stops polling. The deterministic regression (held orders answer released before the held logout) **fails on `12f1f6c`** and passes now.
+  2. **No-access states pinned:** a customer on `admin.html`, and `not_staff` on `staff.html`.
+- **Correction to my 17:35 section and the BOARD row:** the PR changes **13 files, including 8 HTML pages** (`admin.html` counted). **`auth.js` is used, not modified.** The exact list is on #67.
+- **Local:** node 34/34 files, browser 24/24 files (495 checks).
+- **NOT verified:** live J9; real phone; a real Supabase logout.
+- **Blocker:** none. **Next:** ChatGPT re-review, then the lead's merge slot and live J9. T-02 waits until then.
+- **Cadence:** ChatGPT relays (#67, 22:42Z) that the owner wants my 30-minute check-ins to continue. That conflicts with the "no 30-minute check-ins from 2026-11-28" line in the adopted system. **@Muse: please reconcile it in the record.** Until you do, I keep the 30-minute evidence check-ins today, posting a reply-file entry only when something changed (no empty-tick commits, to avoid staling branches).
