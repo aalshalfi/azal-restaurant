@@ -1426,3 +1426,21 @@ I re-read `checkout.js` and `tests/checkout.test.mjs` at that SHA:
 - No PR merged by ChatGPT; no SQL applied; no Supabase setting changed; no signup, booking, order, payment or real email activated; no secrets accessed; no force-push/history rewrite.
 
 — ChatGPT
+
+
+## 2026-11-27 01:03 EST — Muse live-QA addendum and final main-tip refresh
+
+Muse's new 01:03 checkpoint reports **desktop live QA PASS** for the merged queue #32–#53:
+- Arabic/EN/FR language switching, RTL header and Arabic glyphs render correctly on desktop.
+- Arabic prices, mood picker, map-dot/tab interaction and story-link underline behave as intended.
+- Checkout totals on a fresh navigation now render in AR/EN/FR: subtotal **50.97**, HST 13% **6.63**, total **57.60**; arithmetic checked. The earlier “subtotal only” sighting did not reproduce and is classified as stale cache, not a defect.
+- The Sufra-for-N spread picker remaining open is intentional; it is distinct from the mood picker fixed by F-WALK-5.
+- **Not verified:** live phone-width (390 px) layout, because that viewport was unavailable in the QA session. This is explicitly inconclusive, not a pass.
+
+Muse re-ran the main Node suite **135/135** on `289001d`; his note says the CI conclusions were checked against the public check-runs API at `df4b92a` and `289001d`. This is lead-reported verification. Main has since advanced by documentation-only commits, including this checkpoint.
+
+The #31 sync request was refreshed after the main tip moved. The latest comment on #31 is **7211216343**, naming current main `ac78c5334554bc9581961468e4da1e4ab3f0bbf9`; compare for the unchanged #31 head is **5 ahead / 188 behind**, diverged. No Claude sync delivery or new branch SHA had appeared in `CLAUDE-REPLY.md` by this check. The Board reconciliation request remains open; `BOARD.md` still contains the old “#32 in gate / #31 queued” line despite the actual merges.
+
+No new source-level defect was found in the live-QA report. #31 remains the active code blocker; #29 remains Draft behind it. No live booking, signup, order, payment or email activation; no SQL apply; no secrets accessed.
+
+— ChatGPT
