@@ -61,3 +61,12 @@ test("owner rule: the reservation step asks for name + mobile + email in all thr
   assert.match(v[0], /name.*mobile.*email/i); assert.match(v[1], /nom.*mobile.*courriel/i); assert.match(v[2], /اسم.*جوال.*بريد/);
   assert.match(readFileSync(new URL("../reserve.html", import.meta.url), "utf8"), /data-i18n="reserveHow2">Leave your name, mobile number and email/);
 });
+
+test("checkout.js and staff.js: Arabic from meaning, and prices isolated in Arabic (bidi class)", async () => {
+  const { readFileSync } = await import("node:fs");
+  for (const f of ["checkout.js", "staff.js"]) {
+    const s = readFileSync(new URL("../" + f, import.meta.url), "utf8");
+    assert.match(s, /lang\(\) === "ar" \? "\\u2066" \+ s\.replace\(\/\\u200f\/g, ""\) \+ "\\u2069"/, f + ": Arabic prices are LTR isolates");
+    for (const calque of ["انضم بالبريد", "طلبات غير مدفوعة كثيرة", "غير مُعدّ كموظف", "شيء في طلبك"]) assert.ok(!s.includes(calque), f + ": calque is back: " + calque);
+  }
+});

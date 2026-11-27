@@ -170,6 +170,7 @@
   }
 
   function renderCard(st) {
+    try { document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: st && st.status } })); } catch {} // member-history.js listens
     const card = document.querySelector(".member-card");
     if (!card) return;
     if (st.status === "signed_in" || st.status === "no_profile" || st.status === "error") {
