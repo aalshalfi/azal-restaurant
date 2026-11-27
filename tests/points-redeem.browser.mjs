@@ -30,7 +30,7 @@ async function open({ lang = "en", signedIn = true, balance = 12000, has0006 = t
 }
 const totals = (p) => p.evaluate(() => [...document.querySelectorAll("#checkoutTotals .total-line")].map((l) => l.textContent.replace(/\s+/g, " ").trim()));
 
-{ // 12,000 pts on a $55.97 order: both rewards usable
+{ // 12,000 pts on a $55.97 order: one $10 reward usable, next goal $20
   const { p, sent } = await open();
   ok(await p.locator("#coPoints").isVisible() && /12,000 points/.test(await p.textContent("#coPtsBalance")), "member sees the Majlis points box with balance 12,000");
   ok(await p.locator("input[name=coPts]").count() === 2 && await p.locator("#coPts0").isChecked(), "two real choices (none, 10,000); 'Don't use points' is the default");
@@ -64,7 +64,7 @@ const totals = (p) => p.evaluate(() => [...document.querySelectorAll("#checkoutT
 }
 { // a small order below $10 cannot use the first 10,000-point reward
   const { p } = await open({ cart: [[6, 1]] });
-  ok(await p.locator("#coPts10000").count() === 0 && await p.locator("#coPtsNext").isVisible() && /\\$10\\.00/.test(await p.textContent("#coPtsNext")), "$10 reward hidden on an order under $10; minimum order is explained");
+  ok(await p.locator("#coPts10000").count() === 0 && await p.locator("#coPtsNext").isVisible() && /\$10\.00/.test(await p.textContent("#coPtsNext")), "$10 reward hidden on an order under $10; minimum order is explained");
   await p.close();
 }
 { // Arabic: the minus sits inside the left-to-right price isolate
