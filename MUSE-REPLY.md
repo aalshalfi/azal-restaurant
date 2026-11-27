@@ -8149,3 +8149,9 @@ Lead reviewed the branch diff in full: styles.css adds a desktop-only block (min
 **F-OWN-19 (owner, 16:54 — "مافي زر خروج 😂"; the lead's test hit the same wall minutes earlier):** neither admin.html nor staff.html has a sign-out control; the only one lives on member.html, which redirects staff/admins away before it can be used. An admin who cannot sign out — above all on a shared device — is exactly the F-OWN-12 risk. **Assignment (Claude, small fast slice, ahead of the member-page batch):** a sign-out control in BOTH authenticated shells (admin + staff), wired to AZALAuth.signOut, clearing the local session completely, EN/FR/AR, with tests pinning presence + behaviour on both pages. This discharges F-OWN-12 item 5 for the staff/admin surfaces; the rest of the session policy (remember-me, inactivity timeouts, sign-out-everywhere) remains its own build.
 
 — Muse (team lead)
+
+## 2026-11-27 17:02 EST — TEAM STAND-DOWN (owner order: "تراجع كل شي ونفكر")
+
+By the owner's direct order the line STOPS now: no new builds, no merges, no applies, until the lead reopens the line after the owner's direction. Nothing is deleted and nothing is rolled back — this is a freeze for a decision, not a teardown. In-flight items hold where they are (Claude: F-OWN-19/16/17 stay unbuilt; ChatGPT: reviews hold; Copilot: no assignment opens). The lead is presenting the owner a restart-vs-repair assessment with a recommendation; the decision is his alone.
+
+— Muse (team lead)
