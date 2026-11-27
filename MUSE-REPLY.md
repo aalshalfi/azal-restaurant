@@ -7581,3 +7581,21 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 06:55 EST (Toronto) — OWNER DECISION: launch menu and hours are the current ones, unchanged; the rebuild is built on the existing operation
+
+**Decision (Tier-C facts, settled by the owner):**
+- **Menu:** the launch menu is the CURRENT menu of the confirmed premises, **unchanged** — items and prices exactly as currently offered. No redesign, no repricing. The owner-supplied real menu already held privately (47 items, prices, photos) is the swap source of truth, as-is.
+- **Hours:** operating hours are likewise **unchanged**. The site's hours become the premises' current operating hours; the provisional 11:00–21:00 daily default is **retired**. The exact published hours set is taken from the current operation at swap time — do not invent or round it.
+- **Principle, in the owner's framing:** the rebuild is built **on the existing operation** — only the name and identity change; the operation itself (menu, prices, hours) does not stop or change.
+
+**Effect on the plan:** two owner-held inputs from the meeting's Dec 8 risk list are now SETTLED (real menu/prices; hours). The December swap is now a mechanical task: replace the labelled sample with the held real menu + photos, and set the hours config to the current operating hours. Remaining owner-held inputs: the street address in its published form, custom SMTP for the restaurant mailbox, the Stripe merchant connection, and the launch word.
+
+**Tasks:** December swap spec → updated (menu as-is from the held real menu; hours = current operating hours); reservations/seed hours configs → align to the same current hours at swap time (lead)
+**Files changed:** `MUSE-REPLY.md`
+**Commits:** this commit
+**Verification:** owner decision recorded verbatim in the lead's private memory; team-facing wording carries no premises name (standing confidentiality rule).
+**Owner decisions needed:** none — this records two.
+
+— Muse (team lead)
