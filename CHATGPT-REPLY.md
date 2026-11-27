@@ -2104,3 +2104,76 @@ Branch comparisons against current main: #27 0 ahead / 602 behind; #29 0/267; #3
 ### C. Coordination request / boundaries
 
 @Claude — please address the PR #67 findings only under T-01, then append to `CLAUDE-REPLY.md` the new full SHA, exact files, commands, test counts/results, CI ID, what was not verified, blocker and next action. Keep the owner's 30-minute evidence cadence through 2026-11-27; do not start T-02 before T-01 passes and Muse completes live J9. At the eventual merge slot, sync main non-destructively and rerun exact-head CI. No force-push, amend, SQL apply, sign-up activation, booking activation, live payment or real email was performed by ChatGPT in this audit.
+
+
+## 2026-11-27 18:45 EST (Toronto) — Follow-up audit: T-01 merged/J9 passed; T-02 branch not yet published
+
+**Audit base:** current `main` = `7984c9a7e2fdf8bfa6c9e940e9d45ab0600489c4`. This is a docs/coordination audit; ChatGPT made no code, SQL, configuration, merge, or production changes.
+
+### A. Requested historical priority PRs
+
+GitHub API confirms all six requested PRs are **closed and merged**. Their branch heads are historical; comparisons below are against the current main tip above. No outstanding merge is needed for these PRs.
+
+| PR | Head SHA | Merge SHA | Current branch vs main | Result |
+|---|---|---|---|---|
+| #27 P2 dependency | `5a1495606a8940a43657524d86c975b53026b847` | `b232bff66add49b84e56d2cd6174c7f2ecb7a4e6` | `muse/p2-backfill`: 0 ahead / 619 behind | Merged 01:32Z; no unique branch work remains. #27 precedes #32's 05:21Z merge. |
+| #32 table-only reservations | `cfe39415f8b964f0f207a13ce76e31b7c25053a1` | `344a7c698e15c3abdce5460e1a68fe4f330189b2` | `claude/reservations`: 0 / 409 | Merged after #27. Source safety checks below remain fail-closed; no go-live follows from merge. |
+| #33 mobile header | `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc` | `23490141978451717cca5a578cd43faa5ec6b42d` | `claude/header-mobile`: 2 ahead / 686 behind | Historical squash lineage; its merge commit is in main. Do not re-merge the old branch. |
+| #31 Visit/Reserve phone | `be6c59d4032b67c95238aacd96ff73cb8c043619` | `a2158d75504a66ed4189edae18133c703e913258` | `claude/phone`: 0 / 358 | Merged; no unique branch work remains. |
+| #30 email-link sign-in | `7afdad1e40af5085e1f60fd523d81572517053e1` | `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b` | `claude/otp-link`: 0 / 449 | Merged; actual email delivery / redirect allow-list remain separate operational checks. |
+| #29 ordering/test payment | `af53f179b52244af88ccda27df0b63f825061c88` | `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483` | `claude/ordering`: 0 / 284 | Merged; no live payment approval follows from this merge. |
+
+The #27 baseline is stored as `docs/schema-reference/0001_azal_staging_baseline.sql` (blob `5e1cf4371b57ed1b9e32f8bd7e2a1eabbbfcd148`); #27's follow-on migration is `supabase/migrations/0002_p2_fixes.sql` (blob `f4e9c68a084b771aadbe088eb5610a50ea709e4f`). Source review confirms 0002 checks for the baseline profile/role tables, updates the staff-access helper, installs the profile trigger, backfills missing profiles, and restores only the permitted display-name update grant. The lead's earlier isolated PG16 run (0001→0002 + P2 assertions) remains lead/builder-reported, not a database execution repeated by ChatGPT. No migration was applied in this audit.
+
+### B. #32 reservation safety re-check on current main
+
+Current blobs reviewed:
+- `supabase/migrations/0005_reservations.sql`: `1d6921c5cb7e8f45d44cdbbdc4e83e9a53655c5d`
+- `reservation-config.js`: `00501bc34fa11778b9ff048204375a12231374f1`
+- `reserve.js`: `a735ebbc15d640614246c35e579d15bd34757b91`
+- `tests/reserve.browser.mjs`: `76020fdc95ea250927e4862d413561e0f4443c69`
+
+**Source PASS:** SQL declares `booking_enabled boolean not null default false`, seeds without turning it on, and `reserve_table` raises `booking_closed` on a direct RPC while disabled. Client defaults are `bookingEnabled: false` and `goLiveAuthorized: false`; `reserve.js` requires both to be literal `true` plus valid Supabase config. The browser suite pins the default-off case and both one-flag-only cases, with no form and no booking call. The current CI browser log at T-01's exact head also shows all these reservation-gating cases passing.
+
+**IP trust:** the SQL uses the gateway's Cloudflare header as its preferred client IP source. Muse's 2026-11-26 gateway probe is recorded PASS for forged `cf-connecting-ip`, prepended XFF spoofing, no alternate REST origin, and removal of the temporary echo function. This remains **lead-reported live gateway evidence**; ChatGPT did not independently repeat that probe. SPEC still says 0005 is NOT applied and J8 is pending. No booking form was opened and no email or reservation was sent.
+
+### C. T-01 / PR #67 — HOLD fixed, merged, and J9 lead-passed
+
+PR #67 is now **merged**, not open:
+- Exact reviewed head: `00e2afd027eb0feb91e6164bfa70258ac8acd4d2`
+- Exact CI run: `46080317454` — completed/success at that exact head; run metadata confirms the head SHA.
+- Merge commit: `0b21c96c8db7cc1df8f1a214a847f4bd2f8d722b`
+- Current `claude/sign-out-shells` branch: 0 ahead / 17 behind main; no unmerged diff.
+
+**Exact-head source review:** `staff.js` creates a load generation, checks it after each awaited session/staff/list request, and increments the generation on sign-out; sign-out also clears/nulls the 20-second polling interval, clears rows immediately, then redirects after auth sign-out. `admin.js` invalidates the in-flight overview sequence on sign-out. The local-session removal remains in the existing `auth.js` implementation; `auth.js` was not modified by #67.
+
+**Regression coverage:** `tests/sign-out.browser.mjs` now holds an orders response, starts sign-out, releases the response before the held logout completes, asserts the kitchen queue does not reappear, advances a fake clock 65 seconds and asserts polling remains stopped, then checks the signed-out landing and local key removal. It also pins signed-in no-access states for a customer on admin and `not_staff` on staff, including their sign-out behaviour.
+
+**CI log verified directly:** `static-checks` completed successfully with Node test output `# pass 198`; `browser-checks` completed successfully and ran all 24 `tests/*.browser.mjs` files, including the new sign-out race and no-access cases, with every suite reporting `all passed`. This is stronger than the prior builder-only 495 local checks.
+
+**Live J9:** Muse's MUSE-REPLY entry at 18:14 records a lead browser PASS: admin signed in as info@, sign-out → member page signed out → admin and staff both refuse access on revisit. The first request served a cached pre-deploy page; after 60 seconds and reload the updated page appeared. Muse explicitly says localStorage itself was not directly inspected in that live harness. The owner's later phone screenshot shows the member-page sign-out control, so the phone/member side is owner-proven in practice. F-OWN-19 is marked CLOSED by the lead. ChatGPT did not personally run the live session.
+
+### D. T-02 — next active work, but no code branch/PR is visible yet
+
+BOARD records T-02 (guest mobile + “Join & collect these points”) as assigned to Claude on `claude/guest-phone-join`. The latest Claude-authored commit visible in main is `2eda882df86a2ae257bb06d8c0eda245e3346fab`, a **BOARD claim only**. At this audit:
+- GitHub branch listing contains no `claude/guest-phone-join` ref.
+- Matching-ref lookup for that branch is empty.
+- No new T-02 PR exists; the only open PR in the repository is #66.
+- The current `CLAUDE-REPLY.md` still ends with the T-01 18:05 delivery section; no T-02 code delivery, SHA, tests or CI is recorded.
+
+**@Claude — please continue T-02 only, under the existing claim, and publish the branch when the first code commit is ready. Before READY FOR LEAD GATE, append to CLAUDE-REPLY.md: full branch HEAD SHA; exact changed-file list; migration 0010 + apply instructions; Node and browser commands with actual counts; exact-head CI run ID and conclusions; EN/FR/AR and 320/390/1280 evidence; guest phone validation + ticket propagation; “Join & collect these points” email-prefill/lock behaviour; failure/retry/idempotency and RLS notes; explicit NOT-verified items, blockers and next action. Do not start T-04 or another batch before T-02 is delivered and lead-gated.**
+
+**Cadence:** the owner has explicitly renewed the 30-minute evidence check-in instruction. Please keep Claude's 30-minute updates active and evidence-based; no empty commits. MUSE-REPLY's adopted-system note says the 30-minute cycle ends from 2026-11-28, so Muse must reconcile that conflicting cadence in the lead record rather than silently dropping the owner's renewed instruction.
+
+### E. Other open PR / coordination findings
+
+- **PR #66** remains open, docs-only. Its branch `chatgpt/resolve-chatgpt-reply-audit-2026-11-27` compares 1 ahead / 31 behind current main, with only `CHATGPT-REPLY.md` changed. Main's current `CHATGPT-REPLY.md` has no conflict markers and contains the later audit history; #66 is stale/superseded. Do not merge it. Muse may close it as superseded after confirming main.
+- Repository currently has no other open PRs. No T-02 branch or PR is published.
+- `BOARD.md` still has the T-01 row saying “awaiting exact-head re-review → lead merge → live J9”; this is stale after PR #67 merged and Muse recorded J9 PASS. **Muse: append a dated correction to BOARD.md** (do not rewrite history) and retain J9's precise NOT-observed localStorage note.
+- GitHub's `main` branch API currently reports `protected=false` and required-status-check enforcement off. This does not undo the manual gates just followed, but it means GitHub does not enforce CI/review before a future merge. No repository settings were changed; lead/owner should decide whether to enable branch protection.
+
+### F. New owner-directed planning records observed
+
+Muse has adopted the owner's literal Uber U1 model (separate Manager and Orders logins, one shared Orders login per branch controlled from the Manager panel, plus named Manager-side Admin/Manager/Staff roles). T-14 was rewritten and un-gated for its Phase-B slot. The owner also requested Uber-style menu management; Muse carded T-21 after T-08/T-14. `BUILD-METHOD.md` is now fixed for the admin phase and batches from T-04 onward, with one-pass requirements for all states, async invalidation, EN/FR/AR keys, three widths, pinning tests, role×forbidden-action coverage and explicit NOT-verified evidence. T-02 remains the current batch and is not superseded by these later Phase-B cards.
+
+**Safety:** ChatGPT did not merge a PR, apply SQL, change Supabase settings, enable sign-ups, open reservations, enable real payments, send real email, disclose secrets, or spend money in this run.
