@@ -880,3 +880,22 @@ html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:unde
 .auth-dl dt{color:var(--muted);font-size:14px}.auth-dl dd{margin:0;overflow-wrap:anywhere}
 html[dir="rtl"] .auth-dl dd[dir="ltr"]{text-align:right}
 .auth-unset{color:var(--muted);font-style:italic}
+/* ADM-1 one sign-in door + management shell */
+.role-door[hidden]{display:none}
+.role-door{background:var(--brown);color:var(--ivory);padding:18px 20px;margin:0 auto 18px;width:min(760px,100%);display:grid;gap:8px}
+.role-door .section-kicker{color:var(--gold)}
+.role-door-text{margin:0;font-size:17px}
+.role-door-actions{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.role-door .text-link{color:var(--ivory);text-decoration:underline;text-underline-offset:3px;min-height:44px;display:inline-flex;align-items:center}
+.admin{max-width:900px;margin:0 auto;display:grid;gap:12px}
+.admin-who{margin:0;color:var(--clay);font-weight:600;overflow-wrap:anywhere}
+.admin-panel{background:var(--cream);padding:16px 18px;display:grid;gap:8px}
+.admin-panel h2{margin:0;font-size:22px}
+.admin-since{margin:0;color:var(--muted);font-size:14px}
+.admin-kpis{margin:4px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.admin-kpi{background:#fff;border-left:4px solid var(--gold);padding:10px 12px}
+.admin-kpi dt{font-size:13px;color:var(--muted)}.admin-kpi dd{margin:2px 0 0;font-size:26px;font-weight:700}
+html[dir="rtl"] .admin-kpi{border-left:0;border-right:4px solid var(--gold)}
+.admin-line{margin:0}.admin-note{margin:0;color:var(--muted)}
+/* #62: while a staff/admin sign-in is being sent to its own area, nothing of the customer account shows */
+html.role-leaving .member-card,html.role-leaving #memberHistory,html.role-leaving .member-banner,html.role-leaving .member-preview>*:not(#roleDoor){visibility:hidden}
