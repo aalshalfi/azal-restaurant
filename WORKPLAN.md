@@ -98,7 +98,7 @@ Evidence standard for every delivery (professional-work standard, 2026-11-27): e
 
 ### T-14 · ADM-4: staff & branch management — SPEC step 9
 - **What:** the admin manages who is staff, for which branch, without touching the database by hand.
-- **Contains:** invite/assign/revoke staff by email with role + branch; every change written to an audit trail with actor/time; revocation takes effect on the staffer's next request; the admin UI lists current staff per branch.
+- **Contains:** invite/assign/revoke staff by email with role + branch; every change written to an audit trail with actor/time; revocation takes effect on the staffer's next request; the admin UI lists current staff per branch. **Creation flow (owner clarification 2026-11-27 18:32 — admin ≠ staff, every person their own secret account): the admin enters the employee's NAME + EMAIL + branch in the panel; the system invites that email; the employee sets their OWN password through the verified flow and signs in at the one door with their own credentials — the admin never sets, sees, or shares a staff password, and no staff member ever uses the admin's info@ account. If the email already holds an account, the staff role is assigned to that same account (no duplicates). Staff password reset = the standard verified flow (T-05). Per-person accounts are what make the order audit trail meaningful: every accept/reject/hand-over is stamped with the person who did it.**
 - **How:** Claude, branch `claude/adm-4`. Migration 0016 if the audit trail needs a table. Behaviour SQL pins: revoked staff loses access; non-admin cannot assign.
 - **Depends on:** T-08. **Acceptance:** lead creates a throwaway staff account via the UI, sees the queue, revokes, sees access die.
 
