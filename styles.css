@@ -855,3 +855,11 @@ html{scroll-padding-bottom:96px}.sufra-collapsible{scroll-margin-bottom:96px}
 html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px}
 /* #29 sync with F-CHK-1: in live (test-mode) ordering the completion button is #placeOrder; pin it like the preview one. */
 .checkout-panel #placeOrder{position:sticky;bottom:0;z-index:2;box-shadow:0 -14px 18px -6px var(--ivory),0 36px 0 0 var(--ivory)}
+/* F-OWN-8 member details (name, mobile, email) */
+.auth-details{margin:18px 0 6px;display:grid;gap:6px;min-width:0}
+.auth-details-title{font-size:18px;margin:0}
+.auth-dl{margin:0;display:grid;gap:6px}
+.auth-dl div{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr);gap:10px;align-items:baseline}
+.auth-dl dt{color:var(--muted);font-size:14px}.auth-dl dd{margin:0;overflow-wrap:anywhere}
+html[dir="rtl"] .auth-dl dd[dir="ltr"]{text-align:right}
+.auth-unset{color:var(--muted);font-style:italic}

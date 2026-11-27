@@ -40,7 +40,7 @@ test("sign in stores the session; requests carry apikey and bearer", async () =>
   await a.signIn("a@example.invalid", "secret123");
   assert.ok(JSON.parse(st.getItem(KEY)).access_token === "A1");
   const state = await a.state();
-  assert.deepEqual(state, { status: "signed_in", email: "a@example.invalid", name: "Amal", membership: "active", points: 279 });
+  assert.deepEqual(state, { status: "signed_in", email: "a@example.invalid", name: "Amal", phone: null, hasPhoneField: false, membership: "active", points: 279 });
   const q = s.calls.find((c) => /points_ledger/.test(c.url));
   assert.equal(q.init.headers.apikey, "anon-test");
   assert.equal(q.init.headers.Authorization, "Bearer A1");
@@ -154,4 +154,25 @@ test("emailed link: requestCode passes redirect_to; adoptLink stores the session
   assert.equal((await a.session()).access_token, "LA");
   assert.deepEqual(await a.adoptLink("#error=access_denied&error_code=otp_expired"), { error: "link_invalid" });
   assert.equal(await a.adoptLink("#menu"), null);
+});
+
+test("F-OWN-2: mobile rule matches reservations and 0007 azal_phone(); sign-up needs name, email, mobile, password", () => {
+  const { normalizePhone: n, signUpProblem: p } = require("../auth.js");
+  assert.deepEqual(["(343) 999-0001", "1 343 999 0001", "+44 20 7946 0958", "343-999", "+0 123 456 7890", "", null].map(n), ["+13439990001", "+13439990001", "+442079460958", null, null, null, null]);
+  const ok = { name: "Huda", email: "h@example.invalid", phone: "3439990002", password: "longenough" };
+  assert.equal(p(ok), null);
+  assert.equal(p({ ...ok, name: "  " }), "name");
+  assert.equal(p({ ...ok, name: "a".repeat(81) }), "name");
+  assert.equal(p({ ...ok, email: "nope" }), "email");
+  assert.equal(p({ ...ok, phone: "12345" }), "phone");
+  assert.equal(p({ ...ok, password: "short" }), "password");
+});
+
+test("F-OWN-2/8: 0007 writes the phone only through validated paths", () => {
+  const sql = fs.readFileSync(path.join(root, "supabase/migrations/0007_profile_contact.sql"), "utf8");
+  assert.match(sql, /check \(phone is null or phone ~ '\^\\\+\[1-9\]\[0-9\]\{9,14\}\$'\)/);
+  assert.match(sql, /revoke update \(phone\) on table public\.profiles from anon, authenticated;/);
+  assert.match(sql, /revoke all on function public\.update_my_profile\(text, text\) from public, anon;\s*grant execute on function public\.update_my_profile\(text, text\) to authenticated;/);
+  assert.match(sql, /public\.azal_clean_name\(new\.raw_user_meta_data->>'display_name'\)/);
+  assert.match(sql, /insert into public\.memberships \(user_id\)/, "the 0003 membership step is kept in the trigger");
 });
