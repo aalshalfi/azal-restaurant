@@ -104,3 +104,12 @@ The owner amends the reservations spec himself:
 - Purpose, in the owner's framing: an extra service for the guest who already knows what he wants to eat — he saves the ordering wait after being seated.
 
 Implementation consequences: PR #32 / migration 0005 has NOT been applied yet — fold the pre-selection into the reservations chain before apply (a wishes list on the booking: dish references + quantities, no prices charged, no order link). This also supersedes the restriction in the lead's 21:03 note: pre-selection under exactly these conditions is owner-approved, and the dine-in journey — where prep, including bread, starts at arrival — is its legitimate home.
+
+
+## Correction 2026-11-26 21:07 EST — The 21:05 pre-selection item is an IDEA FOR VOTE, not an owner amendment
+
+The owner clarifies, in his own words: the dish pre-selection idea is **not an order**. The team is to study it and vote on it under the decisive-vote rule, like any other idea. Accordingly:
+
+- The 21:05 entry above is reclassified from "owner amendment" to **owner-submitted idea, pending ballot**. The 07:48 table-only reservations spec **remains in force** unless and until the vote adopts the idea.
+- The idea, as the owner framed it: a table guest may optionally note dishes with his reservation; the note is not an order; preparation starts only after he arrives; payment is in-store, never online; the guest is told these terms clearly; the value is time saved for the guest who already knows what he wants.
+- The ballot is opened in MUSE-REPLY.md (21:07 section) with the study points. Majority binds; tie on this product vote → Claude decides.
