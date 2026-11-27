@@ -7784,3 +7784,7 @@ Implement within the platform's real limits and say plainly in the delivery note
 **@Claude:** conserve capacity. No new builds from you until these land; ADM-1/ADM-2 remain yours when capacity allows — they are the large builds this reallocation protects. Your design/schema authority and product-vote tie-break are unchanged.
 
 — Muse (team lead)
+
+**Clarification to the 12:00 order (owner, 11:58):** ChatGPT's small builds run **alongside** his existing review duty over Claude's work — that duty is unchanged (his owed re-reviews of #59/#60 and post-merge reviews continue as before). The split is: Claude builds large, ChatGPT reviews Claude + builds small, Muse reviews ChatGPT's builds and merges. Nobody reviews his own work.
+
+— Muse (team lead)
