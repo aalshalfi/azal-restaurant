@@ -55,19 +55,35 @@
     }
     if (guest) { body.p_guest_name = guest.name; body.p_guest_email = guest.email; }
     // F-OWN-4: only sent when the member chose a reward, so a server without 0006 keeps working for everyone else.
-    if (!guest && Number.isInteger(redeem) && redeem > 0) body.p_redeem_points = redeem;
+    if (!guest && Number.isSafeInteger(redeem) && redeem > 0 && redeem % 10000 === 0) body.p_redeem_points = redeem;
     return body;
   }
 
   // F-OWN-4: which rewards a member can use on this order. The server's redeem_options() is the authority; this only
   // decides what to SHOW: usable tiers (enough points, not more than the subtotal) and, if none, the next one to aim for.
   function redeemView(opts, subtotalCents) {
-    const balance = opts && Number.isInteger(opts.balance) ? opts.balance : 0;
-    const tiers = (opts && Array.isArray(opts.tiers) ? opts.tiers : []).filter((t) => Number.isInteger(t.points) && t.points > 0 && Number.isInteger(t.cents) && t.cents > 0).sort((a, b) => a.points - b.points);
+    const balance = opts && Number.isSafeInteger(opts.balance) && opts.balance > 0 ? opts.balance : 0;
+    const stepPoints = opts && Number.isSafeInteger(opts.step_points) ? opts.step_points : 0;
+    const centsPerStep = opts && Number.isSafeInteger(opts.cents_per_step) ? opts.cents_per_step : 0;
+    if (stepPoints === 10000 && centsPerStep === 1000) {
+      const cap = opts && Number.isSafeInteger(opts.max_steps) ? Math.min(20, Math.max(1, opts.max_steps)) : 20;
+      const steps = Math.min(Math.floor(balance / stepPoints), Math.floor(Math.max(0, subtotalCents) / centsPerStep), cap);
+      const usable = Array.from({ length: steps }, (_, i) => ({ points: (i + 1) * stepPoints, cents: (i + 1) * centsPerStep }));
+      const nextPoints = (Math.floor(balance / stepPoints) + 1) * stepPoints;
+      const next = { points: nextPoints, cents: (nextPoints / stepPoints) * centsPerStep };
+      const min = balance >= stepPoints ? { points: stepPoints, cents: centsPerStep } : null;
+      return { balance, usable, next, min, first: balance < stepPoints, any: true };
+    }
+    // Compatibility with a server still on 0006: hide its legacy 5,000-point tier immediately.
+    // Until 0007 is applied, only the single 10,000-point tier is displayed; the server remains authoritative.
+    const tiers = (opts && Array.isArray(opts.tiers) ? opts.tiers : [])
+      .filter((t) => Number.isSafeInteger(t.points) && t.points > 0 && t.points % 10000 === 0
+        && Number.isSafeInteger(t.cents) && t.cents === t.points / 10)
+      .sort((a, b) => a.points - b.points).slice(0, 20);
     const usable = tiers.filter((t) => t.points <= balance && t.cents <= subtotalCents);
     const next = tiers.find((t) => t.points > balance) || null;
-    const min = tiers.find((t) => t.points <= balance) || null; // smallest reward the balance covers
-    return { balance, usable, next, min, first: next !== null && next === tiers[0], any: tiers.length > 0 };
+    const min = tiers.find((t) => t.points <= balance) || null;
+    return { balance, usable, next, min, first: next !== null && next.points === 10000, any: tiers.length > 0 };
   }
 
   const newKey = () => {
@@ -233,10 +249,10 @@
     }
     const nx = $("coPtsNext");
     // CX-2: enough points but an order smaller than the smallest reward: say what unlocks it (no blank box).
-    const minOrder = !v.usable.length && !v.next && v.min ? v.min : null;
+    const minOrder = !v.usable.length && v.min ? v.min : null;
     nx.hidden = !v.next && !minOrder;
-    if (v.next) nx.textContent = L(v.first ? "ptsNext" : "ptsNextMore", { points: nf().format(v.next.points), amount: money(v.next.cents) });
-    else if (minOrder) nx.textContent = L("ptsMinOrder", { amount: money(minOrder.cents) });
+    if (minOrder) nx.textContent = L("ptsMinOrder", { amount: money(minOrder.cents) });
+    else if (v.next) nx.textContent = L(v.first ? "ptsNext" : "ptsNextMore", { points: nf().format(v.next.points), amount: money(v.next.cents) });
   }
   async function loadPoints() {
     ptsOpts = null;

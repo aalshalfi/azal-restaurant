@@ -8053,3 +8053,67 @@ Read in full by the lead at 15:28. Substance is recorded HERE per the profession
 **Still owed by ChatGPT:** (1) the full audit text in CHATGPT-REPLY.md (lead demand 14:00 — the file still ends at 12:45); (2) migration 0007. Both stand.
 
 — Muse (team lead)
+
+## 2026-11-27 15:55 EST — F-OWN-15 (owner finding, desktop): the website header arrangement is not good
+
+Owner screenshot (his laptop, live site, 15:53) + verdict: «الهيدر من الويب سيت ايضا ليس جيدا» — the DESKTOP header is also not good. What the screenshot shows, verified against source: the logo (78px) sits far left; the nav cluster (Home…Visit + FR box) floats mid-right; a wide void separates it from the bordered "Your order 0" box at the far right. The groups are unevenly distributed with dead space between them — the same imbalance family as his mobile finding (2026-11-27 07:52), which was fixed for mobile only (PR #33/#45); the desktop arrangement was never re-judged. Logged as a team failure under the proactive mandate: the lead's own walks did not flag it.
+
+**Assignment:** Claude (design lead) rules and builds the desktop header rebalance in his next batch after the #60 sync: one deliberate arrangement — brand left; nav, language and order controls grouped with even spacing and consistent heights; no void between the language control and the order button; the order control sized to its content. EN/FR/AR + RTL included; mobile arrangement (#33/#45 discipline) must not regress. **Acceptance = the owner's own verdict on his laptop and phone** — no team member declares the header fixed without it.
+
+— Muse (team lead)
+
+## 2026-11-27 16:02 EST — #60 MERGED by the lead; 0008 apply in flight; F-OWN-16 (owner demo findings): guest phone + a real join action
+
+**#60 — LEAD GATE PASS and MERGED.** Exact head `0aa54eae25f3f217283a0b1bd8796ac43e448609`: lead-run suite **186/186** in a clean worktree; `create_user:false` verified in auth.js:91; Fresh-badge strings absent from script.js/checkout.js (PR #61 preserved); migration 0008 blob `65200a44` as adjudicated; CI green at the head (Claude-reported, consistent with all local evidence). Merge commit **`6aa7e3d5056227b72b5021e21232058ffeee1801`**, merged-tree suite 186/186 (lead-run). **Migration 0008** (sha256 `2f7f2e051771770b53b6666b5cf7011a63601b93c36454404ed167c66c275b23`, idempotent) is being applied by the lead through the dashboard gate now; the password-first flow is fully live only once that lands (result recorded when verified). NOT verified: live registration end-to-end post-0008; a real phone.
+
+**F-OWN-16 — owner findings from his live demo order (15:56, screenshot: guest order paid, sigil Mountain 30, code 4B6EA6, email abdulbaset.m@yahoo.com). Both verified in source by the lead:**
+1. **Guest checkout never asks for a mobile number.** checkout.js collects name + email only (`validateGuest(name, email)`; two inputs); `place_order` has no guest-phone parameter. Owner's reason, binding: the kitchen must be able to CALL the customer. **Fix (Claude, next slice on current main):** required mobile field for guests (same validation as azal_phone), migration **0010** adding `p_guest_phone` + storage on the order, the phone shown on the staff ticket and in the customer's order detail. Signed-in members use their profile phone (0008) — checkout shows it, editable for that order.
+2. **The confirmation's join line is plain text, not an action.** `paidGuest` renders "Join with {email}…" as text; there is no way to act on it. **Fix (same slice):** the confirmation carries a real **"Join & collect these points"** button that opens the #60 join flow with the order's email pre-filled (guest adds name + mobile + password); on verified registration with that email, the order's pending claim attaches automatically (Proposal A mechanism, already in 0004). EN/FR/AR copy in the site's register; tests pin: button present only for guest orders, email pre-filled and locked to the order's email, claim attaches exactly once.
+
+Demo state otherwise: the owner's guest order itself worked end-to-end (paid in test mode, sigil issued). His pending claim for abdulbaset.m@yahoo.com exists server-side and will attach when he registers with that email.
+
+— Muse (team lead)
+
+## 2026-11-27 16:03 EST — 0008 APPLIED + VERIFIED: password-first is fully live
+
+Migration 0008 applied by the lead through the dashboard gate (single run, "Success. No rows returned"). Preflight: profiles 2, orders 2, payments_mode 'test'. Post-apply verification row matches the expected values exactly: phone column present (1), azal_phone('4165551234') = '+14165551234', azal_phone('bad!') = NULL, update_my_profile present (1), profiles/orders counts unchanged (2/2). One process note for the record: the lead's first apply attempt stopped at its own preflight because the check query named a wrong table (app_config for app_settings); nothing was run or changed in that attempt; the corrected run is the one recorded here. **The #60 password-first flow (registration with name + mobile + password, self-edit) is now live end-to-end on staging.** NOT verified: a live registration performed after this apply (the owner's next test is the evidence); a real phone.
+
+— Muse (team lead)
+
+## 2026-11-27 16:20 EST — LEAD GATE: PR #64 (0007) and PR #63 (0009) reviewed and MERGED; applies follow
+
+**PR #64 — migration 0007 (points increments): PASS, merged `e510dc8`.** Exact head `bbc6ee3`: lead-run suite 187/187 in a clean worktree; merged-tree suite 187/187. The migration implements the adopted invariant exactly (points > 0 AND points % 10000 = 0 → points/10 cents, else NULL), replaces the legacy tier seed with the single step '10000:1000', and adds a guard trigger rejecting any other redeem_tiers value. Test pins verified in source: all six boundaries (9999/10000/19999/20000/29999/30000), invalid-config rejection, guest/insufficient/negative/exceeds-order refusals, the tax-basis case ($55.97 − $10 → HST on $45.97 = 598, total 5195), and earn on the discounted amount only. ChatGPT's disclosure stands: his SQL scripts were not run on a live PostgreSQL — the lead's apply gate below runs the boundary assertions on the real database, which is the decisive check.
+
+**PR #63 — migration 0009 (NEW_ORDER outbox): PASS, merged `ef8838a`.** Exact head `b761f8e`: lead-run suite 188/188; merged-tree suite 193/193. Scope discipline verified in source: outbox unique per (order, event), status defaults to 'blocked' with last_error 'sender_disabled', a hard CHECK keeps sender_enabled = false at the data layer, recipient seeded to info@azalrestaurant.com (Ottawa), RLS on with all client grants revoked, payload built from the persisted order (items, totals, note, staff path — no card data, no customer contact fields), trigger fires on the paid transition only. One non-blocking note for the follow-on slice: the payload's order_number uses 8 hex chars; align it with the site's 6-char pickup code + sigil convention when the customer-lifecycle events are built. Conflicts in BOARD.md/CHATGPT-REPLY.md were union-resolved (all sections present — ChatGPT's 15:56, 16:06 and 16:10 sections are in the record; his audit text is still owed as a standalone item).
+
+**Process incident, owned:** the #63 merge commit briefly carried the BOARD.md conflict MARKER LINES on main (the union content itself was correct — both claim rows present). Cause: the lead's scripted resolver failed on BOARD.md and the commit proceeded on the strength of the other file's check. Fixed in `bbb6cde` (markers stripped, verified: no anchored markers remain). Rule reinforced: after any union resolution, grep the committed tree for markers before pushing.
+
+**Next:** the lead applies 0007, then 0009, through the dashboard gate (preflight → single run → boundary assertions on the real DB). Then PR #62 (ADM-1) is the last car of the train.
+
+— Muse (team lead)
+
+## 2026-11-27 16:24 EST — 0007 APPLIED + VERIFIED; F-OWN-17: member-page findings (owner screenshot, signed in as "Aziz")
+
+**0007 is LIVE.** Applied by the lead through the dashboard gate, single run, success. Real-database assertions, all exact: tiers '5000:500,10000:1000' → **'10000:1000'**; azal_redeem_cents: 5000 → **NULL**, 9999 → NULL, 10000 → **1000**, 19999 → NULL, 20000 → **2000**, 30000 → **3000**; config guard trigger present; orders unchanged (2). The owner's 10,000-point minimum is now the enforced server rule, and ChatGPT's un-run SQL concern is closed by these live assertions. 0009's apply follows in the same gate pattern.
+
+**F-OWN-17 — the member page, from the owner's own signed-in screenshot (16:13). Findings verified against source by the lead:**
+1. **The join pitch still opens the page at full length for a signed-in member** — the whole "Be one of our regulars" story + 3 steps render above the member's own card. This is the exact item assigned to Copilot as a cleanup task; it is REASSIGNED to Claude's member-page batch (see Copilot note below).
+2. **Stale copy contradicting the live flow:** "Join with your email", step 1 "Join once with your email" — registration is password-first with name + mobile + password since #60/0008. The meta description still says "Opening soon" as well.
+3. **Identity still incomplete (F-OWN-13 residue):** the card shows the name ("Welcome, Aziz") but no email, no phone (the profile now stores it, 0008), and no member number (number stays ADM-2 scope — it needs the data model).
+4. **Points presented twice:** the POINTS card inside the Majlis box AND a separate "Your points / Balance: 0 points" section — one fact, two blocks.
+5. **No tier, no founding status, no plain-words economics:** the card says only "Member"; the page nowhere states the earn rate or the point value (10 pts per $1; 10,000 pts = $10) — the F-WALK-12 item, still open.
+**Assignment (Claude, member-page batch, after the #62 sync):** signed-in state collapses the pitch to a one-line Majlis header; copy updated to the password-first reality in EN/FR/AR; ONE points presentation; identity line on the card (name + email + phone from the profile); earn rate + point value stated in plain words. Acceptance includes the owner's phone verdict.
+
+**Copilot session — lead action:** the resumed session is HUNG (page shows "Needs attention", one bash step never completing, 1h30m elapsed at the 16:18 check; session total 5.21 credits; account usage 6/1,500). The lead is stopping that session. The two-line dead-strings edit folds into Claude's next batch (it was a pipeline test, not real work — per the owner's 14:51 rule it should never have had a session of its own once the claim conflict was resolved). Copilot's next assignment is the Kitchen Reject (important, specced 14:53 + reason-required amendment 15:33), opened FRESH via a GitHub Issue assignment when its slot comes.
+
+— Muse (team lead)
+
+## 2026-11-27 16:30 EST — LEAD ORDER: PR #62 (ADM-1) sync is FIRST priority — the owner just hit the failure live
+
+The owner signed in as info@azalrestaurant.com (the admin) and landed on the plain customer member page: "Welcome, info@azalrestaurant.com", Member / 0 points, no management entry anywhere (his screenshot, 16:28). This is the F-OWN-10/13 acceptance failure, live: **an admin sign-in that shows only the customer view FAILS ADM-1.** The blockers ahead of #62 are now all cleared (#60 merged 16:02, 0007 applied 16:20, 0009 applied 16:22).
+
+@Claude: sync `claude/adm-1` onto current main NOW (this jumps the member-page batch and the desktop-header branch), keep the routing fix (admin → management only, staff → kitchen, customer → customer view; direct-URL denial; auth-invalidation clearing preserved), re-run the full suite + admin tests, post the exact head + CI run id + NOT-verified line, and mark it READY FOR LEAD GATE. The lead then merges and signs in as admin himself to verify the routing before the owner retries.
+
+Also visible in the same screenshot, for the record: the admin profile itself carries no name/phone (created before #60's fields) — the Edit-my-details block renders correctly; and the F-OWN-17 join pitch still tops the page for the admin too.
+
+— Muse (team lead)
