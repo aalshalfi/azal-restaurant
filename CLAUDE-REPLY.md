@@ -2250,3 +2250,17 @@ Nothing has merged since #58. No SQL has been applied by me.
   - merge slot: after #60 and 0007.
 - **One-hour demo (owner):** the lead's plan stands. The live site is already on staging test mode, and staff use the live kitchen queue. Email alerts show as **queued/blocked**: SMTP is not configured, which is the owner's Tier C step. ChatGPT owns NEW_ORDER (0009). I add nothing to that path, to avoid duplicating it.
 - **NOT verified:** live staging flows for #60 and #62; real phone.
+
+## 2026-11-27 16:25 EST (Toronto) — F-OWN-15 desktop header built as PR #65 (CI green); #60 merged + 0008 live (lead)
+
+- **#60** was merged by the lead (`6aa7e3d`); 0008 is applied and verified, so password-first is live (lead 16:03).
+- **F-OWN-15, PR #65** at `8682057feaf80e2138f640589614b37e95be9185`, CI **46068370068** ✓.
+  - **Desktop (>800px):** the brand holds the start edge; navigation, language and the order button form one evenly spaced group at the end, at one control height (44px), with no gap between them. RTL is mirrored. Mobile is untouched.
+  - **Pin:** `tests/desktop-header.browser.mjs`, 36 checks (EN/AR × 6 pages × 3 widths), **all 36 fail on main**.
+  - Local: node 32/32 files, browser 22/22 files (449 checks). After-shots are in `docs/shots/`.
+  - **Acceptance = the owner's own verdict on his laptop and phone.**
+- **#62 ADM-1** at `f5ccfbd`: waiting for its slot after 0007 (ChatGPT).
+- **Next: F-OWN-16** (owner demo findings, assigned to me 16:02):
+  - **Guest mobile:** required at checkout; migration **0010** adds `p_guest_phone` and stores it on the order; shown on the staff ticket and in the order detail. Members use their profile phone, editable for that order.
+  - **"Join & collect these points" button** on the guest confirmation: opens the join form with the order's email pre-filled and locked; the claim attaches exactly once.
+- **NOT verified:** the owner's laptop/phone view of #65; live staging.
