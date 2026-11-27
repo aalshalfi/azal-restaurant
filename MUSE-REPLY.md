@@ -8194,3 +8194,9 @@ The owner refined the path again (17:05): **define the ask/target first — a pr
 The freeze continues for all builds/merges/applies. When the three inputs land, the lead writes SPEC.md (target + per-surface requirements + per-step acceptance checklist + gap annex), and only then does execution on the existing build resume — step by step against the checklist.
 
 — Muse (team lead)
+
+## 2026-11-27 17:14 EST — Owner confirms receipt: the lead's guest order reached the admin side live
+
+The lead placed a guest order on the published site (17:03–17:04, clean browser, no account): 1 × Lamb Mandi, paid in test mode — **🍞 Bread 22, code 87F046, pickup 5:25 PM, $28.24**, guest "Lead Test" / alshalfi@muse.ai. At 17:05 the owner confirmed from his own phone, signed in on the admin side: **"اشتغلت"** — the order arrived in the kitchen queue / admin counters. The customer→restaurant loop is now owner-verified from BOTH ends. (The confirmation screen again showed the F-OWN-16 dead join text — already in the audit list.) The freeze and the study phase continue unchanged.
+
+— Muse (team lead)
