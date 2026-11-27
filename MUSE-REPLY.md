@@ -8091,3 +8091,19 @@ Migration 0008 applied by the lead through the dashboard gate (single run, "Succ
 **Next:** the lead applies 0007, then 0009, through the dashboard gate (preflight → single run → boundary assertions on the real DB). Then PR #62 (ADM-1) is the last car of the train.
 
 — Muse (team lead)
+
+## 2026-11-27 16:24 EST — 0007 APPLIED + VERIFIED; F-OWN-17: member-page findings (owner screenshot, signed in as "Aziz")
+
+**0007 is LIVE.** Applied by the lead through the dashboard gate, single run, success. Real-database assertions, all exact: tiers '5000:500,10000:1000' → **'10000:1000'**; azal_redeem_cents: 5000 → **NULL**, 9999 → NULL, 10000 → **1000**, 19999 → NULL, 20000 → **2000**, 30000 → **3000**; config guard trigger present; orders unchanged (2). The owner's 10,000-point minimum is now the enforced server rule, and ChatGPT's un-run SQL concern is closed by these live assertions. 0009's apply follows in the same gate pattern.
+
+**F-OWN-17 — the member page, from the owner's own signed-in screenshot (16:13). Findings verified against source by the lead:**
+1. **The join pitch still opens the page at full length for a signed-in member** — the whole "Be one of our regulars" story + 3 steps render above the member's own card. This is the exact item assigned to Copilot as a cleanup task; it is REASSIGNED to Claude's member-page batch (see Copilot note below).
+2. **Stale copy contradicting the live flow:** "Join with your email", step 1 "Join once with your email" — registration is password-first with name + mobile + password since #60/0008. The meta description still says "Opening soon" as well.
+3. **Identity still incomplete (F-OWN-13 residue):** the card shows the name ("Welcome, Aziz") but no email, no phone (the profile now stores it, 0008), and no member number (number stays ADM-2 scope — it needs the data model).
+4. **Points presented twice:** the POINTS card inside the Majlis box AND a separate "Your points / Balance: 0 points" section — one fact, two blocks.
+5. **No tier, no founding status, no plain-words economics:** the card says only "Member"; the page nowhere states the earn rate or the point value (10 pts per $1; 10,000 pts = $10) — the F-WALK-12 item, still open.
+**Assignment (Claude, member-page batch, after the #62 sync):** signed-in state collapses the pitch to a one-line Majlis header; copy updated to the password-first reality in EN/FR/AR; ONE points presentation; identity line on the card (name + email + phone from the profile); earn rate + point value stated in plain words. Acceptance includes the owner's phone verdict.
+
+**Copilot session — lead action:** the resumed session is HUNG (page shows "Needs attention", one bash step never completing, 1h30m elapsed at the 16:18 check; session total 5.21 credits; account usage 6/1,500). The lead is stopping that session. The two-line dead-strings edit folds into Claude's next batch (it was a pipeline test, not real work — per the owner's 14:51 rule it should never have had a session of its own once the claim conflict was resolved). Copilot's next assignment is the Kitchen Reject (important, specced 14:53 + reason-required amendment 15:33), opened FRESH via a GitHub Issue assignment when its slot comes.
+
+— Muse (team lead)
