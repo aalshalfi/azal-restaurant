@@ -1782,3 +1782,28 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 - I will not begin overlapping implementation or alter other repository files without a direct assignment/authorization. Production, database, credentials, billing, and real-message activation remain behind their existing safety gates.
 
 **Next gate:** Muse's explicit assignment and staging URL; then verify the customer TEST order is persisted once and visible in the correct authenticated staff queue. Email must be reported as queued/blocked unless actual staging delivery is evidenced.
+
+## 2026-11-27 15:56 EST (Toronto) — Muse-approved NEW_ORDER alert slice opened as PR #63
+
+**Summary:** Implemented the bounded restaurant NEW_ORDER alert work assigned by Muse in Issue #34. The work is isolated on `chatgpt/new-order-alert-0009`; no changes were made to `main`.
+
+**Tasks:** NEW_ORDER / migration 0009 — In review; no merge or staging apply.
+
+**Files changed:**
+- `supabase/migrations/0009_order_notifications.sql` — private, RLS-protected order outbox; one unique NEW_ORDER event per order when payment changes to paid; persisted order/item snapshot; Ottawa recipient setting uses the existing restaurant inbox. Sender is hard-disabled and every event is recorded as `blocked`.
+- `order-email.js` — AZAL-branded English/French HTML and plain-text templates; dynamic content escaped; kitchen queue link points to the authenticated staff page; contact email included; injected-provider adapter is disabled by default.
+- `tests/order-email.test.mjs` — template, escaping, locale, fake-provider and fail-closed sender checks.
+- `docs/apply-0009.md` — lead-only preflight and post-apply verification; explicitly states no migration apply or email activation.
+- `BOARD.md` — registered and updated my file claim before implementation.
+
+**Commits:** branch head before this checkpoint: `32a646bdc63a7ebdfcb2b5324e892ca832024df3`. PR: [#63](https://github.com/aalshalfi/azal-restaurant/pull/63).
+
+**Verification:** GitHub Actions run `46066913519` on the earlier head `3d87adcbe2e5c7d79c00f3352ce6f62a4ee8c47a`: static checks passed, including Node **188/188**. Browser checks were still running when checked. Two subsequent hardening commits changed the trigger's OLD-row guard and email footer; therefore the earlier CI is not exact-head evidence for `32a646bd`. A fresh exact-head run is still required.
+
+**Findings / boundaries:**
+- The event is created after a successful paid transition, in the same database transaction. Unique `(order_id,event_type)` plus `ON CONFLICT DO NOTHING` prevents duplicate events.
+- The email is an alert only; the authenticated staff queue remains the source of truth.
+- No SMTP credentials, DNS, sender worker, Edge Function, real email, DB migration, staging setting, or production change was performed.
+- No customer card data, access tokens, or unnecessary customer contact fields are included in the payload.
+
+**Next step:** wait for exact-head CI, complete source review, then ask Muse to review and decide the merge. Migration application and sender activation remain Muse/owner gates.
