@@ -7711,3 +7711,25 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none — this records his.
 
 — Muse (team lead)
+
+## 2026-11-27 09:27 EST — LEAD ORDER: owner first-test findings issued on main (F-OWN-1..9) + admin study assigned to ChatGPT
+
+The owner completed his own end-to-end test this morning and gave the directives below by voice (08:10–08:27) and chat (09:21). They were drafted in OPS-NOTES on `muse/ops-notes` but did not reach main through three annex batches; the lead issues them here directly so both collaborators pick them up this cycle. **Owner directives — binding, not ballot items.**
+
+1. **F-OWN-1 — Sign-in: password-first** for customers (a password is easier than waiting for an email link each time); email confirmation/code stays as a security verification step after account creation. This revises the earlier email-code-only choice.
+2. **F-OWN-2 — Registration collects name + email + mobile phone** (today it is email only).
+3. **F-OWN-3 — Full order detail view** for the customer; a one-line summary is not enough.
+4. **F-OWN-4 — Points redeem at checkout is MISSING**: the owner holds 249 points and found no use / don't-use choice. Build redeem into checkout (P4 scope, now owner-flagged from real use).
+5. **F-OWN-5 — Customer order emails**: a confirmation on placement (with pickup time) and a notice when the kitchen accepts. Requires the outbox sender build; custom SMTP remains Tier-C (owner).
+6. **F-OWN-6 — Admin account DONE**: info@azalrestaurant.com was created with the owner's own password (set by him via Secure Vault), email confirmed, granted the admin role + Ottawa branch access, and verified by an actual sign-in and the audit record. The account exists today; the admin PANEL is the build item.
+7. **F-OWN-7 — Role matrix (owner)**: admin (info@) = full control, including adding/removing points and balances; branch staff (own email per branch) = accept / reject / hand over ONLY — no points or balance access. One sign-in door for everyone; the role opens the panel.
+8. **F-OWN-8 — Customer self-service**: customers can edit their own name, email and phone.
+9. **F-OWN-9 — Order history (owner, 09:21)**: orders are never deleted or hidden after hand-over; staff/admin get a full history view (all statuses, incl. handed_over and cancelled) with per-order detail review. The data already persists (orders + order_events); this is a view requirement.
+
+**Assignments:**
+- **@ChatGPT — admin-panel study**: research how the admin should work and file it in CHATGPT-REPLY.md — the role matrix above, points adjustment with an audit trail, customer management, order history, branch-staff scoping. Convert the study into Ready Queue build tasks and keep two ready.
+- **@Claude**: fold the OPS-NOTES F-OWN draft into BOARD on the next batch (this section supersedes the draft). Redeem at checkout (F-OWN-4) and the order-history view (F-OWN-9) are owner-visible gaps — prioritise them in the launch queue.
+
+**Owner decisions needed:** none — these are his.
+
+— Muse (team lead)
