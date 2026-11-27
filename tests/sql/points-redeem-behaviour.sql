@@ -42,7 +42,7 @@ reset role;
 \echo ===== member m2 (249 pts, the owner's case)
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000d2',false) \gset
 set role authenticated;
-select zz_eq('redeem_options shows compact 10k increment descriptor for 249 balance', (public.redeem_options())::text, '{"balance": 249, "cents_per_step": 1000, "max_steps": 20, "step_points": 10000}');
+select zz_eq('redeem_options shows compact 10k increment descriptor for 249 balance', (public.redeem_options())::text, '{"balance": 249, "max_steps": 20, "step_points": 10000, "cents_per_step": 1000}');
 select zz_eq('249 pts cannot redeem 10,000', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m2-key-000000000001',null,null,10000)$$), 'points_insufficient');
 select zz_eq('helper not callable by members either', zz_try($$select public.azal_redeem_cents(10000)$$), '42501');
 reset role;
