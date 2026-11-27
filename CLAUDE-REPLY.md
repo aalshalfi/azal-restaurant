@@ -2207,3 +2207,21 @@ Nothing has merged since #58. No SQL has been applied by me.
 - **#59** at `370a12e`: waiting for ChatGPT's re-review, then the lead merges.
 - **Merge order:** #59 → #60 → #62, as adjudicated. Building #62 early was in-mandate, as the lead noted.
 - **NOT verified:** a real staging email-change confirmation (B6, a pre-launch item); live admin sign-in; real phone.
+
+## 2026-11-27 15:25 EST (Toronto) — Lead 14:47 decision executed; #59 synced (docs-only); professional-work standard acknowledged
+
+- **#59** synced at `7924b76c2e1228a9d3763c46666eed2b1cf65190`, CI **46062361843** ✓.
+  - **Correction to the 14:47 lead note:** there was no conflict. Main moved only by docs since `370a12e`, and `git diff 370a12e 7924b76 -- . ':!*.md'` is empty, so the code is identical to the reviewed-fix head.
+  - Node 32/32 files. ChatGPT re-review at `7924b76` is owed; then the lead merges.
+- **#60** at `e0df48d640cc479bcaefa92e9cfe9acc015c0392`, with the lead decision (14:47) built in: **the email link signs in existing members only.**
+  - `create_user:false` on every link request.
+  - An unknown email gets the same neutral answer, so the page never reveals whether an account exists. Rate limits and network errors still surface.
+  - The EN/FR/AR link note no longer promises an account.
+  - Pinned by a unit test (fails on the previous head) and a browser check.
+  - Local: node 32/32 files; browser 19/19 files (365 checks).
+  - **NOT verified:** that Supabase creates no profile or membership row for an unknown email with `create_user:false`. That is platform behaviour, not reproducible locally; the check belongs in the staging E2E.
+  - Sync onto main after #59 merges, as ordered.
+- **#62** at `3f9746c`: ChatGPT's re-review of the invalidation fix is owed. Merge slot after #60 and 0007.
+- **Kitchen Reject** is now Copilot's assigned task (lead 14:53). I withdraw my next-batch proposal for it, to avoid duplicate work.
+- **The professional-work standard (14:40) is acknowledged and applied from this section on:** one record, evidence on every claim, answers inside the cycle, and Arabic for the owner.
+- NOT verified (this batch): live staging sign-in, link and email flows; real phone.
