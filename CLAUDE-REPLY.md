@@ -1637,6 +1637,72 @@ I acknowledge ChatGPT's 23:51 re-verifications (PASS with sync-hold on #32, #45,
 - **Still owed:** meaning-first Arabic for `checkout.js` and `staff.js` strings. I will do it after #29 merges, to avoid moving its reviewed head.
 - **NOT verified:** live ordering (payments off), phones, the live site.
 
+## 2026-11-27 03:58 EST (Toronto) — #29 ready for the lead's merge at `2856571` (#55 included); #54 PASS, queued behind #29
+
+I acknowledge ChatGPT's 03:28 reviews: #29 PASS with HOLD, #54 PASS, #55 PASS.
+
+**#29:**
+- New head **`2856571ef879e727af4635450a852f17d4ff1a0e`**.
+- **Changed files since `5a6fe92`:** `checkout.js` and `staff.js` (#55: Arabic copy, price isolate), `tests/arabic.test.mjs`, page `?v=`, and `CLAUDE-REPLY.md` (merge).
+- **How:**
+  - `git merge --ff-only origin/claude/ar-checkout`;
+  - `git merge origin/main`: one conflict, append-only `CLAUDE-REPLY.md`, resolved as the union of sections.
+- **vs main:** 0 behind / 19 ahead. Merge base is the current main tip at sync time.
+- **Results:**
+  - `pgchain.sh` on PG16 fresh DBs: ordering 80 PASS / 0 FAIL, reservations 66/0, p2_fix_assertions exit 0;
+  - capacity race: B `slot_full`; throttle races: B `rate_limited` (book and cancel); same-key: false→true, 1 order;
+  - `node --test tests/*.test.mjs`: 157/157;
+  - browser: arabic-fonts 13, auth-link 7, checkout-phone 26, checkout 22, header 25, iftar 15, member-history 9, member 12, reserve 25, rtl 51, sharecard 27, staff 8, story-map 15, walk 10;
+  - **CI 45969593973** ✓ (static + browser).
+- **Pinning:** the note-cap test fails on the pre-fix `checkout.js`; the `#placeOrder` sticky check fails without its CSS rule; the #55 Arabic/isolate test fails on `5a6fe92`.
+- **NOT verified:** live ordering (payments off; config null), a real phone, the live site.
+- **Next:** the lead merges #29 at this exact SHA. Then I merge #54 (PASS at `088548d`, after a CI re-check against the moved main), retarget #38/#39/#43 to main one by one, and then #40.
+
+**Defect ledger:**
+- bidi: ✓ found again and fixed in checkout/staff;
+- encode: ✓ (note);
+- scroll: ✓ (`#placeOrder`);
+- dead controls: ✓ (no checkout on reserve);
+- tofu, state: covered by the suites.
+
+## 2026-11-27 04:35 EST (Toronto) — Stacks pre-synced on #29's reviewed head (#29 itself untouched); one Arabic friction fixed in Table Pulse
+
+While #29 waits at `2856571` for ChatGPT's re-verify and the lead's merge, I merged that exact head into the three stacked branches. Their merge-into-main after #29 is now a no-op sync.
+
+| PR | New head | Conflicts | node | Browser |
+|---|---|---|---|---|
+| #39 cups | `eb5f77b` | none (release bump only) | 160/160 | member-history, member, checkout, header, arabic-fonts pass |
+| #38 pulse | `90ad951` | member.html (script tags) | 162/162 | pulse, member-history, member, checkout, header, arabic-fonts pass |
+| #43 sigil | `0053d3c` | checkout.js and staff.js Arabic lines, pages, styles, CLAUDE-REPLY | 164/164 | all 14 suites pass (checkout 23, staff 12) |
+
+- **Found while doing #38's Arabic:** the Table Pulse first step said «استُلم» (received) and the last «تم الاستلام» (picked up), so a guest could read a new order as already collected.
+  - Now «وصلنا طلبك».
+  - "Last checked" reads «تحقّقنا آخر مرة الساعة {time}».
+  - A test keeps the two steps from ever reading alike; it fails on the old wording.
+- **#43:** the sigil now sits in the new Arabic paid line («عند الاستلام قل فقط {sigil}»). ChatGPT's flagged «تحقّق من الكود» became «الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته». The reserve page loads neither checkout nor sigil (test updated).
+- **No CI yet on these three:** they are stacked; each gets CI when retargeted to main after #29 merges.
+- **NOT verified:** live ordering, phones, the live site.
+
+## 2026-11-27 04:58 EST (Toronto) — #29 synced on main `75c1c11`; ChatGPT PASS 04:58; CI complete: ready for the lead's expected-head merge
+
+- **#29 head `0418be8`:** main `75c1c11` merged in.
+  - Only `CLAUDE-REPLY.md` conflicted, so I took main's file verbatim. GitHub now reports **mergeable=true**, and docs-only main commits stop conflicting.
+  - No application file changed since the reviewed `2856571`.
+- **Fresh evidence at `0418be8`:**
+  - PG16: ordering 80/80, reservations 66/66, p2 assertions; capacity, throttle and same-key races;
+  - node 157/157; 14 browser suites all passing;
+  - **CI 45977710070: static ✓ and browser ✓.** The browser job was still running when ChatGPT wrote 04:58; it has since finished green.
+- **Head moved:** ChatGPT then committed its review record onto the branch as `af53f17` (`CHATGPT-REPLY.md` only).
+  - Its 04:58 verdict: code/CX PASS; merge once browser-checks is green, which it now is.
+  - @Muse: merge with the expected head `af53f17`, or `0418be8` if you prefer the reviewed tree. The application tree is identical in both.
+- **Proposal (process):** docs-only main commits do not invalidate a reviewed head. Before merging, the merger checks `git diff <reviewed-head> <merge-head> -- . ':!*.md'` is empty.
+- **NOT verified:** live ordering (payments off), phones, the live site.
+
+
+## 2026-11-27 05:15 EST (Toronto) — RESTORED: 6 sections my 04:50 #29 sync dropped (verbatim from 2856571)
+
+My 04:50 sync of #29 resolved the CLAUDE-REPLY.md conflict by taking main's file. I wrongly believed every branch-side section was already on main; six were not (Muse caught it at 04:55). They are restored below, unedited, in their original order.
+
 ## ## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
 - **Done:** `supabase/seed/staging-sample-menu.sql` on `claude/ordering`. It adds the 9 illustrative sample dishes and prices from the public preview to the existing fixture branch `ottawa`, in 4 categories, with provisional hours of 11:00–21:00 every day. It uses fixed uuids `a2a10000-…-00000000000N`, which map to the site's product ids 1–9. It is idempotent and labelled staging-only. None of it is a real menu, price or hours (Tier C).
 - **Ran:** a fresh PG16 harness with stub → 0001 → 0002 → 0003 → 0004 → seed → seed again, with no errors. The counts were 9 active items, 9 available `ottawa` items and 7 open days. A member `place_order` (2× Lamb Mandi + 1× Sahawiq, tomorrow 12:00) returned `total_cents = 6325`, which equals 5597 + HST 13% half-up. That is correct.
@@ -1804,3 +1870,47 @@ This runs after his first sign-in has created the profile.
 - points: a guest's are pending, then join to claim them; a member's go to the ledger.
 
 Next: the member page showing order history and the points ledger, then reservations wiring.
+
+## 2026-11-27 05:06 EST (Toronto) — MEETING (lead 05:03): Claude's answers, agenda 1–6
+
+**1. Activation chain.**
+- The seed is **final**: `supabase/seed/staging-sample-menu.sql` @ `8eefdae`, sha256 `4b18d742eab63f9a…`. No last fix.
+- **Fresh evidence (local PG16, which is not live Supabase):** 0001→0005 plus the seed apply clean. As `anon`, I placed a guest order shaped like the owner's first test: 2× Lamb Mandi, 1× Sahawiq, 2× Adeni Chai, note "less spice". Result:
+  - `place_order` returns **subtotal 6395 / tax 831 / total 7226**, the exact figures the client sheet shows (63.95 / 8.31 / 72.26). Client HST and server HST agree to the cent.
+  - With `payments_mode='test'`, `pay_order_test(…, 'tok_test_ok', email)` moves it to **paid**.
+  - Seed ids and prices match `checkout.js` and the menu exactly (9 of 9).
+- **Blockers I see before the owner's first test order:**
+  - (a) The config needs the publishable key; this has blocked #30 activation since 22:55.
+  - (b) **Supabase's built-in email sender is rate-limited to a handful of emails per hour.** The owner's sign-in link may be slow or capped if several tries happen. This is the real risk until custom SMTP (Tier C) exists.
+  - (c) The kitchen screen needs the staff flag on the owner's or staff account, or the paid order is invisible to the kitchen.
+  - (d) The owner must use the test card 4242 4242 4242 4242; any other number is refused locally.
+
+**2. Merge queue.** Confirmed: #54 now, then #39 cups (pre-synced, no conflicts), then #38 pulse, then #43 sigil (the most conflicts, so last), then #40 V6′. Realistic pace is about 20–30 minutes each, including CI. The bottleneck is review turnaround, not building.
+
+**3. Ballots.**
+- **Pre-selection: YES, conditional.** Cast at 21:15 yesterday, adopted 2–0. On the four study points:
+  - expectation gap: closed by wording on the chooser *and* in the confirmation ("noted, not ordered; cooking starts when you sit down; pay at the restaurant");
+  - no-show cost: none, provided the kitchen sees only counts before check-in;
+  - arrival mechanics: host check-in → wish on the table view → "still this?" → normal in-store order;
+  - kitchen value: a real count signal for slow dishes. Whether it changes stock is a kitchen fact, not claimed.
+  - Built as 0006 after 0005 is applied.
+- **V9: no re-scoped form survives; I withdrew it at 21:15.** Takeout bread cools in transit whatever the firing time. Dine-in "bread at seating" is what every Yemeni house already does, so it fails the novelty filter. **Claude: NO.**
+
+**4. 0005 apply: no source change needed.** Both booking flags stay false, and **booking must stay closed until an email sender exists**: the outbox only queues, so a guest would get no confirmation.
+
+**5. Dec 8, independent.**
+- (a) **About 65% launch-ready.** Code paths are done and tested; activation, the owner's end-to-end test, the 0005 apply, the email sender and the owner's real facts (menu, prices, photos, hours) are not.
+- (b) **Biggest risk:** owner-held inputs arriving late: custom SMTP, real menu, prices and photos, the publishable key. Code cannot substitute for them.
+- (c) **Stop:** docs-only commits to main every few minutes forcing re-syncs and re-reviews of already-reviewed heads. Rule proposal: docs-only main movement does not invalidate a reviewed head; the merger checks `git diff <reviewed> <merge-head> -- . ':!*.md'` is empty.
+
+**6. Process rule (mine, from today).**
+- I never resolve a reply-file conflict by taking one side.
+- Reply files merge as the **union of sections**. Before committing any merge, a script checks that **every `## ` heading from both parents exists in the result**, and the merge aborts if one is missing.
+- My 04:50 #29 sync broke exactly this. The 6 dropped sections are restored verbatim in the section above, and the check is now part of my sync scripts.
+
+## 2026-11-27 05:14 EST (Toronto) — Queue after #29: #54 merged; #39 retargeted and green, awaiting CX
+
+- **#54 merged** as `02965b2`: synced head `f1daf17`, CI **45979588217** ✓, ChatGPT PASS at `088548d`. The sync kept both new Arabic tests; rule-14 check passed.
+- **#39 cups:** retargeted to main and synced at `128af7f` (release strings only). node 161/161; browser suites pass; CI **45980019504** ✓. Awaiting ChatGPT CX at this head.
+- **Next:** #38 pulse (with the «وصلنا طلبك» Arabic fix), then #43 sigil, then #40.
+- **NOT verified:** live member data, the live site.

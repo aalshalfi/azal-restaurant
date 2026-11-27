@@ -5,7 +5,10 @@
   "use strict";
   const code = (id) => String(id || "").slice(0, 6).toUpperCase();
 
-  function createHistory({ config, fetch: fetchFn, getSession }) {
+  const cupsFrom = (ledger) => Math.max(0, (ledger || []).filter((r) => r.entry_type === "earn").length - (ledger || []).filter((r) => r.entry_type === "earn_reversal").length);
+  function createHistory({ config, fetch: fetchFn, getSession, pageSize }) {
+    const PAGE = pageSize || 500;   // below Supabase's default PostgREST max-rows (1000), so pages are never truncated
+    const MAX_ROWS = 100000;
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
     async function get(path, token) {
@@ -22,17 +25,31 @@
         const uid = s && s.user && s.user.id;
         if (!uid) return null;
         const u = encodeURIComponent(uid);
-        const [orders, ledger] = await Promise.all([
+        // The WHOLE ledger is read (paged to exhaustion) so the balance and the cups are complete; only the
+        // 50 newest rows are listed on screen. Stable order (created_at, id) so pages never overlap or skip.
+        async function allLedger() {
+          const rows = [];
+          for (let offset = 0; ; offset += PAGE) {
+            const page = await get("/rest/v1/points_ledger?select=id,entry_type,delta_points,created_at,order_id&user_id=eq." + u + "&order=created_at.desc,id.desc&limit=" + PAGE + "&offset=" + offset, s.access_token);
+            rows.push(...page);
+            if (page.length < PAGE) return rows;
+            // Safety cap: never present a partial ledger as complete. 200 pages x 500 rows = 100,000 entries.
+            if (offset + PAGE >= MAX_ROWS) throw Object.assign(new Error("ledger_too_large"), { code: "error" });
+          }
+        }
+        const [orders, ledgerAll] = await Promise.all([
           get("/rest/v1/orders?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
             "&user_id=eq." + u + "&order=placed_at.desc&limit=20", s.access_token),
-          get("/rest/v1/points_ledger?select=entry_type,delta_points,created_at,order_id&user_id=eq." + u + "&order=created_at.desc&limit=50", s.access_token)
+          allLedger()
         ]);
-        return { orders, ledger, total: ledger.reduce((a, r) => a + Number(r.delta_points || 0), 0) };
+        return { orders, ledger: ledgerAll.slice(0, 50), cups: cupsFrom(ledgerAll), entries: ledgerAll.length, total: ledgerAll.reduce((a, r) => a + Number(r.delta_points || 0), 0) };
       }
     };
   }
 
-  const api = { createHistory, code };
+  // V3 "Majlis as hospitality": one qahwa cup per collected paid order (earn rows minus reversals). The exact
+  // points number is always shown next to it; the cups never replace or hide it.
+  const api = { createHistory, code, cupsFrom };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -47,22 +64,39 @@
       st_placed: "Received", st_accepted: "Accepted", st_preparing: "Preparing", st_ready: "Ready for pickup", st_handed_over: "Collected", st_cancelled: "Cancelled",
       pay_unpaid: "Not paid", pay_paid: "Paid", pay_refunded: "Refunded", pay_voided: "Voided",
       e_earn: "Earned", e_redeem: "Used", e_earn_reversal: "Reversed", e_redeem_refund: "Returned",
-      forOrder: "order {code}", error: "We couldn’t load your history. Refresh to try again." },
+      forOrder: "order {code}", error: "We couldn’t load your history. Refresh to try again.",
+      cups: "{n} cups of qahwa poured for you: one for each order you collected.", cupsOne: "1 cup of qahwa poured for you: one for each order you collected.", cupsMore: "+{n}" },
     fr: { orders: "Vos commandes", none: "Aucune commande pour l’instant. Vos retraits apparaîtront ici.", points: "Vos points", noPoints: "Pas encore de points. Ils sont ajoutés quand une commande payée est récupérée.",
       total: "Solde : {n} points", code: "Code {code}", pickup: "Retrait {time}", more: "et {n} de plus",
       st_placed: "Reçue", st_accepted: "Acceptée", st_preparing: "En préparation", st_ready: "Prête à emporter", st_handed_over: "Récupérée", st_cancelled: "Annulée",
       pay_unpaid: "Non payée", pay_paid: "Payée", pay_refunded: "Remboursée", pay_voided: "Annulée",
       e_earn: "Gagnés", e_redeem: "Utilisés", e_earn_reversal: "Retirés", e_redeem_refund: "Rendus",
-      forOrder: "commande {code}", error: "Impossible de charger votre historique. Actualisez pour réessayer." }
+      forOrder: "commande {code}", error: "Impossible de charger votre historique. Actualisez pour réessayer.",
+      cups: "{n} tasses de qahwa servies pour vous\u00a0: une pour chaque commande récupérée.", cupsOne: "1 tasse de qahwa servie pour vous\u00a0: une pour chaque commande récupérée.", cupsMore: "+{n}" },
+    ar: { orders: "طلباتك", none: "لا طلبات بعد. ستظهر هنا طلباتك للاستلام.", points: "نقاطك", noPoints: "لا نقاط بعد. تُضاف النقاط عند استلام طلب مدفوع.",
+      total: "الرصيد: {n} نقطة", code: "الرمز {code}", pickup: "الاستلام {time}", more: "و{n} أخرى",
+      st_placed: "استُلم", st_accepted: "قُبل", st_preparing: "قيد التحضير", st_ready: "جاهز للاستلام", st_handed_over: "تم الاستلام", st_cancelled: "أُلغي",
+      pay_unpaid: "غير مدفوع", pay_paid: "مدفوع", pay_refunded: "مُسترد", pay_voided: "مُلغى",
+      e_earn: "مكتسبة", e_redeem: "مستخدمة", e_earn_reversal: "مسحوبة", e_redeem_refund: "مُعادة",
+      forOrder: "الطلب {code}", error: "تعذّر تحميل سجلّك. حدّث الصفحة وحاول مرة أخرى.",
+      cups: "صببنا لك {n} فناجين قهوة: فنجان عن كل طلب استلمته.", cupsOne: "صببنا لك فنجان قهوة: فنجان عن كل طلب استلمته.", cupsMore: "+{n}" }
   };
-  const lang = () => (document.documentElement.lang === "fr" ? "fr" : "en");
+  const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k] || k; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
-  const loc = () => (lang() === "fr" ? "fr-CA" : "en-CA");
+  const loc = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
   const when = (iso, opts) => new Intl.DateTimeFormat(loc(), Object.assign({ timeZone: "America/Toronto" }, opts)).format(new Date(iso));
   const money = (c) => new Intl.NumberFormat(loc(), { style: "currency", currency: "CAD" }).format(Number(c || 0) / 100);
   const pts = (n) => new Intl.NumberFormat(loc()).format(n);
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function cupIcon() { // a small finjan (handle-less coffee cup) with steam, drawn in the palette
+    const svg = document.createElementNS(SVGNS, "svg"); svg.setAttribute("viewBox", "0 0 24 24"); svg.setAttribute("class", "mh-cup"); svg.setAttribute("aria-hidden", "true");
+    for (const [tag, a] of [["path", { d: "M5 10h14l-1.6 7.2a3 3 0 0 1-2.9 2.3H9.5a3 3 0 0 1-2.9-2.3z", class: "mh-cup-body" }], ["path", { d: "M10 7c0-1.2 1-1.4 1-2.6M14 7c0-1.2 1-1.4 1-2.6", class: "mh-cup-steam" }]]) {
+      const e = document.createElementNS(SVGNS, tag); for (const k in a) e.setAttribute(k, a[k]); svg.append(e);
+    }
+    return svg;
+  }
   const box = el("section", "member-history section"); box.id = "memberHistory"; box.hidden = true; box.setAttribute("aria-live", "polite");
   card.closest("section").after(box);
   let data = null, failed = false, seq = 0;
@@ -89,6 +123,13 @@
       o.append(ul);
     }
     const p = el("div", "mh-block"); p.append(el("h2", null, L("points")), el("p", "mh-balance", L("total", { n: pts(data.total) })));
+    const cups = data.cups;
+    if (cups > 0) {
+      const row = el("div", "mh-cups"); row.setAttribute("role", "img"); row.setAttribute("aria-label", cups === 1 ? L("cupsOne") : L("cups", { n: pts(cups) }));
+      for (let i = 0; i < Math.min(cups, 12); i++) row.append(cupIcon());
+      if (cups > 12) row.append(el("span", "mh-cups-more", L("cupsMore", { n: pts(cups - 12) })));
+      p.append(row, el("p", "mh-cups-text", cups === 1 ? L("cupsOne") : L("cups", { n: pts(cups) })));
+    }
     if (!data.ledger.length) p.append(el("p", "mh-empty", L("noPoints")));
     else {
       const ids = new Map(data.orders.map((r) => [r.id, code(r.id)]));

@@ -702,6 +702,13 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .pulse-error{color:#8a1f11;font-weight:600}
 .pulse[hidden]{display:none!important}
 .pulse-inactive{color:#8a1f11;font-weight:600}
+/* V3 Majlis as hospitality: one qahwa cup per collected order; the number stays visible */
+.mh-cups{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:4px 0}
+.mh-cup{width:28px;height:28px}
+.mh-cup-body{fill:var(--gold);stroke:var(--brown);stroke-width:1.4}
+.mh-cup-steam{fill:none;stroke:var(--clay);stroke-width:1.4;stroke-linecap:round}
+.mh-cups-more{font-weight:700;color:var(--clay);margin-inline-start:4px}
+.mh-cups-text{margin:0 0 10px;font-size:15px;color:var(--muted)}
 
 /* Arabic (V1): right-to-left. Source fonts have no Arabic glyphs, so Arabic uses the device's Arabic font.
    Letter-spacing and uppercase break Arabic letter joining, so both are switched off. */
