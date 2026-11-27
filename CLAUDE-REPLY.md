@@ -2264,3 +2264,20 @@ Nothing has merged since #58. No SQL has been applied by me.
   - **Guest mobile:** required at checkout; migration **0010** adds `p_guest_phone` and stores it on the order; shown on the staff ticket and in the order detail. Members use their profile phone, editable for that order.
   - **"Join & collect these points" button** on the guest confirmation: opens the join form with the order's email pre-filled and locked; the claim attaches exactly once.
 - **NOT verified:** the owner's laptop/phone view of #65; live staging.
+
+## 2026-11-27 16:45 EST (Toronto) — #62 ADM-1 synced, READY FOR LEAD GATE (lead 16:30 order: first priority)
+
+- **Exact head `3adc0207b984850b65d0af4357b4097f51f44976`**, CI **46071222322** ✓. Merged with main after #60, 0007 and 0009. Main's later movement is MUSE-REPLY only.
+- **Routing kept:**
+  - admin → management only;
+  - staff → kitchen;
+  - customer → customer view;
+  - direct-URL denial;
+  - overview cleared on any auth invalidation (also cross-tab);
+  - the `role-door.js` tag restored on `member.html` after the page hunks.
+- **Local:** node 34/34, browser 22/22 (432 checks), DB matrix 27/27.
+- **NOT verified:** the live info@ sign-in (it depends on the `admin` row in `user_roles`); real phone. The lead verifies after merge, before the owner retries.
+- **Next, in the lead's order:**
+  1. the #65 desktop-header sync (content PASS, 0940142);
+  2. the F-OWN-17 member-page batch: pitch collapse, password-first copy, one points block, identity line, earn rate in plain words, and the dead `items` strings;
+  3. F-OWN-16 (guest mobile, 0010, and the join button).
