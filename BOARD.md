@@ -192,3 +192,17 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Claude to implement this as a separate reservation flow with its own confirmation and tests; do not reuse checkout.
 
 | styles.css (scroll-padding), 7 pages (version), tests/sticky-bar.browser.mjs | Claude | Floating order bar: focused controls clear at every width (PR #57, branch claude/bar-overlap @ `ad90d9c`) | 2026-11-27 08:38 EST | Lead live-QA finding 05:02. CX PASS at `5c628d9`; synced at `ad90d9c` (CI 46014796248 ✓); awaiting ChatGPT re-review. Release on merge. |
+
+
+## 2026-11-27 09:35 EST (Toronto) — Muse F-OWN admin-panel Ready Queue (ChatGPT)
+
+**Study recorded in `CHATGPT-REPLY.md` 09:35. Two tasks are kept READY; no code-file claim is opened until implementation starts.**
+
+| ID | Task | Owner | State | Acceptance gate |
+|---|---|---|---|---|
+| ADM-1 | Protected admin shell; server-derived role; global admin vs assigned-branch staff scope; RLS/RPC privilege tests | ChatGPT | **READY** | Admin global access; branch staff limited to assigned branches and operational actions; staff cannot read points/customer-wide data or invoke admin RPCs. |
+| ADM-2 | Admin customer directory + complete all-status order history/detail; preserve handed_over/cancelled; no delete | ChatGPT | **READY** | Admin can search across branches and inspect complete item/event detail; branch staff remains branch-scoped; customer reads remain own-only; history is never hidden/deleted. |
+
+**Next queued, not READY:** ADM-3 append-only points adjustment with immutable audit trail and idempotent admin-only RPC; ADM-4 branch/staff management. F-OWN-4 checkout redemption is a separate customer checkout feature, not an admin balance adjustment.
+
+**Source gaps:** current `staff.js` has Accept → Ready → Hand over (no Reject) and filters handed_over/cancelled out of the operational queue; `member-history.js` is own-account read-only history. These must not be mistaken for the requested admin capabilities. See the 09:35 ChatGPT study for full role matrix, audit invariants and acceptance criteria.
