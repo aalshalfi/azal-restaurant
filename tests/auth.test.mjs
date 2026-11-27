@@ -140,3 +140,16 @@ test("requestCode refuses a malformed email before sending anything", async () =
   for (const bad of ["", "nobody", "a@b", "a b@c.de"]) await assert.rejects(a.requestCode(bad), { code: "invalid_email" });
   assert.equal(s.calls.length, 0);
 });
+
+test("emailed link: requestCode passes redirect_to; adoptLink stores the session from the URL fragment", async () => {
+  const s = server([[/\/otp/, () => json(200, {})], [/\/auth\/v1\/user/, (u, i) => json(i.headers.Authorization === "Bearer LA" ? 200 : 401, { id: "u-9", email: "link@example.invalid" })]]);
+  const st = mem();
+  const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
+  await a.requestCode("link@example.invalid", "https://aalshalfi.github.io/azal-restaurant/member.html");
+  assert.match(s.calls[0].url, /\/auth\/v1\/otp\?redirect_to=https%3A%2F%2Faalshalfi\.github\.io%2Fazal-restaurant%2Fmember\.html$/);
+  const r = await a.adoptLink("#access_token=LA&refresh_token=LR&expires_in=3600&token_type=bearer&type=magiclink");
+  assert.equal(r.session.user.email, "link@example.invalid");
+  assert.equal((await a.session()).access_token, "LA");
+  assert.deepEqual(await a.adoptLink("#error=access_denied&error_code=otp_expired"), { error: "link_invalid" });
+  assert.equal(await a.adoptLink("#menu"), null);
+});

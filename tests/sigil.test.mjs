@@ -40,7 +40,8 @@ test("guest confirmation and staff ticket use the same function", () => {
   for (const w of ["just say {sigil}", "dites simplement {sigil}", "قل فقط {sigil}"]) assert.ok(co.includes(w), w);
 });
 test("every page that loads checkout.js loads sigil.js before it", () => {
-  for (const f of ["404.html", "index.html", "member.html", "menu.html", "reserve.html", "story.html", "staff.html"]) {
+  assert.ok(!readFileSync(new URL("../reserve.html", import.meta.url), "utf8").includes("sigil.js"), "reserve is table-only (#32): no checkout, no sigil");
+  for (const f of ["404.html", "index.html", "member.html", "menu.html", "story.html", "staff.html"]) {
     const h = readFileSync(new URL("../" + f, import.meta.url), "utf8");
     const s = h.indexOf('src="sigil.js'), c = h.indexOf('src="checkout.js');
     assert.ok(s > 0 && s < c, f);

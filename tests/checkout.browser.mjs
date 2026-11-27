@@ -32,6 +32,12 @@ async function run({ lang = "en", card, second }) {
   return { page, sent };
 }
 
+{ // F-CHK-1 in live (test-mode) ordering: at a short phone height the sheet scrolls and #placeOrder stays reachable
+  const { page } = await run({}); await page.setViewportSize({ width: 390, height: 600 });
+  const r = await page.evaluate(() => { const el = document.querySelector(".checkout-panel"), b = document.getElementById("placeOrder").getBoundingClientRect(); return { scrolls: el.scrollHeight > el.clientHeight, inView: b.top >= 0 && b.bottom <= innerHeight }; });
+  ok(r.scrolls && r.inView, "live mode at 390x600: the sheet scrolls and the place-order button is on screen without scrolling");
+  await page.close();
+}
 { // guest, decline then pay
   const { page, sent } = await run({});
   ok(await page.locator("#placeDemoOrder").count() === 0, "preview button replaced when config is live");
