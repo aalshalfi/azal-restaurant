@@ -589,6 +589,25 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .auth-links{display:flex;flex-wrap:wrap;gap:4px 20px}
 .auth-sent{font-size:14px;margin:0 0 6px}
 .auth-claimed{font-weight:600;color:var(--clay);margin:8px 0 0}
+/* Live table booking (reserve.js) */
+.reserve-form,.reserve-cancel form{display:grid;gap:6px;max-width:520px;margin:18px 0}
+.reserve-form label,.reserve-cancel label,.rs-times legend{font-weight:600;font-size:15px;color:var(--brown);margin-top:8px}
+.reserve-form input,.reserve-form select,.reserve-cancel input{font:inherit;font-size:16px;min-height:48px;padding:10px 12px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:var(--brown);width:100%}
+.reserve-form input:focus-visible,.reserve-form select:focus-visible,.rs-slot:focus-visible,.reserve-cancel input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.rs-times{border:0;padding:0;margin:0}
+#rsSlots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.rs-slot{min-height:44px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:var(--brown);font:inherit;font-size:15px;cursor:pointer}
+.rs-slot[aria-checked="true"]{background:var(--brown);color:#F8F1E7;border-color:var(--brown)}
+.rs-help{font-size:14px;color:var(--muted);margin:2px 0}
+.rs-error{color:#8a1f11;font-weight:600;margin:6px 0 0}
+.rs-error:empty{display:none}
+.reserve-form .button{margin-top:12px;min-height:52px}
+.reserve-done{background:var(--cream);border-left:6px solid var(--gold);padding:18px;margin:18px 0;max-width:560px}
+.rs-done-main{font-size:19px;font-weight:600;margin:0 0 8px}
+.rs-code{font-size:22px;font-weight:800;letter-spacing:.08em;margin:0 0 8px}
+.reserve-cancel{margin:22px 0;max-width:520px}
+.reserve-cancel summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.reserve-how [hidden],.reserve-done[hidden],.reserve-form[hidden]{display:none!important}
 /* HDR-MOB: balanced mobile header (owner 07:53). Desktop (>800px) unchanged: quick controls and the bag icon are hidden there. */
 .header-quick,.cart-open .cart-icon{display:none}
 .hq-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
