@@ -35,7 +35,7 @@ select zz_eq('invalid redeem config is rejected', zz_try('update public.app_sett
 set role anon;
 select zz_eq('anon cannot read redeem options', zz_try($$select public.redeem_options()$$), '42501');
 select zz_eq('anon cannot call the balance helper', zz_try($$select public.azal_points_balance('00000000-0000-0000-0000-0000000000d1')$$), '42501');
-select zz_eq('guest cannot redeem', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'g-key-0000000000001','Amal','amal@example.invalid',10000)$), 'redeem_members_only');
+select zz_eq('guest cannot redeem', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'g-key-0000000000001','Amal','amal@example.invalid',10000)$$), 'redeem_members_only');
 select zz_eq('guest order without points still works (default 0)', public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'g-key-0000000000002','Amal','amal@example.invalid')->>'total_cents', '677');
 reset role;
 
@@ -43,7 +43,7 @@ reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000d2',false) \gset
 set role authenticated;
 select zz_eq('redeem_options shows compact 10k increment descriptor for 249 balance', (public.redeem_options())::text, '{"balance": 249, "cents_per_step": 1000, "max_steps": 20, "step_points": 10000}');
-select zz_eq('249 pts cannot redeem 10,000', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m2-key-000000000001',null,null,10000)$), 'points_insufficient');
+select zz_eq('249 pts cannot redeem 10,000', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m2-key-000000000001',null,null,10000)$$), 'points_insufficient');
 select zz_eq('helper not callable by members either', zz_try($$select public.azal_redeem_cents(10000)$$), '42501');
 reset role;
 
@@ -51,13 +51,13 @@ reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000d1',false) \gset
 set role authenticated;
 select zz_eq('a non-tier amount is refused', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-000000000001',null,null,7000)$$), 'invalid_redeem');
-select zz_eq('negative points refused', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-000000000002',null,null,-10000)$), 'invalid_redeem');
+select zz_eq('negative points refused', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-000000000002',null,null,-10000)$$), 'invalid_redeem');
 select zz_eq('reward larger than the order refused ($10 off a $5.99 bread)', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000003',null,null,10000)$$), 'redeem_exceeds_order');
 select (public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004',null,null,10000))::text as o1 \gset
 select zz_eq('10,000 pts on $55.97: discount 1000, HST on 4597 = 598, total 5195', (:'o1'::jsonb->>'subtotal_cents')||'/'||(:'o1'::jsonb->>'discount_cents')||'/'||(:'o1'::jsonb->>'tax_cents')||'/'||(:'o1'::jsonb->>'total_cents'), '5597/1000/598/5195');
 select zz_eq('points not spent at placement (balance still 25000)', (select sum(delta_points)::text from public.points_ledger), '25000');
 select zz_eq('same key, same cart, same points replays', case when public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1},{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2}]',null,null,'m1-key-000000000004',null,null,10000)->>'order_id' = :'o1'::jsonb->>'order_id' then 'same' else 'diff' end, 'same');
-select zz_eq('same key, same cart, different points is a conflict', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004',null,null,20000)$), 'idempotency_conflict');
+select zz_eq('same key, same cart, different points is a conflict', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004',null,null,20000)$$), 'idempotency_conflict');
 select zz_eq('same key, same cart, no points is a conflict', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":2},{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000004')$$), 'idempotency_conflict');
 select zz_eq('a declined card spends nothing', (public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_declined')->>'outcome') || '/' || (select sum(delta_points)::text from public.points_ledger), 'declined/25000');
 select zz_eq('paid: charged 5195', public.pay_order_test((:'o1'::jsonb->>'order_id')::uuid,'tok_test_ok')->>'total_cents', '5195');
