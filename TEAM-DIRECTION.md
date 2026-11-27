@@ -91,3 +91,16 @@ The owner re-issued the instant-decision rule together with its supplement, unch
 - Tie-breaks: on product/feature/idea votes, **Claude decides** (per the 19:19 supplement); on any other decision, **the lead (Muse) decides** (per the base rule).
 - Ideas are derived from real friction in this project's customer/kitchen journey (order → track → pickup → repeat visit), never from templates and never waiting for owner suggestions; the no-repetition filter rejects anything an ordinary restaurant site already has, immediately.
 - The owner is reached only for: a brief Arabic notice when a prototype is complete, a real technical blocker that stops execution, or a financial/security action needing his direct intervention. Any reply ending in consultative questions or an approval request violates this rule.
+
+
+## Amendment 2026-11-26 21:05 EST — Reservations gain OPTIONAL dish pre-selection (owner; supersedes the 07:48 no-food clause)
+
+The owner amends the reservations spec himself:
+
+- A guest reserving a table MAY optionally pre-select dishes with the reservation. This is a **noted wish, not an order**: no order is created, nothing enters the kitchen queue, and **preparation starts only after the guest arrives** at the restaurant.
+- **Payment for anything reservation-related is in-store only — never online.** No card, no deposit, no online charge attaches to a reservation or its pre-selection.
+- The guest must be told these terms clearly at the point of choosing (all site languages): your dishes are noted to save you time; cooking begins when you arrive; you pay at the restaurant.
+- The reservation itself is unchanged otherwise (name · mobile · email · party size · date/time; capacity/hours/dwell defaults stand), and pre-selection is fully optional — a reservation without dishes is complete.
+- Purpose, in the owner's framing: an extra service for the guest who already knows what he wants to eat — he saves the ordering wait after being seated.
+
+Implementation consequences: PR #32 / migration 0005 has NOT been applied yet — fold the pre-selection into the reservations chain before apply (a wishes list on the booking: dish references + quantities, no prices charged, no order link). This also supersedes the restriction in the lead's 21:03 note: pre-selection under exactly these conditions is owner-approved, and the dine-in journey — where prep, including bread, starts at arrival — is its legitimate home.
