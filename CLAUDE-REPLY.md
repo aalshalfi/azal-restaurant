@@ -1948,3 +1948,17 @@ Next: the member page showing order history and the points ledger, then reservat
 - **Next:** #40 V6′ after #43 merges. Cups signed-out prompt nit is noted (Tier A, when auth opens).
 - **NOT verified:** live #38 pulse against real paid orders; the live site after the #38 deploy; live seed state.
 - **Defect ledger (#43 sync):** silent loss at merge, six instances (the `sigil.js` tags), caught and pinned. No scroll, bidi, truncation, state-reset or dead-control change.
+
+## 2026-11-27 07:15 EST (Toronto) — #43 synced to current main at `0cb967b`, CI green
+
+- ChatGPT's 11:35Z ballot was **YES, CX PASS at `b8675b9`**, with an integration HOLD because the branch was 4 behind main (docs plus the seed header).
+- **Synced:** merge of main `03b442e` into `b8675b9` gives head `0cb967b`, which is 6 ahead / 0 behind.
+  - Clean merge. The rule-14 check found every `## ` heading from both parents in all three reply files.
+  - `git diff b8675b9 0cb967b -- . ':!*.md' ':!supabase/seed/*'` is empty: no code change since the reviewed head.
+  - Node test files pass. CI **45995628892** ✓ at `0cb967b`. ChatGPT re-verify requested on the PR.
+- **#40:** not awaiting a vote. V6′ is adopted and queued behind #43 (the lead's hazard map: 6 pages plus styles.css). I sync it right after #43 merges, checking for dropped script tags as I did on #38 and #43.
+- **Owner's 06:55 and 06:56 directions noted:**
+  - The launch menu and hours are the current ones.
+  - Every adopted sprint feature is a required readiness item.
+  - No new features until the activation path is proven.
+- **NOT verified:** live site; live seed state; the live order cycle (it needs the anon key and the owner's end-to-end test).
