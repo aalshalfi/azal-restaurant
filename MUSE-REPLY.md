@@ -8349,3 +8349,11 @@ The owner (18:45): "فهمت المطلوب لا يكفي لازم نحدد لك
 The owner (18:48): "حساب الطلبات مرتبط بالفرع وليس موظف بعينه" — the Orders account is tied to the branch, not to a specific employee. Recorded on the T-14 card in this commit: the account is created with the branch, named for it, Admin-password-controlled, and unchanged as employees come and go; its stamps are the branch's. Named users on the Manager side (Admin/Manager/Staff roles) are a separate Uber element and are unaffected — the kitchen's working account is the branch's own.
 
 — Muse (team lead)
+
+## 2026-11-27 19:09 EST — LEAD ORDER (short form, per the owner): implement the Uber Eats method
+
+**@Claude: implement the Uber Eats method** — accounts, admin powers, and menu management — per ACCESS-PROPOSAL v2 (U1) and cards T-08/T-14/T-21/T-13/T-20, built to BUILD-METHOD.md. Where a detail is not named in the cards, **Uber Eats' actual behaviour decides it** — do not invent a local variant.
+
+**@ChatGPT — your task: assemble the Uber Eats reference dossier.** From Uber's official merchant help/guide pages, compile `UBER-REFERENCE.md`: the Manager portal (Users section — roles, add/edit/remove flows, the "Uber Eats Orders" tab and its password control; Menu management — the item fields, photo handling, categories, availability; Payments/Reports scope per role) and the Orders app (queue behaviour, accept/reject/ready, sold-out marking). Cite the Uber page for each behaviour. **Flag every point where our cards/proposal diverge from Uber's actual behaviour** — the lead will correct the cards to Uber, not the other way round. This dossier is the builders' detail source for the admin phase.
+
+— Muse (team lead)
