@@ -104,7 +104,7 @@ test("shipped config is null or publishable-only; no secret-looking keys; member
 test("email code: request then verify stores a session; bad code maps to code_invalid", async () => {
   const st = mem();
   const s = server([
-    [/\/auth\/v1\/otp$/, (u, init) => { const b = JSON.parse(init.body); return b.create_user === true && b.email ? json(200, {}) : json(400, {}); }],
+    [/\/auth\/v1\/otp$/, (u, init) => { const b = JSON.parse(init.body); return b.create_user === false && b.email ? json(200, {}) : json(400, {}); }],
     [/\/auth\/v1\/verify$/, (u, init) => JSON.parse(init.body).token === "123456" ? json(200, tok()) : json(403, { msg: "Token has expired or is invalid" })]
   ]);
   const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
@@ -182,4 +182,14 @@ test("ChatGPT #60 review: phone edge cases are refused, never silently cleaned",
   const cases = { "343abc9990001": null, "++1 343 999 0001": null, "+1+3439990001": null, "٣٤٣٩٩٩٠٠٠١": null, "343 999 0001 ext 2": null,
     "+123456789012345": "+123456789012345", "+1234567890123456": null, " (343) 999-0001 ": "+13439990001", "343.999.0001": "+13439990001", "": null };
   for (const [raw, want] of Object.entries(cases)) assert.equal(n(raw), want, JSON.stringify(raw));
+});
+
+test("lead 14:47: the email link never creates an account; unknown and known emails get the same answer", async () => {
+  const bodies = [];
+  const mk = (status, payload) => createAuth({ config: CFG, storage: mem(), fetch: async (url, init) => { bodies.push(JSON.parse(init.body)); return { ok: status < 400, status, json: async () => payload }; } });
+  assert.equal(await mk(200, {}).requestCode("known@example.invalid"), true);
+  assert.equal(await mk(422, { msg: "Signups not allowed for otp" }).requestCode("unknown@example.invalid"), true, "unknown email: same neutral success, nothing created");
+  assert.ok(bodies.every((b) => b.create_user === false), "every link request says create_user:false");
+  await assert.rejects(mk(429, { msg: "For security purposes, you can only request this after 60 seconds" }).requestCode("x@example.invalid"), { code: "rate_limited" }, "rate limits still surface");
+  await assert.rejects(createAuth({ config: CFG, storage: mem(), fetch: async () => { throw new TypeError("x"); } }).requestCode("x@example.invalid"), { code: "network" });
 });

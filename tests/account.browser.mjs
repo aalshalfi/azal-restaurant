@@ -112,4 +112,12 @@ const msg = (p) => p.evaluate(() => (document.getElementById("authMessage") || d
   ok(u && /select=id,display_name,phone&/.test(u.u) && !/select=\*/.test(u.u), "profile read is select=id,display_name,phone (no *)");
   await p.close();
 }
+{ // lead 14:47: link for existing members only; an unknown email gets the same neutral answer
+  const { p, sent } = await open();
+  await p.route("https://fake.supabase.co/auth/v1/otp**", (r) => r.fulfill({ status: 422, json: { msg: "Signups not allowed for otp" } }));
+  await p.click("#authUseCode"); await p.fill("#authEmail", "nobody@example.invalid"); await p.click("#authSubmit"); await p.waitForTimeout(300);
+  ok(/sign-in link to nobody@example\.invalid/.test(await p.textContent(".member-card")), "unknown email: the same 'we emailed a link' answer (no account-existence leak)");
+  ok(/already have an account/.test(await p.textContent(".member-card")) && !/creates your Majlis account/.test(await p.textContent(".member-card")), "the link note no longer promises an account");
+  await p.close();
+}
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");

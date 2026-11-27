@@ -84,7 +84,15 @@
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(email || "").trim())) throw Object.assign(new Error("invalid_email"), { code: "invalid_email" }); // nothing sent
         // redirect_to: the default Supabase email carries a sign-in LINK (no code) until custom SMTP lets us edit it;
         // the link returns here and adoptLink() finishes sign-in. With {{ .Token }} in the template, the code works too.
-        await call("/auth/v1/otp" + (redirectTo ? "?redirect_to=" + encodeURIComponent(redirectTo) : ""), { method: "POST", body: { email, create_user: true } });
+        // Lead decision 14:47: the link signs in EXISTING members only; accounts are created only by the join form
+        // (name + email + mobile + password). An unknown email gets the same neutral answer as a known one, so the
+        // page never reveals whether an account exists. Rate limits and network errors still surface.
+        try {
+          await call("/auth/v1/otp" + (redirectTo ? "?redirect_to=" + encodeURIComponent(redirectTo) : ""), { method: "POST", body: { email, create_user: false } });
+        } catch (e) {
+          if (e.code === "signups_closed" || /user not found|signups? not allowed|otp_disabled/i.test(String(e.message || ""))) return true;
+          throw e;
+        }
         return true;
       },
       async verifyCode(email, token) {
