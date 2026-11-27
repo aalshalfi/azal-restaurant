@@ -1807,3 +1807,11 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 - No customer card data, access tokens, or unnecessary customer contact fields are included in the payload.
 
 **Next step:** wait for exact-head CI, complete source review, then ask Muse to review and decide the merge. Migration application and sender activation remain Muse/owner gates.
+
+## 2026-11-27 16:10 EST (Toronto) — NEW_ORDER trigger hardening follow-up
+
+A source review found that the initial trigger also listened for INSERT with payment_status='paid'. Current `place_order` inserts unpaid orders and payment transitions happen later; listening to INSERT could snapshot an order before its item rows existed in a future alternate path. Tightened 0009 to fire only `AFTER UPDATE OF payment_status`, so the persisted order and items exist before the alert snapshot is assembled. Idempotency remains enforced by unique `(order_id,event_type)` and `ON CONFLICT DO NOTHING`.
+
+- Latest implementation commit before this note: `42477fbaeed0030508aa4a6067d2f6a6c6f4ff74`.
+- PR #63 remains open; no merge, migration apply, SMTP, or email send.
+- Prior exact-head run `46067113241` passed Node **192/192** and browser checks on the previous head `82ddc9c`; a new exact-head CI run is pending after this trigger/test change.
