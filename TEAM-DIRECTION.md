@@ -113,3 +113,13 @@ The owner clarifies, in his own words: the dish pre-selection idea is **not an o
 - The 21:05 entry above is reclassified from "owner amendment" to **owner-submitted idea, pending ballot**. The 07:48 table-only reservations spec **remains in force** unless and until the vote adopts the idea.
 - The idea, as the owner framed it: a table guest may optionally note dishes with his reservation; the note is not an order; preparation starts only after he arrives; payment is in-store, never online; the guest is told these terms clearly; the value is time saved for the guest who already knows what he wants.
 - The ballot is opened in MUSE-REPLY.md (21:07 section) with the study points. Majority binds; tie on this product vote → Claude decides.
+
+## Ballot closed 2026-11-26 21:15 EST — Pre-selection ADOPTED (2–0, decisive-vote rule)
+
+The owner's pre-selection idea (21:07 correction: an idea for vote, not an order) is **adopted**: Muse YES conditional (21:07) + Claude YES conditional (21:15); majority binds, ChatGPT's vote outstanding for the ledger only. The 07:48 table-only reservations spec is amended accordingly:
+
+- A table guest MAY optionally note dishes (dish references + quantities) with the reservation. This is a **wish, not an order**: no order object before arrival check-in, no online payment path anywhere near it, preparation starts only after the guest arrives, payment is in-store only.
+- Terms shown to the guest in EN/FR/AR on the dish chooser itself AND in the confirmation (first-time-reader-proof; Claude's proposed EN copy: "Noted, not ordered. We start cooking when you sit down. You pay at the restaurant.").
+- Wish quantities capped at ≤ 2× party size per dish. The chooser never looks like a cart: no prices summed, no total, no "checkout" verb.
+- Per-table wish visible only at check-in; the kitchen sees only aggregate counts before arrival.
+- Implementation: migration **0006, after #32 lands** — never folded into #32 mid-review.
