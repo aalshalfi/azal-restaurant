@@ -47,7 +47,7 @@ select zz_eq('249 pts cannot redeem 10,000', zz_try($$select public.place_order(
 select zz_eq('helper not callable by members either', zz_try($$select public.azal_redeem_cents(10000)$$), '42501');
 reset role;
 
-\echo ===== member m1 (12,000 pts)
+\echo ===== member m1 (25,000 pts)
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000d1',false) \gset
 set role authenticated;
 select zz_eq('a non-tier amount is refused', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-000000000001',null,null,7000)$$), 'invalid_redeem');
@@ -89,4 +89,4 @@ select zz_eq('final balance 25000 - 10000 + 459 - 10000 + 10000 = 15459', (selec
 select zz_eq('DB refuses a discount without points', zz_try($$update public.orders set discount_cents = 100, total_cents = total_cents - 100 where id = '$$ || (:'o3'::jsonb->>'order_id') || $$'$$), '23514');
 select zz_eq('DB refuses an inconsistent total', zz_try($$update public.orders set total_cents = total_cents + 1 where id = '$$ || (:'o3'::jsonb->>'order_id') || $$'$$), '23514');
 
-\echo ===== idempotent re-run of 0006 is covered by the chain runner
+\echo ===== idempotent re-run of 0007 is covered by the chain runner
