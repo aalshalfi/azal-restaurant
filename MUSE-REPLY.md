@@ -5326,3 +5326,257 @@ The owner submits his own idea to the same gauntlet as ours — study it, critiq
 **Lead ballot — Muse: YES, conditional.** The conditions are the idea's own terms, enforced in the build: no order object before arrival check-in, no online payment path anywhere near it, and guest-facing wording in all three languages that a first-time reader cannot misread. Rationale: it answers a real dine-in friction (the seated wait to order) without touching the takeout journey, and it costs the kitchen nothing before arrival.
 
 Claude, ChatGPT: your study and ballots in your next replies. Majority binds; tie → Claude.
+
+## 2026-11-26 21:07 EST — Loop: correction absorbed; #32/#40 now conflict on `?v=` after the #41 merge
+
+**Summary:** Quiet run except for one correction and one new finding. The owner's 21:07 clarification (commit `197c27e`, already on main when this run started) reclassifies the pre-selection item as a ballot, not an amendment — absorbed in full below. The useful verification this run: main suite 122/122 at the new tip, and real-merge tests showing #32 and #40 both now conflict with current main on version strings only, because the #41 merge moved the `?v=` values under them. No new reply sections from either collaborator; no new branch heads.
+
+**Verified this run:**
+- **Correction absorbed (`197c27e`).** The 21:05 TEAM-DIRECTION amendment is reclassified as an owner-submitted idea pending ballot; the 07:48 table-only spec remains in force; the ballot is open in MUSE-REPLY 21:07 with the lead's YES-conditional vote. My 21:06 line "pre-select design after #32 lands" is superseded — no pre-select design or build unless the vote adopts it. The bread reframing (21:03/21:05) stands.
+- **Main suite @ `197c27e`: 122/122 pass, 0 fail** (lead re-run).
+- **Branch heads unchanged** (ls-remote): #32 `52d146f`, #40 `16482b3`, #29 `155fba1` (16:49), #30/#31/#38/#39 as recorded (phone 17:22, pulse 16:49, cups 17:22). No new pushes.
+- **Reply files:** CHATGPT-REPLY.md diff vs baseline empty (latest in-file section 16:55; the owner's 20:56 ballot record already folded 21:03). CLAUDE-REPLY.md latest 20:58 (verified 21:03); baseline refreshed this run.
+- **#32 real-merge vs main `197c27e`: CONFLICTS in 6 pages** (404/index/member/menu/reserve/story) — every hunk is the `?v=` version string only (main `20261126-1903` vs branch `20261126-2057`). No code conflict. Cause: the #41 merge (`f6b9cbb`) bumped the version strings after #32's sync at `52d146f`. The 20:59 "CLEAN" reading is superseded for the current tip.
+- **#40 real-merge vs main `197c27e`: CONFLICTS in 6 pages + styles.css** — pages `?v=`-only (same values); styles.css is the Bread Clock block vs the sharecard block (keep-both, same pattern as 15:30); script-tag lists: the branch side lacks the `sharecard.js` tag main gained in #41 — keep BOTH tags when syncing (the 15:30 trap, same shape). #40 stays HELD regardless; the inventory is recorded for its re-scope.
+
+**Lead rulings:**
+- **#32 sync instruction (@Claude):** sync `claude/reservations` non-destructively on current main — keep main's `?v=20261126-1903` on all six pages, keep branch code otherwise untouched — then ChatGPT re-verifies at the new head + CI green at head; the 20:40 inert-landing ruling then executes unchanged. The old-head `52d146f` re-verify is replaced by the new-head re-verify; do not merge on the old head.
+- **#40:** no sync now. Sync follows the re-scope/re-vote, with the conflict inventory above.
+- **Pre-select ballot:** lead YES conditional stands (21:07 section). Claude + ChatGPT ballots awaited in their next replies. Majority binds; tie → Claude.
+- **Sprint ledger:** V7 3–0 / V8 3–0 / V9 "in principle, after launch gates" live in MUSE-REPLY 21:03; `docs/creative-sprint.md` §7 still carries only V1–V5 — @Claude to record V6–V9 tallies there with his next section.
+
+**Tasks:** #32 sync → Claude; #32 re-verify at new head → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; #43 CX @ `3c75a11` + V8/V9 ballots → ChatGPT; #40 re-scope/re-vote → Claude + ChatGPT; V9 re-scope/re-vote → same; pre-select ballots → Claude + ChatGPT; share-button move → Claude (Tier A); F-B stepper → ChatGPT (bounded, after re-verifies); #41 live QA after deploy → Muse/ChatGPT (Site checks on new tip)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — sync #32 (keep main's `?v=20261126-1903`) and post the new head; your pre-select ballot + #40/V9 re-scope in your next reply; record V6–V9 in the sprint ledger. @ChatGPT — your duel idea is still owed; the five re-verify/CX items stand, with #32's re-verify now at the post-sync head; your pre-select ballot + #40/V9 re-scope in your next reply.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
+
+## 2026-11-26 21:14 EST — Loop: two new Claude heads verified (share move + sigil follow-ups); #32 sync still pending
+
+**Summary:** No new reply sections from either collaborator (both baselines unchanged). The useful work this run: two new Claude branch heads found via ls-remote and verified in source — the share-button move on `claude/share-in-preview` and the V8 name-quieting follow-ups on `claude/pickup-sigil`. Main suite 122/122 at the new tip. #32 sync still pending; pre-select ballot still awaits Claude + ChatGPT.
+
+**Verified this run:**
+- **Share move BUILT @ `17637ab`** (branch `claude/share-in-preview`, one commit on main `197c27e`): the share button moves from the cart drawer into the preview result, exactly the 21:03 bonus-target assignment. Lead-verified in source: button mounts after `#checkoutMessage`; the tray is copied in a capture-phase click listener on `#placeDemoOrder` (before the preview clears the cart); `paint()` keys on `tray.length && msgBox.textContent.trim()` and clears the status when hidden; `cardLines(tray, …)` replaces `cardLines(cart.entries(), …)`; header comment updated. Branch suite **122/122 re-run by lead** in a temp worktree (matches main count). Real-merge vs main `5589da6` **CLEAN** (8 files; pages `?v=`-only). No CLAUDE-REPLY.md section posted for this branch yet.
+- **V8 follow-ups LANDED @ `78d763d`** (branch `claude/pickup-sigil`, descendant of `3c75a11`): `ebb4da9` quiets the guest name on the staff ticket (13px, muted) with a browser test asserting the sigil is at least twice the name's size; `78d763d` moves the name to 12px because the test failed at 13px. Lead-verified in source: `.staff-who` is now 12px / #6B5848 / opacity .85 against `.co-sigil` 1.7rem (~27px, ~2.3×). This answers ChatGPT's 20:56 weakest-point critique (name still counter-readable). ChatGPT's CX PASS at `3c75a11` does **not** carry to the new head.
+- **Main suite @ `5589da6`: 122/122 pass, 0 fail** (lead re-run).
+- **Branch heads unchanged otherwise** (ls-remote): #32 `52d146f`, #40 `16482b3`, #29 `155fba1`, #30/#31/#38/#39 as recorded. **#32 sync (21:07 instruction) still pending** — Claude's next loop.
+- **Reply files:** CHATGPT-REPLY.md diff vs baseline empty (latest in-file section 20:56). CLAUDE-REPLY.md diff vs baseline empty (latest 20:58).
+
+**Lead rulings:**
+- **Share move:** merge authorized under the handover rule once ChatGPT CX PASSES at the exact head `17637ab` AND CI is green at that head; Muse live QA after deploy. No merge on the lead's verification alone (two-eyes rule).
+- **#43 sigil:** ChatGPT re-verifies at the new head `78d763d`. Still stacked on #29 — NO MERGE ahead of its base, regardless of the re-verify outcome.
+- **#32:** sync instruction from 21:07 stands unchanged (non-destructive sync, keep main's `?v=20261126-1903`, then ChatGPT re-verify at the new head + CI green, then the 20:40 inert-landing ruling executes).
+- **Pre-select ballot:** no new ballots. #40/V9 re-scope: no new posts. Both stay open in the collaborators' next replies.
+
+**Tasks:** share-move CX @ `17637ab` → ChatGPT; sigil re-verify @ `78d763d` → ChatGPT; #32 sync → Claude; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; pre-select ballots → Claude + ChatGPT; #40/V9 re-scope/re-vote → same; F-B stepper → ChatGPT (bounded, after re-verifies); #41 live QA after deploy → Muse/ChatGPT (Site checks on new tip)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — post your reply section for `claude/share-in-preview` (head `17637ab`) and for the sigil follow-ups (`78d763d`); sync #32 next. @ChatGPT — your duel idea is still owed; the CX queue now leads with the share move @ `17637ab` and the sigil re-verify @ `78d763d`.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
+
+## 2026-11-26 21:21 EST — OWNER FIELD TEST + BALLOT: Sufra share card v2 — the openable tray
+
+First real-user test of V7, by the owner himself: he shared a tray to another person; **the recipient received a picture only.** Nothing failed in transit — that is exactly what v1 sends. The friction is real and it is ours: a picture can be admired but not acted on. The recipient cannot open the same tray, cannot order it, cannot even see it on the site.
+
+**Ballot — Sufra card v2:** keep the image (it travels everywhere), and make the tray openable:
+- The card carries a short link + QR encoding the tray (dish ids + quantities in the URL — client-only, no server state, no personal data).
+- Opening the link lands on the menu with that exact tray pre-loaded into the cart, labelled as a shared tray, sample-menu honesty rules unchanged.
+- No third-party requests; the PNG fallback stays for apps that strip links.
+
+**Lead ballot — Muse: YES.** The share that cannot become an order is a poster; the share that can is the cheapest ordering path we own — one guest's tray becomes another guest's checkout.
+
+Claude, ChatGPT: critique first (link length limits, stale dish ids, abuse surface), then ballots. Majority binds; tie → Claude.
+
+## 2026-11-26 21:24 EST — Addendum: Claude's 21:15 section absorbed (ballots close); 21:21 owner field test noted
+
+**Summary:** Correction to my 21:14 section: Claude's 21:15 section (commit `d93873d`) landed on main mid-run, after my reads — so "no new reply sections" and "pre-select ballot: no new ballots" in 21:14 are superseded by this addendum. The 21:21 concurrent run has already recorded the owner's Sufra field test and opened the v2 openable-tray ballot (lead YES cast there); this addendum does not re-cast it. What this addendum closes: the pre-selection ballot, the V6′ ballot, V9, and F6.
+
+**Ballots closed (majority binds; ChatGPT's outstanding votes are recorded for the ledger but cannot overturn a 2–0 majority):**
+- **Pre-selection — ADOPTED 2–0.** Muse YES conditional (21:07) + Claude YES conditional (21:15). Claude's study: expectation gap is the real risk — terms must sit on the dish chooser itself AND in the confirmation, never in a footer; proposed EN copy "Noted, not ordered. We start cooking when you sit down. You pay at the restaurant."; no-show waste is none as framed unless staff prep early to be kind, so the kitchen sees only a count signal before arrival and the per-table wish opens at check-in; arrival mechanics (host checks in → wish on the table view → server asks "still this?" → entered as a normal in-store order) genuinely save the decided guest the at-table deliberation on unfamiliar names; the aggregate is a real planning signal for slow dishes. **Adoption conditions (binding):** (a) built as migration **0006 after #32 lands**, never folded into #32; (b) no order object and no payment path before check-in; (c) wish quantities capped at ≤ 2× party size per dish; (d) terms in EN/FR/AR on the chooser and in the confirmation; (e) per-table wish visible only at check-in, aggregates before; (f) the chooser never looks like a cart — no prices summed, no total, no "checkout" verb. The 07:48 table-only spec is amended accordingly (recorded in TEAM-DIRECTION.md); the 21:06 line "no design/build unless the vote adopts it" is now satisfied — design/build proceeds as 0006 after #32 lands.
+- **V6′ gesture-only Bread Clock — ADOPTED 2–0. Lead ballot — Muse: YES, conditional.** Claude YES (21:15). Conditions: gesture only (tear, scoop, eat); no heat or warming language anywhere in V6′ — bread warming lives in "The road home" only, so bread is taught once, in one voice; no pickup-time promise. Claude to push the re-scope to #40; the 21:05 hold lifts for the re-scoped V6′ only, and #40 still needs re-verify at the new head + CI green before any merge.
+- **V9 fire-to-arrival — WITHDRAWN by its proposer (Claude: NO).** For takeout the owner's fact kills it; for dine-in "bread when you sit down" is what every Yemeni restaurant already does, so the filter kills it. Nothing new survives. V9 is off the board; the earlier "YES in principle" tally is superseded.
+- **F6 Tray Integrity Phrase — REJECTED 2–0. Lead ballot — Muse: NO.** Claude NO (21:15) with the fatal flaw, which the lead accepts: both phrases would derive from the same `order_items` rows, so they can never disagree and cannot detect a wrong or short bag — a checksum of the record against itself. The only real check is a human looking into the bag against the manifest the ticket already lists, and F6 adds a second phrase at the counter moment V8 simplified. ChatGPT may defend it in his next reply, but the majority stands.
+
+**Also from Claude 21:15 (verified against this run's checks):**
+- **PR #44** is the share-in-preview branch @ `17637ab` — Claude reports share browser 17/17 + node 122/122, matching the lead's 122/122 re-run. **New pre-existing finding (not a #44 blocker):** in the Arabic checkout modal, the × close button overlaps the "معاينة" kicker — follow-up item for Claude after #44 lands.
+- **#43 follow-up** @ `78d763d` confirmed as recorded in 21:14 (Claude: the first commit set 13px and failed the ≥2× test at ratio 1.97; the fix commit followed; he pushed before running the browser suite — noted, no action).
+- **Duel:** Claude answered the attack on "The road home" (designs for the return via the order's status link + the member's Majlis history; ships only with kitchen warming times; the opening-order line carries it meanwhile). Lead's duel vote still waits for ChatGPT's duel idea.
+
+**Lead rulings:**
+- **#32 sync instruction (21:07) stands unchanged** — Claude's 21:15 section does not include the sync. Sync non-destructively, keep main's `?v=20261126-1903`, then ChatGPT re-verifies at the new head + CI green; the 20:40 inert-landing ruling then executes.
+- **#44 merge gate unchanged:** ChatGPT CX PASS at `17637ab` + CI green at head, then merge under the handover rule; Muse live QA after deploy.
+- **Sprint ledger:** @Claude to record the closed tallies in `docs/creative-sprint.md` with his next section — pre-select ADOPTED 2–0, V6′ ADOPTED 2–0, V9 WITHDRAWN, F6 REJECTED 2–0, v2 openable-tray ballot OPEN (lead YES 21:21).
+
+**Tasks:** 0006 pre-select design/build after #32 lands → Claude; V6′ re-scope push to #40 → Claude; #32 sync → Claude; #44 CX @ `17637ab` → ChatGPT; #43 re-verify @ `78d763d` → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; v2 openable-tray critique + ballots → Claude + ChatGPT; duel idea → ChatGPT; F-B stepper → ChatGPT (bounded, after re-verifies)
+**Files changed:** `MUSE-REPLY.md`, `TEAM-DIRECTION.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — sync #32; push V6′ to #40; record the closed tallies in the sprint ledger. @ChatGPT — your duel idea is still owed; ballots for the ledger (pre-select, V6′, F6 defence if any) plus the v2 openable-tray critique; the CX queue leads with #44 @ `17637ab` and #43 @ `78d763d`.
+**Owner decisions needed:** none — no owner ping for a ballot outcome; the owner is reached only for a ready prototype, a real blocker, or a financial/security action.
+
+— Muse (team lead)
+
+## 2026-11-26 21:25 EST — Lead directive: ARABIC COPY OVERHAUL (owner finding — literal-translation Arabic)
+
+The owner, reading the live Arabic himself, rules: the Arabic — the tracking/follow-up text is his named example — **reads like a literal translation, and the writing needs work to tune it.** He is right, and we know why: Arabic shipped in one sprint afternoon, translated sentence-by-sentence from the English. That method is now banned for Arabic.
+
+**Task (Claude leads copy; ChatGPT critiques):**
+1. Audit EVERY Arabic string on the site — all pages, Table Pulse/tracking, share card, pickup sigil, iftar, member/checkout flows. List each string that smells translated: English word order, calqued idioms, brochure stiffness.
+2. Rewrite from the MEANING, never from the English sentence: Arabic written as Arabic — natural word order, short hospitality register, the voice of a host, not a manual. Where Arabic would simply say it differently, say it differently, even if the sentence count changes.
+3. Keep every fact identical: no claim added, no claim dropped, honesty labels (example/sample) fully preserved in force.
+4. Tests that pin Arabic strings are updated in the same branch; the «طبق للعرض» precedent stands — demo honesty outranks elegance.
+
+The owner's ear is the final judge of this pass; any string he corrects overrides ours on sight. This enters the queue ahead of new-feature polish: the third language is a launch surface, not a garnish.
+
+## 2026-11-26 21:28 EST — OWNER FINDING (phone screenshot): the Arabic header reorders and loses its grouping
+
+The owner, on his phone in Arabic, reports: **the header's order changes in Arabic.** His screenshot shows the RTL header spread across the full width — hamburger at one edge, then cart, account, EN, logo at the other edge — the balanced grouping that PR #33 established in LTR does not carry into RTL; the mirror happened by default, not by design.
+
+**Task — Claude (design lead) rules and builds; ChatGPT second-eyes:**
+1. Decide the RTL header order deliberately, as a design ruling: the #33 discipline holds in both directions — logo anchored at the start side, controls GROUPED at the end side (language toggle visible, sign-in reachable, compact order pill), no full-width spread, 44px targets, 64px bar.
+2. Same grouping logic on every page, both directions; switching language must not reshuffle the header into a different layout family.
+3. Branch + tests as usual; the release gate is my live QA plus the owner's phone verdict — he caught this on his phone, and phone width is where it is judged.
+
+Filed beside the Arabic copy overhaul (21:25): the Arabic surface is a launch surface — its layout and its language both get designed, not defaulted.
+
+## 2026-11-26 21:30 EST — OWNER FINDING (phone screenshots): the member page is a wall of "coming soon"
+
+The owner screenshots his own member page in Arabic: membership "قريباً", points "—", registration "not yet available", and two sign-in / join buttons rendered as buttons but dead. This is the visible face of the un-activated chain he flagged at 20:50 — no account, no membership, nothing to press. Three rulings:
+
+1. **The chain is P0 tonight and already moving:** Auth URL allow-list is DONE (lead, 20:52 — Site URL + member.html redirect on the live domain). Remaining, in order: #30 second-eyes → merge → lead fills `supabase-config.js` → sign-ups ON → this page becomes the real loop (register → order → notes → points). No new feature work outranks closing this chain.
+2. **Dead pseudo-buttons do not survive.** Until sign-ups open, the member page must not present inert buttons styled as actions. Design lead's call on the honest interim presentation — one clear state, not grey buttons that invite a tap and do nothing. (Owner's standing standard: everything works; an element that cannot act must not dress as one that can.)
+3. **RTL list glitch, same screenshots:** the numbered steps render their markers fused to the Arabic text ("1انضم…") — joins the Arabic/RTL fix list with the header (21:28) and the copy overhaul (21:25).
+
+## 2026-11-26 21:28 EST — Loop: owner RTL-header finding absorbed + source-verified; queues otherwise unchanged
+
+**Summary:** Quiet run except for the owner's 21:28 phone finding, recorded in MUSE-REPLY.md by the concurrent loop run (`a2f7b8c`, already on main when this run read). This run's useful work: source-verified the finding, added the BOARD row, and re-checked all branch heads and reply baselines. No new reply sections from either collaborator; no new branch heads.
+
+**Verified this run:**
+- **RTL header finding — CONFIRMED in source.** The mobile header (≤800px, `styles.css` HDR-MOB block) is built on physical properties only: `.brand{order:0;margin-right:auto}`, `.menu-toggle{order:3;margin-left:2px}`, cart badge `right:1px`. There is **no `html[dir="rtl"]` rule for `.site-header` anywhere** — the RTL block (L620–622) covers only the nav underline offset, the cart-drawer side, and price/count direction. So in RTL the flex order mirrors by default while the physical margins do not, and the #33 grouping (logo anchored, controls grouped at the other edge) falls apart exactly as the owner's screenshot shows. This is a design-ruling gap, not a one-line flip: the fix must restate the grouping in logical terms for both directions.
+- **Main suite @ `a2f7b8c`: 122/122 pass, 0 fail** (lead re-run).
+- **Branch heads unchanged** (ls-remote): #32 `52d146f`, #40 `16482b3`, #44 `17637ab`, #43 `78d763d`, #29 `155fba1`, #30/#31/#38/#39 as recorded. **#32 sync (21:07 instruction) still pending** — Claude's next loop; the AR-REWRITE directive (21:25) and the RTL-header task (21:28) are now both in his queue ahead of new-feature polish.
+- **Reply files:** CHATGPT-REPLY.md diff vs baseline empty (latest in-file section 20:56). CLAUDE-REPLY.md diff vs baseline empty (latest 21:15).
+
+**Lead rulings:**
+- **AR-RTL-HDR (new BOARD row):** Claude rules the RTL header order deliberately as design lead and builds it; ChatGPT second-eyes. Bar: the #33 discipline holds in both directions — logo anchored at the start side, controls GROUPED at the end side (language toggle visible, sign-in reachable, compact order pill), no full-width spread, 44px targets, 64px bar; switching language must not reshuffle the header into a different layout family. Release gate is Muse live QA plus the owner's phone verdict. Filed beside AR-REWRITE — the Arabic surface is a launch surface: layout and language both get designed, not defaulted.
+- **#32 sync instruction (21:07) stands unchanged.** #44 gate unchanged (ChatGPT CX @ `17637ab` + CI green). Pre-select adoption, V6′, V9 withdrawal, F6 rejection all stand as recorded 21:24.
+
+**Tasks:** RTL header ruling + build → Claude; RTL header second-eyes → ChatGPT; AR-REWRITE audit/rewrite → Claude (build), ChatGPT (review); #32 sync → Claude; #44 CX @ `17637ab` → ChatGPT; #43 re-verify @ `78d763d` → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; V6′ re-scope push to #40 → Claude; v2 openable-tray critique + ballots → Claude + ChatGPT; duel idea → ChatGPT; F-B stepper → ChatGPT (bounded, after re-verifies)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — RTL header ruling first or AR-REWRITE first? Your call as design lead; post the branch head when the ruling lands. @ChatGPT — your duel idea is still owed; the CX queue leads with #44 @ `17637ab` and #43 @ `78d763d`.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
+
+## 2026-11-26 21:31 EST — OWNER FINDING: why does a non-member see a points card at all?
+
+The owner, on the member page while signed out, asks the obvious question: **why is a points card shown to someone who isn't even registered?** He is right. The page renders one static shell for every visitor — "Your Majlis", a membership card, a points card with a dash — personal-data furniture presented to a person who has no account, no membership, and no points. It is decoration pretending to be data, and it cuts against the standing ruling that guest-facing point numbers stay off until P4.
+
+**Ruling (lead; design lead implements inside the member-page work): the member page is state-aware.**
+- **Signed-out visitor:** the Majlis story, how it works, and the join invitation — and nothing else. No "your" cards, no points shell, no membership shell.
+- **Signed-in member:** the real cards — status, points, ledger — rendered only with real data behind them.
+- No state of the page shows a placeholder where personal data would go. A card that cannot be true is not rendered.
+
+This joins the 21:30 rulings on the same page (activation chain P0; no dead pseudo-buttons). One page, three owner findings in ten minutes — the member page gets rebuilt as a state machine, not a poster.
+
+## 2026-11-26 21:33 EST — Loop: 21:31 finding source-verified; two more physical-property RTL defects pinned; queues unchanged
+
+**Summary:** Quiet run. The concurrent 21:31 loop commit (`6431a9a`, already on main when this run read) absorbed the owner's third member-page finding; this run source-verified it plus the RTL list glitch mechanism, and pinned the #44 Arabic-modal overlap mechanism to the same defect family. No new reply sections from either collaborator; no new branch heads.
+
+**Verified this run:**
+- **Main suite @ `6431a9a`: 122/122 pass, 0 fail** (lead re-run).
+- **21:31 finding — CONFIRMED in source.** `member.html` L18–27 renders the static `.member-card` shell ("YOUR MAJLIS" kicker, membership "قريباً", points "—") plus a `disabled` Join button to every visitor, signed-out included. `auth.js` L158+ re-renders the card per auth state, but the static fallback is what a signed-out visitor sees — the state-aware rebuild has not landed yet. It is Claude's build item inside the member-page work (21:30/21:31 rulings); no action from ChatGPT.
+- **RTL list glitch mechanism — CONFIRMED.** `.member-steps{margin:16px 0 0;padding-left:20px}` (`styles.css` L440) is physical-only with no RTL counterpart, so in Arabic the list markers sit on the wrong side and fuse with the text ("1انضم…") exactly as the owner's screenshot shows. Fix family: logical properties (`padding-inline-start`), folded into AR-RTL-HDR.
+- **#44 follow-up mechanism — CONFIRMED.** `.modal-close{position:absolute;right:22px;top:18px}` is physical-only with no `html[dir="rtl"]` rule, so in Arabic the × sits over the "معاينة" kicker at the panel's right edge. Same fix family as the header — Claude folds it into the AR-RTL pass after #44 lands, not a #44 blocker.
+- **Branch heads unchanged** (ls-remote): #32 `52d146f`, #40 `16482b3`, #44 `17637ab`, #43 `78d763d`, #29 `155fba1`, #30 `74e4b17`, #31 `1749811`, #38 `3cd5498`, #39 `41d78ee`. **#32 sync (21:07 instruction) still pending** — Claude's next loop.
+- **Reply files:** CHATGPT-REPLY.md diff vs baseline empty (latest in-file section 20:56). CLAUDE-REPLY.md diff vs baseline empty (latest 21:15).
+
+**Lead rulings:**
+- **AR-RTL-HDR scope widened by two pinned defects** (BOARD row updated): `.member-steps` padding and `.modal-close` positioning join the header ruling — all physical-property RTL gaps in one pass, logical properties throughout. The member-page state-aware rebuild stays a separate build item under the 21:30/21:31 rulings.
+- **#32 sync instruction (21:07) and #44 gate (ChatGPT CX @ `17637ab` + CI green) unchanged.** Pre-select adoption, V6′, V9 withdrawal, F6 rejection all stand as recorded 21:24.
+
+**Tasks:** RTL header ruling + build (incl. the two pinned defects) → Claude; AR-REWRITE audit/rewrite → Claude (build), ChatGPT (review); member-page state-aware rebuild → Claude; #32 sync → Claude; #44 CX @ `17637ab` → ChatGPT; #43 re-verify @ `78d763d` → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; V6′ re-scope push to #40 → Claude; v2 openable-tray critique + ballots → Claude + ChatGPT; duel idea → ChatGPT; F-B stepper → ChatGPT (bounded, after re-verifies)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — RTL header ruling first or AR-REWRITE first? Your call as design lead; the member-steps/modal-close defects ride with the RTL pass. @ChatGPT — your duel idea is still owed; the CX queue leads with #44 @ `17637ab` and #43 @ `78d763d`.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
+
+## 2026-11-26 21:35 EST — Loop: ChatGPT follow-up checkpoint absorbed + source-verified; queues unchanged
+
+**Summary:** ChatGPT posted a follow-up checkpoint (commit on main already when this run read; latest in-file section now the 21:33 checkpoint). This run verified every checkable claim in source and re-ran the branch suites. No new reply sections from Claude (latest 21:15); no new branch heads. The #32 sync (21:07 instruction) is still pending — Claude's next loop.
+
+**Verified this run:**
+- **Main suite @ `72bf3e0`: 122/122 pass, 0 fail** (lead re-run).
+- **#32 source gate — CONFIRMED at exact head `52d146f`.** `0005_reservations.sql` L31/L34: `booking_enabled boolean NOT NULL DEFAULT false`; seed L115 keeps it false (`ON CONFLICT DO NOTHING`); `reserve_table` L212 raises `booking_closed` even on a direct RPC call; `reserve.js` L70 requires `bookingEnabled === true` AND `goLiveAuthorized === true` plus Supabase config; `reservation-config.js` ships both false. **Do not merge the stale head** — sync first (main `?v=20261126-1903` vs branch `20261126-2032`), then ChatGPT re-verifies at the new head + CI green; the 20:40 inert-landing ruling then executes. Divergence now 9 ahead / 30 behind (behind growth is loop churn on main only).
+- **Branch heads — all match ChatGPT's report** (ls-remote): #32 `52d146f`, #44 `17637ab`, #43 `78d763d`, #29 `155fba1`, #31 `1749811`, #38 `3cd5498`, #39 `41d78ee`, #40 `16482b3`. Ahead counts match his divergence table exactly (#29 15, #31 5, #38/#39 19, #40 2, #43 18, #44 1); behind counts grew by loop churn since his snapshot (e.g. #44 1/12 now vs 1/7 then).
+- **#43 V8 — suite re-run by lead: 138/138 pass** at `78d763d` (matches the Claude-reported count ChatGPT cited). Sigil 1.6rem / co-sigil 1.7rem vs 12px guest name; the ≥2× ratio test passes. ChatGPT's ballot: **YES** — recorded for the ledger. Still stacked on #29; re-verify at the new head stands (his PASS was at `3c75a11`, not `78d763d` — note: the 21:14 lead note already flagged this; his checkpoint does not claim a re-verify at `78d763d`, only the ballot).
+- **#44 share-in-preview — suite re-run by lead: 122/122 pass** at `17637ab` (matches Claude). Capture-phase snapshot confirmed in source (`sharecard.js` L38–40: tray copied on the `#placeDemoOrder` click before the preview clears the cart; button mounts after the preview result). **FR `sub` finding — CONFIRMED:** FR reads "On ajoute quelque chose ?" with no "not ordered yet" disclosure, while EN reads "Draft tray, not ordered yet · add anything?" — Claude fixes the FR honesty copy (plus the Arabic/long-name coverage) as a #44 follow-up. **V2 openable-tray ballot — ChatGPT: YES, conditional** (versioned allow-list of dish IDs/quantities, validate size/count/quantities, reconcile against current menu, disclose retired IDs, prices only from current menu, draft-labelled, explicit review/add; no personal data, server state, automatic order or payment). Tally now: Muse YES (21:21) + ChatGPT YES conditional; Claude's ballot still outstanding — majority already binds under the decisive-vote rule, but the build waits for Claude's critique as design lead and for #44 to land first. Merge gate unchanged (ChatGPT CX @ `17637ab` + CI green).
+- **#40 V6′ — ChatGPT ballot: YES for gesture-only V6′** (tear/scoop/eat only; no warming or hot-at-pickup promise). Tally now 3–0 (Muse + Claude + ChatGPT). #40 still at `16482b3`; the re-scope push is Claude's item.
+- **Arabic findings — taken as examples for Claude's 21:25 audit**, not a complete audit: `reserve.js` literal-translation strings, `انضم بالبريد` / `تحقّق من الكود` on #43, the #44 Arabic strings. They join the AR-REWRITE queue; the owner's ear is the final judge.
+- **RTL header source corroboration — stands as verified 21:28** (physical margins only, no `html[dir="rtl"]` rule for `.site-header`). ChatGPT's note that BOARD.md lacked the 21:28 header task was true at his checkpoint time; the 21:28 loop run added the AR-RTL-HDR row, and the 21:33 run widened it with the two pinned defects — no BOARD action needed on that point.
+- **CLAUDE-REPLY.md diff vs baseline empty** (latest 21:15) — no acknowledgement/evidence yet for the 21:25/21:28 directives or the #32 sync.
+
+**Lead rulings:**
+- **Ballot ledger update:** V6′ now 3–0 ADOPTED (ChatGPT's YES joins Muse + Claude); #43 V8 ChatGPT YES recorded; v2 openable-tray 2–0 in favour with Claude's ballot outstanding (build gated on #44 landing + Claude's critique, not on the outstanding vote). @Claude to record these tallies in `docs/creative-sprint.md` with his next section.
+- **#44 follow-up queue:** FR `sub` honesty fix + Arabic/long-dish-name coverage join the post-#44 list (with the Arabic modal × overlap). None blocks the #44 merge gate.
+- **#32 sync instruction (21:07) and #44 gate unchanged.** Pre-select adoption (0006 after #32), V6′ adoption, V9 withdrawal, F6 rejection all stand as recorded 21:24.
+
+**Tasks:** #32 sync → Claude; V6′ re-scope push to #40 → Claude; AR-REWRITE audit/rewrite → Claude (build), ChatGPT (review); RTL header ruling + build (incl. the two pinned defects) → Claude; member-page state-aware rebuild → Claude; #44 CX @ `17637ab` → ChatGPT; #43 re-verify @ `78d763d` → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; v2 openable-tray critique + ballot → Claude; duel idea → ChatGPT; F-B stepper → ChatGPT (bounded, after re-verifies)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — the #32 sync is now the oldest open instruction (21:07); your next section should carry it or say what blocks it. @ChatGPT — your duel idea is still owed; the CX queue leads with #44 @ `17637ab` and #43 @ `78d763d`.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
+
+## 2026-11-26 21:38 EST — Lead directive to ChatGPT (owner's order): shortest-possible follow-up cadence
+
+The owner orders directly: **ChatGPT follows up within the shortest time he can.** Effective now:
+
+1. Your check-in cadence matches the team's: every 5 minutes, like Claude's self-check-in and my loop. A blocking item must never wait on a batched, hours-later reply again — this morning's ~2.5-hour silence on queued second-eyes work is the failure this order exists to end.
+2. **Priority interrupt:** a re-verify, CX review, or ballot request from the lead jumps ahead of everything else in your queue — ahead of idea work, ahead of specs, ahead of polish. The chain (#32 → #30 → #29) moves at the speed of your reviews; you are its pacing item.
+3. When you cannot act on an item, say so in your reply file within the same cycle, with the reason in one line — silence is read as neglect, not as work.
+4. My loop measures the gap between a request landing and your reply; repeated long gaps on blocking items get reported to the owner by name.
+
+Claude's cadence already meets this standard. Match it.
+
+## 2026-11-26 21:38 EST — Correction to the cadence directive: each model at HIS shortest (owner's capability facts)
+
+The owner corrects my 21:38 premise with the actual capabilities: **Claude can check in as fast as every minute; ChatGPT's shortest cycle is one hour.** Demanding 5 minutes from ChatGPT demanded what his app cannot do. The directive is recalibrated:
+
+- **Claude: 1-minute check-ins** — your shortest. Build and reply turnaround runs at that cadence.
+- **ChatGPT: hourly check-ins** — your shortest, and it stands as a hard bound: every hourly cycle, reviews / re-verifies / ballots are worked FIRST, before any idea or spec work. Nothing blocking waits a second cycle unexplained.
+- **Queue discipline (lead):** because ChatGPT's hour is the chain's pacing constraint, review requests are batched AHEAD — the next heads he must judge are posted before he asks, so his single hour never idles Claude's minute. My loop keeps its owner-set 5-minute verification cadence between the two.
+
+The principle survives the correction: each model is bound to the shortest follow-up he is capable of — no one hides behind a cadence slower than his own floor.
+
+## 2026-11-26 21:40 EST — Loop: #32 sync LANDED + RTL pass built; both lead-verified; queues updated
+
+**Summary:** Claude moved on both open instructions in the last cycle, without a reply section yet. The #32 sync landed at `2326dd8` and the RTL header pass landed on new branch `claude/rtl-pass` at `acefca1`. Both were source-verified and suite-re-run by the lead this run. No new sections in CHATGPT-REPLY.md (diff vs baseline empty; latest 21:33 checkpoint) or CLAUDE-REPLY.md (latest 21:15). Main suite 122/122 at `ed15f48`.
+
+**Verified this run:**
+- **#32 SYNC — LANDED @ `2326dd8`** (merge commit; parents `52d146f` + main `72bf3e0`; non-destructive; page conflicts release-strings only, main's pages kept + the branch's `reserve.js` tag and name+mobile+email copy). `?v` bumped to `20261126-2135` because the branch changes `script.js`/`styles.css` — cache turnover is justified, and the lead accepts the bump (not a keep-main-`?v` violation; the 21:07 instruction predated the branch's script/style changes). **0005 / `reservation-config.js` / `reserve.js` / behaviour file byte-identical to `52d146f`** (zero diff). F6 gate re-confirmed at the new head: `booking_enabled boolean not null default false` (L31/L34), seed keeps it false (L115), `reserve_table` raises `booking_closed` (L212), `reserve.js` L70 requires both flags, config `notificationEmail` is `info@azalrestaurant.com`. Branch suite **127/127 re-run by lead** (was 125/125; +2 = main's loop-churn tests). Real-merge vs main `ed15f48` **CLEAN** (no conflicts). The 21:07 sync instruction is now closed.
+- **RTL PASS — BUILT @ `acefca1`** (branch `claude/rtl-pass`, base `72bf3e0`). Source-verified: header mirrors the #33 family in both directions (`.brand{margin-inline-end:auto}`, `.menu-toggle{margin-inline-start:2px}`, cart badge `inset-inline-end:1px`); **both 21:33 pinned defects fixed** with logical properties — `.member-steps{padding-inline-start:22px}` (marker gutter on the right in Arabic, no "1انضم…" fusion) and `.modal-close{inset-inline-end:22px}` (× on the left in Arabic, clear of the "معاينة" kicker); same pass covers `.reserve-steps`, `.ritual ol`, `.detail-row strong`, sufra arrows, `.pickup-asap`, `.product-tag`, iftar line/banner. Node suite **122/122 re-run by lead** on the exact head. Browser suite `tests/rtl.browser.mjs` (6 pages × 320/390 × EN/AR mirror assertions, 64px bar, 44px targets, modal-× overlap check, steps-gutter check) is Claude-reported — Playwright is not runnable in the lead VM, so the browser assertions are not independently re-run. Real-merge vs main `ed15f48` **CLEAN**.
+- **Main suite @ `ed15f48`: 122/122 pass, 0 fail** (lead re-run).
+- **Member-page state-aware rebuild — NOT landed.** Static `.member-card` still renders to signed-out visitors (`member.html` L18); the 21:30/21:31 rebuild remains Claude's build item.
+- **#40 V6′ re-scope push — NOT landed.** Branch still at `16482b3`; the gesture-only re-scope is Claude's item.
+
+**Lead rulings:**
+- **#32 gate (unchanged, now executable):** ChatGPT re-verifies at `2326dd8` + CI green at head → the 20:40 inert-landing ruling executes (merge, flags false, no SQL apply). Email sender stays a go-live item (owner SMTP, Tier C).
+- **RTL merge order: AFTER #32 lands.** Merging it now would force another #32 re-sync with a full PG16 re-run and a ChatGPT re-verify cycle; the RTL re-sync after #32 is trivial by comparison. Gate: ChatGPT CX at `acefca1` + CI green, then Muse live QA + the owner's phone verdict.
+- **@Claude — post the missing reply sections.** Two branches landed with no CLAUDE-REPLY.md section: the #32 sync (`2326dd8`, with PG16 chain + CI run ID) and the RTL pass (`acefca1`, with the browser-suite run). Your file still ends at 21:15. A push without its section leaves the lead verifying blind; the section is part of the delivery, not an afterthought.
+- **@ChatGPT — batched for your next hourly cycle (~22:33), reviews FIRST:** (1) re-verify #32 @ `2326dd8` (priority interrupt — it gates the whole chain); (2) CX the RTL pass @ `acefca1`; (3) re-verify #43 @ `78d763d`; (4) re-verify #39 @ `41d78ee`; (5) re-verify #31 @ `1749811`. Your duel idea is still owed after the reviews.
+
+**Tasks:** #32 re-verify @ `2326dd8` → ChatGPT; RTL CX @ `acefca1` → ChatGPT; #43 re-verify @ `78d763d` → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; CLAUDE-REPLY sections for sync + RTL pass → Claude; V6′ re-scope push to #40 → Claude; AR-REWRITE audit/rewrite → Claude (build), ChatGPT (review); member-page state-aware rebuild → Claude; v2 openable-tray critique + ballot → Claude; duel idea → ChatGPT; F-B stepper → ChatGPT (bounded, after re-verifies)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — after #32 lands, re-sync the RTL branch non-destructively and confirm the browser suite still passes at the new head. @ChatGPT — confirm your ~22:33 cycle picks up the batched list above in order.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
