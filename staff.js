@@ -82,7 +82,7 @@
   // Same bidi rule as script.js (F-WALK-3): in Arabic every price is a left-to-right isolate.
   const money = (c) => { const s = new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100); return lang() === "ar" ? "\u2066" + s.replace(/\u200f/g, "") + "\u2069" : s; };
 
-  let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false;
+  let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0;
   // T-01 / F-OWN-19: identity + sign-out on every signed-in state of the kitchen screen.
   const whoBar = () => `<div class="staff-who-bar"><p class="staff-who-line">${esc(L("signedAs", { email }))}</p><button type="button" class="button staff-signout" id="staffSignOut"${signingOut ? " disabled" : ""}>${esc(L(signingOut ? "signingOut" : "signOut"))}</button></div>`;
 
@@ -117,11 +117,17 @@
   async function load() {
     if (!st.enabled) { state = "inert"; return paint(); }
     if (signingOut) return;
-    try { const s = auth && (await auth.session()); email = (s && s.user && s.user.email) || ""; if (!s) { state = "signed_out"; rows = []; return paint(); } } catch {}
+    // ChatGPT #67 review: every await is followed by a generation check, so a load still in flight when Sign out is
+    // pressed (a 20 s refresh or a manual one) can never repaint the queue afterwards.
+    const my = ++gen;
+    const stale = () => my !== gen || signingOut;
+    try { const s = auth && (await auth.session()); if (stale()) return; email = (s && s.user && s.user.email) || ""; if (!s) { state = "signed_out"; rows = []; return paint(); } } catch {}
     try {
-      if (state !== "ready") { if (!(await st.isStaff())) { state = "not_staff"; return paint(); } }
-      rows = await st.list(); lastAt = new Date(); state = "ready";
+      if (state !== "ready") { const ok = await st.isStaff(); if (stale()) return; if (!ok) { state = "not_staff"; return paint(); } }
+      const r = await st.list(); if (stale()) return;
+      rows = r; lastAt = new Date(); state = "ready";
     } catch (e) {
+      if (stale()) return;
       if (e.code === "signed_out") state = "signed_out"; else flash = L("e_network");
     }
     paint();
@@ -133,7 +139,7 @@
     if (b.id === "staffRefresh") { flash = ""; return load(); }
     if (b.id === "staffSignOut") {
       if (signingOut) return;
-      signingOut = true; clearInterval(timer); rows = []; paint(); // the queue disappears at once
+      signingOut = true; gen++; clearInterval(timer); timer = null; rows = []; paint(); // the queue disappears at once; in-flight loads are void
       try { if (auth) await auth.signOut(); } catch {}
       state = "signed_out"; paint();
       try { root.location.replace("member.html"); } catch {}

@@ -61,4 +61,32 @@ for (const [lang, word] of [["fr", /Se déconnecter/], ["ar", /تسجيل الخ
   ok(word.test(await p.textContent(btn)) && await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${lang} ${pg} @320: labelled control, no horizontal scroll`);
   await ctx.close();
 }
+{ // ChatGPT #67 review: a kitchen load in flight when Sign out is pressed never repaints the queue; polling stays stopped
+  const { ctx, sent } = await ctxFor("staff"); const p = await ctx.newPage();
+  await p.clock.install();
+  await p.goto(`${base}/staff.html`); await p.waitForTimeout(600);
+  ok(/Lamb Mandi/.test(await p.textContent("main")), "race: queue visible first");
+  let releaseOrders, releaseLogout;
+  const heldOrders = new Promise((r) => (releaseOrders = r)), heldLogout = new Promise((r) => (releaseLogout = r));
+  await p.route("https://fake.supabase.co/rest/v1/orders**", (r) => heldOrders.then(() => r.fulfill({ json: [{ id: "abc12300-0000-4000-8000-000000000001", branch_slug: "ottawa", fulfilment_status: "placed", payment_status: "paid", total_cents: 2824, order_items: [{ quantity: 1, item_name_en_snapshot: "Lamb Mandi" }], guest_name: "Guest" }] })));
+  await p.route("https://fake.supabase.co/auth/v1/logout**", (r) => heldLogout.then(() => r.fulfill({ status: 204, body: "" })));
+  await p.click("#staffRefresh"); await p.waitForTimeout(150);           // a load is now waiting on the orders answer
+  await p.click("#staffSignOut"); await p.waitForTimeout(150);           // sign-out starts; logout is held too
+  releaseOrders(); await p.waitForTimeout(400);                           // the old load resumes BEFORE logout returns
+  ok(!/Lamb Mandi/.test(await p.textContent("main")), "race: the late orders answer never repaints the queue");
+  const before = sent.filter((u) => u.includes("/rest/v1/orders")).length;
+  await p.clock.runFor(65000); await p.waitForTimeout(200);              // three polling periods
+  ok(sent.filter((u) => u.includes("/rest/v1/orders")).length === before, "race: polling stays stopped after sign-out");
+  releaseLogout(); await p.waitForURL(/member\.html$/, { timeout: 5000 }).catch(() => {});
+  ok(/member\.html$/.test(p.url()) && await p.evaluate((k) => localStorage.getItem(k) === null, KEY), "race: still lands signed out on the member page");
+  await ctx.close();
+}
+for (const [pg, btn, note] of [["admin", "#adminSignOut", /doesn’t have access/], ["staff", "#staffSignOut", /not set up as staff/]]) { // signed-in, no access
+  const { ctx, sent } = await ctxFor("customer"); const p = await ctx.newPage();
+  await p.goto(`${base}/${pg}.html`); await p.waitForTimeout(600);
+  ok(note.test(await p.textContent("main")) && await p.locator(btn).isVisible(), `${pg} as a signed-in account WITHOUT access: told so, and Sign out is there`);
+  await p.click(btn); await p.waitForURL(/member\.html$/, { timeout: 5000 }).catch(() => {});
+  ok(/member\.html$/.test(p.url()) && sent.some((u) => u.includes("/auth/v1/logout")) && await p.evaluate((k) => localStorage.getItem(k) === null, KEY), `${pg} without access: sign-out ends the session and lands signed out`);
+  await ctx.close();
+}
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");
