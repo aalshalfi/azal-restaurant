@@ -24,7 +24,7 @@
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const S = { en: { hint: "Choose a region below to see what it brings to the table.", menu: "See it on the menu", caption: "Stylised map, for orientation only." },
     fr: { hint: "Choisissez une région ci-dessous pour voir ce qu’elle apporte à la table.", menu: "Voir au menu", caption: "Carte stylisée, à titre indicatif." },
-    ar: { hint: "اختر منطقة من القائمة أدناه لترى ما تقدّمه للسفرة.", menu: "شاهدها في القائمة", caption: "خريطة مبسّطة للتوضيح فقط." } };
+    ar: { hint: "اختر منطقة من الأسفل لترى ما تضعه على السفرة.", menu: "شاهد أطباقها في القائمة", caption: "خريطة مبسّطة للتوضيح فقط." } };
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const svgEl = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
   const product = (id) => { try { const p = products.find((x) => x.id === id); return p ? (typeof localizedProduct === "function" ? localizedProduct(p) : p) : null; } catch { return null; } };

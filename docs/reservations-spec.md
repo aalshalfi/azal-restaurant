@@ -4,9 +4,9 @@ Source: owner (via Riyad's suggestion, 22:34). Owner direction 22:35: the goal i
 
 ## Guest flow (3 steps, mobile-first, EN/FR)
 1. Party size, date, time (only slots that exist).
-2. Name + phone or email (the only personal data collected; consent line shown).
+2. Name, mobile phone and email (all three required; the only personal data collected).
 3. Confirmation screen with a reference code; "add to calendar" link; cancel link.
-Optional: "Pre-order for the table" jumps to the menu with the reservation attached (the "Sufra for N" idea). Not required for booking.
+**Owner rule 2026-11-26 07:48 (binding): a reservation reserves a table only.** No dishes, notes, cart, pre-order, payment, deposit or link to any order. The menu may be linked for browsing only.
 
 ## Rules (decided by me unless the owner overrules)
 - Capacity is counted in **seats per time slot**, not tables, until the owner gives a floor plan.
@@ -49,9 +49,9 @@ Spec (now) → owner answers → migration on staging (reviewed with my local PG
 9. Walk-ins: staff can mark seats occupied (`walk_in` booking by staff) so online availability stays honest.
 10. No-show: staff marks `no_show` 15 min after start; seats free; no fee (no deposit by owner order). Repeat no-shows are a Tier C policy question, not built.
 11. Late arrival: table held 15 min (my default, config) then staff may release.
-12. Abuse: rate limit per IP/contact (e.g. 5 attempts per 10 min, enforced server-side), no CAPTCHA initially; honeypot field. Captcha is a Tier C service decision if abuse appears.
-13. Data: collect name + email (+ optional phone) only; 12-month retention then deletion (owner confirms; legal gate in launch-gates).
-14. Pre-order link: optional `reservation_id` on a later order; a booking never requires an order.
+12. Abuse: server-side throttles per email (5/10 min), mobile (5/h) and client IP (10/h); cancel guesses 5 per code and 10 per IP per 15 min (0005). No CAPTCHA initially. Captcha is a Tier C service decision if abuse appears.
+13. Data: collect name, mobile phone and email only; 12-month retention then deletion (owner confirms; legal gate in launch-gates).
+14. ~~Pre-order link~~ removed by the owner's table-only rule (07:48): no link between a booking and any order.
 
 ## Email templates (EN/FR). Placeholders in {braces}. Sender, address and signature are owner-held; none invented.
 
