@@ -9,12 +9,14 @@
 - Isolated AZAL Supabase project ref: `nrnkhnmlgkjytyryinlj` (Muse-reported name `azal`, Canada Central, Free).
 - Existing Yemen Gate projects remain hands-off.
 - **Muse is the only person authorized to execute SQL in the project.** ChatGPT and Claude do not apply SQL.
-- Apply order for the verified-empty project: **0001 baseline → verify → 0002 P2 fixes → verify**.
-- Hard gates: (1) confirm exact project ref and sign-ups OFF; (2) run read-only baseline checks and confirm the project is empty; (3) Claude/Muse confirm the exact 0001 + 0002 files and expected outputs; (4) Muse explicitly clears the apply gate; (5) Muse applies 0001; (6) Muse runs Q1–Q13 and confirms the baseline state; (7) Muse applies 0002; (8) Muse reruns Q1–Q13 + Q5b; (9) Claude gives final live C-REV PASS/FAIL on the post-0002 outputs.
+- Apply order that was used for the verified-empty project (historical, executed 2026-11-26 05:35 EST): **0001 baseline → verify → 0002 P2 fixes → verify**.
+- Hard gates as they stood for that apply (historical): (1) confirm exact project ref and sign-ups OFF; (2) run read-only baseline checks and confirm the project is empty; (3) Claude/Muse confirm the exact 0001 + 0002 files and expected outputs; (4) Muse explicitly clears the apply gate; (5) Muse applies 0001; (6) Muse runs Q1–Q13 and confirms the baseline state; (7) Muse applies 0002; (8) Muse reruns Q1–Q13 + Q5b; (9) Claude gives final live C-REV PASS/FAIL on the post-0002 outputs.
 
-## Package B — verified-empty project only
+> **ARCHIVE — NOT INSTRUCTIONS.** Everything from "Package B" to the end of this file records the one-time apply that Muse reported executing on 2026-11-26 05:35 EST against `nrnkhnmlgkjytyryinlj` (0001 + 0002; Muse then reported 0003 at 06:05 and 0004 at 06:37). Live staging is no longer empty, so the preflight STOP rule below now fails by design: **re-running 0001 or 0002 against that project is forbidden.** The steps are kept, in their original wording, only as the record of what was done. Any future apply, to any project, needs a new exact-target runbook reviewed under the current gates; it must not reuse this one.
 
-The AZAL staging project was verified EMPTY at 23:01. Therefore the **full Package B sequence is required**:
+## ARCHIVE — Package B — verified-empty project only (executed once, 2026-11-26 05:35 EST)
+
+The AZAL staging project was verified EMPTY at 23:01 (2026-11-25). At that moment the **full Package B sequence was required**:
 
 1. Apply the complete baseline SQL from `docs/schema-reference/0001_azal_staging_baseline.sql`.
 2. Verify the resulting baseline with the read-only checks in `docs/supabase-verify.sql` (Q1–Q13). Expected: the 0001 schema exists and the three known P2 defects remain visible.
@@ -25,7 +27,7 @@ The AZAL staging project was verified EMPTY at 23:01. Therefore the **full Packa
 
 If the initial read-only checks show that the project is not empty or the project ref differs, STOP. Do not apply 0001 or 0002 until Muse and Claude reconcile the actual state and issue a revised, exact-target runbook. Do not use 0001 as a repair/reset script.
 
-## 1. Preflight — read-only
+## ARCHIVE — 1. Preflight — read-only (historical record)
 
 1. Open Supabase Dashboard and verify the project ref is exactly `nrnkhnmlgkjytyryinlj`. Do not use either Yemen Gate project.
 2. Confirm public sign-ups are OFF and email confirmation remains ON.
@@ -33,7 +35,7 @@ If the initial read-only checks show that the project is not empty or the projec
 4. If any AZAL application schema already exists, or any unexpected data is present, STOP. Do not apply 0001 and do not proceed with 0002.
 5. Confirm the exact reviewed file revisions: `docs/schema-reference/0001_azal_staging_baseline.sql` and `supabase/migrations/0002_p2_fixes.sql` from the approved P2 branch/PR. Record their commit SHA values in Muse's reply. Never record secrets.
 
-## 2. Apply 0001 baseline — Muse only
+## ARCHIVE — 2. Apply 0001 baseline — Muse only (historical record)
 
 Only after the preflight is confirmed empty and Muse explicitly clears the gate:
 
@@ -51,7 +53,7 @@ Only after the preflight is confirmed empty and Muse explicitly clears the gate:
    - Q13: no real customer/order/ledger/payment data.
 6. Paste every non-sensitive output block into `MUSE-REPLY.md`. Claude must confirm the exact baseline outputs before Muse proceeds.
 
-## 3. Apply 0002 P2 fixes — Muse only
+## ARCHIVE — 3. Apply 0002 P2 fixes — Muse only (historical record)
 
 Only after the 0001 post-apply outputs are reviewed and Muse explicitly clears the second gate:
 
@@ -60,7 +62,7 @@ Only after the 0001 post-apply outputs are reviewed and Muse explicitly clears t
 3. Execute once. The migration contains its own transaction and preflight. If any statement errors, stop and capture the error; do not retry selectively or apply a partial patch.
 4. Record the applied source SHA, project ref, Toronto time, SQL Editor result, and operator. Never record secrets.
 
-## 4. Post-0002 verification — Q1–Q13 + Q5b
+## ARCHIVE — 4. Post-0002 verification — Q1–Q13 + Q5b (historical record)
 
 Muse reruns Q1–Q13 in `docs/supabase-verify.sql` and shares every non-sensitive output block with Claude. Also run this Q5b companion query because the migration deliberately uses a column-level grant:
 
@@ -87,11 +89,11 @@ Expected after 0002:
 
 After Q1–Q13 and Q5b, Muse may run `supabase/tests/p2_fix_assertions.sql` as one query. It uses synthetic `.invalid` fixtures and ends in `ROLLBACK`; it must not leave users, orders, or ledger rows. Claude reviews the pasted post-apply outputs and records final PASS/FAIL. P2 is not Done until that verdict is recorded.
 
-## 5. Dashboard-only checks
+## ARCHIVE — 5. Dashboard-only checks (historical record)
 
 From the bottom of `docs/supabase-verify.sql`, Muse also confirms: public signup remains disabled; no service-role key exists in the repository or front-end bundle; and there are zero real rows in orders, order_items, points_ledger, and payment_events. Never paste anon/service-role keys, passwords, or connection strings into GitHub or chat.
 
-## 6. Failure and rollback policy
+## ARCHIVE — 6. Failure and rollback policy (historical record)
 
 - If the initial preflight does not confirm the exact verified-empty project, STOP. Do not apply 0001 or 0002.
 - If 0001 fails, stop; do not apply 0002. Capture the error and request a reviewed recovery plan.

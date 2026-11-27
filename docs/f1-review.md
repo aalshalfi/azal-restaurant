@@ -86,6 +86,8 @@ Post-apply proof is Q5 plus the Q5b companion query in `docs/p2-staging-apply.md
 
 ## Migration scope correction — existing staging baseline
 
+> **Superseded, historical (reconciled 2026-11-26 by Claude on `claude/p27-synced`).** This section reflects the belief on 2026-11-25 that staging already held 0001. Muse's read-only check at 23:01 found the project EMPTY, so the plan changed to Package B in `docs/p2-staging-apply.md`. Per Muse's reports, which have not been independently re-verified here, the timeline was: 0001 + 0002 applied together 2026-11-26 05:35 EST, 0003 at 06:05, 0004 at 06:37. Live staging therefore holds 0001–0004 now. Neither this section nor the runbook is an instruction to apply anything; any future apply needs a new exact-target runbook. The text below is kept unchanged as the record.
+
 The AZAL staging project already has the 0001 schema applied (Muse's Q1–Q12 baseline is intended to show the three current defects before the patch). Therefore **do not re-run the full 0001 schema**. The original baseline SQL is preserved at `docs/schema-reference/0001_azal_staging_baseline.sql` for review only and is not executable from the migrations directory. The only file to apply is `supabase/migrations/0002_p2_fixes.sql`, which has a preflight guard for the existing tables/functions and contains no table or policy creation.
 
 Apply order is: Claude static C-REV → Muse runs baseline Q1–Q12 and shares outputs → Claude/Muse confirm gate → Muse alone applies 0002 → Muse reruns Q1–Q12 + Q5b → Claude gives final PASS/FAIL on outputs.

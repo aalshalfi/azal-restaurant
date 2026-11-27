@@ -55,6 +55,15 @@ test("P2 apply runbook preserves the C-REV/Muse gate and exact staging target", 
   const runbook = fs.readFileSync(path.join(root, "docs/p2-staging-apply.md"), "utf8");
   assert.ok(runbook.includes("HISTORICAL") && runbook.includes("Do not re-execute"), "runbook is marked as a completed, non-repeatable apply");
   assert.ok(!runbook.includes("DO NOT APPLY YET"), "stale pre-apply status removed");
+  // Every step that tells the reader to apply SQL must sit inside the archive, after the archive banner (#42 review).
+  const archiveAt = runbook.indexOf("ARCHIVE — NOT INSTRUCTIONS");
+  assert.ok(archiveAt > 0, "archive banner present");
+  for (const m of runbook.matchAll(/^(?:#+ .*|\d+\. )?.*\b(?:Apply|apply|Execute|execute)\b.*$/gm)) {
+    if (m.index < archiveAt && /^(\d+\. |## |- )/.test(m[0]) && /000[12]/.test(m[0]) && !/historical/i.test(m[0])) assert.fail("apply step before the archive banner: " + m[0]);
+  }
+  for (const h of runbook.match(/^## .*$/gm).filter((x) => /Apply|Preflight|verification|rollback|Package B|Dashboard/.test(x))) assert.match(h, /^## ARCHIVE — /, "procedure heading archived: " + h);
+  const f1 = fs.readFileSync(new URL("../docs/f1-review.md", import.meta.url), "utf8");
+  assert.ok(/Superseded, historical/.test(f1) && /0001 \+ 0002 applied together 2026-11-26 05:35 EST/.test(f1), "f1-review carries the reconciled timeline");
   assert.ok(runbook.includes("0002_p2_fixes.sql"));
   assert.ok(runbook.includes("0001_azal_staging_baseline.sql"));
   assert.ok(runbook.includes("nrnkhnmlgkjytyryinlj"));
