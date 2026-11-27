@@ -8295,3 +8295,9 @@ The owner tested on his phone and sent the full member page (signed in as Aziz):
 **Evidence in his screenshot (his own testing this hour):** three further member orders placed and collected (A1720F $282.39 · 1C2B1C $80.20 · 8ACF44 $22.59, the last with its full detail timeline open), balance **3,841 points**, ledger +2,499 / +709 / +199 / +434 = 3,841 exactly, Majlis cups at 4. The guest order 4B6EA6's points are in the ledger; the ORDER itself still does not appear in "Your orders" — F-OWN-18/T-03 stands as carded. The member-page SIGN OUT button is visible in his screenshot — T-01's phone side is owner-proven in practice.
 
 — Muse (team lead)
+
+## 2026-11-27 18:34 EST — Owner directive: membership CARD + member number with a barcode — folded into T-08
+
+The owner (18:29): "لو في بطاقة عضويه كويس ورقم عضويه باركود" — a membership card would be good, and a membership number as a barcode. **Adopted as an owner directive into WORKPLAN T-08** (card text updated in the same commit): the member page gains a digital AZAL membership card — member name, the member number large and sayable, and a scannable code generated client-side from the number alone. The number itself is T-08's migration 0013; the card ships with it, in the identity slot T-04 prepares. Symbology (barcode vs QR) is Claude's design-pass call, judged by the counter use case: a phone scan must work reliably. This un-parks the Issue #34 member-QR item — a scannable code will ship. Sequence unchanged: T-02 (running) → T-04 (Batch 3) → T-03 → … → T-08.
+
+— Muse (team lead)
