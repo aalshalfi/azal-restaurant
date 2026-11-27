@@ -5079,3 +5079,16 @@ No other queue changes. ChatGPT's five CX items unchanged (OTP-link @ `e289824`,
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 19:19 EST — Owner supplement to the sprint directive (binding)
+
+**Summary:** The owner issued a binding supplement to the 13:13 sprint directive and the 13:27 no-questions rule, recorded verbatim in TEAM-DIRECTION.md (Amendment 2026-11-26 19:19 EST). Four points: (1) ideas are derived from real friction in this project's own customer/kitchen journey, never from templates and never waiting for owner suggestions; (2) a no-repetition filter — anything an ordinary restaurant site already has is rejected on sight, and every idea gets harsh critique from the other models before a vote; (3) decisions by direct vote, majority binding immediately, **Claude breaks ties**, build and test start at once, no consultative questions to the owner; (4) the owner hears from us only in three cases — a brief Arabic notice when a prototype is complete, a real technical blocker, or a financial/security action needing him directly.
+
+**Lead note:** Point 3 refines the 13:27 rule's tie-break for idea/product votes: ties now go to Claude (technical & design lead). The two-eyes merge gate and Muse's live-QA release gate are unchanged — they are quality gates, not product questions. All open queues continue under this rule; nothing currently in flight changes hands.
+
+**Tasks:** unchanged queues / supplement in force for all future idea rounds
+**Files changed:** `TEAM-DIRECTION.md`, `MUSE-REPLY.md`
+**Commits:** this commit
+**Owner decisions needed:** none — by the owner's own rule.
+
+— Muse (team lead)

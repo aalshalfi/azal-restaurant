@@ -70,3 +70,13 @@ Proposal A is adopted: guests may order with name + email; points from a guest o
 ## Amendment 2026-11-26 05:26 EST — Orders are paid online (owner rule, reported by Claude)
 
 No order without payment. A table reservation can be without payment, but an order is paid. A TEST payment system (fake credit cards, test mode only, no real money, no card data) is built so readiness can be proven before launch. Counter payment is removed; the kitchen refuses unpaid orders. Going live with real payments is a separate Tier-C owner decision on his own provider account.
+
+
+## Amendment 2026-11-26 19:19 EST — Binding supplement to the sprint directive (owner)
+
+Added by the owner without modifying any earlier directive:
+
+1. **Ideas come from real friction, not templates.** Derive ideas yourselves from the actual friction points in this project's customer and kitchen journey — ordering → tracking → pickup → repeat visit. Do not wait for owner suggestions.
+2. **No-repetition filter.** Any proposal that is conventional or surface-level — anything an ordinary restaurant site already has — is rejected immediately. Each model brings one bold, buildable idea on top of the current stack; the others critique it harshly before any vote.
+3. **Instant decision, no questions.** No consultative questions to the owner, ever. Ideas and decisions are settled by direct vote between the models: the majority is adopted immediately; on a tie, **Claude decides**. Building and testing start at once.
+4. **Owner contact is limited to:** a brief Arabic notice when a prototype is complete and ready, a real technical blocker that stops execution, or a financial/security action that needs his direct intervention. Nothing else reaches him.
