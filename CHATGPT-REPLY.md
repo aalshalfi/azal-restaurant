@@ -1783,6 +1783,7 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 
 **Next gate:** Muse's explicit assignment and staging URL; then verify the customer TEST order is persisted once and visible in the correct authenticated staff queue. Email must be reported as queued/blocked unless actual staging delivery is evidenced.
 
+<<<<<<< HEAD
 ## 2026-11-27 16:06 EST (Toronto) — Muse-assigned 0007 rewards correction opened as PR #64
 
 **Summary:** Implemented the separate forward-only 0007 policy task explicitly left outstanding by Muse. Branch: `chatgpt/points-0007-increments`. PR: [#64](https://github.com/aalshalfi/azal-restaurant/pull/64).
@@ -1806,3 +1807,37 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 - The SQL behavior and two-session race scripts are provided, but ChatGPT has not run them against Supabase or an actual PostgreSQL instance.
 
 **Verification:** PR #64 was opened from a non-destructive merge of current main into the branch. Exact-head CI is pending; no green CI or SQL runtime result is claimed yet. Muse retains review, migration-apply, merge and release authority.
+=======
+## 2026-11-27 15:56 EST (Toronto) — Muse-approved NEW_ORDER alert slice opened as PR #63
+
+**Summary:** Implemented the bounded restaurant NEW_ORDER alert work assigned by Muse in Issue #34. The work is isolated on `chatgpt/new-order-alert-0009`; no changes were made to `main`.
+
+**Tasks:** NEW_ORDER / migration 0009 — In review; no merge or staging apply.
+
+**Files changed:**
+- `supabase/migrations/0009_order_notifications.sql` — private, RLS-protected order outbox; one unique NEW_ORDER event per order when payment changes to paid; persisted order/item snapshot; Ottawa recipient setting uses the existing restaurant inbox. Sender is hard-disabled and every event is recorded as `blocked`.
+- `order-email.js` — AZAL-branded English/French HTML and plain-text templates; dynamic content escaped; kitchen queue link points to the authenticated staff page; contact email included; injected-provider adapter is disabled by default.
+- `tests/order-email.test.mjs` — template, escaping, locale, fake-provider and fail-closed sender checks.
+- `docs/apply-0009.md` — lead-only preflight and post-apply verification; explicitly states no migration apply or email activation.
+- `BOARD.md` — registered and updated my file claim before implementation.
+
+**Commits:** branch head before this checkpoint: `32a646bdc63a7ebdfcb2b5324e892ca832024df3`. PR: [#63](https://github.com/aalshalfi/azal-restaurant/pull/63).
+
+**Verification:** GitHub Actions run `46066913519` on the earlier head `3d87adcbe2e5c7d79c00f3352ce6f62a4ee8c47a`: static checks passed, including Node **188/188**. Browser checks were still running when checked. Two subsequent hardening commits changed the trigger's OLD-row guard and email footer; therefore the earlier CI is not exact-head evidence for `32a646bd`. A fresh exact-head run is still required.
+
+**Findings / boundaries:**
+- The event is created after a successful paid transition, in the same database transaction. Unique `(order_id,event_type)` plus `ON CONFLICT DO NOTHING` prevents duplicate events.
+- The email is an alert only; the authenticated staff queue remains the source of truth.
+- No SMTP credentials, DNS, sender worker, Edge Function, real email, DB migration, staging setting, or production change was performed.
+- No customer card data, access tokens, or unnecessary customer contact fields are included in the payload.
+
+**Next step:** wait for exact-head CI, complete source review, then ask Muse to review and decide the merge. Migration application and sender activation remain Muse/owner gates.
+
+## 2026-11-27 16:10 EST (Toronto) — NEW_ORDER trigger hardening follow-up
+
+A source review found that the initial trigger also listened for INSERT with payment_status='paid'. Current `place_order` inserts unpaid orders and payment transitions happen later; listening to INSERT could snapshot an order before its item rows existed in a future alternate path. Tightened 0009 to fire only `AFTER UPDATE OF payment_status`, so the persisted order and items exist before the alert snapshot is assembled. Idempotency remains enforced by unique `(order_id,event_type)` and `ON CONFLICT DO NOTHING`.
+
+- Latest implementation commit before this note: `42477fbaeed0030508aa4a6067d2f6a6c6f4ff74`.
+- PR #63 remains open; no merge, migration apply, SMTP, or email send.
+- Prior exact-head run `46067113241` passed Node **192/192** and browser checks on the previous head `82ddc9c`; a new exact-head CI run is pending after this trigger/test change.
+>>>>>>> origin/chatgpt/new-order-alert-0009
