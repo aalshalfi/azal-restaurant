@@ -8200,3 +8200,28 @@ The freeze continues for all builds/merges/applies. When the three inputs land, 
 The lead placed a guest order on the published site (17:03–17:04, clean browser, no account): 1 × Lamb Mandi, paid in test mode — **🍞 Bread 22, code 87F046, pickup 5:25 PM, $28.24**, guest "Lead Test" / alshalfi@muse.ai. At 17:05 the owner confirmed from his own phone, signed in on the admin side: **"اشتغلت"** — the order arrived in the kitchen queue / admin counters. The customer→restaurant loop is now owner-verified from BOTH ends. (The confirmation screen again showed the F-OWN-16 dead join text — already in the audit list.) The freeze and the study phase continue unchanged.
 
 — Muse (team lead)
+
+## 2026-11-27 17:22 EST — LEAD COMPLETENESS AUDIT: results + adjudication (SPEC gap annex, part 1)
+
+The lead's live audit walked all surfaces (17:02–17:07). Adjudicated by the lead against the standing record:
+
+**VALID — enter the SPEC gap annex:**
+- AUD-1: Home hero "We're getting ready to open" contradicts live ordering (F-WALK-10, now precise). The SPEC will state ONE staging stance.
+- AUD-2: Dish cards (home) and "SEE IT ON THE MENU" (story) land at the top of the menu, not on the dish. Deep-link/anchor them.
+- AUD-3: Sticky order bar still overlaps content (FR: Adeni Chai card; EN: spread quantity row) — F-WALK-9 confirmed again.
+- AUD-4: In FR the language button shows only "ع" — unclear. (Ties to F-WALK-13.)
+- AUD-5: AR mood-card arrows point ↙ in RTL — wrong direction.
+- AUD-6: No clear-cart control; emptying a 10-item spread took 10 clicks.
+- AUD-7: PLACE ORDER button overlaps the card field at scroll end — F-WALK-8 confirmed live again.
+- AUD-8: Points lines ("Majlis points 0", "You'll earn about 28 points") render for a staff/admin session at checkout.
+- AUD-9: Branch name renders lowercase "ottawa" in the admin overview.
+- AUD-10: Staff order card's sigil block reads as unexplained duplication ("🍞 22" over "Bread · Pain · خبز") — design review for Claude.
+- AUD-11: Home Visit section carries no location information at all — district-level copy ("Orléans, Ottawa") is allowed and should be present; the street address stays owner-gated.
+
+**NOT defects — by design / owner-gated (the SPEC will state each explicitly so they stop being re-flagged):** street address unpublished (owner-held, December swap); hours = the premises' current hours at the swap; placeholder photos until the real-photo swap (alt-text mismatch noted under AUD-2's batch); "Test mode / Preview site" labels are the deliberate staging honesty stance; Reserve has no form because 0005 is gated on a real email sender (the page states this honestly); test-mode payment takes a card number only (real fields arrive with the owner's Stripe hookup); pickup-only is the model (no delivery); the kitchen sees paid orders only (owner's payment rule); the audit's "Lead Test" kitchen order was the owner's own requested test.
+
+**Audit limits, honestly:** the signed-out member view, the join form, and the wrong-password error could not be observed — the QA profile is stuck in the admin session (F-OWN-19's blast radius). Join fields are known from source (name, email, phone, password — PR #60); the wrong-password error text remains NOT verified and enters the SPEC acceptance checklist for the fix batch's live retest in a clean profile.
+
+**One audit mystery, solved:** the guest order 87F046 advanced NEW → ACCEPTED → collected during the walk and admin sales moved $77.36 → $105.60 (+$28.24 exactly) — that was the OWNER processing it from his phone (his "اشتغلت", 17:05). No automation touched it.
+
+— Muse (team lead)
