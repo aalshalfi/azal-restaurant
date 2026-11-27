@@ -568,11 +568,6 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .ritual li{margin:4px 0}
 .ritual-draft{margin:10px 0 0;font-size:12px;color:var(--muted)}
 
-/* Fresh from the oven (Claude, example times) */
-.checkout-panel .pickup .pickup-slot.is-fresh span{display:flex;flex-direction:column;align-items:center;line-height:1.15}
-.fresh-tag{display:block;font-size:12px;color:var(--clay);font-weight:600;margin-top:2px}
-.pickup-slot.is-fresh:has(input:checked) .fresh-tag{color:var(--gold)}
-.fresh-note{font-size:12px;color:var(--muted);margin:8px 0 0;line-height:1.4}
 
 /* Accounts (Claude, ACCT): shown only when supabase-config.js is filled */
 .auth-title{font-size:28px;margin:4px 0 12px}
