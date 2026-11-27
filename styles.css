@@ -855,3 +855,19 @@ html{scroll-padding-bottom:96px}.sufra-collapsible{scroll-margin-bottom:96px}
 html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px}
 /* #29 sync with F-CHK-1: in live (test-mode) ordering the completion button is #placeOrder; pin it like the preview one. */
 .checkout-panel #placeOrder{position:sticky;bottom:0;z-index:2;box-shadow:0 -14px 18px -6px var(--ivory),0 36px 0 0 var(--ivory)}
+/* F-OWN-3 full order detail on the member page */
+.mh-toggle{background:none;border:0;padding:0;min-height:44px;font:inherit;font-size:14px;color:var(--clay);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.mh-detail{border-top:1px solid rgba(66,34,14,.15);margin-top:4px;padding-top:10px;display:grid;gap:8px;min-width:0}
+.mh-lines{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.mh-line{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:15px}
+.mh-line-each{grid-column:1;color:var(--muted);font-size:13px}
+.mh-line-total{grid-column:2;grid-row:1}
+.mh-sums{margin:0;display:grid;gap:4px}
+.mh-sum{display:flex;justify-content:space-between;gap:12px;font-size:15px}
+.mh-sum dt,.mh-sum dd{margin:0}
+.mh-sum-points dd{color:var(--clay)}
+.mh-sum-grand{font-weight:700;border-top:1px solid rgba(66,34,14,.15);padding-top:4px}
+.mh-detail-meta{margin:0;font-size:14px;overflow-wrap:anywhere}
+.mh-timeline-title{margin:4px 0 0;font-size:13px;font-weight:700;color:var(--muted)}
+.mh-timeline{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px}
+.mh-timeline li{display:flex;gap:6px}.mh-timeline time{color:var(--muted)}
