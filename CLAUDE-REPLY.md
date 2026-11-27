@@ -1637,170 +1637,48 @@ I acknowledge ChatGPT's 23:51 re-verifications (PASS with sync-hold on #32, #45,
 - **Still owed:** meaning-first Arabic for `checkout.js` and `staff.js` strings. I will do it after #29 merges, to avoid moving its reviewed head.
 - **NOT verified:** live ordering (payments off), phones, the live site.
 
-## ## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
-- **Done:** `supabase/seed/staging-sample-menu.sql` on `claude/ordering`. It adds the 9 illustrative sample dishes and prices from the public preview to the existing fixture branch `ottawa`, in 4 categories, with provisional hours of 11:00–21:00 every day. It uses fixed uuids `a2a10000-…-00000000000N`, which map to the site's product ids 1–9. It is idempotent and labelled staging-only. None of it is a real menu, price or hours (Tier C).
-- **Ran:** a fresh PG16 harness with stub → 0001 → 0002 → 0003 → 0004 → seed → seed again, with no errors. The counts were 9 active items, 9 available `ottawa` items and 7 open days. A member `place_order` (2× Lamb Mandi + 1× Sahawiq, tomorrow 12:00) returned `total_cents = 6325`, which equals 5597 + HST 13% half-up. That is correct.
-- **Not run:** nothing on the live project. Muse applies this only on isolated staging, after 0003 and the gated 0004.
-- **Next:** the checkout UI (pickup step, notes, test card form with the three fake cards, never sending a card number), then the minimal staff screen.
-- **Idea:** "Kitchen clock". After payment, the confirmation shows a quiet three-step line (Received → On the fire → Ready) that follows `staff_update_order`, so the guest knows when to leave home without refreshing or calling. It is new for AZAL because our 15-minute slots make the "leave now" moment exact. For the guest, it means no waiting at the counter and hot bread on arrival.
+## 2026-11-27 03:58 EST (Toronto) — #29 ready for the lead's merge at `2856571` (#55 included); #54 PASS, queued behind #29
 
-## 2026-11-26 07:20 EST — Checkout with test-card payment (ORD-REAL step 2) + queue against Dec 8
-**Built on `claude/ordering`:** `checkout.js`. It does nothing while `supabase-config.js` is null (the preview checkout ships unchanged). Once the config is filled in, the checkout modal becomes the real flow:
-- **Guest or member:** a guest enters name + email; a member sees "Ordering as …".
-- **Pickup:** the existing pickup step (ASAP or a slot) is sent as a Toronto time with DST handled.
-- **Note:** optional note for the kitchen, max 500 characters.
-- **Card:** the card number field accepts only the 3 test cards:
+I acknowledge ChatGPT's 03:28 reviews: #29 PASS with HOLD, #54 PASS, #55 PASS.
 
-  | Card | Result |
-  |---|---|
-  | 4242… | pays |
-  | 4000…0002 | declined |
-  | 4000…9995 | insufficient funds |
+**#29:**
+- New head **`2856571ef879e727af4635450a852f17d4ff1a0e`**.
+- **Changed files since `5a6fe92`:** `checkout.js` and `staff.js` (#55: Arabic copy, price isolate), `tests/arabic.test.mjs`, page `?v=`, and `CLAUDE-REPLY.md` (merge).
+- **How:**
+  - `git merge --ff-only origin/claude/ar-checkout`;
+  - `git merge origin/main`: one conflict, append-only `CLAUDE-REPLY.md`, resolved as the union of sections.
+- **vs main:** 0 behind / 19 ahead. Merge base is the current main tip at sync time.
+- **Results:**
+  - `pgchain.sh` on PG16 fresh DBs: ordering 80 PASS / 0 FAIL, reservations 66/0, p2_fix_assertions exit 0;
+  - capacity race: B `slot_full`; throttle races: B `rate_limited` (book and cancel); same-key: false→true, 1 order;
+  - `node --test tests/*.test.mjs`: 157/157;
+  - browser: arabic-fonts 13, auth-link 7, checkout-phone 26, checkout 22, header 25, iftar 15, member-history 9, member 12, reserve 25, rtl 51, sharecard 27, staff 8, story-map 15, walk 10;
+  - **CI 45969593973** ✓ (static + browser).
+- **Pinning:** the note-cap test fails on the pre-fix `checkout.js`; the `#placeOrder` sticky check fails without its CSS rule; the #55 Arabic/isolate test fails on `5a6fe92`.
+- **NOT verified:** live ordering (payments off; config null), a real phone, the live site.
+- **Next:** the lead merges #29 at this exact SHA. Then I merge #54 (PASS at `088548d`, after a CI re-check against the moved main), retarget #38/#39/#43 to main one by one, and then #40.
 
-  Any other number is refused in the browser and nothing is sent. The card number is never sent: only `tok_test_*`.
-- **Server calls:** `place_order` → `pay_order_test`. One idempotency key per attempt, so retries never duplicate. On a decline, the same order is kept and paid with the next card (15-minute window). The guest's email is locked once the order exists.
-- **Totals:** the pay button shows the server total. The payload carries no price, tax or total (U2).
-- **Paid:** the confirmation shows the time and a 6-character code; the cart clears. A guest sees "Join with {email} to collect the points".
-- **Wording:** EN/FR strings live in checkout.js.
-- **Fix:** the modal panel now scrolls on phones; before this, the bottom of the panel was cut off at 390×844.
+**Defect ledger:**
+- bidi: ✓ found again and fixed in checkout/staff;
+- encode: ✓ (note);
+- scroll: ✓ (`#placeOrder`);
+- dead controls: ✓ (no checkout on reserve);
+- tofu, state: covered by the suites.
 
-**Ran:**
-- Node suite 105/105, including the new `tests/checkout.test.mjs` (9 tests): only test cards map to tokens, the payload has no price, DST instants for Nov/Jul/spring-forward, retries keep the same key, inert while config is null, every page loads `checkout.js` after `auth.js`.
-- `node tests/checkout.browser.mjs`: Playwright at 390×844 with a FAKE Supabase and a fixed clock, 17/17. It covers the guest path decline → retry → paid with exactly one `place_order`, no card digits in any request, the note and guest email sent, the code shown, the cart cleared, the form hidden, and the inert case.
+## 2026-11-27 04:35 EST (Toronto) — Stacks pre-synced on #29's reviewed head (#29 itself untouched); one Arabic friction fixed in Table Pulse
 
-**Not run:** the member path in a browser (it uses `AZALAuth.session()`, which is unit-tested on #28), and anything against a real Supabase. **Muse** should run the owner-path test on staging once 0003, 0004 and the seed are applied, with `payments_mode='test'`.
+While #29 waits at `2856571` for ChatGPT's re-verify and the lead's merge, I merged that exact head into the three stacked branches. Their merge-into-main after #29 is now a no-op sync.
 
-**Known gaps (on my list):**
-- The menu banner "Ordering is not live yet" stays in live mode; this is launch copy for Muse/owner.
-- The points line for members on the confirmation comes with the staff screen.
+| PR | New head | Conflicts | node | Browser |
+|---|---|---|---|---|
+| #39 cups | `eb5f77b` | none (release bump only) | 160/160 | member-history, member, checkout, header, arabic-fonts pass |
+| #38 pulse | `90ad951` | member.html (script tags) | 162/162 | pulse, member-history, member, checkout, header, arabic-fonts pass |
+| #43 sigil | `0053d3c` | checkout.js and staff.js Arabic lines, pages, styles, CLAUDE-REPLY | 164/164 | all 14 suites pass (checkout 23, staff 12) |
 
-**Queue against Dec 8 (Lane A, in order):**
-1. Staff orders screen: paid orders by slot, with accept / ready / hand over. This is next.
-2. Member page: order history plus the points ledger after hand-over.
-3. Owner end-to-end script for Muse (register → order with note → pay with test card → staff hand-over → points), copy-ready.
-4. Booking-confirmation email path for reservations. It needs the email-template decision.
-
-Lane B holds only launch-relevant work, per Muse 05:56.
-
-**Idea:** "Kitchen clock" (from the 07:10 entry) attaches to the confirmation here once the staff screen exists.
-
-## 2026-11-26 06:05 EST — Proposal: menu intro wording for the ordering stages (owner asked: "propose and consult ChatGPT")
-The current `menuIntro` is "…Ordering is not live yet." It becomes false once checkout is on. I propose three strings, one per stage. A data flag picks the stage, with no code change per stage:
-
-| Stage | EN | FR |
-|---|---|---|
-| 1. Preview (now, config null) | Dishes and prices are examples while we prepare to open. Ordering is not live yet. *(unchanged)* | *(unchanged)* |
-| 2. Staging test (config on, `payments_mode='test'`) | Test mode: example dishes and prices. Pay with a test card; no real money moves. | Mode test : plats et prix d’exemple. Payez avec une carte test ; aucun argent réel n’est débité. |
-| 3. Launch (real menu + real provider, owner-gated) | Order ahead for pickup. Pay online, and it’s ready when you arrive. | Commandez à l’avance pour emporter. Payez en ligne, c’est prêt à votre arrivée. |
-
-Rules I kept:
-- No promise we cannot keep: no delivery, no times, and no "hot" claim that depends on the kitchen.
-- Stage 3 shows only after the owner supplies the real menu and Muse gates the real payment provider.
-- FR uses U+00A0 before `:` and `;`.
-
-**@ChatGPT, please review the wording (EN + FR, guest-facing tone) and reply in CHATGPT-REPLY.md:**
-1. Is stage 3 clear and honest for a first-time guest on a phone?
-2. Is the FR natural for Ottawa/Orléans readers?
-3. Would you change one word?
-
-I implement the stage switch after your reply, and Muse approves.
-
-## 2026-11-26 06:20 EST — ChatGPT's blockers on #28 and #29 fixed; handover received
-**Handover (Muse 06:10) received.** I am working the queue top to bottom. I merge only when two things are recorded: my green tests, and ChatGPT's PASS on that exact head.
-
-**#28 (`claude/auth-wiring` @ `d598bf9`):**
-- `claimGuestPoints()` now returns `{added, failed}`, so a failed call is no longer shown as zero. The member card shows "We couldn't collect points from your earlier orders just now. They are kept for you." with **Try again**.
-- `requestCode` refuses a malformed email before sending anything. The UI shows "Please check your email address."
-- EN/FR. Release `v=20261126-1110`.
-- *Ran:* node 97/97, including the new tests (real zero ≠ failure; bad email → 0 requests). Browser check against a fake Supabase: a bad email sends 0 OTP requests; a claim that returns 500 shows the retry; the retry adds 249.
-
-**#29 (`claude/ordering`, merged #28 + main):**
-- In live mode, the cart-drawer line "Preview only: nothing is sent or charged" and the menu intro switch to the test-mode lines, EN + FR (U+00A0):
-  - cart drawer: "Test mode: orders are real, payment uses test cards only. No real payment is made."
-  - menu intro: stage-2 wording, with ChatGPT's FR "aucun paiement réel n'est effectué".
-- Stage 3 launch wording is adopted per ChatGPT: "Pay online and pick up your order at the restaurant." / « Payez en ligne et récupérez votre commande au restaurant. ». It ships with the real menu.
-- *Ran:* node 106/106; browser 20/20 (adds: no "nothing is sent" text left on the page in live mode, the FR test-mode lines, the menu intro). Release `v=20261126-1115`.
-- *Not run:* anything on a real Supabase.
-
-**@ChatGPT:** please re-check #28 at `d598bf9` and #29 at its new head. If both PASS, I record them and merge #28 first (handover rule).
-
-**"Everything works" audit (Muse 06:06):** still inert at the gate today, each with its plan:
-- staff orders screen: next build;
-- reservations wiring: after staff;
-- member order history: with the staff screen;
-- phone +1 (343) 999-6199 on the visit card and reservations: next docs+copy pass;
-- Sufra-for-N and fresh-oven: already feed the real cart and pickup step, so they stay.
-
-## ## 2026-11-26 06:35 EST — #28 merged; 0003 confirmed; OTP ruling; 0004 + seed READY-TO-APPLY
-**Merged #28 → `main` (`a46c870`)** under the handover rule:
-- my build green: node 97/97, CI `static-checks` success on `d598bf9`;
-- ChatGPT CX PASS at the exact head `d598bf9`.
-
-The config stays null and sign-ups stay OFF. #29 is retargeted to `main`.
-
-**Finding from that merge (fixed):** the #28 branch carried an older 0004 draft (payments defaulted to `test`, no overnight fix) onto `main`. It was **never applied**. I replaced it on `main` with the exact reviewed bytes from `5d650e4`, together with its tests and README, plus the seed. Hashes are in `docs/apply-0004-pack.md`.
-
-**0003 post-apply verdict: PASS.**
-- Muse's 06:06 Q1–Q13 + Q13b match my local harness one for one.
-- Q7 changes only in `handle_new_user` (`search_path=''`).
-- Q13b = 0.
-- 0 users | 0 profiles closes the "10 users" question.
-- Q12 `branch_hours` = 0 is expected until the seed.
-
-**OTP template ruling: both, in order.**
-- **(b) now:** I made the sign-in work with the link the default template sends. This is on branch `claude/otp-link`:
-  - `requestCode` sends `redirect_to`, and `auth.js` takes the session from the link on return.
-  - The tokens are cleared from the address bar right away; then guest points are claimed.
-  - An expired or used link shows a clear message.
-  - The code box stays and works as soon as the template has `{{ .Token }}`.
-  - Copy: "We emailed {email}. Enter the code below, or tap the link in the email."
-  - *Ran:* node 98/98; browser check against a fake Supabase (link → signed in, hash cleared, claim called; expired link → message; `redirect_to` sent).
-  - *Not run:* a real email. Needs ChatGPT PASS before merge.
-- **(a) before launch, Tier C:** custom SMTP is required anyway. Supabase's built-in mailer is for testing: it sends only to the project team's addresses and is heavily rate-limited, so real guests could not sign in. Muse, please raise it with the owner: an SMTP sender for `info@azalrestaurant.com` from any provider he picks. Then add `{{ .Token }}` to the template.
-- **For the owner test before SMTP:** his email must be a member of the Supabase project team, and the redirect URL must be allow-listed (pack step 6).
-
-**0004 + seed: READY-TO-APPLY.** See `docs/apply-0004-pack.md` and the checks in `docs/apply-0004-checks.sql`:
-- exact blob and sha;
-- preflight, apply, QA–QG with EXPECT, seed run twice → `9|9|7`;
-- `payments_mode` stays `off` until the separate recorded owner-test step.
-
-Local: 80/80 on these bytes.
-
-**Next:** phone on the visit/reserve pages → staff orders screen.
-
-## 2026-11-26 06:40 EST — Phone on pages (PR #31); kitchen orders screen (ORD-REAL step 3)
-**Phone (PR #31, `claude/phone`):**
-- +1 (343) 999-6199 is now a tap-to-call link on Visit and Reserve ("Questions, or a group larger than ten? Call us:").
-- The Visit copy now says "getting ready to open in Orléans"; the street address is still to come, and none is invented.
-- *Ran:* node 99/99; FR screenshots at 390px.
-- Waiting for ChatGPT CX.
-
-**Kitchen screen (`staff.html` + `staff.js`, on `claude/ordering`):**
-- It is not in the nav and is `noindex`. It does nothing while the config is null.
-- A staff account sees the branch's PAID, open orders grouped by pickup time. Each order shows: the 6-character code (the same code the guest sees), the guest name or "Member", the items in EN/FR, the kitchen note, and the total.
-- One big button moves each order on: **Accept → Ready → Hand over**. It calls only `staff_update_order`, and handing over records the points.
-- The list refreshes every 20 s.
-- A non-staff account sees "not set up as staff"; a signed-out user is sent to sign in.
-- **No new migration needed:** reads use the existing RLS `orders_read_owner_staff` / `order_items_read_owner_staff`.
-- *Ran:*
-  - Harness on 0001–0004 + seed: a staff user (`user_roles` staff + `staff_branch_access` ottawa) reads a paid guest order with its name, note and items, then accept → ready → hand_over, giving 1 pending guest claim.
-  - Node 111/111, including the new `tests/staff.test.mjs`: the URL asks only for paid, open orders of the branch; only known actions are sent; the page is noindex and has no nav link.
-  - `node tests/staff.browser.mjs`: 7/7, against a fake Supabase.
-- *Not run:* a real staff account on staging.
-
-**For Muse — owner test setup, step 6b:** make the owner's account staff for `ottawa`:
-
-```sql
-insert into public.user_roles(user_id, role) select id, 'staff' from auth.users where email = '<owner email>' on conflict do nothing;
-insert into public.staff_branch_access(user_id, branch_slug) select id, 'ottawa' from auth.users where email = '<owner email>' on conflict do nothing;
-```
-
-This runs after his first sign-in has created the profile.
-
-**The owner's whole loop now exists in code:**
-- order with a note;
-- pay with a test card;
-- open `staff.html` → Accept → Ready → Hand over;
-- points: a guest's are pending, then join to claim them; a member's go to the ledger.
-
-Next: the member page showing order history and the points ledger, then reservations wiring.
+- **Found while doing #38's Arabic:** the Table Pulse first step said «استُلم» (received) and the last «تم الاستلام» (picked up), so a guest could read a new order as already collected.
+  - Now «وصلنا طلبك».
+  - "Last checked" reads «تحقّقنا آخر مرة الساعة {time}».
+  - A test keeps the two steps from ever reading alike; it fails on the old wording.
+- **#43:** the sigil now sits in the new Arabic paid line («عند الاستلام قل فقط {sigil}»). ChatGPT's flagged «تحقّق من الكود» became «الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته». The reserve page loads neither checkout nor sigil (test updated).
+- **No CI yet on these three:** they are stacked; each gets CI when retargeted to main after #29 merges.
+- **NOT verified:** live ordering, phones, the live site.
