@@ -67,3 +67,32 @@ test("ledger beyond the safety cap fails visibly instead of showing a partial ba
   const h = H.createHistory({ config: CFG, pageSize: 50000, getSession: async () => S, fetch: async (u) => ({ ok: true, json: async () => (u.includes("/orders") ? [] : Array.from({ length: 50000 }, () => ({ entry_type: "earn", delta_points: 1 }))) }) });
   await assert.rejects(h.load(), { code: "error" });
 });
+
+test("F-OWN-3: detailView keeps the server's own numbers and a readable timeline", () => {
+  const v = H.detailView({ id: "x", subtotal_cents: 5597, discount_cents: 500, redeemed_points: 5000, tax_rate_bps: 1300, tax_cents: 663, total_cents: 5760, scheduled_for: "2026-11-25T17:30:00Z", customer_note: "No onions",
+    order_items: [{ quantity: 2, unit_price_cents: 2499, line_total_cents: 4998, item_name_en_snapshot: "Lamb Mandi", item_name_fr_snapshot: null }],
+    order_events: [{ event_type: "placed", created_at: "a" }, { event_type: "paid", created_at: "b" }, { event_type: "note_edit", created_at: "c" }, { event_type: "hand_over", created_at: "d" }] });
+  assert.deepEqual([v.subtotal, v.discount, v.points, v.tax, v.total, v.rateBps], [5597, 500, 5000, 663, 5760, 1300]);
+  assert.deepEqual(v.lines, [{ q: 2, en: "Lamb Mandi", fr: "Lamb Mandi", unit: 2499, line: 4998 }], "a missing French name falls back to English, never blank");
+  assert.deepEqual(v.timeline.map((t) => t.step), ["placed", "paid", "handed_over"], "unknown event types are skipped, not shown raw");
+  const old = H.detailView({ id: "y", subtotal_cents: 599, tax_rate_bps: 1300, tax_cents: 78, total_cents: 677, pickup_slot: "2026-11-25T17:30:00Z" });
+  assert.deepEqual([old.discount, old.points, old.pickup, old.note, old.lines.length, old.timeline.length], [0, 0, "2026-11-25T17:30:00Z", null, 0, 0], "before 0006: no discount; pickup falls back to the slot");
+});
+
+test("member history: Arabic never calls a received order 'استُلم', and Arabic prices are LTR isolates", () => {
+  const src = readFileSync(new URL("../member-history.js", import.meta.url), "utf8");
+  assert.match(src, /st_placed: "وصلنا طلبك"/);
+  assert.doesNotMatch(src, /"استُلم"/);
+  assert.match(src, /lang\(\) === "ar" \? "\\u2066" \+ s\.replace\(\/\\u200f\/g, ""\) \+ "\\u2069" : s/);
+});
+
+test("ChatGPT #59 review 3: inherited names are never timeline steps", () => {
+  const v = H.detailView({ id: "z", subtotal_cents: 1, tax_rate_bps: 1300, tax_cents: 0, total_cents: 1,
+    order_events: ["constructor", "toString", "__proto__", "hasOwnProperty", "valueOf", "mystery", "placed"].map((t) => ({ event_type: t, created_at: "x" })) });
+  assert.deepEqual(v.timeline.map((t) => t.step), ["placed"]);
+});
+
+test("ChatGPT #59 review 2: the detail projection is an explicit allow-list", () => {
+  assert.equal(H.DETAIL_COLS, "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status");
+  assert.doesNotMatch(readFileSync(new URL("../member-history.js", import.meta.url), "utf8"), /select=\*/);
+});

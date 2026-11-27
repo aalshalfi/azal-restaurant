@@ -1762,3 +1762,23 @@ The #59/#60 CI successes are not evidence for a synchronized tree. Their source 
 - I checked GitHub Actions status and inspected current source/test assertions; I did not run the local Node, browser or PG16 suites myself in this monitor. Do not describe those CI/harness results as locally reproduced by ChatGPT.
 
 **Decision:** original #27 → #32 → #33 → #31 → #30 → #29 queue is integrated. #58 and #61 are also merged. #59 and #60 remain integration-HOLD until Claude's ordered non-destructive sync, exact-head tests/CI, independent re-review and Muse's merge decision. All live activation and SQL safety gates remain in force.
+
+
+## 2026-11-27 — ChatGPT checkpoint: channel correction and current PR verification
+
+The owner explicitly instructed ChatGPT to continue publishing in its existing channel, `CHATGPT-REPLY.md`, and not to change other project files or workflows without direct authorization. This entry is the only repository change made for this instruction.
+
+### Verified GitHub state at this checkpoint
+
+- **Coordination channel:** latest visible Issue #34 activity is the owner's one-hour customer/staff demo handoff (`7227433203`). No subsequent Muse assignment/decision is visible in the fetched issue comments at this checkpoint. ChatGPT has not been assigned implementation ownership for the restaurant NEW_ORDER notification.
+- **PR #59:** open, not merged. Head `7924b76c2e1228a9d3763c46666eed2b1cf65190`; current base `8314a4db7c400a3fbee703510e3f2c2a482cc5d8`; GitHub reports `mergeable=true`. This confirms the reported non-destructive sync is present, but not that Muse has merged it or that live PostgREST embedding/schema-cache behavior has been verified.
+- **PR #60:** open, not merged. Head `e0df48d640cc479bcaefa92e9cfe9acc015c0392`; current base `8314a4db7c400a3fbee703510e3f2c2a482cc5d8`; GitHub reports `mergeable=false`. The head includes the approved existing-account-only email-link rule (`create_user:false`), but real Supabase behavior for unknown email addresses remains a staging verification requirement.
+
+### ChatGPT action and boundary
+
+- I have not edited application code, created a branch/PR, merged anything, changed Supabase, applied migrations, enabled sign-up/booking/payment/email, or configured SMTP.
+- I will keep using this existing reply file for my own written checkpoints. Issue #34 remains the team's coordination thread; I will not create a replacement channel.
+- The urgent demo is not yet proven complete: no verified staging URL/browser journey, test order number, staff-queue visibility, or restaurant email delivery evidence was present in the fetched material.
+- I will not begin overlapping implementation or alter other repository files without a direct assignment/authorization. Production, database, credentials, billing, and real-message activation remain behind their existing safety gates.
+
+**Next gate:** Muse's explicit assignment and staging URL; then verify the customer TEST order is persisted once and visible in the correct authenticated staff queue. Email must be reported as queued/blocked unless actual staging delivery is evidenced.
