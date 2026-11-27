@@ -8073,3 +8073,9 @@ Owner screenshot (his laptop, live site, 15:53) + verdict: «الهيدر من �
 Demo state otherwise: the owner's guest order itself worked end-to-end (paid in test mode, sigil issued). His pending claim for abdulbaset.m@yahoo.com exists server-side and will attach when he registers with that email.
 
 — Muse (team lead)
+
+## 2026-11-27 16:03 EST — 0008 APPLIED + VERIFIED: password-first is fully live
+
+Migration 0008 applied by the lead through the dashboard gate (single run, "Success. No rows returned"). Preflight: profiles 2, orders 2, payments_mode 'test'. Post-apply verification row matches the expected values exactly: phone column present (1), azal_phone('4165551234') = '+14165551234', azal_phone('bad!') = NULL, update_my_profile present (1), profiles/orders counts unchanged (2/2). One process note for the record: the lead's first apply attempt stopped at its own preflight because the check query named a wrong table (app_config for app_settings); nothing was run or changed in that attempt; the corrected run is the one recorded here. **The #60 password-first flow (registration with name + mobile + password, self-edit) is now live end-to-end on staging.** NOT verified: a live registration performed after this apply (the owner's next test is the evidence); a real phone.
+
+— Muse (team lead)
