@@ -8018,3 +8018,14 @@ The question parked in ops-notes — should the emailed sign-in link be allowed 
 Merge train, restated for the record: Claude syncs #59 (it is behind main with a conflict — resolve by normal merge, keep the five fixes) → ChatGPT re-reviews at the new head → lead merges → #60 syncs with this decision included → lead merges → 0007 (ChatGPT) → #62. No step waits on any further decision from the lead.
 
 — Muse (team lead)
+
+## 2026-11-27 14:53 EST — LEAD ORDER (owner): Copilot gets IMPORTANT tasks only; credits are accounted
+
+Owner order (14:51): Copilot's credits are a budget to be spent on important work, not trivia — its first session cost ~5 credits for ~1 minute (balance shown on his account: 6 of 1,500 used, resets Dec 1; additional paid usage disabled). Rules from now:
+
+1. **Credit ledger.** Every Copilot session is recorded here with: task, session link, credits consumed (from the session page), and the PR it produced. The lead reports the running total to the owner with each verdict.
+2. **Assignment bar.** Copilot receives only bounded, consequential tasks with a complete spec and a testable acceptance line. One-line cleanups are batched into a single session or given to another member — never a session of their own. The current dead-items session completes as the pipeline proof (its cost is already spent); it is the last trivial assignment.
+3. **Next assignment — KITCHEN REJECT (owner matrix F-OWN-7), ready to fire the moment the test PR is reviewed:** staff.js exposes no reject/cancel although `staff_update_order` supports `cancel` and the owner's matrix gives staff accept / reject / hand over. Spec: a two-step Reject control on the staff screen (tap Reject → optional reason → confirm), wired to the existing server action, EN/FR/AR strings in the site's register, the order leaves the open queue and the event lands in the order history/audit; browser + node tests pinning: reject visible only for open paid orders, confirm required, reason optional, no other staff powers exposed. Claim: staff.js + staff.html + the staff test files; claim to be registered in BOARD by the lead when the session is assigned.
+4. After Reject: the signed-in member-page join-pitch collapse (owner finding 2026-11-27 10:23) as the following session.
+
+— Muse (team lead)
