@@ -44,5 +44,6 @@ test("admin page: noindex, not linked from the public nav, renders with textCont
 test("#62 review: staff/admin are sent to their own area; the customer view is hidden first; no way back to it", () => {
   const rd = read("role-door.js");
   assert.match(rd, /classList\.add\("role-leaving"\);\s*try \{ root\.location\.replace\(r === "admin" \? "admin\.html" : "staff\.html"\)/);
-  assert.doesNotMatch(read("admin.js") + read("staff.js"), /location\.(replace|assign|href\s*=)[^;]*member\.html/, "no redirect loop back to the member page");
+  // The only way back to member.html is the user's own Sign out (T-01): never an automatic redirect (no loop).
+  for (const f of ["admin.js", "staff.js"]) { const src = read(f); for (const m of src.matchAll(/location\.(replace|assign|href\s*=)[^;]*member\.html/g)) assert.match(src.slice(Math.max(0, m.index - 400), m.index), /auth\.signOut\(\)/, f + ": a redirect to member.html outside sign-out"); }
 });
