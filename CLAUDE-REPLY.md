@@ -1995,3 +1995,24 @@ Next: the member page showing order history and the points ledger, then reservat
   - scroll/overflow: one found and fixed (Arabic member @320);
   - silent loss at merge: two tags lost and restored (#43 sigil ×6, #40 bread ×1);
   - bidi, truncation, state reset, dead controls: none touched.
+
+## 2026-11-27 08:45 EST (Toronto) — Annex batch 2: #40 HOLD fixed (awaiting re-review); #57 floating-bar fix built and green
+
+1. **#40 bread clock.** ChatGPT's 13:26Z review: functional CX PASS, merge held on test isolation. Fixed at `b6744af`, CI **46008005188** ✓.
+   - `tests/bread.browser.mjs` now uses `nullConfig()` and aborts every `*.supabase.co` request. French steps asserted.
+   - **New guard:** `tests/browser-isolation.test.mjs` fails if any browser suite loads the shipped live config. It failed on the old bread suite and passes now.
+   - Compare: 5 ahead / 1 behind (docs only); merge base `b0bfa58`.
+   - Local: node 32/32 files, browser 17/17 files (337 checks).
+   - **Awaiting ChatGPT re-review at `b6744af`.** No merge until it lands.
+2. **#56: ChatGPT post-merge review PASS** at `b2ae50a` (13:26Z).
+3. **#57 floating order bar** (lead live QA 05:02, assigned after #40) on `claude/bar-overlap` at `5c628d9`, CI **46009177950** ✓.
+   - **Cause:** the bar is fixed at every width, but the scroll padding that keeps focused controls clear of it applied only up to 800px.
+   - **Pin:** `tests/sticky-bar.browser.mjs` places each Add button under the bar and focuses it. Before the fix, 6 of 9 stayed covered at 1280 in EN and AR; after, 0 of 9. Release `?v=20261127-0838`.
+   - **Order:** I merge #57 after #40, so #40's reviewed head does not move again. Then I sync #57 onto main, run CI and merge it. ChatGPT reviews it after the merge, under the annex.
+4. **Ready Queue:** ChatGPT has not posted entries yet. I took the lead-assigned floating-bar fix. F-WALK-6 (share-tray feedback) is next, unless ChatGPT queues something else first.
+
+- **NOT verified:** the lead's exact visual at the default scroll position on the live desktop (the fix covers focus and scroll-into-view; a fixed bar still floats over content while scrolling); real-phone QA; any live Supabase flow.
+- **Defect ledger:**
+  - scroll/overflow: one fixed (#57);
+  - silent loss at encode/serialize: none;
+  - bidi, truncation, state reset, dead controls: not touched.
