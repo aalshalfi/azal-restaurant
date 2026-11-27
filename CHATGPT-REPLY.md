@@ -1783,7 +1783,6 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 
 **Next gate:** Muse's explicit assignment and staging URL; then verify the customer TEST order is persisted once and visible in the correct authenticated staff queue. Email must be reported as queued/blocked unless actual staging delivery is evidenced.
 
-<<<<<<< HEAD
 ## 2026-11-27 16:06 EST (Toronto) — Muse-assigned 0007 rewards correction opened as PR #64
 
 **Summary:** Implemented the separate forward-only 0007 policy task explicitly left outstanding by Muse. Branch: `chatgpt/points-0007-increments`. PR: [#64](https://github.com/aalshalfi/azal-restaurant/pull/64).
@@ -1807,7 +1806,7 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 - The SQL behavior and two-session race scripts are provided, but ChatGPT has not run them against Supabase or an actual PostgreSQL instance.
 
 **Verification:** PR #64 was opened from a non-destructive merge of current main into the branch. Exact-head CI is pending; no green CI or SQL runtime result is claimed yet. Muse retains review, migration-apply, merge and release authority.
-=======
+
 ## 2026-11-27 15:56 EST (Toronto) — Muse-approved NEW_ORDER alert slice opened as PR #63
 
 **Summary:** Implemented the bounded restaurant NEW_ORDER alert work assigned by Muse in Issue #34. The work is isolated on `chatgpt/new-order-alert-0009`; no changes were made to `main`.
@@ -1840,4 +1839,165 @@ A source review found that the initial trigger also listened for INSERT with pay
 - Latest implementation commit before this note: `42477fbaeed0030508aa4a6067d2f6a6c6f4ff74`.
 - PR #63 remains open; no merge, migration apply, SMTP, or email send.
 - Prior exact-head run `46067113241` passed Node **192/192** and browser checks on the previous head `82ddc9c`; a new exact-head CI run is pending after this trigger/test change.
->>>>>>> origin/chatgpt/new-order-alert-0009
+
+
+
+## 2026-11-27 — Benchmark study for SPEC.md v0.2 (Muse assignment 17:08; owner process order 17:12)
+
+**Scope and method.** I reviewed seven real restaurant ordering/rewards experiences on 2026-11-27: three independent/local Canadian restaurant storefronts and four larger Canadian or best-in-class programs. I followed the public website into the order/menu or rewards/account information that could be inspected without creating an account, submitting an order, or paying. I did not create accounts, place orders, inspect private kitchen/admin systems, or claim to have verified staff-side behavior. Where a platform blocked a deeper step or the information was only documented in official FAQs/terms, that limitation is stated.
+
+### 1. Sites actually walked
+
+1. **Say Cheese Pizza & Poutine — Ottawa independent**
+   - Website: https://saycheesepizza.ca/
+   - Ordering path: https://saycheesepizza.ca/order
+   - Walked: homepage → Order Online → menu/cart surface. The menu exposes 74 items, category navigation, search, dietary filters (vegetarian / halal / spicy), item descriptions and size/price variants. The ordering page offers sign-in/create-account for saved address, phone and rewards, and makes Pickup vs Delivery an explicit early choice. The restaurant's own site links into its Menu.ca-powered ordering experience; this is a restaurant-branded storefront, not a wholly custom backend.
+   - Not verified: authenticated account contents, final checkout/payment, order receipt, or kitchen/admin screens.
+   - Evidence: homepage and order page, especially menu filters, account prompt and pickup/delivery choice.
+
+2. **Al's Diner — Ottawa independent**
+   - Website: https://www.alsdiner.ca/
+   - Ordering path: https://als-diner.ezonlinefoodorders.com/
+   - Walked: restaurant homepage → Order Online → live ordering menu. The order page visibly supports Guest and Login, has an always-visible loyalty proposition (**1 point per $1; 100 points = $5 off at checkout**), menu categories, prices, explicit Out Of Stock labels, Pickup and Delivery, hours, address and phone. This is the clearest local example of a small restaurant putting the earn/redeem rule directly above the menu rather than hiding it in a separate rewards page.
+   - Not verified: sign-in, earning ledger, checkout or payment; the ordering provider is EZ Online Food Orders.
+   - Evidence: public ordering page and restaurant homepage.
+
+3. **Lorenzo's Pizza Carling — Ottawa independent**
+   - Ordering path: https://order.lorenzoscarling.com/
+   - Loyalty terms: https://order.lorenzoscarling.com/loyalty-program
+   - Walked: restaurant ordering storefront, category/deals navigation, login entry, location details and loyalty terms. The terms describe configurable earning by spend or completed order; points are awarded only when an order is marked completed, cancelled/voided orders do not qualify, and post-completion refunds/credits can trigger point deductions. The terms also explain account uniqueness, opt-out and expiry behavior. These are platform/participating-program terms; the public page does not establish which optional settings this particular location has enabled.
+   - Not verified: actual logged-in reward balance, configured earn rate, checkout or staff/admin functions. Ordering is powered by eHungry.
+
+4. **Denny's Canada — Canadian chain**
+   - Website / loyalty: https://www.dennys.ca/mydennys-faqs/
+   - Ordering/account platform: https://dennys.xdineapp.com/
+   - Walked: official MyDenny's Rewards FAQ and its xDine account/order destination. The FAQ says points are accessible on a computer after signing into xDine or by scanning a restaurant QR code; online pickup orders earn points only when the customer is signed in. It also documents the migration from the old rewards app/site and that a smartphone app is not mandatory.
+   - Not verified: full live xDine checkout or account dashboard; the ordering platform did not expose a readable page in this inspection.
+   - Evidence: official FAQ, including points access, online pickup eligibility and platform migration.
+
+5. **Chipotle Canada — best-in-class digital ordering + loyalty**
+   - Order/rewards: https://www.chipotle.ca/order/rewards
+   - Sign-in: https://www.chipotle.ca/order/sign-in
+   - Rewards terms: https://www.chipotle.ca/rewards-terms
+   - Walked: Canadian order/rewards landing, sign-in form and official terms. The sign-in exposes Remember me and Forgot Password. Canadian Rewards registration requires first/last name, email, mobile and password (plus birthday/preferences). Online orders earn only when placed while signed in; guest online orders do not earn points. The terms explain account eligibility, reward restrictions and inactivity expiry (365 days). The public rewards page exposes the member points/rewards area and a Rewards Exchange entry point.
+   - Important regional note: the Canadian Rewards terms exclude Quebec; Ottawa is within the eligible geography.
+   - Not verified: account-specific exchange contents, actual checkout redemption, or staff-side screens.
+
+6. **Panera Bread Canada — best-in-class account/recovery and personalized rewards**
+   - MyPanera Canada: https://www.panerabread.com/content/panerabread_ca/en-ca/mypanera/mypanera-canada.html
+   - Order entry: https://www.panerabread.com/en-us/start-an-order.html
+   - Walked: Canadian MyPanera page, account/recovery copy and public order-entry page. The Canadian program emphasizes personalized rewards rather than a simple visible points currency. The account experience documents saved payment, rewards, saved delivery addresses and recent café details; the page exposes password recovery. Panera's order-entry copy permits guest ordering but warns that guest ordering does not receive a visit credit toward the next reward.
+   - Not verified: logged-in checkout or the exact current Canadian reward offer because the account-dependent panels are dynamic.
+   - Design lesson: guest checkout can remain available, but the loss of member credit must be explained before the customer chooses guest.
+
+7. **CAVA — best-in-class loyalty progression (US comparator)**
+   - Rewards: https://cava.com/rewards
+   - Walked: official rewards explanation and FAQ content. CAVA combines base points (10 per $1) with named status levels and faster earn rates at higher tiers, birthday benefits, challenges/multiplier events and a rewards-history view. The FAQ says points generally appear within 48 hours, third-party delivery orders do not earn, rewards can be applied to the online cart, and redeemed points are not returned if the wrong reward is selected.
+   - Regional note: this is a US comparator, not an Ottawa competitor or a Canadian policy model.
+   - Not verified: live logged-in checkout, staff tools or the current app UI.
+
+### 2. Completeness checklist — benchmarked by surface
+
+Tags: **[standard everywhere]** = baseline expectation for a trustworthy ordering site; **[common]** = frequently useful but not mandatory for every small restaurant; **[distinctive]** = differentiating pattern worth considering, not an automatic AZAL requirement.
+
+#### Visitor pages / menu
+- [standard everywhere] Clear restaurant identity, location, phone, current hours and a direct path to Order Online.
+- [standard everywhere] Menu categories; item names, concise descriptions and current prices; clear unavailable/out-of-stock state.
+- [standard everywhere] Item details and required modifiers are visible before adding to cart; price changes follow selected options.
+- [standard everywhere] Pickup/delivery or service mode is explicit before checkout; location/branch is unambiguous.
+- [common] Search, dietary/allergen filters, category shortcuts, specials and featured items (Say Cheese demonstrates search + dietary tags).
+- [common] Dish-card links land on the actual dish/order item, not merely the top of a generic menu.
+- [distinctive] Restaurant-specific bundles/group deals surfaced as curated menu paths rather than forcing customers to assemble every component.
+
+#### Checkout / pickup
+- [standard everywhere] Cart shows each item, selected modifiers, quantity, unit price and line total; subtotal, tax, discount and total reconcile.
+- [standard everywhere] Customer can change quantity/remove items and recover from validation/payment errors without losing the cart.
+- [standard everywhere] Pickup/delivery mode, selected location, promised pickup window and contact details are visible before final submission.
+- [standard everywhere] Guest path and member path are explicit; the guest path explains any reward-credit consequence before checkout.
+- [standard everywhere] Payment state and order confirmation are truthful; the confirmation includes an order identifier and pickup instructions.
+- [common] Saved contact/payment details, promo code and reward application at checkout (Panera/Chipotle/CAVA patterns).
+- [common] Scheduled pickup, item notes and easy reorder/favourites.
+- [distinctive] Group ordering with an organizer and individually customized meals (Chipotle's group-order flow).
+
+#### Customer account / loyalty
+- [standard everywhere] Sign in, create account, forgot-password recovery, sign out, and edit profile/contact information.
+- [standard everywhere] Clear explanation of what earns points/credit, when credit posts, what is excluded, and how redemption works.
+- [standard everywhere] Balance and transaction/reward history; customer can tell whether an order earned credit.
+- [standard everywhere] Guest/member distinction is explicit; no silent promise of points for an unlinked guest order.
+- [common] Saved payment, address/location, recent orders and favourites/reorder.
+- [common] Birthday or welcome reward and a clear route to support for missing credit.
+- [distinctive] Tier progression, earn multipliers and challenges (CAVA); reward exchange/catalog rather than a single reward type (Chipotle); personalized offers rather than points accounting (Panera). These are optional differentiators, not core launch requirements.
+
+#### Staff / kitchen
+- [standard everywhere] Authenticated, branch-scoped incoming queue; paid/valid order state; readable ticket with order code, items/modifiers, notes and pickup time.
+- [standard everywhere] Explicit accept/reject (required reason), prepare/ready/hand-over states; every transition audited by actor and time.
+- [standard everywhere] Refresh/retry cannot duplicate actions; completed/cancelled orders remain in history.
+- [standard everywhere] Staff identity, branch and sign-out are visible; no customer-wide points/admin access.
+- [common] New-order alert, closed-orders view, tap-to-call guest phone and short staff session timeout.
+- [distinctive] Dedicated pickup shelf/fast-lane or QR handoff can improve throughput at scale; only adopt if the actual premises can operate it.
+
+#### Admin / management
+- [standard everywhere] Protected admin role, overview, branch-scoped staff controls and full order/customer lookup.
+- [standard everywhere] All-status order history; audit trail for staff/role changes and manual balance changes.
+- [standard everywhere] Clear operational states for email/outbox and failed orders; no fake "sent" status.
+- [common] Sales by day/branch, customer directory, promotion controls, stock availability and low-stock alerts.
+- [distinctive] Loyalty segmentation and campaign performance; defer until basic service, accounting and consent controls are reliable.
+- **Evidence limit:** none of the public customer websites exposes its real internal kitchen/admin system. These requirements are baseline operational design, not claims that I inspected those companies' private staff screens.
+
+#### Emails & notifications
+- [standard everywhere] Order confirmation with order code, branch, item summary, total and pickup time.
+- [standard everywhere] Status updates for accepted/rejected (reason), ready and hand-over when the restaurant promises them.
+- [standard everywhere] Idempotent outbox, retries, delivery-state distinction (queued/delivered/bounced/failed), safe templates and no payment secrets.
+- [common] Account verification, password reset, email-change confirmation, birthday/welcome offers.
+- [distinctive] Personalized challenge/offer notifications (CAVA/Panera style), only after consent, deliverability and frequency controls are proven.
+
+#### Session & account basics
+- [standard everywhere] Password reset, clear wrong-password/unknown-account messaging, email verification, self-edit, sign-out on every authenticated page.
+- [standard everywhere] Session invalidation after sign-out/account switch; private data cleared and late requests discarded.
+- [standard everywhere] Guest checkout remains possible if the business chooses it; account/reward trade-offs are stated before the choice.
+- [common] Remember-me, device/session management, saved payment and one-tap reorder.
+- [distinctive] QR-based in-store account/payment access (Denny's) as an optional bridge between online and physical visits.
+
+### 3. AZAL mapping against SPEC.md v0.1
+
+The following maps to the current main SPEC, not to assumptions about future code. The SPEC remains the authority; this study proposes checklist refinements only and does not authorize a new build or reorder.
+
+| Surface / benchmark line | AZAL status in SPEC v0.1 | Evidence / gap |
+|---|---|---|
+| Visitor identity, menu, categories, descriptions, prices, stories | HAVE | §3.1 says menu and stories are built. |
+| Search and dietary filters | PARTIAL / not fully specified | Say Cheese demonstrates useful menu search and dietary tags; SPEC does not yet require search/filter behavior as a basic. Consider adding only if current menu data supports it. |
+| Deep-link from featured dish to exact menu item | MISSING | AUD-2; SPEC step 5. |
+| Location/contact | PARTIAL + OWNER | Phone HAVE; district line missing (AUD-11); street address/hours/photos remain OWNER-held. |
+| Pickup vs delivery | HAVE (pickup-only business rule) | AZAL intentionally uses pickup only; do not copy delivery options from comparators. |
+| Itemized cart/checkout | MISSING / PARTIAL | SPEC §3.2: itemized lines missing; totals/server pricing HAVE; place-order overlap partial (AUD-7). |
+| Guest/member checkout and reward attribution | HAVE / PARTIAL | J1 guest and J2 member passed; guest points claim passed (J3, 434 pts); guest mobile and join action still missing (F-OWN-16). |
+| Loyalty earn/redeem clarity | PARTIAL | 0006+0007 live per SPEC; 10,000-point increments fixed. Member page still needs one points block and plain-language rules (F-OWN-17). Al's always-visible banner is a good clarity pattern, not a reason to change AZAL's fixed economics. |
+| Member account/profile/order history | HAVE / PARTIAL | Sign-in, profile edit, full order detail and guest claim are listed HAVE; password reset, member number, one-point presentation and session policy remain missing/partial. |
+| Staff queue/order processing | HAVE / PARTIAL | J5 live passed. Sign-out, reject-with-reason, guest phone, closed-orders view and shorter staff timeout remain missing. |
+| Admin overview / protected role | HAVE | J4 live passed and overview is live-verified. |
+| Admin history, directory, audit, staff/branch, inventory | MISSING | ADM-2 through ADM-5 remain queued in SPEC. |
+| Email notifications | PARTIAL / MISSING | 0009 NEW_ORDER outbox exists/applied but sender is off pending owner SMTP; customer status lifecycle and outbox admin view are missing. |
+| Session / recovery | MISSING / PARTIAL | Password reset and complete sign-out/session policy are pending; F-OWN-19 is step 1 in SPEC. |
+
+### 4. Up to three distinctive findings (for later team vote only)
+
+1. **CAVA — loyalty progression, not just a balance.** Named tiers with transparent thresholds, earn multipliers, birthday benefits and challenges can make Majlis feel like belonging. AZAL already has a decided P4 tier plan in SPEC §4; this benchmark validates the direction but does not authorize changing the thresholds or pulling P4 ahead of the existing build order.
+2. **Chipotle — a visible reward exchange.** A member sees points and a clear route to available rewards. This can inform a future AZAL redemption catalogue, but AZAL's current 10,000-point increments and server-side limits remain binding; do not introduce goods/charity or flexible cash-equivalent redemption by imitation.
+3. **Say Cheese + Al's — practical independent-restaurant clarity.** Searchable category menus, dietary labels, visible pickup choice, out-of-stock labels, and an always-visible earn/redeem banner help a small restaurant communicate quickly. The highest-value AZAL adaptation is clarity and fewer dead ends, not adding more features.
+
+### 5. Recommendation to Muse for SPEC v0.2
+
+- Fold the checklist categories and the AZAL HAVE/PARTIAL/MISSING mapping into the SPEC as a **benchmark annex**; do not change the existing 11-step build order.
+- Add explicit acceptance lines, where not already present, for: menu search/filter only if supported by real menu metadata; guest reward-credit consequence; out-of-stock state; visible points earn/redeem rule; password reset; identity + sign-out on every authenticated shell; complete order ticket fields; and customer-visible order status history.
+- Keep all owner-held launch inputs (address, real photos/menu/prices/hours, SMTP/domain, Stripe, reservations go-live) marked OWNER.
+- No new feature vote is requested for the three distinctive findings in this message; they are research observations for a later vote after the core SPEC fix batch.
+- This was a **study only**: no code, branch, migration, payment, email, live setting or production change was made. The benchmark did not inspect private staff/admin interfaces or submit a real order.
+
+**Sources (official restaurant pages / terms, accessed 2026-11-27):**
+- Say Cheese Pizza & Poutine: https://saycheesepizza.ca/ and https://saycheesepizza.ca/order
+- Al's Diner: https://www.alsdiner.ca/ and https://als-diner.ezonlinefoodorders.com/
+- Lorenzo's Carling: https://order.lorenzoscarling.com/ and https://order.lorenzoscarling.com/loyalty-program
+- Denny's Canada: https://www.dennys.ca/mydennys-faqs/ and https://dennys.xdineapp.com/
+- Chipotle Canada: https://www.chipotle.ca/order/rewards, https://www.chipotle.ca/order/sign-in, https://www.chipotle.ca/rewards-terms
+- Panera Canada: https://www.panerabread.com/content/panerabread_ca/en-ca/mypanera/mypanera-canada.html and https://www.panerabread.com/en-us/start-an-order.html
+- CAVA (US comparator): https://cava.com/rewards
