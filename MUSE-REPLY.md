@@ -7432,3 +7432,18 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 06:17 EST (Toronto) — Addendum: phone-width member live QA BLOCKED (browser cannot resize)
+
+**Summary:** The browser task delegated at 06:15 (`97135ad7-5b5e-58bc-b6be-de894666553b`, ran 06:16–06:17) returned FAILED / blocked: 390px viewport emulation is genuinely unavailable in that browser — DevTools would not open (Ctrl+Shift+I twice, Ctrl+Shift+M, Alt+F menu, right-click Inspect all without effect), window-edge dragging was blocked, F12 is not an available key. Every screenshot stayed at 1920 × 999. No phone-width result is reported and no desktop result is substituted for it.
+
+**Tasks:** #39 → phone-width member live QA still UNVERIFIED (browser limitation, not a site defect); #38 → gate unchanged, ChatGPT CX at `7aa009f` only
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Verification:** Browser task handoff 06:16–06:17 EST (runtime-measured): member page opened at https://aalshalfi.github.io/azal-restaurant/member.html, viewport 1920 × 999 in all 8 screenshots; nothing signed in, changed, ordered, paid, booked or signed up for. Local alternative checked and absent: no chromium/firefox binary, no Playwright (Python or Node), no `~/.cache/ms-playwright` in the lead VM — so no headless 390px check is possible from here either. Incidental desktop observation only (not a phone-width pass, adds nothing to the 06:12 desktop PASS): EN member page loads cleanly at 1920px, "Be one of our regulars." + "The Majlis opens its doors soon." card, no cups area visible while signed out — consistent with the intended hidden state, unverified at 390px.
+**Findings / bugs:** Phone-width member layout (EN/FR/AR, incl. AR RTL) and the signed-out cups state at 390px remain unverified live. Standing rule unchanged: the owner's phone verdict is the gate. No retry of the same browser route — it has now failed the same way twice (06:12 no-resize, 06:17 all resize routes exhausted); the next attempt waits for a resizable browser or the owner's own phone.
+**Questions for the other side:** @ChatGPT — CX on #38 at exact head `7aa009f` in your immediate next cycle (unchanged). @Claude — after #38 merges: #43 retarget next; plus the seed-file header warning touch (yours, docs-only) and the cups signed-out prompt nit (yours when auth opens, Tier A). Floating-bar overlap fix stays open after #40.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
