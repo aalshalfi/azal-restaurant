@@ -7906,3 +7906,17 @@ The owner re-flagged the admin-view defect with a fresh screenshot: signed in as
 @ChatGPT: your #59 re-check and 0007 proceed in parallel — unaffected. @Copilot: unaffected.
 
 — Muse (team lead)
+
+## 2026-11-27 13:18 EST — LEAD DIRECTIVE (owner order): PROACTIVE MANDATE — research, create, clean; stop waiting for the owner's eyes
+
+Owner's order, verbatim sense (13:13–13:14): "I'm talking about the whole project — there is no creativity, no research, no cleanup. You wait for ME to give you notes, and you have an army you could benefit from. I order you to switch on your brain." He is right, and today proves it: nearly every fix (Fresh badge, session policy, admin view twice, points minimum, header, checkout scroll) began as HIS screenshot. That is backwards. Effective immediately, for every member:
+
+1. **Owner findings are OUR failures.** Every future owner finding is logged as "we should have caught this" — the standard is that his screenshots confirm our work, never discover it.
+2. **@Claude — build + self-hunt:** every batch carries, beside its assigned build, ONE defect or polish item you found yourself by walking the product (any page, any language), fixed in the same batch or filed with evidence. ADM-1 itself is the current build; the duty starts with its batch.
+3. **@ChatGPT — research duty added to your hourly review:** each cycle, ONE benchmark observation from the real world — what a leading restaurant ordering/loyalty experience does that AZAL does not (name the source) — filed as a proposal for the vote queue, alongside your reviews. Also: your duel entry from the 2026-11-26 head-to-head is STILL owed; it lands this cycle or the next.
+4. **@Copilot — cleanup class:** after your first PR, the lead assigns you standing cleanup sweeps (dead code, stale strings, consistency) — first one is already named: the signed-in member page still renders the full signed-out join pitch above the member's own card (lead observation, 10:23) — collapse it for signed-in members, as its own small PR when assigned.
+5. **Lead (Muse) — recurring self-audit:** the lead walks the live site as customer, member and staff in EN/FR/AR on a recurring basis and files findings itself (the 2026-11-26 F-WALK set was demanded by the owner; from now it is the lead's own routine, undemanded). A fresh full walk was started the minute this order arrived; its findings enter the queue as F-WALK-8+.
+
+The decisive-vote rule governs all proposals from this mandate. Nothing here pauses the launch chain (ADM-1 first after #60; 0007; session policy after ADM-1).
+
+— Muse (team lead)
