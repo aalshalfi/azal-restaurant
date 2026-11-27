@@ -1,6 +1,6 @@
 # AZAL — SPEC.md
 
-**The single specification for the AZAL restaurant website.** Written by the team lead (Muse), 2026-11-27, from: the owner's directives (F-OWN-1..19), the team votes, Claude's study input (2026-11-27 17:20), the lead's completeness audit (2026-11-27 17:22), and the standing configuration record. ChatGPT's benchmark study (assigned 2026-11-27 17:08) folds into v0.2 on arrival.
+**The single specification for the AZAL restaurant website.** Written by the team lead (Muse), 2026-11-27, from: the owner's directives (F-OWN-1..19), the team votes, Claude's study input (2026-11-27 17:20), the lead's completeness audit (2026-11-27 17:22), and the standing configuration record. **v0.2 (2026-11-27): ChatGPT's benchmark study folded in (§9 + acceptance lines in §3.1/§3.2); the 11-step build order is unchanged.**
 
 **Rule of this document:** if it is not in the SPEC, it does not get built. If it is in the SPEC, it does not get forgotten. A step is done only when every line of its acceptance checklist is ticked and lead-verified live.
 
@@ -38,6 +38,8 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - One header arrangement, correct on desktop and mobile, EN/FR/AR — **HAVE** (#33/#45/#65; desktop awaiting the owner's verdict).
 - Language control: a direct choice is preferred; the cycling button is **HAVE** (improvement candidate F-WALK-13, vote queue — not a blocker).
 - Menu with names, descriptions, prices, pronunciation chips, add-to-order — **HAVE**.
+- Menu search — **HAVE** (verified live in the audit). Dietary/allergen filters — **December content question** (needs real menu metadata; not a build step).
+- Unavailable items are visibly marked and cannot be ordered; availability is re-checked server-side at placement — **HAVE** (branch availability + server pricing path).
 - Dish stories + Yemen map — **HAVE** (map edge-crop polish F-WALK-14, polish step).
 - Dish cards and "SEE IT ON THE MENU" deep-link to the dish itself — **MISSING** (AUD-2).
 - Visit block: phone — **HAVE**; district line "Orléans, Ottawa" — **MISSING** (AUD-11); street address, hours, map — **OWNER** (December swap).
@@ -58,7 +60,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - Points redemption in 10,000-point steps — **HAVE** (0006+0007 live).
 - Payment: test card now — **HAVE**; real provider — **OWNER** (last step, his word).
 - Confirmation: code, sigil, pickup time, next steps — **HAVE**.
-- Guest confirmation carries a real **"Join & collect these points"** action (email pre-filled and locked) — **MISSING** (F-OWN-16).
+- Guest confirmation carries a real **"Join & collect these points"** action (email pre-filled and locked) — **MISSING** (F-OWN-16). The guest path states the points consequence plainly before the choice: points are recorded for the order's email and claimable on joining (benchmark line, §9).
 - Place-order button never covers a field — **PARTIAL** (AUD-7 / F-WALK-8).
 - Clear-cart control — **MISSING** (AUD-6).
 - Points lines never render for staff/admin sessions — **MISSING** (AUD-8).
@@ -73,7 +75,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - ONE points presentation, with the rules in plain words: **10 points per $1 · 10,000 points = $10 · founding members (first 100) earn +25% for life** — **MISSING** (F-OWN-17).
 - Copy matches the password-first reality (no "join with your email") — **MISSING** (F-OWN-17; script.js:21, :144).
 - Edit my details (name, phone; email via Auth confirmation) — **HAVE**.
-- Order history, never deleted, with full detail — **HAVE** (#59).
+- Order history, never deleted, with full detail — **HAVE** (#59). Signed-in customers see each order's live status in its detail view — **HAVE** (#59 events).
 - Guest points attach after sign-up with the same email — **HAVE** (proven 2026-11-27, 434 pts).
 - Claimed guest orders also appear in the member's history — **MISSING** (F-OWN-18).
 - Session policy: remember-me choice; inactivity sign-out (24h customers); sign-out everywhere; sign-out clears the local session completely — **MISSING** (F-OWN-12).
@@ -166,4 +168,16 @@ Each step closes only when its SPEC lines are ticked and lead-verified live.
 
 F-OWN-12 → step 7 · F-OWN-16 → step 2 · F-OWN-17 → step 3 · F-OWN-18 → step 2 · F-OWN-19 → step 1 · F-WALK-8 → step 5 · F-WALK-9/AUD-3 → step 5 · F-WALK-11 → step 5 · F-WALK-12 → step 5 · F-WALK-13 → vote queue · F-WALK-14 → step 5 · AUD-1 → step 5 · AUD-2 → step 5 · AUD-4 → step 5 · AUD-5 → step 5 · AUD-6 → step 5 · AUD-7 → step 5 · AUD-8 → step 5 · AUD-9 → step 5 · AUD-10 → step 5 · AUD-11 → step 5 · password reset → step 3 · ADM-2 → step 6 · ADM-3 → step 9 · ADM-4 → step 9 · ADM-5 → step 9 · Reject → step 4 · 0005 + pre-selection → step 11 (OWNER-gated).
 
-*SPEC v0.1 — Muse (team lead), 2026-11-27. v0.2 folds in ChatGPT's benchmark checklist on arrival; changes after v0.2 require a lead note in MUSE-REPLY.md naming the section changed and why.*
+*SPEC v0.2 — Muse (team lead), 2026-11-27. Changes after v0.2 require a lead note in MUSE-REPLY.md naming the section changed and why.*
+
+## 9. Benchmark annex (ChatGPT study, 2026-11-27 — adopted by the lead)
+
+Seven real ordering/rewards experiences walked on their public surfaces (staff/admin interiors are not publicly inspectable — those lines are baseline operational design, and the study says so): **Say Cheese Pizza & Poutine** (Ottawa independent), **Al's Diner** (Ottawa independent), **Lorenzo's Pizza Carling** (Ottawa independent), **Denny's Canada**, **Chipotle Canada**, **Panera Bread Canada**, **CAVA** (US comparator). Full study + sources: CHATGPT-REPLY.md, 2026-11-27 benchmark section.
+
+**What the benchmark confirms AZAL already meets or has specced:** identity/menu/stories; server-reconciled totals; guest + member paths with claimable guest points (J1–J3); plain-language earn/redeem clarity as a requirement (Al's Diner's always-visible rule banner is the clarity pattern — AZAL's economics stay as decided, §4); protected admin with real overview (J4); paid-only branch-scoped kitchen queue (J5); idempotent outbox with truthful delivery states (§3.6).
+
+**Acceptance lines the benchmark added (folded into §3):** menu search (HAVE); a visible unavailable state with server-side re-check (HAVE); the guest points consequence stated before the guest/member choice (§3.2); customer-visible order status (§3.3).
+
+**Explicitly NOT adopted:** delivery as a service mode (AZAL is pickup-only by the owner's rule — the comparators' delivery options do not apply); flexible reward catalogues or cash-equivalent redemption by imitation (the 10,000-point server invariant stands); any change to tier thresholds or to the build order.
+
+**Vote-queue observations (no build, no vote requested now):** CAVA-style tier progression visibility (validates the decided P4 direction); a Chipotle-style visible reward exchange (post-launch consideration); independent-restaurant clarity patterns (searchable categories, dietary labels, out-of-stock labels, visible earn/redeem rule) — the clarity items are already inside §3 and step 5.
