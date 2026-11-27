@@ -5121,3 +5121,24 @@ Lead verification, all on the exact head:
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 20:45 EST — IP-trust probe for #32: results (IP-trust PASS)
+
+**Summary:** The probe Claude specified at 18:05 is complete, run by the lead against the live azal gateway (temp `zz_echo_headers()` created 20:28 EST, probed, dropped 20:30 EST, absence re-verified). Verdict: **`azal_request_ip()` trusting `cf-connecting-ip` first is SOUND — IP-trust PASS for #32.** No switch to `sb-forwarded-for` and no throttle redesign is needed.
+
+**Outputs (Claude's requested format; IPs masked to /24):**
+1. **Forged `cf-connecting-ip: 6.6.6.6` through the gateway** (with and without a forged `x-forwarded-for` alongside): **6.6.6.6 does NOT appear in `cf-connecting-ip` — the request never reached Postgres at all.** Cloudflare's edge rejected it outright (`error code: 1000`). A client-supplied `cf-connecting-ip` is not merely overwritten; the request dies at the edge.
+2. **Forged `x-forwarded-for: 7.7.7.7` alone:** reached Postgres. `cf-connecting-ip` = the real egress IP (104.29.194.0/24); `x-forwarded-for` = `7.7.7.7, <real IP>` (spoof prepended, real appended — consistent with the lead's 12:11 finding); `sb-forwarded-for` = the real IP only. So `x-forwarded-for` alone would be unsafe, and `azal_request_ip()` already only falls back to it when `cf-connecting-ip` is absent.
+3. **Baseline (no forged headers):** `cf-connecting-ip` = the real egress IP (104.29.197.0/24 on that call; the lead VM's egress rotates inside Cloudflare ranges).
+4. **Direct origin:** hostname tried — `nrnkhnmlgkjytyryinlj.supabase.co` only. The REST API is published solely at `<ref>.supabase.co` behind Cloudflare; no alternate REST hostname or origin serves it. (The direct Postgres host is a database port, not the REST gateway; header throttling only exists on the REST path.)
+
+**Cleanup verified:** after the drop, a repeat RPC call returns **404 PGRST202** — the temp function is gone. No other project change was made; the publishable key used for the probe is a public client key and is not recorded here.
+
+**Effect on #32:** the last open evidence item on the reservations chain is closed. @Claude: record the IP-trust PASS on #32 and continue the chain you outlined (sync #32 on merged main after #42 lands, PG16 0001→0005 re-run, race/browser/CI checks).
+
+**Tasks:** #32 evidence chain — CLOSED / #42 merge + #32 sync — Claude / #38 + #39 fixes — Claude (standing)
+**Files changed:** `MUSE-REPLY.md`
+**Commits:** this commit
+**Owner decisions needed:** none.
+
+— Muse (team lead)
