@@ -623,6 +623,27 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .staff-order footer{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:15px}
 .staff-act{min-height:48px;min-width:150px;font-size:14px}
 #staffRefresh{background:none;border:0;padding:8px 0;min-height:44px;font-size:14px;text-decoration:underline;color:var(--brown)}
+.phone-link{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.reserve-phone{font-size:15px;line-height:1.6;margin:18px 0 22px}
+/* Live table booking (reserve.js) */
+.reserve-form,.reserve-cancel form{display:grid;gap:6px;max-width:520px;margin:18px 0}
+.reserve-form label,.reserve-cancel label,.rs-times legend{font-weight:600;font-size:15px;color:var(--brown);margin-top:8px}
+.reserve-form input,.reserve-form select,.reserve-cancel input{font:inherit;font-size:16px;min-height:48px;padding:10px 12px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:var(--brown);width:100%}
+.reserve-form input:focus-visible,.reserve-form select:focus-visible,.rs-slot:focus-visible,.reserve-cancel input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.rs-times{border:0;padding:0;margin:0}
+#rsSlots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.rs-slot{min-height:44px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:var(--brown);font:inherit;font-size:15px;cursor:pointer}
+.rs-slot[aria-checked="true"]{background:var(--brown);color:#F8F1E7;border-color:var(--brown)}
+.rs-help{font-size:14px;color:var(--muted);margin:2px 0}
+.rs-error{color:#8a1f11;font-weight:600;margin:6px 0 0}
+.rs-error:empty{display:none}
+.reserve-form .button{margin-top:12px;min-height:52px}
+.reserve-done{background:var(--cream);border-left:6px solid var(--gold);padding:18px;margin:18px 0;max-width:560px}
+.rs-done-main{font-size:19px;font-weight:600;margin:0 0 8px}
+.rs-code{font-size:22px;font-weight:800;letter-spacing:.08em;margin:0 0 8px}
+.reserve-cancel{margin:22px 0;max-width:520px}
+.reserve-cancel summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.reserve-how [hidden],.reserve-done[hidden],.reserve-form[hidden]{display:none!important}
 /* HDR-MOB: balanced mobile header (owner 07:53). Desktop (>800px) unchanged: quick controls and the bag icon are hidden there. */
 .header-quick,.cart-open .cart-icon{display:none}
 .hq-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -705,3 +726,83 @@ html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:n
 .ymap-caption{margin:0;font-size:12px;color:var(--muted)}
 @media(prefers-reduced-motion:reduce){.ymap-halo{transition:none}}
 .ymap-label{font-size:15px;fill:var(--brown);font-weight:600;pointer-events:none}.ymap-dot.is-on .ymap-label{fill:var(--clay)}.language-toggle,.language-quick{font-family:'Source Sans 3','Source Sans Pro',Arial,"AZAL Arabic",sans-serif}
+/* V7 Sufra share card (sharecard.js) */
+.share-tray{width:100%;margin-top:10px;min-height:44px;background:transparent;border:1px solid var(--brown);color:var(--brown)}
+.share-tray[hidden]{display:none!important}
+.share-status{margin:6px 0 0;font-size:13px;color:var(--muted);min-height:1em}
+.share-status:empty{display:none}
+
+/* AR-RTL pass (Claude, design lead, owner findings 21:28/21:30/21:33). Design ruling: in Arabic the header is the exact
+   mirror of the #33 family, not a different layout: logo anchored at the START edge (right), the controls GROUPED at the
+   END edge (left) in the same logical order (language, account, order, menu), 64px bar, 44px targets. Done with logical
+   properties so both directions share one rule; physical margins/offsets that only worked left-to-right are neutralised.
+   The same pass fixes every other physical-only rule that breaks in RTL. LTR rendering is unchanged. */
+@media(max-width:800px){
+ .brand{margin-right:0;margin-inline-end:auto}
+ .menu-toggle{margin-left:0;margin-inline-start:2px}
+ .cart-open #cartCount{right:auto;inset-inline-end:1px}
+}
+.modal-close{right:auto;inset-inline-end:22px}
+.skip-link{left:auto;inset-inline-start:16px}
+.member-steps{padding-left:0;padding-inline-start:22px}
+.reserve-steps{padding-left:0;padding-inline-start:22px}
+.ritual ol{padding-left:0;padding-inline-start:20px}
+.detail-row strong{text-align:end}
+.sufra-choice{text-align:start}
+.sufra-arrow,.sufra-n summary::after,.sufra-collapsible summary::after{margin-left:0;margin-inline-start:auto}
+.pickup .pickup-asap{text-align:start}
+html[dir="rtl"] .product-tag{left:auto;right:14px}
+html[dir="rtl"] .sufra-arrow{display:inline-block;transform:scaleX(-1)}
+@media(max-width:480px){html[dir="rtl"] .product-tag{right:6px}html[dir="rtl"] .hero-bottom span:last-child{text-align:left}}
+@media(max-width:600px){html[dir="rtl"] .iftar-line{padding-right:0;padding-left:34px}html[dir="rtl"] .iftar-banner::after{right:auto;left:-14px}}
+html[dir="rtl"] .dir-arrow{display:inline-block;transform:scaleX(-1)}
+/* v2 openable tray: a shared tray is shown first, added only on the guest's tap. */
+.shared-tray{margin:18px 0 6px;padding:18px 20px;background:var(--cream);border:1px solid #dfcfbb;border-inline-start:4px solid var(--gold)}
+.shared-tray-title{font-size:24px;margin:0 0 8px}
+.shared-tray-list{margin:0 0 8px;padding-inline-start:20px;line-height:1.7}
+.shared-tray-msg{margin:6px 0;color:var(--clay);font-weight:600}
+.shared-tray-note{margin:6px 0 12px;font-size:13px;color:var(--muted)}
+.shared-tray-actions{display:flex;gap:10px;flex-wrap:wrap}
+.shared-tray-actions .button{min-height:44px;width:auto;margin:0}
+
+/* F-CHK-1 (owner, phone, 21:58, P0): the checkout sheet scrolls INSIDE itself at phone heights. Design ruling: the panel
+   scrolls (not the backdrop), the × stays pinned at the top, and the completion button stays pinned at the bottom of the
+   view while the slot grid scrolls, so finishing is always one tap away. Desktop: same panel, it only scrolls if taller. */
+.checkout-modal{padding:12px}
+.checkout-panel{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.checkout-panel .modal-close{position:sticky;top:0;right:auto;left:auto;float:right;z-index:3;width:44px;height:44px;margin:-22px -22px 0 0;border-radius:22px;background:var(--ivory)}
+html[dir="rtl"] .checkout-panel .modal-close{float:left;margin:-22px 0 0 -22px}
+.checkout-panel #placeDemoOrder{position:sticky;bottom:0;z-index:2;box-shadow:0 -14px 18px -6px var(--ivory),0 36px 0 0 var(--ivory)}
+/* F-CHK-2: totals in the drawer and the sheet: subtotal, HST 13%, total. */
+.total-line+.total-line{margin-top:6px}
+.total-line.total-grand{font-weight:700;border-top:1px solid #dfcfbb;padding-top:8px;margin-top:8px}
+.checkout-totals{margin:14px 0 4px}
+.checkout-totals:empty{display:none}
+html[dir="rtl"] #cartTax,html[dir="rtl"] #cartGrand,html[dir="rtl"] .checkout-totals strong{direction:ltr;unicode-bidi:isolate}
+
+
+/* AR-TOFU (lead live QA 22:50): the Arabic ritual title rendered as tofu boxes because .ritual-title sets a Latin-only
+   serif stack. Sweep: every rule in this file that sets a Latin-only font-family gets an Arabic twin that puts the
+   self-hosted "AZAL Arabic" (Arabic code points only, via unicode-range) first, so Arabic glyphs always exist while
+   Latin text keeps its original face. tests/arabic-fonts.browser.mjs pins it across pages. */
+html[lang="ar"] .footer p{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .iftar-line{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .majlis-preview h2{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .member-stat strong{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .page-banner h1{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .page-story .welcome-grid p{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .ritual-title{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .signature-card h3{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .signature-heading h2{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .story-values h2{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .sufra-choice-title{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .welcome-grid p{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+/* Lead walk 22:05 fixes. F-WALK-7: map dots select their tab on tap. F-WALK-5: on phones the fixed order bar must not hide
+   what keyboard focus or a scroll-into-view brings up (the third mood option). */
+.ymap-dot{pointer-events:auto;cursor:pointer}
+@media(max-width:800px){html{scroll-padding-bottom:96px}.sufra-collapsible{scroll-margin-bottom:96px}}
+/* F-WALK-7: Arabic text links ("قصتنا" beside the hero button) drew their border far below the taller Arabic glyphs and
+   looked detached. In Arabic the underline follows the text instead. */
+html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px}
+/* #29 sync with F-CHK-1: in live (test-mode) ordering the completion button is #placeOrder; pin it like the preview one. */
+.checkout-panel #placeOrder{position:sticky;bottom:0;z-index:2;box-shadow:0 -14px 18px -6px var(--ivory),0 36px 0 0 var(--ivory)}

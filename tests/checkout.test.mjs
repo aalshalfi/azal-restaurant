@@ -68,8 +68,9 @@ test("inert without config, and the shipped config is null", () => {
   assert.match(readFileSync(new URL("../supabase-config.js", import.meta.url), "utf8"), /url:\s*null,\s*anonKey:\s*null/);
 });
 
-test("every page loads checkout.js after auth.js with the release version", () => {
-  for (const p of ["index", "menu", "member", "reserve", "story", "404"]) {
+test("every page with the order sheet loads checkout.js after auth.js; the table-only reserve page loads none (#32)", () => {
+  assert.ok(!readFileSync(new URL("../reserve.html", import.meta.url), "utf8").includes("checkout.js"), "reserve.html: no food checkout");
+  for (const p of ["index", "menu", "member", "story", "404"]) {
     const h = readFileSync(new URL(`../${p}.html`, import.meta.url), "utf8");
     const v = h.match(/script\.js\?v=([\w-]+)"/)[1];
     assert.ok(h.indexOf(`auth.js?v=${v}`) < h.indexOf(`checkout.js?v=${v}`) && h.includes(`checkout.js?v=${v}`), p);

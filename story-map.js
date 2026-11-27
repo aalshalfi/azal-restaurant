@@ -7,7 +7,8 @@
   const OUTLINE = [[42.7, 16.4], [43.3, 17.4], [44.6, 17.4], [46.4, 17.25], [47.6, 17.5], [48.8, 18.2], [52.0, 19.0], [53.1, 16.65], [52.2, 15.9], [51.2, 15.2], [49.6, 14.6], [48.6, 14.0], [47.4, 13.6], [46.0, 13.3], [45.0, 12.8], [44.0, 12.6], [43.45, 12.65], [43.25, 13.3], [42.95, 14.1], [42.9, 14.8], [42.65, 15.5]];
   const project = ([lon, lat]) => [Math.round(((lon - 42.3) / (53.5 - 42.3)) * 560), Math.round(((19.4 - lat) / (19.4 - 12.3)) * 300)];
   // Each region points at products whose story names it (ids from script.js products).
-  // The SVG is decorative (aria-hidden, no pointer handlers): the tab list is the one control surface.
+  // The SVG stays aria-hidden: the tab list is the accessible control. F-WALK-7 (lead walk 22:05): the dots looked tappable
+  // and did nothing, so a tap on a dot now simply selects its tab (pointer convenience; keyboard and screen readers use tabs).
   const REGIONS = [
     { id: "hadramaut", short: "Hadramaut", ar: "حضرموت", shortAr: "حضرموت", at: [48.6, 15.9], products: [1, 2], en: "Hadramaut", fr: "Hadramaout" },
     { id: "sanaa", short: "Sana’a", ar: "جبال صنعاء", shortAr: "صنعاء", at: [44.2, 15.35], products: [5, 4], en: "Sana’a highlands", fr: "Hauts plateaux de Sanaa" },
@@ -23,7 +24,7 @@
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const S = { en: { hint: "Choose a region below to see what it brings to the table.", menu: "See it on the menu", caption: "Stylised map, for orientation only." },
     fr: { hint: "Choisissez une région ci-dessous pour voir ce qu’elle apporte à la table.", menu: "Voir au menu", caption: "Carte stylisée, à titre indicatif." },
-    ar: { hint: "اختر منطقة من القائمة أدناه لترى ما تقدّمه للسفرة.", menu: "شاهدها في القائمة", caption: "خريطة مبسّطة للتوضيح فقط." } };
+    ar: { hint: "اختر منطقة من الأسفل لترى ما تضعه على السفرة.", menu: "شاهد أطباقها في القائمة", caption: "خريطة مبسّطة للتوضيح فقط." } };
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const svgEl = (tag, attrs) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
   const product = (id) => { try { const p = products.find((x) => x.id === id); return p ? (typeof localizedProduct === "function" ? localizedProduct(p) : p) : null; } catch { return null; } };
@@ -37,6 +38,7 @@
     const g = svgEl("g", { class: "ymap-dot", "data-region": r.id });
     const label = svgEl("text", { x: x + (r.id === "tihama" ? 14 : 0), y: r.id === "aden" || r.id === "sanaa" ? y - 14 : y + 30, class: "ymap-label", "text-anchor": r.id === "tihama" ? "start" : "middle" });
     g.append(svgEl("circle", { cx: x, cy: y, r: 22, class: "ymap-halo" }), svgEl("circle", { cx: x, cy: y, r: 7, class: "ymap-core" }), label);
+    g.addEventListener("click", () => select(r.id));
     svg.append(g); dots.set(r.id, g);
   }
   const list = el("div", "ymap-regions"); list.setAttribute("role", "tablist");
@@ -67,7 +69,10 @@
     if (!["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) return;
     e.preventDefault();
     const i = REGIONS.findIndex((r) => r.id === current), n = REGIONS.length;
-    const j = e.key === "Home" ? 0 : e.key === "End" ? n - 1 : (i + (e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1) + n) % n;
+    // In right-to-left pages the tab row runs right to left, so ArrowLeft moves forward (WAI-ARIA tabs pattern).
+    const rtl = document.documentElement.dir === "rtl";
+    const forward = e.key === "ArrowDown" || e.key === (rtl ? "ArrowLeft" : "ArrowRight");
+    const j = e.key === "Home" ? 0 : e.key === "End" ? n - 1 : (i + (forward ? 1 : -1) + n) % n;
     select(REGIONS[j].id, true);
   });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });

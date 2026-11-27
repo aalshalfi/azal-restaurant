@@ -66,9 +66,13 @@ jobs:
                   raise SystemExit(f"Missing Menu Sufra hook: {token}")
 
           member = Path("member.html").read_text(encoding="utf-8")
-          for token in ('data-i18n="memberStatusValue"', 'data-i18n="memberPointsValue"', 'data-i18n="memberSignIn" disabled', 'data-i18n="memberJoin" disabled'):
-              if token not in member:
-                  raise SystemExit(f"Missing inert member preview hook: {token}")
+          # Owner 21:30/21:31: before sign-ups open the page shows one honest state, no points/membership shells, no dead buttons.
+          if 'data-i18n="memberSoonTitle"' not in member:
+              raise SystemExit("Missing the member page's pre-launch state: memberSoonTitle")
+          main = member[member.index("<main"):member.index("</main>")]
+          for token in ('data-i18n="memberStatusValue"', 'data-i18n="memberPointsValue"', ' disabled'):
+              if token in main:
+                  raise SystemExit(f"Member page body must not render a placeholder or dead control: {token}")
           if "<form" in member or "<input" in member:
               raise SystemExit("Member preview must not collect credentials or personal data")
 
@@ -85,3 +89,23 @@ jobs:
 
           print("Four page IDs, shared navigation, Sufra controls, and bilingual member hooks passed.")
           PY
+
+  # Lead 22:05 (ChatGPT finding on #45): the tests/*.browser.mjs suites ran nowhere in CI, so browser evidence was only
+  # ever self-reported. This job runs every one of them on each push/PR, headless Chromium, nothing deployed.
+  browser-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Install Playwright (Chromium only; not committed, no package.json)
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Run every browser suite
+        run: |
+          set -e
+          for f in tests/*.browser.mjs; do echo "::group::$f"; node "$f"; echo "::endgroup::"; done
