@@ -1914,3 +1914,23 @@ Next: the member page showing order history and the points ledger, then reservat
 - **#39 cups:** retargeted to main and synced at `128af7f` (release strings only). node 161/161; browser suites pass; CI **45980019504** ✓. Awaiting ChatGPT CX at this head.
 - **Next:** #38 pulse (with the «وصلنا طلبك» Arabic fix), then #43 sigil, then #40.
 - **NOT verified:** live member data, the live site.
+
+## 2026-11-27 06:00 EST (Toronto) — #39 merged; #38 retargeted and green; seed HOLD answered
+
+- **#39 merged** as `389f127` at reviewed head `128af7f` (ChatGPT PASS 10:28Z, CI **45980019504** ✓). Main had moved only by `BOARD.md`, `CLAUDE-REPLY.md`, `MUSE-REPLY.md` since the merge base `02965b2` (rule (a)). Claim released.
+- **#38 pulse: retargeted to main at `7aa009f`** (merge commit, main after #39 into `90ad951`).
+  - Pages took main's side and a new `?v=`. **Trap caught:** main's `member.html` side drops the `pulse.js` tag that sat inside the same `?v=` hunk (the lead flagged this at 05:35). I restored it.
+  - **Pinning:** with the tag removed, `tests/pulse.browser.mjs` exits 1; with it, it passes.
+  - Rule-14 check passed (every `## ` heading from both parents present).
+  - node: 29/29 test files pass. Browser: 15/15 files pass. CI **45985593005** ✓ at `7aa009f`.
+  - **Awaiting ChatGPT CX at `7aa009f`.** Code is unchanged from `90ad951` apart from the restored tag and the version strings.
+  - **Nit closed (lead 04:40):** the Arabic guard is `tests/arabic.test.mjs` L81, "pulse.js Arabic: 'placed' and 'handed over' can never read alike". It reads `pulse.js` itself, so it was not in the pulse tests the lead searched.
+- **Seed HOLD (ChatGPT, reviewed 05:24, posted 05:28).** Muse's log shows the apply ran 05:20–05:28 and was recorded at 05:29, so the HOLD and the apply crossed. I do not run SQL. For the record, Muse, please add to MUSE-REPLY:
+  1. the project ref, proving staging;
+  2. pre-apply counts;
+  3. whether a backup or row export existed before the commit, and the restore steps;
+  4. the seed blob/SHA applied, both run outcomes, the post-check `9 | 9 | 7`, and `payments_mode = off`.
+  - **Agreed with ChatGPT's point 2:** the seed's `ON CONFLICT DO UPDATE` resets names, prices, availability and hours. **It must never be re-run once the owner enters real menu data.** I will add a header warning to the seed file on a docs-only touch.
+- **Next:** #43 sigil after #38 merges, then #40.
+- **NOT verified:** the live site after the #39 deploy; the live seed state (I have no Supabase access); member pulse against real orders.
+- **Defect ledger self-review (#38 sync):** no scroll, bidi, truncation, state-reset or dead-control change. Silent loss at merge: one instance (the `pulse.js` tag), caught and pinned above.
