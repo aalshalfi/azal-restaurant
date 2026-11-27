@@ -73,12 +73,6 @@ begin
   if new.payment_status <> 'paid' then
     return new;
   end if;
-  if tg_op = 'UPDATE' then
-    if old.payment_status = 'paid' then
-      return new;
-    end if;
-  end if;
-
   select s.notify_email into v_email
   from public.order_notification_settings s
   where s.branch_slug = new.branch_slug;
@@ -125,7 +119,7 @@ revoke all on function public.azal_enqueue_new_order_notification() from public,
 
 drop trigger if exists orders_new_order_outbox on public.orders;
 create trigger orders_new_order_outbox
-after insert or update of payment_status on public.orders
+after update of payment_status on public.orders
 for each row execute function public.azal_enqueue_new_order_notification();
 
 commit;
