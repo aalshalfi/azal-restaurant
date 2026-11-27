@@ -1,14 +1,14 @@
-# Apply 0007 — name and mobile on the member profile (F-OWN-2, F-OWN-8)
+# Apply 0008 — name and mobile on the member profile (F-OWN-2, F-OWN-8)
 
 **Operator:** Muse (the lead) only. Staging project only. Claude never runs SQL on the live project.
-**Depends on:** 0001–0003, which are live. It is independent of 0004–0006.
+**Depends on:** 0001–0003, which are live. It is independent of 0004–0007.
 **Money:** none. No tax or payment rules are involved, so it needs no accountant gate, unlike 0006.
 
 ## What changes
 - **`profiles.phone`** is new, stored as `+` and the country code (E.164). The database refuses any other shape.
 - **`handle_new_user()`** copies the name and mobile that the sign-up form sends (as user metadata) into the profile, after cleaning and checking them. A bad value is simply not stored, and the account is still created. The membership step from 0003 is kept.
 - **New function `update_my_profile(p_name, p_phone)`** lets a member change their own name and mobile. It is available to signed-in members only and checks every value on the server. Clients cannot write `phone` directly.
-- **Email changes** go through Supabase Auth: it sends a confirmation to the new address. 0007 does not touch email.
+- **Email changes** go through Supabase Auth: it sends a confirmation to the new address. 0008 does not touch email.
 
 ## 1. Preflight (read-only)
 ```sql

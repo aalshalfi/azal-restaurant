@@ -67,7 +67,7 @@
         write(s);
         return s;
       },
-      // F-OWN-2: name + mobile travel as user metadata; the server (0007 handle_new_user) cleans and stores them.
+      // F-OWN-2: name + mobile travel as user metadata; the server (0008 handle_new_user) cleans and stores them.
       async signUp(email, password, meta) {
         if (!enabled) throw Object.assign(new Error("disabled"), { code: "disabled" });
         const body = { email, password };
@@ -116,7 +116,7 @@
           return { added: Number((r && r.points_added) || 0), failed: false };
         } catch { return { added: 0, failed: true }; }
       },
-      // F-OWN-8: the member edits their own name and mobile (0007 update_my_profile validates server-side).
+      // F-OWN-8: the member edits their own name and mobile (0008 update_my_profile validates server-side).
       async updateProfile(name, phone) {
         const s = await session();
         if (!s) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
@@ -145,7 +145,7 @@
         let profile = null, membership = null, rows = [];
         try {
           [profile, membership, rows] = await Promise.all([
-            // select=* so the 0007 phone column comes along once it exists, and nothing breaks before.
+            // select=* so the 0008 phone column comes along once it exists, and nothing breaks before.
             q("/rest/v1/profiles?select=*&id=eq." + encodeURIComponent(uid)).then((r) => r[0] || null),
             q("/rest/v1/memberships?select=status,joined_at&user_id=eq." + encodeURIComponent(uid)).then((r) => r[0] || null),
             q("/rest/v1/points_ledger?select=delta_points&user_id=eq." + encodeURIComponent(uid))
@@ -161,7 +161,7 @@
     };
   }
 
-  // Same mobile rule as reservations and 0007 azal_phone(): 10 digits -> +1, 11 starting with 1 -> +, or + and 10-15 digits.
+  // Same mobile rule as reservations and 0008 azal_phone(): 10 digits -> +1, 11 starting with 1 -> +, or + and 10-15 digits.
   function normalizePhone(raw) {
     const s = String(raw || ""), d = s.replace(/\D/g, "");
     if (/^\d{10}$/.test(d)) return "+1" + d;
@@ -206,7 +206,7 @@
   }
 
   // F-OWN-8: the member sees and edits their own name, mobile and email. Editing shows only when the server has
-  // 0007 (the profile row carries a phone field); otherwise the details are shown read-only, with no dead button.
+  // 0008 (the profile row carries a phone field); otherwise the details are shown read-only, with no dead button.
   function detailsBlock(st) {
     const v = (x) => (x ? esc(x) : `<span class="auth-unset">${esc(tr("authNotSet"))}</span>`);
     if (!editing) {

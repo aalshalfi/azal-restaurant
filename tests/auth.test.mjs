@@ -156,7 +156,7 @@ test("emailed link: requestCode passes redirect_to; adoptLink stores the session
   assert.equal(await a.adoptLink("#menu"), null);
 });
 
-test("F-OWN-2: mobile rule matches reservations and 0007 azal_phone(); sign-up needs name, email, mobile, password", () => {
+test("F-OWN-2: mobile rule matches reservations and 0008 azal_phone(); sign-up needs name, email, mobile, password", () => {
   const { normalizePhone: n, signUpProblem: p } = require("../auth.js");
   assert.deepEqual(["(343) 999-0001", "1 343 999 0001", "+44 20 7946 0958", "343-999", "+0 123 456 7890", "", null].map(n), ["+13439990001", "+13439990001", "+442079460958", null, null, null, null]);
   const ok = { name: "Huda", email: "h@example.invalid", phone: "3439990002", password: "longenough" };
@@ -168,8 +168,8 @@ test("F-OWN-2: mobile rule matches reservations and 0007 azal_phone(); sign-up n
   assert.equal(p({ ...ok, password: "short" }), "password");
 });
 
-test("F-OWN-2/8: 0007 writes the phone only through validated paths", () => {
-  const sql = fs.readFileSync(path.join(root, "supabase/migrations/0007_profile_contact.sql"), "utf8");
+test("F-OWN-2/8: 0008 writes the phone only through validated paths", () => {
+  const sql = fs.readFileSync(path.join(root, "supabase/migrations/0008_profile_contact.sql"), "utf8");
   assert.match(sql, /check \(phone is null or phone ~ '\^\\\+\[1-9\]\[0-9\]\{9,14\}\$'\)/);
   assert.match(sql, /revoke update \(phone\) on table public\.profiles from anon, authenticated;/);
   assert.match(sql, /revoke all on function public\.update_my_profile\(text, text\) from public, anon;\s*grant execute on function public\.update_my_profile\(text, text\) to authenticated;/);

@@ -1,5 +1,5 @@
--- AZAL 0007: name + mobile on the member profile (F-OWN-2, F-OWN-8; owner first test 2026-11-27) (Claude).
--- Apply after 0001-0003 (independent of 0004-0006). Idempotent: safe to run twice. Run by the lead only.
+-- AZAL 0008: name + mobile on the member profile (F-OWN-2, F-OWN-8; owner first test 2026-11-27) (Claude).
+-- Apply after 0001-0003 (independent of 0004-0007). Idempotent: safe to run twice. Run by the lead only.
 --  * profiles gains phone (+E.164, the same rule as reservations: 10 digits -> +1, 11 starting with 1 -> +,
 --    or '+' and 10-15 digits). display_name already exists (<= 80 chars).
 --  * Sign-up sends {display_name, phone} as user metadata; handle_new_user() copies them into the profile,
@@ -8,14 +8,14 @@
 --    Email changes go through Supabase Auth itself (confirmation to the new address); nothing here.
 begin;
 
-do $azal_0007_preflight$
+do $azal_0008_preflight$
 begin
   if to_regclass('public.profiles') is null or to_regclass('public.memberships') is null
      or to_regprocedure('public.handle_new_user()') is null then
-    raise exception '0007 requires 0001 + 0002 + 0003';
+    raise exception '0008 requires 0001 + 0002 + 0003';
   end if;
 end;
-$azal_0007_preflight$;
+$azal_0008_preflight$;
 
 alter table public.profiles add column if not exists phone text;
 do $c$ begin

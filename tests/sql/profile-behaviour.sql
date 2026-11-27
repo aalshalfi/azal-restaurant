@@ -1,4 +1,4 @@
--- 0007 profile contact: behaviour tests (Claude). FRESH db after stub + 0001-0003 + 0007 (x2).
+-- 0008 profile contact: behaviour tests (Claude). FRESH db after stub + 0001-0003 + 0008 (x2).
 \set ON_ERROR_STOP 0
 create or replace function public.zz_try(sql text) returns text language plpgsql as $$
 begin execute sql; return 'ok'; exception when others then return coalesce(nullif(sqlerrm,''), sqlstate) || '|' || sqlstate; end $$;

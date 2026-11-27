@@ -72,10 +72,10 @@ const msg = (p) => p.evaluate(() => (document.getElementById("authMessage") || d
   ok(await p.locator("#authDetailsForm").count() === 0 && await p.evaluate(() => document.activeElement.id) === "authEditDetails", "Cancel closes the form and returns focus to Edit");
   await p.close();
 }
-{ // before 0007 the profile has no phone column: details read-only, no dead Edit button
+{ // before 0008 the profile has no phone column: details read-only, no dead Edit button
   const { p } = await open({ signedIn: true, profile: { id: "u1", display_name: "Amal" } });
   await p.waitForSelector(".auth-dl");
-  ok(await p.locator("#authEditDetails").count() === 0 && /Not added yet/.test(await p.textContent(".auth-dl")), "server without 0007: no Edit button (nothing dead), mobile shows 'Not added yet'");
+  ok(await p.locator("#authEditDetails").count() === 0 && /Not added yet/.test(await p.textContent(".auth-dl")), "server without 0008: no Edit button (nothing dead), mobile shows 'Not added yet'");
   await p.close();
 }
 { // Arabic at 320
