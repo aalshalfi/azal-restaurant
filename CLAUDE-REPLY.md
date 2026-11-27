@@ -2057,3 +2057,28 @@ Next: the member page showing order history and the points ledger, then reservat
   - dead controls: none (unreachable rewards are text);
   - state reset: the reward is cleared after payment, and a changed choice gets a fresh key;
   - silent loss: `p_redeem_points` is always sent for a chosen reward (tested).
+
+## 2026-11-27 10:55 EST (Toronto) — Annex batch 5: #58 CX fixes (re-review owed); F-OWN-3 built as PR #59
+
+1. **#58 F-OWN-4: all three ChatGPT findings (15:39Z) fixed.** New head `abd1dbc`, synced with a normal merge of main `efa000f` (4 ahead / 0 behind). CI **46028643334** ✓.
+   - **CX-1:** the drawer and the sheet show one set of totals once a reward is chosen.
+   - **CX-2:** enough points but an order below the smallest reward now shows a plain line about the minimum order, not a blank box.
+   - **CX-3:** empty tiers clear a chosen reward from the totals and from the request.
+   - **Pins:** 4 new browser checks **fail on the old head** and pass now.
+   - Local: node 32/32 files, browser 19/19 files (366 checks). SQL unchanged and still green; race pinned.
+   - **Gate accepted:** 0006 is not applied until the accountant/owner HST decision is recorded. That is a real-world fact, not a vote. Merging the client is safe, because it stays hidden without 0006.
+2. **F-OWN-3: PR #59** at `adecc14`, CI **46027566405** ✓.
+   - An "Order details" panel per order: lines with unit and line prices, subtotal, points used, HST, total, pickup, note, and a timeline.
+   - Own rows only. No schema change, because the baseline RLS already lets owners read orders, items and events.
+   - **Defects fixed on the way:**
+     - Arabic history said «استُلم» for a received order, so it now says «وصلنا طلبك»;
+     - Arabic prices in the history were not isolated (bidi).
+   - Tests: `order-detail.browser.mjs` (16 checks), plus unit guards.
+   - Awaiting ChatGPT CX. It merges after #58, synced onto it.
+3. **Next:** F-OWN-1/2/8 (password-first sign-in; name, email and mobile at sign-up; customers editing their profile). They touch `auth.js` and `profiles`, so I check the profile columns first.
+- **NOT verified:** live Supabase (0006 not applied); HST on a store-funded reward (accountant); real phone.
+- **Defect ledger:**
+  - bidi: one fixed (#59);
+  - state reset: open panels survive a language switch (#59), and the reward is cleared after payment (#58);
+  - dead controls: none; rewards out of reach are text;
+  - silent loss: none; a stale hidden reward is now impossible (#58 CX-3).

@@ -213,8 +213,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 |---|---|---|---|
 | F-OWN-1 | Sign-in password-first; email confirmation stays as verification after sign-up | Claude (auth.js) | Queued |
 | F-OWN-2 | Registration collects name + email + mobile | Claude (auth + profiles) | Queued (needs a profiles column check) |
-| F-OWN-3 | Full order detail view for the customer | Claude (member-history.js) | Queued |
-| F-OWN-4 | Points redeem at checkout (use / don't use) | Claude | **BUILT: PR #58 @ `b6cd60c` (CI 46021500953 ✓); 0006 not applied (lead, docs/apply-0006.md); awaiting ChatGPT CX** |
+| F-OWN-3 | Full order detail view for the customer | Claude | **PR #59 @ `adecc14` (CI 46027566405 ✓); awaiting ChatGPT CX; merges after #58** |
+| F-OWN-4 | Points redeem at checkout (use / don't use) | Claude | **PR #58 @ `abd1dbc` (CI 46028643334 ✓); ChatGPT CX-1..3 fixed + pinned; awaiting re-review. 0006 NOT applied: gated on the accountant/owner HST decision (ChatGPT 15:39Z), then lead apply per docs/apply-0006.md** |
 | F-OWN-5 | Order emails: confirmation with pickup time + "kitchen accepted" | Claude (outbox sender) | Blocked on custom SMTP (Tier C, owner) |
 | F-OWN-6 | Admin account info@ | Owner/Muse | DONE (account exists; panel = ADM-1) |
 | F-OWN-7 | Role matrix: admin full; branch staff accept/reject/hand over only | ChatGPT study → ADM-1 | READY (ADM-1) |
