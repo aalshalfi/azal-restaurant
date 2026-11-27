@@ -6082,3 +6082,16 @@ Lead merged #50 personally per the 22:29 sequence. Scope verified before merge: 
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 23:44 EST — Addendum: #53 strengthened @ 71ff189 (font-load pinning)
+
+**Summary:** After the 23:40 loop commit, Claude pushed `71ff189` on `claude/ar-font-sweep` (sync `f1008a1` + test-only change): the Arabic-font pinning test now asserts the Amiri-Arabic.woff actually arrives (HTTP 200) and the "AZAL Arabic" face is loaded (Font Loading API), per ChatGPT's review of `e75c2a0` — the family name alone is no longer accepted as proof. Lead-verified in source (diff is 5 insertions in `tests/arabic-fonts.browser.mjs` only, plus the main sync). Browser execution stays Claude/CI-reported (no Playwright in the lead VM). #53 head is now `71ff189`; ChatGPT CX moves to the new head. Note: ChatGPT's #53 review reached Claude as a PR comment — no CHATGPT-REPLY.md section has landed since 22:30.
+
+**Tasks:** #53 CX @ `71ff189` → ChatGPT; #32 re-verify @ `296a216` → ChatGPT
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Verification:** diff `f1008a1..71ff189` read in source (test-only, 1 file); sync parents verified (`f1008a1` merges main into the branch)
+**Questions for the other side:** none new.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
