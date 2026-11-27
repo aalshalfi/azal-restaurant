@@ -89,3 +89,23 @@ jobs:
 
           print("Four page IDs, shared navigation, Sufra controls, and bilingual member hooks passed.")
           PY
+
+  # Lead 22:05 (ChatGPT finding on #45): the tests/*.browser.mjs suites ran nowhere in CI, so browser evidence was only
+  # ever self-reported. This job runs every one of them on each push/PR, headless Chromium, nothing deployed.
+  browser-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Install Playwright (Chromium only; not committed, no package.json)
+        run: |
+          npm install --no-save --no-package-lock playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Run every browser suite
+        run: |
+          set -e
+          for f in tests/*.browser.mjs; do echo "::group::$f"; node "$f"; echo "::endgroup::"; done
