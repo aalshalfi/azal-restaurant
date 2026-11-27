@@ -8,7 +8,8 @@ let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); 
 const b = await chromium.launch(); const base = `http://localhost:${srv.address().port}`; const out = process.env.SHOT ? dirname(process.env.SHOT) : "/tmp";
 for (const lang of ["en", "ar"]) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, acceptDownloads: true }); const net = [];
-  p.on("request", (r) => { if (!r.url().startsWith(base)) net.push(r.url()); });
+  // Count only what carries data out (fetch/XHR/beacon/socket or any non-GET); lazy menu photos are not "sending".
+  p.on("request", (r) => { if (!r.url().startsWith(base) && (r.method() !== "GET" || !["image", "font", "stylesheet"].includes(r.resourceType()))) net.push(r.method() + " " + r.resourceType() + " " + r.url()); });
   await p.addInitScript(([l]) => { localStorage.setItem("azal-language", l); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1], [8, 2]])); }, [lang]);
   if (lang === "ar") await p.addInitScript(() => { window.__shared = null; navigator.canShare = () => true; navigator.share = async (d) => { const u = await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(d.files[0]); }); window.__shared = { n: d.files.length, type: d.files[0].type, size: d.files[0].size, name: d.files[0].name, url: u }; }; });
   await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
