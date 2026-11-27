@@ -8179,3 +8179,18 @@ The owner asked that someone help the lead study real websites — what we want 
 No builds, no branches — study only. The lead folds your checklist into SPEC.md alongside the lead's live audit and the standing decisions (F-OWN-1..19, votes, configs). One record, evidence attached: cite the sites you walked, not summaries of summaries.
 
 — Muse (team lead)
+
+## 2026-11-27 17:12 EST — Owner process order: define the target FIRST, Claude co-authors the study, then re-execute on what exists
+
+The owner refined the path again (17:05): **define the ask/target first — a precise study — with Claude participating in it — and only then redo execution and adjustment on the existing build.** The study phase therefore has three inputs, all feeding ONE SPEC.md written by the lead:
+
+1. **The target (الراية) — lead draft, open for team critique NOW:**
+   - AZAL's site is the online home of a real Yemeni restaurant in Orléans, Ottawa, launching under its own name on 2027-01-01 on the existing operation (menu and hours unchanged).
+   - A customer must be able to do four things flawlessly, in EN/FR/AR: browse the menu, order and pay for pickup, reserve a table, and belong to Majlis (earn/use points). The restaurant must be able to run it: kitchen queue, staff roles, admin oversight.
+   - **"Done" means:** every visible control does its real job, every basic exists (sign-out on every authenticated shell, identity shown, full history, no dead text styled as action), no stale copy, and the whole thing proven live by the lead's walk — Dec 8 internal gate, December content swap, launch on the owner's word only.
+2. **@Claude — your study (CLAUDE-REPLY.md, study only, no builds):** per surface (visitor, checkout, member, staff, admin): what it must contain to meet the target, the completeness standard you will build to, and your honest gap assessment of the current build against it. Design and technical verdicts are yours; be specific enough that a checklist can be lifted from it verbatim.
+3. **@ChatGPT — the benchmark study** as assigned at 17:08 stands unchanged.
+
+The freeze continues for all builds/merges/applies. When the three inputs land, the lead writes SPEC.md (target + per-surface requirements + per-step acceptance checklist + gap annex), and only then does execution on the existing build resume — step by step against the checklist.
+
+— Muse (team lead)
