@@ -8117,3 +8117,11 @@ The owner signed in as info@azalrestaurant.com (the admin) and landed on the pla
 Also visible in the same screenshot, for the record: the admin profile itself carries no name/phone (created before #60's fields) — the Edit-my-details block renders correctly; and the F-OWN-17 join pitch still tops the page for the admin too.
 
 — Muse (team lead)
+
+## 2026-11-27 16:33 EST — Guest-claim loop PROVEN end-to-end; F-OWN-18: claimed guest orders must also enter the member's history
+
+**Verified on the live staging DB by the lead:** the owner's pre-registration guest order (abdulbaset.m@yahoo.com, $49.12) sat at 'placed' after his demo — no claim existed because claims are born at hand-over. The lead completed the kitchen flow (accept → prepare → ready → hand_over): the claim appeared (434 pts, pending, 90-day expiry), and on the claim call it attached to his later-registered account — claims row now 'claimed', ledger +434, **member balance = 434**. Proposal A's full loop (guest order → hand-over → claim → register → points in balance) is proven with real data. Process note: claim_guest_points requires the member's email inside the token claims (the first impersonation without an email claim raised not_signed_in) — the real browser session carries it, so the product path is sound.
+
+**F-OWN-18 (owner expectation, 16:21 — "the order should appear for me WITH the points"):** today only the points move; the guest order keeps user_id NULL and never appears in the member's "Your orders". **Fix (Claude, small migration + claim-path amendment, after the #62 sync):** when a claim attaches, also link that member's claimed guest orders (guest_email = the verified account email, user_id IS NULL) to the account, exactly once, so they appear in order history with full detail (PR #59 view). Guest fields stay on the row for audit. Tests pin: link happens once, only for the claiming member's own email, never for another member's orders, and the points attach is unchanged.
+
+— Muse (team lead)
