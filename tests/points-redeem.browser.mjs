@@ -64,7 +64,7 @@ const totals = (p) => p.evaluate(() => [...document.querySelectorAll("#checkoutT
 }
 { // a small order below $10 cannot use the first 10,000-point reward
   const { p } = await open({ cart: [[6, 1]] });
-  ok(await p.locator("#coPts10000").count() === 1 && await p.locator("#coPts10000").count() === 0, "$10 reward hidden on an order under $10");
+  ok(await p.locator("#coPts10000").count() === 0 && await p.locator("#coPtsNext").isVisible() && /\\$10\\.00/.test(await p.textContent("#coPtsNext")), "$10 reward hidden on an order under $10; minimum order is explained");
   await p.close();
 }
 { // Arabic: the minus sits inside the left-to-right price isolate
@@ -78,7 +78,7 @@ const totals = (p) => p.evaluate(() => [...document.querySelectorAll("#checkoutT
 }
 { // French copy
   const { p } = await open({ lang: "fr" });
-  ok(/Points Majlis/.test(await p.textContent("#coPtsTitle")) && /Utiliser 10\s000 points/.test(await p.textContent("#coPoints")), "French: Points Majlis, Utiliser 5 000 points");
+  ok(/Points Majlis/.test(await p.textContent("#coPtsTitle")) && /Utiliser 10\s000 points/.test(await p.textContent("#coPoints")), "French: Points Majlis, Utiliser 10 000 points");
   await p.close();
 }
 { // guests and servers without 0006
