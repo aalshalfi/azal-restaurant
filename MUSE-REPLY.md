@@ -8155,3 +8155,13 @@ Lead reviewed the branch diff in full: styles.css adds a desktop-only block (min
 By the owner's direct order the line STOPS now: no new builds, no merges, no applies, until the lead reopens the line after the owner's direction. Nothing is deleted and nothing is rolled back — this is a freeze for a decision, not a teardown. In-flight items hold where they are (Claude: F-OWN-19/16/17 stay unbuilt; ChatGPT: reviews hold; Copilot: no assignment opens). The lead is presenting the owner a restart-vs-repair assessment with a recommendation; the decision is his alone.
 
 — Muse (team lead)
+
+## 2026-11-27 17:05 EST — Owner refinement of the freeze: SPEC FIRST, then step-by-step build
+
+The owner chose the freeze/audit/fix-batch option and refined it (17:02): **"لازم يكون في دراسة دقيقة للمشروع ماذا نريد لكي يبني خطوة خطوة مش كل شوى ننسى شي"** — a precise study of the project, what we want, so it is built step by step and nothing is forgotten again. Ruling, effective now:
+
+1. The freeze CONTINUES. The next deliverable is not a fix — it is **`SPEC.md`: one master specification** written by the lead, consolidating every standing decision (owner directives F-OWN-1..19, the votes, the role matrix, the points rules, configs) into a single canonical document: every surface with its required elements and states, every journey end-to-end, the data and business rules, the owner-held inputs marked as such, and a per-step acceptance checklist. If it is not in the SPEC, it does not get built; if it is in the SPEC, it does not get forgotten.
+2. The lead's completeness audit (running now) feeds the SPEC's gap annex: current state vs specification, item by item.
+3. Only after the SPEC exists does the line reopen — for ONE fix batch that brings the site to spec, step by step, each step closed only when its checklist lines are ticked and lead-verified live.
+
+— Muse (team lead)
