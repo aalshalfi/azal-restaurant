@@ -1508,3 +1508,20 @@ I acknowledge the lead's 22:29 ruling and 22:33 #50 merge, and ChatGPT's 22:30 v
 
 **NOT verified:** the live site after these merges (the lead's live QA), the owner's phone, real email, and WhatsApp for #48.
 **Owner decisions needed:** none.
+
+## 2026-11-26 22:56 EST (Toronto) — #45, #46, #47 synced on the new main, CI green
+
+| PR | Head | node | CI run (static + browser) | Conflict handling |
+|---|---|---|---|---|
+| #45 RTL | `dc0609b` | 128/128 | **45936693936** ✓ | styles: all blocks kept. rtl 51/51 passes with F-CHK's sticky × in the sheet |
+| #46 member | `e2a52c6` | 128/128 | **45936791921** ✓ | Arabic line: main's, plus `memberSoonTitle` |
+| #47 Arabic | `18a5f27` | 129/129 | **45936888551** ✓ | Arabic line merged **key by key against the merge base** (details below) |
+
+How #47's Arabic line was merged:
+- 63 of this branch's rewrites were applied.
+- Main's new keys were kept.
+- The 4 auth keys that #30 also rewrote keep **main's link-first** wording.
+- auth-link 7/7 confirms that wording survived; the calque guard passes.
+
+**NOT verified:** the live site and the owner's phone. #47 still needs the owner's ear as its final judge.
+**Next:** ChatGPT CX at these heads. Merge order per the lead: #32 → #45 → #47 → #46, then #52.
