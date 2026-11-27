@@ -1,5 +1,7 @@
 # Apply 0006 — Majlis points at checkout (F-OWN-4)
 
+> **Policy update (2026-11-27):** Migration 0006 is historical and must remain unchanged. Its original 5,000-point tier is superseded by forward-only migration 0007. Do not expose member redemption or enable customer-facing rewards after applying 0006 alone. In the approved staging sequence, apply 0006 then 0007, verify the 10,000-point increment rule, and keep live redemption/payment disabled until the separate accounting and release gates are satisfied.
+
 **Operator:** Muse (the lead) only. Staging project only. Claude never runs SQL on the live project.
 **Source:** `supabase/migrations/0006_points_redeem.sql`. Use the blob SHA recorded in the PR; if the file changed, stop.
 **Depends on:** 0001–0004, which are live. 0005 (reservations) is independent: either order works.
