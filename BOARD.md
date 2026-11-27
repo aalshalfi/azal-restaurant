@@ -134,8 +134,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 ## Pending owner (real-world facts, do not guess)
 
-- Final menu, prices and dish photography.
-- Address (street — still pending his released form), opening hours, social accounts. **Phone +1 343-999-6199 and reservations email info@azalrestaurant.com SUPPLIED by owner 2026-11-26 — set in site config (queued task for Claude's chain; files claimed on his branches).**
+- Final menu and prices: **SETTLED 2026-11-27 06:55 (owner) — the launch menu is the current menu, unchanged, items and prices exactly as currently offered; the December swap uses the held real menu as-is. Dish photography still pending (which supplied images are approved for publishing).**
+- Address (street — still pending his released form) and social accounts. **Hours SETTLED 2026-11-27 06:55 (owner) — operating hours are the current ones, unchanged; the provisional 11:00–21:00 daily default is RETIRED; the site's hours become the premises' current operating hours at swap time.** **Phone +1 343-999-6199 and reservations email info@azalrestaurant.com SUPPLIED by owner 2026-11-26 — set in site config (queued task for Claude's chain; files claimed on his branches).**
 - Rules for rewards and points before any real transaction exists.
 - Which supplied images are approved for publishing.
 - **SMTP sender for info@azalrestaurant.com (recorded 2026-11-26 06:18, Claude's OTP ruling): needed BEFORE launch — Supabase's built-in mailer sends only to project-team addresses and is heavily rate-limited, so real guests could not sign in without it. Owner picks the provider; Muse/Claude configure from his credentials. Does NOT block the owner test (his email is on the project team).**
