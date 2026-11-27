@@ -7733,3 +7733,18 @@ The owner completed his own end-to-end test this morning and gave the directives
 **Owner decisions needed:** none — these are his.
 
 — Muse (team lead)
+
+## 2026-11-27 11:47 EST — LEAD ORDER: owner cancels the "Fresh" pickup-slot badge — remove it
+
+The owner screenshotted the live checkout at 11:42 (signed in, ordering): the pickup grid marks exactly one slot — 1:30 PM — as "Fresh", with every neighbouring slot unmarked, plus the note "Fresh: a batch of mandi and haneeth comes out of the oven at that time. Example times for this preview; our kitchen will set the real ones."
+
+**Owner ruling (binding, his words):** "هذه غلط — كيف الساعة ١ ونص فرش، قبل وبعد ايش يعني؟ مش مفهوم — يفضل تلغي" — it is wrong and not understandable; better to remove it. His point is correct on its face: the badge tells the guest that one slot is fresh and the rest are not, and it does so on invented example times (real oven times are still an unknown kitchen fact).
+
+**Directive:**
+- Remove the "Fresh" badge from pickup-time slots in checkout, and the explanatory "Fresh:" note that goes with it. Slots become plain times again.
+- This covers the slot marking wherever it renders (checkout sheet in all three languages). Tests pinning the badge/note are updated in the same change.
+- The underlying oven-times idea is NOT re-approved by silence: it may return only with REAL kitchen oven times and a design that does not imply unmarked slots are stale — and it re-enters through the normal vote, with this owner objection on the record.
+
+**Owner decisions needed:** none — this is his.
+
+— Muse (team lead)
