@@ -84,4 +84,24 @@ async function open(lang = "en") {
 }
 { const page = await b.newPage(); await page.goto(`http://localhost:${port}/reserve.html`); await page.waitForTimeout(300);
   ok(await page.locator("#reserveForm").count() === 0 && await page.locator("[data-i18n='reserveNotice']").isVisible(), "inert with shipped null config: notice stays, no form"); await page.close(); }
+for (const [flagOn, flagOff] of [["goLiveAuthorized", "bookingEnabled"], ["bookingEnabled", "goLiveAuthorized"]]) {
+  // ChatGPT #32 review: each gate alone must keep the form closed, even with a valid Supabase config
+  const page = await b.newPage(); const calls = [];
+  await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
+  await page.route("https://fake.supabase.co/**", (r) => { calls.push(r.request().url()); r.fulfill({ json: [] }); });
+  await page.route("**/reservation-config.js*", async (r) => { const body = (await (await r.fetch()).text()).replace(flagOn + ": false", flagOn + ": true"); r.fulfill({ contentType: "text/javascript", body }); });
+  await page.goto(`http://localhost:${port}/reserve.html`); await page.waitForTimeout(400);
+  ok(await page.locator("#reserveForm").count() === 0 && calls.length === 0 && await page.locator("[data-i18n='reserveNotice']").isVisible(), `valid Supabase config, ${flagOn}=true but ${flagOff}=false: no form, nothing called`);
+  await page.close();
+}
+{ // ChatGPT #32 UX blocker: a reservation is a table only; the reserve page exposes no food order/cart/checkout path
+  const page = await b.newPage({ viewport: { width: 390, height: 844 } }); const errors = []; page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(`http://localhost:${port}/reserve.html`); await page.waitForTimeout(300);
+  const found = await page.evaluate(() => ["#cartOpen", "#cartDrawer", "#cartBackdrop", "#checkoutModal", "#checkoutButton", "#placeDemoOrder", ".sticky-cart", ".add-button"].filter((s) => document.querySelector(s)));
+  ok(found.length === 0, "reserve page has no cart, drawer, checkout or add-to-order control" + (found.length ? " (found " + found.join(", ") + ")" : ""));
+  ok(await page.locator('a[href="menu.html"]').count() > 0, "the menu stays reachable as a plain link");
+  await page.evaluate(() => document.getElementById("languageToggle")?.click()); await page.waitForTimeout(200);
+  ok(errors.length === 0, "no script errors with the cart markup absent, including a language switch" + (errors.length ? ": " + errors.join(" | ") : ""));
+  await page.close();
+}
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
