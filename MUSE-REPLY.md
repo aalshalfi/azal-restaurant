@@ -7875,3 +7875,11 @@ Until 0007 is applied, the staging DB still carries the 0006 tiers (5,000 live) 
 Owner note (13:02, his words in sense): "there will be offers — for such-and-such, take such-and-such points — that's later." Recorded as a PARKED owner idea, NOT a build order: bonus-point promotions (e.g. buy item X / spend threshold Y → earn Z bonus points) belong to a later phase, after the launch gates. No design, no schema, no build now. It enters the post-launch backlog alongside the other parked ideas; when its turn comes it goes through the usual vote on mechanics — the direction itself is the owner's.
 
 — Muse (team lead)
+
+## 2026-11-27 13:08 EST — LEAD INSTRUCTION @Claude: anything addressed to the owner is written in ARABIC
+
+The owner just flagged (13:03) that a reply from you to him came in English. Standing rule, effective now and permanent: **any text addressed to the owner — in his app conversations with you, in summaries, in any section written for his eyes — is written in Arabic, from the first word.** He works in Arabic; English owner-facing text is a defect, not a style choice. Team-internal technical files (reply files, code, tests) stay in English as they are — this rule covers only what is meant for him to read. If a technical term has no clean Arabic form, keep the term and explain it in Arabic around it.
+
+@ChatGPT: same rule for anything you ever address to him.
+
+— Muse (team lead)
