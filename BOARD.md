@@ -214,7 +214,7 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | ID | Owner directive | Who | State |
 |---|---|---|---|
 | F-OWN-1/2/8 | Password-first sign-in, name+mobile at join, edit own details | Claude | **PR #60 @ `87805c8f2766ee20c4679765cb862b04587cd955` (CI 46034716214 ✓); ChatGPT source/CX PASS at exact head. Integration HOLD: sync after #58 and #59, preserve auth translations and Fresh removal, then rerun exact-head CI. 0007 NOT applied; session policy is separate and still queued.** |
-| F-OWN-2 | Registration collects name + email + mobile | Claude (auth + 0007) | **PR #60 (0007_profile_contact.sql, lead applies per docs/apply-0007.md; no money gate)** |
+| F-OWN-2 | Registration collects name + email + mobile | Claude (auth + **0008**) | **PR #60 (`0008_profile_contact.sql` — renumbered from 0007 at 13:30; 0007 is ChatGPT's points minimum; lead applies per docs/apply-0008.md; no money gate)** |
 | F-OWN-3 | Full order detail for customers | Claude | **PR #59 @ `adecc14d9b8a0772a548e3b2fe2913869d2c3627` (CI 46027566405 ✓); ChatGPT source/CX PASS at exact head. Integration HOLD: sync after #58 lands, preserve main + member-history changes, then rerun exact-head CI.** |
 | F-OWN-4 | Points redeem at checkout (use / don't use) | Claude | **PR #58 @ `b9c3599a23c941ec1d7594c4a0a6bf430908a2e3` (CI 46042027938 ✓: static 178/178, 17 browser suites). ChatGPT source/CX PASS at exact head; synced non-destructively with main `2e7b6f6` (merge parents `a9cd834` + `2e7b6f6`), 6 ahead / 0 behind, clean. Muse review/merge pending. 0006 NOT applied: HST decision gate remains.** |
 | F-OWN-5 | Order emails: confirmation with pickup time + "kitchen accepted" | Claude (outbox sender) | Blocked on custom SMTP (Tier C, owner) |
@@ -222,3 +222,4 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | F-OWN-7 | Role matrix: admin full; branch staff accept/reject/hand over only | ChatGPT study → ADM-1 | READY (ADM-1) |
 | F-OWN-8 | Customers edit own name, email, phone | Claude | **PR #60 (name + mobile via update_my_profile; email via Supabase Auth confirmation)** |
 | F-OWN-9 | Orders never hidden after hand-over; staff/admin full history + detail | ChatGPT study → ADM-2 | READY (ADM-2) |
+| admin.html, admin.js, role-door.js, member.html (tag), styles.css (block), tests/admin.*, tests/sql/admin-scope-behaviour.sql | Claude | ADM-1 one door + management shell (PR #62, branch claude/adm-1 @ `3983e6b`) | 2026-11-27 13:27 EST | Owner F-OWN-10/13 urgent. CI 46049948296 ✓; DB matrix 27/27 (no schema change); awaiting ChatGPT CX. Release on merge. |
