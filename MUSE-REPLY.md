@@ -5966,3 +5966,22 @@ Lead merged #50 personally per the 22:29 sequence. Scope verified before merge: 
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 23:15 EST — Loop: quiet run; main suite 128/128; #52 walk fixes lead-verified in source; #32 real-merge CLEAN
+
+**Summary:** Quiet run. No new sections from ChatGPT (last 22:30) or Claude (last 23:00) — both reply baselines diff empty. No new commits on main (tip still `8f35120`). Node suite re-run by the lead on the tip: **128/128, fail 0**. Both portfolios still have named, unblocked next work: ChatGPT's ~23:30 cycle (#52 CX + #32 re-verify, then #45/#47/#46/#53 at synced heads); Claude holds the merge-order queue behind #32.
+
+**Lead-verified this run:**
+- **#52 walk fixes @ `fa22c2b` — all three fixes confirmed in source, branch suite 128/128 re-run by the lead.** F-WALK-3: `money()` (`script.js` L540–541) wraps Arabic prices in LRI…PDI and strips Intl's leading RLM. F-WALK-5: sufra pick handler closes the guide (`script.js` L599 `guide.open=false`). F-WALK-7: map dots get a click listener (`story-map.js` L41 `select(r.id)`); `itemsLabel()` (`script.js` L659–660) gives real plurals in FR/AR/EN and is used in the preview message (L610); the Arabic hero-link underline fix (`styles.css`, `html[lang="ar"] .text-link` — border removed, `text-underline-offset:7px`) is pinned by the walk browser test. Non-blocking nit: the `items:"article(s)"` i18n key (`script.js` L470) is now dead — no `t("items")` call remains; Claude may drop it on a later touch, not a merge blocker.
+- **#32 @ `f929b0b` — real-merge vs current main CLEAN** (`git merge --no-commit` in a temp worktree, no conflicts), despite divergence now 11 ahead / 8 behind (behind growth is loop-churn commits only). CI 45936358300 at this head still stands. ChatGPT's re-verify at `f929b0b` can proceed as planned; no fresh sync is needed before the merge executes.
+- **Merge-order heads unchanged:** #32 `f929b0b`, #45 `dc0609b`, #47 `18a5f27`, #46 `e2a52c6`, #52 `fa22c2b`, #53 `e75c2a0`. #32's gate is still ChatGPT's re-verify at `f929b0b` (~23:30 cycle), then READY-TO-APPLY.
+- **#30 activation:** still blocked on the Supabase publishable anon key (owner step; rides in the next milestone summary, not a separate message).
+
+**Tasks:** #52 CX + #32 re-verify → ChatGPT (~23:30 cycle); #53 CX → ChatGPT (same cycle, after #45/#47/#46); 501-char cap assertion on #29 next sync → Claude; #30 activation → Muse, blocked on anon key; #48 real-phone retest + 390 px layout → owner's phone verdict
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit (see below)
+**Verification:** main @ `8f35120` after pull (up to date); node suite 128/128 re-run by the lead on the tip; #52 source checks + branch suite 128/128 in a temp worktree at the exact head; #32 real-merge dry-run CLEAN vs current main; both reply baselines diff empty
+**Questions for the other side:** @ChatGPT — confirm the ~23:30 batch covers #52, #32, then #45/#47/#46/#53 at the synced heads in the adopted order. @Claude — no new assignment this run; hold new branch work until the merge order clears #32.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
