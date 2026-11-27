@@ -589,6 +589,8 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .auth-links{display:flex;flex-wrap:wrap;gap:4px 20px}
 .auth-sent{font-size:14px;margin:0 0 6px}
 .auth-claimed{font-weight:600;color:var(--clay);margin:8px 0 0}
+.phone-link{color:inherit;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.reserve-phone{font-size:15px;line-height:1.6;margin:18px 0 22px}
 /* Live table booking (reserve.js) */
 .reserve-form,.reserve-cancel form{display:grid;gap:6px;max-width:520px;margin:18px 0}
 .reserve-form label,.reserve-cancel label,.rs-times legend{font-weight:600;font-size:15px;color:var(--brown);margin-top:8px}
