@@ -1508,3 +1508,63 @@ I acknowledge the lead's 22:29 ruling and 22:33 #50 merge, and ChatGPT's 22:30 v
 
 **NOT verified:** the live site after these merges (the lead's live QA), the owner's phone, real email, and WhatsApp for #48.
 **Owner decisions needed:** none.
+
+## 2026-11-26 22:56 EST (Toronto) — #45, #46, #47 synced on the new main, CI green
+
+| PR | Head | node | CI run (static + browser) | Conflict handling |
+|---|---|---|---|---|
+| #45 RTL | `dc0609b` | 128/128 | **45936693936** ✓ | styles: all blocks kept. rtl 51/51 passes with F-CHK's sticky × in the sheet |
+| #46 member | `e2a52c6` | 128/128 | **45936791921** ✓ | Arabic line: main's, plus `memberSoonTitle` |
+| #47 Arabic | `18a5f27` | 129/129 | **45936888551** ✓ | Arabic line merged **key by key against the merge base** (details below) |
+
+How #47's Arabic line was merged:
+- 63 of this branch's rewrites were applied.
+- Main's new keys were kept.
+- The 4 auth keys that #30 also rewrote keep **main's link-first** wording.
+- auth-link 7/7 confirms that wording survived; the calque guard passes.
+
+**NOT verified:** the live site and the owner's phone. #47 still needs the owner's ear as its final judge.
+**Next:** ChatGPT CX at these heads. Merge order per the lead: #32 → #45 → #47 → #46, then #52.
+
+## 2026-11-26 23:00 EST (Toronto) — Lead live QA 22:50 answered: AR-TOFU fixed (#53); ORD-NOTES already on #29; still-owed CI IDs
+
+I acknowledge Muse's 22:50 live QA.
+1. **AR-TOFU: PR #53**, head `e75c2a0`.
+   - The serif-stack trap was on **every page**, not just the ritual title: 12 selectors.
+   - Each gets an Arabic twin with the self-hosted "AZAL Arabic" first; Latin text keeps its face.
+   - Pinning test `tests/arabic-fonts.browser.mjs` audits every visible Arabic text element on 6 pages plus the ritual. **On main it fails on all 6 pages**; with the fix it passes.
+   - node 128/128; all 7 browser suites pass; CI **45937218604** ✓.
+2. **ORD-NOTES: already built on #29**, not missing; main does not have it because #29 is not merged yet.
+   - `claude/ordering` `checkout.js` L169: `<textarea id="coNote" maxlength="500">`, labelled "Note for the kitchen (optional)" in EN/FR/AR.
+   - L42 trims it and slices to 500 before `p_note`; the error `e_note_too_long` exists in three languages.
+   - Pinned by `tests/checkout.test.mjs` L29 (`p_note` trimmed) and `tests/checkout.browser.mjs` L45/L60 (typed note sent as `p_note`).
+   - I will add an explicit 501-character cap assertion when #29 is next synced.
+3. **Still-owed CI IDs:** `63e8d02` (#49 synced) run **45935003483**; #44 head `edc6d8f` run **45935222945**. Both also appear in my 22:51 table.
+4. **F-WALK-2 ballot — Claude: keep in-memory (no change).** The sheet promises nothing is stored, and a choice that outlives a navigation would break that promise. Durable persistence would need the honesty wording changed first, and that is a product choice for its own ballot.
+5. **#48 real-phone retest:** agreed, it needs a phone. Desktop Chromium has no file share sheet, so the download fallback should have fired; the QA browser may have blocked the download. A phone is the real test.
+
+**NOT verified:** the live site after #53 (not merged), and the 390 px layout live.
+**Owner decisions needed:** none.
+
+## 2026-11-26 23:45 EST (Toronto) — ChatGPT 23:12 reviews answered: #32 UX blocker fixed, #53 font load pinned, #29 note cap (a real silent-loss defect)
+
+| PR | New head | node | browser | CI | Pinning (fails without the fix) |
+|---|---|---|---|---|---|
+| #32 reservations | `296a216` | 133/133 | reserve 25, header 25, checkout-phone 26, sharecard 27, auth-link 7, iftar 15, story-map 13 | **45941215077** ✓ | "no cart/checkout on reserve" **fails on `f929b0b`**. The two single-gate tests pass on both heads: evidence for gates that were already correct, not a fix. |
+| #53 Arabic fonts | `71ff189` | 128/128 | all 7 passed | **45941565982** ✓ | WOFF 200 + face-loaded assertions **fail when the WOFF is answered 404** (negative run) |
+| #29 ordering | `d8f4bd2` | 132/132 | checkout, staff, member-history, header, iftar, story-map passed | none yet (branch not synced; full sync after #32/#31) | 500/501 test **fails on the pre-fix `checkout.js`** |
+
+Details:
+- **#32:** the reservation page no longer carries any food-order path; the menu stays a plain link. Main is merged in. PG16: 66/66, 80/80, p2 assertions; capacity, throttle and same-key races as before. Both booking flags stay false.
+- **#29:** the 501-character case exposed a real defect: the note was **sliced to 500 in silence**, which is the ledger's "silent loss at encode" class. Now 500 characters arrive exactly, and 501 is refused with the server's own `note_too_long` in EN/FR/AR.
+- **Heads-up for #45:** once #32 merges, `tests/rtl.browser.mjs` must expect 3 header controls on `reserve` (no food cart there). I will fold that in when #45 re-syncs after #32.
+
+**NOT verified:** live Supabase, the email sender, the live site, and phones.
+
+**Defect ledger:**
+- silent encode loss: ✓ found and fixed (#29);
+- dead controls: ✓ (the food cart is removed from reserve, not just hidden);
+- tofu / truncation: ✓ (#53 pinned with a real font load);
+- bidi, scroll, state: n/a for these changes.
+
+**Owner decisions needed:** none.
