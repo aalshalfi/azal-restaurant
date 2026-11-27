@@ -92,4 +92,36 @@ const totals = (p) => p.evaluate(() => [...document.querySelectorAll("#checkoutT
   ok(po && !("p_redeem_points" in po.body), "server without 0006: place_order body has no p_redeem_points (old signature still matches)");
   await o.p.close();
 }
+{ // ChatGPT #58 CX-1: the drawer and the sheet show the same totals once a reward is chosen, also after closing and reopening
+  const { p } = await open();
+  await p.check("#coPts5000"); await p.waitForTimeout(100);
+  await p.evaluate(() => document.querySelector("#checkoutModal .modal-close")?.click()); await p.waitForTimeout(150);
+  const drawer = await p.evaluate(() => [document.getElementById("cartTax")?.textContent, document.getElementById("cartGrand")?.textContent]);
+  ok(drawer[0] === "$6.63" && drawer[1] === "$57.60", "after closing the sheet the drawer shows the same HST $6.63 and total $57.60");
+  await p.evaluate(() => document.getElementById("checkoutButton").click()); await p.waitForTimeout(250);
+  const t = await totals(p);
+  ok(await p.locator("#coPts5000").isChecked() && /−\$5\.00/.test(t[1]) && /\$57\.60/.test(t[3]), "reopened: the reward is still chosen and the sheet still totals $57.60");
+  await p.check("#coPts0"); await p.waitForTimeout(100);
+  ok(await p.evaluate(() => document.getElementById("cartGrand")?.textContent) === "$63.25" && (await totals(p)).length === 3, "back to no points: drawer and sheet both return to $63.25");
+  await p.close();
+}
+{ // CX-2: plenty of points but an order smaller than the smallest reward: a plain line, never a blank box
+  const q = await open({ cart: [[8, 1]], balance: 12000 }); // Adeni chai, $3.99
+  const sub = await q.p.evaluate(() => cartTotals([...cart.entries()]).sub);
+  if (sub < 500) {
+    ok(await q.p.locator("input[name=coPts]").count() === 0 && /take \$5\.00 off an order of \$5\.00 or more/.test(await q.p.textContent("#coPtsNext")) && await q.p.locator("#coPtsNext").isVisible(), "12,000 pts on a sub-$5 order: no radio, a clear line about the minimum order");
+  } else ok(false, "fixture: expected an item under $5 (got " + sub + ")");
+  await q.p.close();
+}
+{ // CX-3: tiers vanish after a reward was chosen: the hidden reward is cleared from totals and the request
+  const { p, sent } = await open();
+  await p.check("#coPts5000"); await p.waitForTimeout(100);
+  await p.route("https://fake.supabase.co/rest/v1/rpc/redeem_options", (r) => r.fulfill({ json: { balance: 12000, tiers: [] } }));
+  await p.evaluate(() => document.querySelector("#checkoutModal .modal-close")?.click()); await p.evaluate(() => document.getElementById("checkoutButton").click()); await p.waitForTimeout(300);
+  ok(await p.locator("#coPoints").isHidden() && await p.evaluate(() => (window.AZAL_REDEEM_CENTS || 0) === 0) && (await totals(p)).length === 3, "empty tiers: the section hides AND the chosen reward is cleared from the totals");
+  await p.fill("#coCard", "4242 4242 4242 4242"); await p.click("#placeOrder"); await p.waitForTimeout(300);
+  const po = sent.filter((s) => s.u.endsWith("/rpc/place_order")).pop();
+  ok(po && !("p_redeem_points" in po.body), "empty tiers: place_order carries no stale p_redeem_points");
+  await p.close();
+}
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");

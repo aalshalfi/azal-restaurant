@@ -569,10 +569,11 @@ const negMoney=v=>{const s=money(v);return s.startsWith("\u2066")?"\u2066\u2212"
 function renderCart(){
  const entries=[...cart.entries()], count=entries.reduce((sum,[,qty])=>sum+qty,0);
  const tt=cartTotals(entries), total=tt.sub/100;
- const cartTax=$("cartTax"), cartGrand=$("cartGrand"), coTotals=$("checkoutTotals");
- if(cartTax)cartTax.textContent=money(tt.tax/100);
- if(cartGrand)cartGrand.textContent=money(tt.grand/100);
+ // One set of numbers everywhere (ChatGPT #58 CX-1): with a reward chosen, the drawer's HST and total match the sheet.
  const ct=cartTotals(entries,window.AZAL_REDEEM_CENTS||0);
+ const cartTax=$("cartTax"), cartGrand=$("cartGrand"), coTotals=$("checkoutTotals");
+ if(cartTax)cartTax.textContent=money(ct.tax/100);
+ if(cartGrand)cartGrand.textContent=money(ct.grand/100);
  if(coTotals)coTotals.innerHTML=count?`<div class="total-line"><span>${t("subtotal")}</span><strong>${money(ct.sub/100)}</strong></div>${ct.disc?`<div class="total-line total-points"><span>${t("pointsLine")}</span><strong>${negMoney(ct.disc/100)}</strong></div>`:""}<div class="total-line"><span>${t("hst")}</span><strong>${money(ct.tax/100)}</strong></div><div class="total-line total-grand"><span>${t("total")}</span><strong>${money(ct.grand/100)}</strong></div>`:"";
  if(cartCount)cartCount.textContent=count;
  if(cartTotal)cartTotal.textContent=money(total);

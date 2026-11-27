@@ -66,7 +66,8 @@
     const tiers = (opts && Array.isArray(opts.tiers) ? opts.tiers : []).filter((t) => Number.isInteger(t.points) && t.points > 0 && Number.isInteger(t.cents) && t.cents > 0).sort((a, b) => a.points - b.points);
     const usable = tiers.filter((t) => t.points <= balance && t.cents <= subtotalCents);
     const next = tiers.find((t) => t.points > balance) || null;
-    return { balance, usable, next, first: next !== null && next === tiers[0], any: tiers.length > 0 };
+    const min = tiers.find((t) => t.points <= balance) || null; // smallest reward the balance covers
+    return { balance, usable, next, min, first: next !== null && next === tiers[0], any: tiers.length > 0 };
   }
 
   const newKey = () => {
@@ -138,7 +139,7 @@
       e_note_too_long: "The note is too long (500 characters max).", e_network: "Connection problem. Check your connection and try again: you will not be charged twice.",
       e_error: "Something went wrong. Nothing was charged. Please try again.",
       ptsTitle: "Majlis points", ptsBalance: "You have {points} points.", ptsNone: "Don’t use points", ptsUse: "Use {points} points: {amount} off",
-      ptsNext: "Your first reward, {amount} off, comes at {points} points.", ptsNextMore: "Your next reward, {amount} off, comes at {points} points.",
+      ptsNext: "Your first reward, {amount} off, comes at {points} points.", ptsNextMore: "Your next reward, {amount} off, comes at {points} points.", ptsMinOrder: "Your points can take {amount} off an order of {amount} or more.",
       e_points_insufficient: "Your points balance changed. Choose again.", e_invalid_redeem: "That reward is not available. Choose again.", e_redeem_exceeds_order: "That reward is larger than this order. Choose a smaller one.", e_redeem_members_only: "Sign in to use your points." },
     fr: { kicker: "MODE TEST", title: "Votre commande", text: "Le paiement est en mode test : utilisez une carte test ci-dessous. Aucun paiement réel n’est effectué.",
       guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", signedAs: "Commande au nom de {email}",
@@ -154,7 +155,7 @@
       e_note_too_long: "La note est trop longue (500 caractères max.).", e_network: "Problème de connexion. Vérifiez votre connexion et réessayez : vous ne serez pas débité deux fois.",
       e_error: "Un problème est survenu. Rien n’a été débité. Veuillez réessayer.",
       ptsTitle: "Points Majlis", ptsBalance: "Vous avez {points} points.", ptsNone: "Ne pas utiliser de points", ptsUse: "Utiliser {points} points : {amount} de rabais",
-      ptsNext: "Votre première récompense, {amount} de rabais, arrive à {points} points.", ptsNextMore: "Votre prochaine récompense, {amount} de rabais, arrive à {points} points.",
+      ptsNext: "Votre première récompense, {amount} de rabais, arrive à {points} points.", ptsNextMore: "Votre prochaine récompense, {amount} de rabais, arrive à {points} points.", ptsMinOrder: "Vos points donnent {amount} de rabais sur une commande de {amount} ou plus.",
       e_points_insufficient: "Votre solde de points a changé. Choisissez de nouveau.", e_invalid_redeem: "Cette récompense n’est pas disponible. Choisissez de nouveau.", e_redeem_exceeds_order: "Cette récompense dépasse le montant de la commande. Choisissez-en une plus petite.", e_redeem_members_only: "Connectez-vous pour utiliser vos points." },
     ar: { kicker: "وضع التجربة", title: "طلبك", text: "الدفع هنا تجريبي: استخدم إحدى البطاقات التجريبية أدناه، ولن تُنقل أي أموال حقيقية.",
       guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", signedAs: "تطلب بحسابك {email}",
@@ -170,12 +171,12 @@
       e_note_too_long: "الملاحظة أطول من 500 حرف. اختصرها قليلاً.", e_network: "مشكلة في الاتصال. تأكّد من الشبكة وحاول مرة أخرى، ولن يُخصم منك مرتين.",
       e_error: "حدث خطأ. لم يُخصم شيء. حاول مرة أخرى.",
       ptsTitle: "نقاط المجلس", ptsBalance: "رصيدك {points} نقطة.", ptsNone: "لا أريد استخدام النقاط", ptsUse: "استخدم {points} نقطة: خصم {amount}",
-      ptsNext: "أول مكافأة لك خصم {amount}، تصلها عند {points} نقطة.", ptsNextMore: "مكافأتك التالية خصم {amount}، تصلها عند {points} نقطة.",
+      ptsNext: "أول مكافأة لك خصم {amount}، تصلها عند {points} نقطة.", ptsNextMore: "مكافأتك التالية خصم {amount}، تصلها عند {points} نقطة.", ptsMinOrder: "نقاطك تخصم {amount} من أي طلب قيمته {amount} أو أكثر.",
       e_points_insufficient: "تغيّر رصيد نقاطك. اختر من جديد.", e_invalid_redeem: "هذه المكافأة غير متاحة. اختر من جديد.", e_redeem_exceeds_order: "المكافأة أكبر من قيمة هذا الطلب. اختر مكافأة أصغر.", e_redeem_members_only: "سجّل دخولك لتستخدم نقاطك." },
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const locOf = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
-  const L = (k, vars) => { let s = S[lang()][k] || S.en[k] || k; for (const v in vars || {}) s = s.replace("{" + v + "}", vars[v]); return s.replace(/\.\./g, "."); };
+  const L = (k, vars) => { let s = S[lang()][k] || S.en[k] || k; for (const v in vars || {}) s = s.split("{" + v + "}").join(vars[v]); return s.replace(/\.\./g, "."); };
   // Same bidi rule as script.js (F-WALK-3): in Arabic every price is a left-to-right isolate.
   const money = (c) => { const s = new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100); return lang() === "ar" ? "\u2066" + s.replace(/\u200f/g, "") + "\u2069" : s; };
   const timeOf = (iso) => new Intl.DateTimeFormat(locOf(), { hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }).format(new Date(iso));
@@ -214,7 +215,7 @@
     const fs = $("coPoints"); if (!fs) return;
     if (guestMode || !ptsOpts) { fs.hidden = true; if (redeem) setRedeem(0, 0); return; }
     const v = redeemView(ptsOpts, subtotalNow());
-    if (!v.any) { fs.hidden = true; return; }
+    if (!v.any) { fs.hidden = true; if (redeem) setRedeem(0, 0); return; } // CX-3: never keep a hidden reward
     fs.hidden = false;
     $("coPtsTitle").textContent = L("ptsTitle");
     $("coPtsBalance").textContent = L("ptsBalance", { points: nf().format(v.balance) });
@@ -231,8 +232,11 @@
       }
     }
     const nx = $("coPtsNext");
-    nx.hidden = !v.next;
+    // CX-2: enough points but an order smaller than the smallest reward: say what unlocks it (no blank box).
+    const minOrder = !v.usable.length && !v.next && v.min ? v.min : null;
+    nx.hidden = !v.next && !minOrder;
     if (v.next) nx.textContent = L(v.first ? "ptsNext" : "ptsNextMore", { points: nf().format(v.next.points), amount: money(v.next.cents) });
+    else if (minOrder) nx.textContent = L("ptsMinOrder", { amount: money(minOrder.cents) });
   }
   async function loadPoints() {
     ptsOpts = null;

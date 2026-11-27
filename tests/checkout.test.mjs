@@ -110,6 +110,8 @@ test("F-OWN-4: redeemView shows usable rewards only, and the next goal", () => {
   const mid = C.redeemView({ balance: 7000, tiers }, 5597);
   assert.deepEqual([mid.usable.map((t) => t.points), mid.next.points, mid.first], [[5000], 10000, false], "7,000: 5,000 usable, next reward (not first) at 10,000");
   assert.deepEqual(C.redeemView({ balance: 12000, tiers }, 800).usable.map((t) => t.points), [5000], "a reward larger than the subtotal is not offered");
+  const small = C.redeemView({ balance: 12000, tiers }, 399);
+  assert.deepEqual([small.usable.length, small.next, small.min && small.min.points], [0, null, 5000], "CX-2: enough points, order under $5: nothing usable, no next goal, min reward 5,000 (the UI says so)");
   assert.equal(C.redeemView(null, 5597).any, false);
   assert.equal(C.redeemView({ balance: 9e9, tiers: [{ points: -1, cents: 500 }, { points: 5000, cents: 0 }] }, 5597).any, false, "malformed tiers are ignored");
 });
