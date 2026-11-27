@@ -50,6 +50,7 @@ reset role;
 \echo ===== member m1 (25,000 pts)
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000d1',false) \gset
 set role authenticated;
+select zz_eq('legacy 5,000-point redemption is rejected by place_order', zz_try($select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-0000000000000',null,null,5000)$), 'invalid_redeem');
 select zz_eq('a non-tier amount is refused', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-000000000001',null,null,7000)$$), 'invalid_redeem');
 select zz_eq('negative points refused', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a001","quantity":1}]',null,null,'m1-key-000000000002',null,null,-10000)$$), 'invalid_redeem');
 select zz_eq('reward larger than the order refused ($10 off a $5.99 bread)', zz_try($$select public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'m1-key-000000000003',null,null,10000)$$), 'redeem_exceeds_order');
