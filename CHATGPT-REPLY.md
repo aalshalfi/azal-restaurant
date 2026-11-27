@@ -1641,3 +1641,124 @@ My rule: before any review verdict or merge handoff, record the exact full head 
 Next queued (not marked ready): **ADM-3 audited points adjustment**; **ADM-4 branch/staff administration**. F-OWN-4 checkout redemption remains a distinct P4 launch-priority item and must not be conflated with admin adjustments.
 
 **Files changed by this assignment:** `CHATGPT-REPLY.md` and `BOARD.md` only (documentation/queue). No application source, database, Supabase settings, user accounts, payments, sign-ups, or live features changed.
+
+
+## 2026-11-27 12:32 EST — Dependency audit, exact-head CX reviews, Fresh removal, and #58 sync
+
+### Original owner queue: #27 → #32 → #33 → #31 → #30 → #29
+
+All requested PRs are now merged, and every merge commit is an ancestor of current main `2e7b6f608c70f6120881670ef00833d89d420e69`.
+
+| PR | Merge commit | Exact-head Site checks |
+|---|---|---|
+| #27 | `b232bff66add49b84e56d2cd6174c7f2ecb7a4e6` | `45873460526` success |
+| #42 canonical P2 landing | `2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce` | `45920912279` success |
+| #32 table-only reservations | `344a7c698e15c3abdce5460e1a68fe4f330189b2` (synced head `cfe39415f8b964f0f207a13ce76e31b7c25053a1`) | `45945148747` success |
+| #33 | `23490141978451717cca5a578cd43faa5ec6b42d` | `45852008344` success |
+| #31 | `a2158d75504a66ed4189edae18133c703e913258` | `45952177739` success |
+| #30 | `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b` | `45935703028` success |
+| #29 | `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483` | `45977845768` success |
+
+#27's merge commit is an ancestor of #42's merge commit; #42 is the canonical P2 source landing and includes the #27 prerequisite. The exact 0001/0002 SQL blobs were previously compared and match. The isolated PG16 0001→0002 harness and subsequent PG16 suites are Claude/Muse-reported local evidence; I did not independently run PostgreSQL. No production SQL was applied.
+
+### #32 reservations — source gate remains closed
+
+At current main I rechecked:
+- `reservation_settings.booking_enabled` is `NOT NULL DEFAULT false`; `reserve_table` raises `booking_closed` even on a direct RPC call.
+- `reservation-config.js` has `bookingEnabled:false` and `goLiveAuthorized:false`; `reserve.js` requires both exact `true` values plus the Supabase client config.
+- `reserve.html` remains table-only: no cart/drawer/checkout wiring.
+- `azal_request_ip()` prefers `cf-connecting-ip`; otherwise it uses only the LAST `x-forwarded-for` hop, never the client-controlled first hop. The SQL behavior test pins CF precedence and last-hop selection. Muse's staging gateway probe reports that forged XFF is prepended while the real egress IP is appended, and the REST origin is only the Supabase hostname behind Cloudflare. That live probe is lead-reported, not independently repeated by ChatGPT.
+- 0005 remains unapplied; the outbox sender is not built. Merge is source-only, not launch.
+
+### Fresh pickup badge removal — PR #61 merged
+
+- Exact PR head: `c9f67b8e30309ebf23b328204a1d671c340330cc`.
+- Main merge commit: `2e7b6f608c70f6120881670ef00833d89d420e69`, merged by repository owner account `aalshalfi` at 17:25:32Z.
+- Exact-head CI `46041065911`: static **175/175**, zero failures; all **16 browser suites** reported all passed.
+- Change removes only the example Fresh badge/note, the associated EN/FR/AR keys and CSS, and refreshes seven page asset versions. Pickup options remain plain times.
+- **Post-merge evidence gap:** PR #61 has no GitHub review submission or PR discussion, and the current MUSE-REPLY has no live-QA record for this change. I posted comment `7224455325` asking Muse to record the exact-head review and EN/FR/AR desktop/mobile QA, or mark live QA pending. I did not revert or alter the merged change.
+
+### #58 — non-destructive sync completed; exact-head CI green
+
+The first sync `a9cd8342b3b09b35c856840ddaaed6254fea5a6a` merged branch head `abd1dbcacca67e76910bb66b389406c3018ae2e0` with main `67648914617c44f2bddd50fb855f13e4ae2fe811`. Main then advanced when #61 merged, so I synced again rather than leave #58 behind.
+
+- Current PR #58 head: `b9c3599a23c941ec1d7594c4a0a6bf430908a2e3`.
+- Second normal merge commit parents: `a9cd8342b3b09b35c856840ddaaed6254fea5a6a` + `2e7b6f608c70f6120881670ef00833d89d420e69`.
+- Compare against main: **6 ahead / 0 behind**, merge base is current main; GitHub reports `mergeable_state=clean`.
+- `checkout.js`, the 0006 migration, checkout unit/browser tests, and the points-redeem SQL behavior test are byte-identical to the reviewed `abd1dbc` head. The sync preserves points-redeem code while carrying main's Fresh removal, updated page cache versions, Board and reply-file state. `script.js` renders pickup choices as plain times; Fresh translations/example marker are absent. `styles.css` retains points/reward styling while Fresh badge/note selectors are absent.
+- Exact-head CI `46042027938`: static **178/178**, zero failures; all **17 browser suites** passed, including `points-redeem.browser.mjs`, `reserve.browser.mjs`, RTL and the rest of the browser matrix.
+- Earlier SQL/ordering evidence (36/36 for 0006 behavior, the payment-lock race and refund-on-cancel) is Claude-reported at the original code head; the 0006 SQL and SQL test blobs are unchanged by this sync. I did not independently run PG16.
+- **Verdict: source/CX PASS at `b9c3599`; Muse review/merge still pending.** 0006 is NOT applied pending the owner/accountant HST decision. No redemption is live.
+
+### #59 and #60 — source/CX PASS, integration HOLD
+
+**#59** — exact head `adecc14d9b8a0772a548e3b2fe2913869d2c3627`, CI `46027566405` (static + browser success). I inspected `member-history.js`, its unit/browser tests, the member-history CSS and the owner-read RLS policies. Orders, ledger and detail are filtered to the authenticated user; detail uses server price snapshots and persisted events, includes cancellation/handover states, uses `textContent` for dynamic values, and Arabic prices are LTR-isolated. Review comment: `7224390591`. **Integration HOLD:** sync after #58 lands and rerun CI at the new exact head.
+
+**#60** — exact head `87805c8f2766ee20c4679765cb862b04587cd955`, CI `46034716214` (static + browser success). I inspected `auth.js`, 0007, auth/account browser tests, SQL behavior tests and apply instructions. Password-first sign-in, validated name/email/mobile/password join, server-normalized E.164 phone, `update_my_profile` bound to `auth.uid()` with SECURITY DEFINER/empty search_path, revoked direct phone writes, and Supabase Auth email confirmation are present. Edit is hidden before 0007. Review comment: `7224391292`. **Integration HOLD:** sync after #58 and #59, preserve both auth translations and Fresh removal, then rerun CI. The requested remember-me/sessionStorage/localStorage and 24h customer / 8h staff-admin idle policy is a separate queued requirement; #60 still inherits the existing localStorage session behavior. 0007 is NOT applied.
+
+### Operational safety / activation
+
+- `supabase-config.js` is now populated with the staging Supabase URL and public client key; the value is intentionally not repeated. The browser can reach that configured project, but this does not prove any feature toggle is enabled.
+- Reservations remain closed in code (both UI flags false; 0005 default false and not applied).
+- 0006 remains unapplied pending the HST decision; 0004 defaults `payments_mode` to `off`, and the staging seed record says off.
+- 0007 remains unapplied; `docs/apply-0007.md` reserves the staging operation to Muse with preflight, backup, post-checks and rollback.
+- The outbox sender/custom SMTP is not configured.
+- The actual Supabase Auth sign-up toggle and real confirmation-email delivery are not independently verifiable from the repository. The last explicit OFF evidence predates the 09:27 activation plan, which listed ON as a planned step but has no later completed-state evidence. I posted operational check comment `7224459201` asking Muse for current read-only evidence and to keep sign-ups, booking, payment and real email disabled until all gates and owner approval are recorded.
+- ChatGPT made no SQL apply, Supabase setting change, account activation, sign-up activation, booking activation, payment activation or email activation.
+
+### Claude handoff
+
+Issue #34 comment `7224399905` asks Claude to preserve the 30-minute check-in cadence, avoid ChatGPT's #58/#61 branches and merge chores, and focus only on ADM-1 after the two ChatGPT tasks land, per Muse's capacity ruling. The latest CLAUDE-REPLY still ends at 12:12 EST and says no new builds until ChatGPT's two tasks land; no response/update was present at this checkpoint. Muse's 12:15 ruling reserves Claude's remaining weekly capacity for ADM-1, with ADM-2 only if capacity remains.
+
+
+## 2026-11-27 12:45 EST (Toronto) — scheduled monitor: owner queue confirmed integrated; #59/#60 integration holds refreshed
+
+### Current main and original owner queue
+
+Current `main` tip: `c634780cc687e1603e040f436c9bef4190a08d3c` (merge of PR #58, authored by Muse).
+
+Re-fetched PR metadata for #27, #29, #30, #31, #32 and #33. All six are closed/merged. Compared each recorded merge commit against current main; every comparison has `behind_by=0`, confirming each merge commit is an ancestor of current main:
+
+| PR | Merge commit | Exact-head Site checks |
+|---|---|---|
+| #27 | `b232bff66add49b84e56d2cd6174c7f2ecb7a4e6` | `45873460526` success |
+| #32 | `344a7c698e15c3abdce5460e1a68fe4f330189b2` | `45945148747` success |
+| #33 | `23490141978451717cca5a578cd43faa5ec6b42d` | `45852008344` success |
+| #31 | `a2158d75504a66ed4189edae18133c703e913258` | `45952177739` success |
+| #30 | `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b` | `45935703028` success |
+| #29 | `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483` | `45977845768` success |
+
+#27's prerequisite is therefore present in main; #42 remains the canonical synced P2 landing also recorded above. The CI results above are GitHub Actions records on those historical PR heads. The isolated PostgreSQL 16 0001→0002 harness evidence remains Claude/Muse-reported; I did not independently run PG16 in this monitor.
+
+### #32 table-only and fail-closed gate — current main source inspection
+
+I re-read the current main blobs and test assertions:
+
+- `supabase/migrations/0005_reservations.sql`, blob `1d6921c5cb7e8f45d44cdbbdc4e83e9a53655c5d`: `booking_enabled boolean NOT NULL DEFAULT false`; additive ALTER also defaults false; availability returns no slots while closed; direct `reserve_table` raises `booking_closed`.
+- `reservation-config.js`, blob `00501bc34fa11778b9ff048204375a12231374f1`: `bookingEnabled:false` and `goLiveAuthorized:false`.
+- `reserve.js`, blob `a735ebbc15d640614246c35e579d15bd34757b91`: the browser gate requires both values to be strict boolean `true`, plus Supabase URL/key.
+- `tests/reserve.test.mjs`, blob `274915ac3680a3d2bc79f180f6b141846f48c9f6`: independently pins each flag, strict boolean values and absent Supabase config.
+- `tests/sql/reservations-behaviour.sql`, blob `383fa661ab554f6588ff7b30707f53f934240dfd`: tests closed-by-default, direct anonymous RPC refusal, Cloudflare header precedence and use of the last X-Forwarded-For hop.
+
+The SQL source and tests support the IP-trust design. Muse's live Cloudflare gateway probe is recorded in the prior owner comment on #32 (`7220100605`): spoofed `cf-connecting-ip` rejected at the edge, XFF spoof prepended while the real client hop is appended, and no direct REST origin found. This is lead-reported evidence; I did not independently repeat the live probe.
+
+This is a source/security gate result, not go-live approval. The current live Supabase/Auth settings and whether 0005/0006/0007 have since been applied were not independently verified in this monitor. No SQL, setting, account, signup, booking, payment or email activation was performed.
+
+### Directly related follow-on PRs
+
+- **#61 — Fresh pickup badge removal:** merged at `2e7b6f608c70f6120881670ef00833d89d420e69`; exact head `c9f67b8e30309ebf23b328204a1d671c340330cc`; Site checks `46041065911` success. It is an ancestor of #58's base/main. The previously recorded post-merge visual QA gap remains; the merge and CI do not prove live desktop/mobile EN/FR/AR visual QA.
+- **#58 — Majlis points at checkout:** now merged at current main `c634780cc687e1603e040f436c9bef4190a08d3c`; final PR head `567d94f14b333dd2d9d3c32945fde5496f678f70`; exact-head Site checks `46042618857` success. The code/CX review was recorded at `b9c3599a23c941ec1d7594c4a0a6bf430908a2e3`; the final head is its documentation/reply-file follow-up. 0006 remains behind the HST decision gate in the recorded board; no live redemption approval is implied.
+- **#59 — customer order detail:** still open, not merged. Exact head `adecc14d9b8a0772a548e3b2fe2913869d2c3627`; Site checks `46027566405` success on that old head. Current compare to main: **1 ahead / 31 behind**, merge base `efa000faed539f2bab644a9384b4a6b14061d17d`, status diverged; GitHub currently reports `mergeable=false`. Prior source/CX review is PASS at this exact head, but integration remains HOLD.
+- **#60 — password-first sign-in/profile:** still open, not merged. Exact head `87805c8f2766ee20c4679765cb862b04587cd955`; Site checks `46034716214` success on that old head. Current compare to main: **1 ahead / 30 behind**, merge base `206606942f0ed972077707f0aca43f8c7ffb4558`, status diverged; GitHub reports `mergeable=false`. Prior source/CX review is PASS at this exact head, but integration remains HOLD.
+
+The #59/#60 CI successes are not evidence for a synchronized tree. Their source reviews remain valid only for their unchanged reviewed heads; a normal merge of current main changes the integration tree and requires fresh review and CI.
+
+### Coordination / next steps
+
+- Current `BOARD.md` still shows stale F-OWN status text: #58 is described as awaiting Muse review/merge, and #59/#60 are shown at their pre-sync heads. Claude needs to refresh the rows to the current state.
+- Current `CLAUDE-REPLY.md` still ends with the 2026-11-27 12:12 EST checkpoint; no newer Claude entry was present in this read. The 30-minute cadence therefore needs an explicit restart/check-in.
+- I posted a fresh handoff on issue #34: Claude is asked to sync #59 onto current main with a normal non-destructive merge, run Node/browser/CI on the resulting exact SHA and record the full evidence; after #59 is merged by Muse, sync #60 onto the updated main and repeat. No rebase, force-push, history rewrite or merge by ChatGPT. Muse remains the merge/release gate.
+- At each meaningful checkpoint Claude must append to `CLAUDE-REPLY.md`: full SHA, changed files, exact commands, tests actually run and per-suite outcomes, CI run IDs, ahead/behind/merge-base, blockers and next step. Refresh `BOARD.md` accordingly. Do not divert to unrelated open drafts such as #13/#7/#4.
+- I checked GitHub Actions status and inspected current source/test assertions; I did not run the local Node, browser or PG16 suites myself in this monitor. Do not describe those CI/harness results as locally reproduced by ChatGPT.
+
+**Decision:** original #27 → #32 → #33 → #31 → #30 → #29 queue is integrated. #58 and #61 are also merged. #59 and #60 remain integration-HOLD until Claude's ordered non-destructive sync, exact-head tests/CI, independent re-review and Muse's merge decision. All live activation and SQL safety gates remain in force.

@@ -568,11 +568,6 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .ritual li{margin:4px 0}
 .ritual-draft{margin:10px 0 0;font-size:12px;color:var(--muted)}
 
-/* Fresh from the oven (Claude, example times) */
-.checkout-panel .pickup .pickup-slot.is-fresh span{display:flex;flex-direction:column;align-items:center;line-height:1.15}
-.fresh-tag{display:block;font-size:12px;color:var(--clay);font-weight:600;margin-top:2px}
-.pickup-slot.is-fresh:has(input:checked) .fresh-tag{color:var(--gold)}
-.fresh-note{font-size:12px;color:var(--muted);margin:8px 0 0;line-height:1.4}
 
 /* Accounts (Claude, ACCT): shown only when supabase-config.js is filled */
 .auth-title{font-size:28px;margin:4px 0 12px}
@@ -871,3 +866,9 @@ html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:unde
 .mh-timeline-title{margin:4px 0 0;font-size:13px;font-weight:700;color:var(--muted)}
 .mh-timeline{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px}
 .mh-timeline li{display:flex;gap:6px}.mh-timeline time{color:var(--muted)}
+/* F-OWN-4 Majlis points at checkout: real radios only for rewards the member can use; the next goal is plain text. */
+.co-points{border:1px solid rgba(66,34,14,.2);border-radius:10px;padding:10px 12px 12px;margin:8px 0 2px;display:grid;gap:6px;min-width:0}
+.co-points legend{font-weight:700;font-size:.92rem;color:#42220E;padding:0 4px}
+.co-pts-choice{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:500!important;margin:0!important;cursor:pointer}
+.co-pts-choice input{width:20px!important;height:20px;min-height:0!important;margin:0;accent-color:#914820;flex:none}
+.total-points strong{color:#914820}
