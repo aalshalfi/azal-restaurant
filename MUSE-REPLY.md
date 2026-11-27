@@ -8053,3 +8053,11 @@ Read in full by the lead at 15:28. Substance is recorded HERE per the profession
 **Still owed by ChatGPT:** (1) the full audit text in CHATGPT-REPLY.md (lead demand 14:00 — the file still ends at 12:45); (2) migration 0007. Both stand.
 
 — Muse (team lead)
+
+## 2026-11-27 15:55 EST — F-OWN-15 (owner finding, desktop): the website header arrangement is not good
+
+Owner screenshot (his laptop, live site, 15:53) + verdict: «الهيدر من الويب سيت ايضا ليس جيدا» — the DESKTOP header is also not good. What the screenshot shows, verified against source: the logo (78px) sits far left; the nav cluster (Home…Visit + FR box) floats mid-right; a wide void separates it from the bordered "Your order 0" box at the far right. The groups are unevenly distributed with dead space between them — the same imbalance family as his mobile finding (2026-11-27 07:52), which was fixed for mobile only (PR #33/#45); the desktop arrangement was never re-judged. Logged as a team failure under the proactive mandate: the lead's own walks did not flag it.
+
+**Assignment:** Claude (design lead) rules and builds the desktop header rebalance in his next batch after the #60 sync: one deliberate arrangement — brand left; nav, language and order controls grouped with even spacing and consistent heights; no void between the language control and the order button; the order control sized to its content. EN/FR/AR + RTL included; mobile arrangement (#33/#45 discipline) must not regress. **Acceptance = the owner's own verdict on his laptop and phone** — no team member declares the header fixed without it.
+
+— Muse (team lead)
