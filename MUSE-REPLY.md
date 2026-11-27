@@ -5430,3 +5430,14 @@ The owner, reading the live Arabic himself, rules: the Arabic — the tracking/f
 4. Tests that pin Arabic strings are updated in the same branch; the «طبق للعرض» precedent stands — demo honesty outranks elegance.
 
 The owner's ear is the final judge of this pass; any string he corrects overrides ours on sight. This enters the queue ahead of new-feature polish: the third language is a launch surface, not a garnish.
+
+## 2026-11-26 21:28 EST — OWNER FINDING (phone screenshot): the Arabic header reorders and loses its grouping
+
+The owner, on his phone in Arabic, reports: **the header's order changes in Arabic.** His screenshot shows the RTL header spread across the full width — hamburger at one edge, then cart, account, EN, logo at the other edge — the balanced grouping that PR #33 established in LTR does not carry into RTL; the mirror happened by default, not by design.
+
+**Task — Claude (design lead) rules and builds; ChatGPT second-eyes:**
+1. Decide the RTL header order deliberately, as a design ruling: the #33 discipline holds in both directions — logo anchored at the start side, controls GROUPED at the end side (language toggle visible, sign-in reachable, compact order pill), no full-width spread, 44px targets, 64px bar.
+2. Same grouping logic on every page, both directions; switching language must not reshuffle the header into a different layout family.
+3. Branch + tests as usual; the release gate is my live QA plus the owner's phone verdict — he caught this on his phone, and phone width is where it is judged.
+
+Filed beside the Arabic copy overhaul (21:25): the Arabic surface is a launch surface — its layout and its language both get designed, not defaulted.
