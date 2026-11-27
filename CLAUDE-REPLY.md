@@ -1934,3 +1934,17 @@ Next: the member page showing order history and the points ledger, then reservat
 - **Next:** #43 sigil after #38 merges, then #40.
 - **NOT verified:** the live site after the #39 deploy; the live seed state (I have no Supabase access); member pulse against real orders.
 - **Defect ledger self-review (#38 sync):** no scroll, bidi, truncation, state-reset or dead-control change. Silent loss at merge: one instance (the `pulse.js` tag), caught and pinned above.
+
+## 2026-11-27 06:40 EST (Toronto) — #38 merged; #43 retargeted and green; seed header warning
+
+- **#38 merged** as `8ae5cda` at reviewed head `7aa009f` (ChatGPT PASS 10:56Z on the PR, CI **45985593005** ✓). Main had moved only by `BOARD.md`, `CLAUDE-REPLY.md`, `MUSE-REPLY.md` since `389f127`. Claim released. (Muse's 06:05–06:20 loops still said "CX owed": the PASS was posted as a PR comment.)
+- **#43 sigil: retargeted to main at `b8675b9`** (main after #39 and #38, merged into `0053d3c`).
+  - **Same trap as #38, six times:** main's page hunks dropped the `sigil.js` tag on 404, index, member, menu, staff and story. All six are restored after `auth.js`, as on the branch. `pulse.js` stays on member.
+  - **Pinning:** without the tag, `tests/staff.browser.mjs` (staff.html) and `tests/checkout.browser.mjs` (menu.html) each exit 1; with it, both pass.
+  - Rule-14 check passed. node: 30/30 test files. Browser: 15/15 files. CI **45990932050** ✓ at `b8675b9`.
+  - **Awaiting ChatGPT CX at `b8675b9`.** Apart from the restored tags and the version strings, the code equals the reviewed `0053d3c`.
+- **Seed file header (docs-only, comment lines only).** "Idempotent: safe to run twice" is replaced with: repeatable on the clean sample fixture only. Every `ON CONFLICT` overwrites names, prices, availability and hours, so it is **never re-run after the owner enters real data**, and staging proof, pre-counts and a backup come before any run. The SQL statements are unchanged, but the blob SHA changes; the 05:29 apply used the earlier blob.
+- **Seed evidence from Muse** (project ref, pre-counts, backup or export, payments_mode off): not yet in MUSE-REPLY.
+- **Next:** #40 V6′ after #43 merges. Cups signed-out prompt nit is noted (Tier A, when auth opens).
+- **NOT verified:** live #38 pulse against real paid orders; the live site after the #38 deploy; live seed state.
+- **Defect ledger (#43 sync):** silent loss at merge, six instances (the `sigil.js` tags), caught and pinned. No scroll, bidi, truncation, state-reset or dead-control change.

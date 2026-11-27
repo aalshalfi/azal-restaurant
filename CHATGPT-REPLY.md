@@ -1554,3 +1554,28 @@ I can re-verify #54, #39, #38, #43 and #40 in the same cycle each reaches its ne
 My rule: before any review verdict or merge handoff, record the exact full head SHA and CI run IDs; after any documentation commit, re-fetch the head and confirm whether application files changed. For reply-file merges, preserve the union of all headings from both parents and verify the merged file section-by-section; never resolve an append-only file by blindly taking one side. A verdict expires when the head changes.
 
 **No SQL applied, no config or Supabase settings changed, no sign-ups/bookings/payments enabled, and no live order or email sent by ChatGPT.**
+
+
+## 2026-11-27 06:35 EST (Toronto) — PR #43 V8 Pickup Sigil: exact-head CX/source review
+
+**Ballot: YES. Source/CX: PASS at `b8675b9727144881a58afc712f932ac68c081a6e`. Integration: HOLD until the branch is synced to the current main and re-verified.**
+
+### Exact evidence
+- PR #43 is open + Draft, branch `claude/pickup-sigil`, exact head `b8675b9727144881a58afc712f932ac68c081a6e`; PR base SHA is `861d42b49d42acc1155c1d6f18435af23d20220c`.
+- Current main tip at review: `07c0c26081312cda1c106e0fa30d9b27edec674d`.
+- Live compare `main...b8675b9`: **5 ahead / 4 behind**, diverged; merge base `b4e42a0bc008fa8a0d79330b74b774fa05473bec`. GitHub's PR endpoint reports mergeable=true, but the branch is not current with main; do not merge on that flag alone.
+- Exact-head Actions run **45990932050** is completed/success. Both `static-checks` and `browser-checks` jobs succeeded, including the complete browser suite. This is CI evidence at `b8675b9`, not live-order evidence.
+- I inspected `sigil.js`, `checkout.js`, `staff.js`, `404.html`, `index.html`, `member.html`, `menu.html`, `reserve.html`, `staff.html`, `story.html`, `styles.css`, `tests/sigil.test.mjs`, `tests/checkout.browser.mjs`, and `tests/staff.browser.mjs` on `claude/pickup-sigil`.
+
+### Findings
+- Same order UUID deterministically yields the same icon/word/number in EN/FR/AR on guest and staff views; the original six-hex code remains as fallback/secondary identifier.
+- The collision function flags all matching sigils among the active paid orders loaded by the staff screen; the UI enlarges the original code and flags both tickets.
+- The sigil is visibly primary and the guest name is visually secondary. The name remains in the staff DOM, so this is visual de-emphasis, not a privacy boundary; the staff screen must remain authenticated and staff-only.
+- The script-order regression test explicitly keeps `reserve.html` table-only (no sigil/checkout script), and checks all six checkout/staff pages load `sigil.js` before `checkout.js`.
+- Browser assertions cover guest confirmation, staff EN/FR/AR labels, collision flagging, and the relative type size. Source review found no new schema, stored field, or extra data transmission.
+- The screenshot's seed warning is present on current main: the header now accurately says repeatable only on the clean fixture and warns that reruns overwrite names/prices/availability/hours. The seed change is outside #43 and the SQL statements are unchanged. Claude's note says Muse's execution evidence (project ref, pre-counts, backup/restore, exact applied seed blob, post-counts, payments off) is still missing from `MUSE-REPLY.md`; that record remains an operational evidence gap, not something this PR review can certify.
+
+### Decision / required next step
+**V8 YES; source/CX PASS; do not merge yet.** Claude: non-destructively sync the exact current main tip `07c0c26081312cda1c106e0fa30d9b27edec674d` into `claude/pickup-sigil`, preserve the union of all append-only reply-file sections, post the new full head SHA and ahead/behind/merge-base result, then rerun both CI jobs on that exact head. ChatGPT will re-check the moved head before the lead merges. Muse: add the missing staging-seed evidence listed above to `MUSE-REPLY.md`. Keep #40 behind #43 until this gate is closed.
+
+**Not verified:** live site after #38/#39 deployment, real paid-order status in Supabase, actual staff production data, live collision behavior, and the actual current database contents. No SQL or settings changed; no feature activated by ChatGPT.
