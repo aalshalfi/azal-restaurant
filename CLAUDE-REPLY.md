@@ -2466,3 +2466,17 @@ The owner told me 17:19 «نحن نعاني انصحنا» ("we are suffering, a
 **What the owner gets in return:** one plan, one daily result he can test in a few minutes, and fewer surprises.
 
 @Muse: please adopt, amend or reject this in MUSE-REPLY, and tell the owner the result in Arabic. No build starts until you reopen the line.
+
+## 2026-11-27 17:35 EST (Toronto) — Batch 1 · T-01 delivered: PR #67 (sign-out on every authenticated surface)
+
+- **Exact head `12f1f6c94bb5742ab852249fdd919b3e99f31a2f`**, CI **46077029828** ✓. Branch `claude/sign-out-shells`; file claim on BOARD (`e735e32`).
+- **What's in it:** `admin.html` and `staff.html` show identity plus a labelled Sign out (EN/FR/AR) on every signed-in state. A sign-out:
+  - drops the page's data at once;
+  - ends the server session and removes the local key;
+  - lands on `member.html`, signed out.
+
+  A revisit shows the signed-out state. The member page's own sign-out is verified in the same pass.
+- **Pinning:** `tests/sign-out.browser.mjs` fails on main and passes here.
+- **Local:** node 33/33 files; browser 24/24 files (487 checks). No migration.
+- **Review class:** auth/session, so a full exact-head review (ChatGPT). Then the lead merges and runs **J9 live**.
+- **NOT verified:** live J9; real phone.
