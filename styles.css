@@ -589,6 +589,25 @@ body :where(.eyebrow,.section-kicker,.card-label,.demo-label,.product-category,.
 .auth-links{display:flex;flex-wrap:wrap;gap:4px 20px}
 .auth-sent{font-size:14px;margin:0 0 6px}
 .auth-claimed{font-weight:600;color:var(--clay);margin:8px 0 0}
+/* Live table booking (reserve.js) */
+.reserve-form,.reserve-cancel form{display:grid;gap:6px;max-width:520px;margin:18px 0}
+.reserve-form label,.reserve-cancel label,.rs-times legend{font-weight:600;font-size:15px;color:var(--brown);margin-top:8px}
+.reserve-form input,.reserve-form select,.reserve-cancel input{font:inherit;font-size:16px;min-height:48px;padding:10px 12px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:var(--brown);width:100%}
+.reserve-form input:focus-visible,.reserve-form select:focus-visible,.rs-slot:focus-visible,.reserve-cancel input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.rs-times{border:0;padding:0;margin:0}
+#rsSlots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.rs-slot{min-height:44px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:var(--brown);font:inherit;font-size:15px;cursor:pointer}
+.rs-slot[aria-checked="true"]{background:var(--brown);color:#F8F1E7;border-color:var(--brown)}
+.rs-help{font-size:14px;color:var(--muted);margin:2px 0}
+.rs-error{color:#8a1f11;font-weight:600;margin:6px 0 0}
+.rs-error:empty{display:none}
+.reserve-form .button{margin-top:12px;min-height:52px}
+.reserve-done{background:var(--cream);border-left:6px solid var(--gold);padding:18px;margin:18px 0;max-width:560px}
+.rs-done-main{font-size:19px;font-weight:600;margin:0 0 8px}
+.rs-code{font-size:22px;font-weight:800;letter-spacing:.08em;margin:0 0 8px}
+.reserve-cancel{margin:22px 0;max-width:520px}
+.reserve-cancel summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.reserve-how [hidden],.reserve-done[hidden],.reserve-form[hidden]{display:none!important}
 /* HDR-MOB: balanced mobile header (owner 07:53). Desktop (>800px) unchanged: quick controls and the bag icon are hidden there. */
 .header-quick,.cart-open .cart-icon{display:none}
 .hq-icon{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -659,6 +678,31 @@ html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:n
 .share-tray[hidden]{display:none!important}
 .share-status{margin:6px 0 0;font-size:13px;color:var(--muted);min-height:1em}
 .share-status:empty{display:none}
+
+/* AR-RTL pass (Claude, design lead, owner findings 21:28/21:30/21:33). Design ruling: in Arabic the header is the exact
+   mirror of the #33 family, not a different layout: logo anchored at the START edge (right), the controls GROUPED at the
+   END edge (left) in the same logical order (language, account, order, menu), 64px bar, 44px targets. Done with logical
+   properties so both directions share one rule; physical margins/offsets that only worked left-to-right are neutralised.
+   The same pass fixes every other physical-only rule that breaks in RTL. LTR rendering is unchanged. */
+@media(max-width:800px){
+ .brand{margin-right:0;margin-inline-end:auto}
+ .menu-toggle{margin-left:0;margin-inline-start:2px}
+ .cart-open #cartCount{right:auto;inset-inline-end:1px}
+}
+.modal-close{right:auto;inset-inline-end:22px}
+.skip-link{left:auto;inset-inline-start:16px}
+.member-steps{padding-left:0;padding-inline-start:22px}
+.reserve-steps{padding-left:0;padding-inline-start:22px}
+.ritual ol{padding-left:0;padding-inline-start:20px}
+.detail-row strong{text-align:end}
+.sufra-choice{text-align:start}
+.sufra-arrow,.sufra-n summary::after,.sufra-collapsible summary::after{margin-left:0;margin-inline-start:auto}
+.pickup .pickup-asap{text-align:start}
+html[dir="rtl"] .product-tag{left:auto;right:14px}
+html[dir="rtl"] .sufra-arrow{display:inline-block;transform:scaleX(-1)}
+@media(max-width:480px){html[dir="rtl"] .product-tag{right:6px}html[dir="rtl"] .hero-bottom span:last-child{text-align:left}}
+@media(max-width:600px){html[dir="rtl"] .iftar-line{padding-right:0;padding-left:34px}html[dir="rtl"] .iftar-banner::after{right:auto;left:-14px}}
+html[dir="rtl"] .dir-arrow{display:inline-block;transform:scaleX(-1)}
 /* v2 openable tray: a shared tray is shown first, added only on the guest's tap. */
 .shared-tray{margin:18px 0 6px;padding:18px 20px;background:var(--cream);border:1px solid #dfcfbb;border-inline-start:4px solid var(--gold)}
 .shared-tray-title{font-size:24px;margin:0 0 8px}

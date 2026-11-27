@@ -52,3 +52,12 @@ test("AR-REWRITE (lead 21:25): literal-translation calques found in the audit do
   // honesty labels keep their force in Arabic (the rewrite changed words, not facts)
   for (const label of ["طبق للعرض", "للتوضيح", "معاينة", "لم يُرسل شيء", "قريباً"]) assert.ok(src.includes(label), "honesty label missing: " + label);
 });
+
+test("owner rule: the reservation step asks for name + mobile + email in all three languages (ChatGPT #47 review)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const js = readFileSync(new URL("../script.js", import.meta.url), "utf8");
+  const v = [...js.matchAll(/reserveHow2:"([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(v.length, 3, "EN, FR and AR each have the step");
+  assert.match(v[0], /name.*mobile.*email/i); assert.match(v[1], /nom.*mobile.*courriel/i); assert.match(v[2], /اسم.*جوال.*بريد/);
+  assert.match(readFileSync(new URL("../reserve.html", import.meta.url), "utf8"), /data-i18n="reserveHow2">Leave your name, mobile number and email/);
+});
