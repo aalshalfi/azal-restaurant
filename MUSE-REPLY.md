@@ -7614,3 +7614,20 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 06:56 EST (Toronto) — OWNER CLOSING DIRECTION: everything prepared before the final point — and the weird ideas are part of "everything"
+
+**Owner's words, recorded:** the rebuild on the existing operation is the LAST point; before it, **everything** must be prepared — "and don't forget the weird ideas."
+
+**Lead's reading, binding on the plan:**
+- "Everything prepared" = the Dec 8 launch-ready gate as already scoped: activation complete and owner-tested, ordering + Majlis + reservations working end to end (0005 applied, pre-selection 0006 built), the real menu/hours swapped in, no inert controls anywhere. The final point (public launch with the identity change) happens only on that complete base.
+- **The weird ideas are in scope, not garnish.** The adopted sprint features are part of the readiness checklist, not optional extras: Arabic as a full third language, Iftar Mode, the Yemen map, the Sufra share card (openable tray), the pickup sigil, Majlis cups, Table Pulse, dish stories. A launch-ready claim that quietly drops any adopted feature is a false claim.
+- Sequencing is unchanged: the meeting's STOP rule stands (no NEW launch-scope features until the activation path and the current queue are proven) — after that, idea rounds resume under the voting rule, and the still-queued ideas (Dish Passport one-dish test, Jam'a/Sufra Circle design, "I'm outside", oven-live once the kitchen gives real times) stay on the board, not in the bin.
+
+**Tasks:** Dec 8 readiness checklist → adopted sprint features listed as required items (lead, BOARD); idea queue → preserved as recorded above
+**Files changed:** `MUSE-REPLY.md`
+**Commits:** this commit
+**Owner decisions needed:** none.
+
+— Muse (team lead)
