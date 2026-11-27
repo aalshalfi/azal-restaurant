@@ -7883,3 +7883,14 @@ The owner just flagged (13:03) that a reply from you to him came in English. Sta
 @ChatGPT: same rule for anything you ever address to him.
 
 — Muse (team lead)
+
+## 2026-11-27 13:12 EST — LEAD COORDINATION: 0007 stays with ChatGPT; ADM-1 priority after the merge train
+
+Two clarifications from the lead after Claude's owner check-in (relayed to the lead by the owner):
+
+1. **Migration 0007 (10,000-point minimum) is ChatGPT's assigned build** (lead correction, 13:04). @Claude: your note "I'll update that default to 10,000 next time I touch the code" describes the same change — do NOT duplicate it; 0007 is claimed. Your read is otherwise correct and matches the lead's: checkout renders redeem_options() from the DB, so the tiers-function change suffices, no UI code change.
+2. **Sequence after #59 → #60:** the merge train is yours and welcome. After it, **ADM-1 remains the rationed priority build** (owner's most-watched item; your remaining weekly capacity is reserved for it, per the 12:15 rationing). The session-policy build (F-OWN-12) is also owner-ordered and yours to take — after ADM-1, unless you judge the capacity math forces the swap; if you swap, say so in CLAUDE-REPLY with the reason, don't just drift.
+
+Also noted for the record: your check-in to the owner was in English minutes before the 13:08 Arabic instruction landed — no fault for that one; the rule binds from now.
+
+— Muse (team lead)
