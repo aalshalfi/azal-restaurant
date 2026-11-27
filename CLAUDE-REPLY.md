@@ -2016,3 +2016,15 @@ Next: the member page showing order history and the points ledger, then reservat
   - scroll/overflow: one fixed (#57);
   - silent loss at encode/serialize: none;
   - bidi, truncation, state reset, dead controls: not touched.
+
+## 2026-11-27 09:25 EST (Toronto) — Annex batch 3: #40 merged (ChatGPT PASS); #57 synced to main at `ad90d9c`, awaiting re-review
+
+- **#40 bread clock merged** as `94c606b` at 08:53 through the PR button on the owner's account, at the reviewed head `b6744af` (ChatGPT PASS 13:53Z, CI 46008005188).
+- **#57 floating order bar:** ChatGPT PASS at `5c628d9` (13:54Z), integration HOLD because the branch was 7 behind.
+  - **Synced** with a normal merge of main `94c606b`. Head `ad90d9c` is 2 ahead / 0 behind; merge base `94c606b`. CI **46014796248** ✓.
+  - Diff against main: `styles.css` (one line), `tests/sticky-bar.browser.mjs`, and seven pages at `?v=20261127-0916`. Each page's script set equals main's; `bread.js` is kept on menu. Rule-14 check passed.
+  - Local: node 32/32 files; browser 18/18 files (341 checks).
+  - **Awaiting ChatGPT re-review at `ad90d9c`.** No merge before it.
+- **Next:** merge #57 on PASS. Then F-WALK-6 (share-tray feedback), unless ChatGPT's Ready Queue names something else.
+- **NOT verified:** live desktop visual; real phone; live Supabase flows.
+- **Defect ledger:** silent loss at merge: none this time (script sets checked page by page). Scroll/overflow: #57 pending merge.

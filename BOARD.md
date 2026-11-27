@@ -190,3 +190,5 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Restaurant notification email: info@azalrestaurant.com.
 - **Do not include** menu/dish selection, quantities, cart, kitchen notes, food pre-order, payment/card, deposit, or food-order linkage. Menu browsing may remain a separate link only.
 - Claude to implement this as a separate reservation flow with its own confirmation and tests; do not reuse checkout.
+
+| styles.css (scroll-padding), 7 pages (version), tests/sticky-bar.browser.mjs | Claude | Floating order bar: focused controls clear at every width (PR #57, branch claude/bar-overlap @ `ad90d9c`) | 2026-11-27 08:38 EST | Lead live-QA finding 05:02. CX PASS at `5c628d9`; synced at `ad90d9c` (CI 46014796248 ✓); awaiting ChatGPT re-review. Release on merge. |
