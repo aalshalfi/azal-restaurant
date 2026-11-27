@@ -7,6 +7,14 @@
 
   const NEXT = { placed: "accept", accepted: "ready", preparing: "ready", ready: "hand_over" };
   const code = (id) => String(id || "").slice(0, 6).toUpperCase();
+  const Sig = root.AzalSigil || (typeof require === "function" ? require("./sigil.js") : null);
+  // V8: the spoken sigil leads the ticket; all three words are shown because the guest may say it in any language.
+  function sigilHtml(id, clash, esc, note) {
+    const s = Sig && Sig.sigil(id);
+    if (!s) return "";
+    return `<span class="staff-sigil" aria-label="${esc(s.word("en") + " " + s.num)}">${esc(s.icon + " " + s.num)}</span><span class="staff-sigil-words">${esc(["en", "fr", "ar"].map(s.word).join(" · "))}</span>` +
+      (clash ? `<span class="staff-clash">${esc(note)}</span>` : "");
+  }
 
   function createStaff({ config, fetch: fetchFn, getToken, branch }) {
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
@@ -37,7 +45,7 @@
     };
   }
 
-  const api = { createStaff, NEXT, code };
+  const api = { createStaff, NEXT, code, sigilHtml };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -50,19 +58,19 @@
     en: { title: "Kitchen orders", inert: "The orders screen turns on when the site is connected to the AZAL system.", signIn: "Sign in with your staff email on the Majlis page first.", signInLink: "Go to sign-in",
       notStaff: "This account is not set up as staff for this branch.", empty: "No paid orders waiting. New ones appear here by themselves.",
       accept: "Accept", ready: "Ready", hand_over: "Hand over", asap: "As soon as possible", member: "Member",
-      s_placed: "New", s_accepted: "Accepted", s_preparing: "Preparing", s_ready: "Ready for pickup",
+      clash: "Same sigil as another order: check the code", s_placed: "New", s_accepted: "Accepted", s_preparing: "Preparing", s_ready: "Ready for pickup",
       updated: "Updated {time}", refresh: "Refresh", working: "One moment…", e_network: "Connection problem. The list will retry.", e_error: "That did not work. Refresh and try again.",
       e_bad_transition: "That order already moved on. Refreshed.", e_order_closed: "That order is already closed. Refreshed.", e_not_staff: "This account is not staff for this branch." },
     fr: { title: "Commandes cuisine", inert: "L’écran des commandes s’active quand le site est relié au système AZAL.", signIn: "Connectez-vous d’abord avec votre courriel du personnel sur la page Majlis.", signInLink: "Aller à la connexion",
       notStaff: "Ce compte n’est pas configuré comme personnel de cette succursale.", empty: "Aucune commande payée en attente. Les nouvelles apparaissent ici d’elles-mêmes.",
       accept: "Accepter", ready: "Prête", hand_over: "Remettre", asap: "Dès que possible", member: "Membre",
-      s_placed: "Nouvelle", s_accepted: "Acceptée", s_preparing: "En préparation", s_ready: "Prête à emporter",
+      clash: "Même signe qu’une autre commande : vérifiez le code", s_placed: "Nouvelle", s_accepted: "Acceptée", s_preparing: "En préparation", s_ready: "Prête à emporter",
       updated: "Mis à jour à {time}", refresh: "Actualiser", working: "Un instant…", e_network: "Problème de connexion. La liste va réessayer.", e_error: "Ça n’a pas marché. Actualisez et réessayez.",
       e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale." },
     ar: { title: "طلبات المطبخ", inert: "تعمل شاشة الطلبات عند ربط الموقع بنظام أزال.", signIn: "سجّل الدخول أولاً ببريد الموظف من صفحة المجلس.", signInLink: "اذهب لتسجيل الدخول",
       notStaff: "هذا الحساب غير مُعدّ كموظف في هذا الفرع.", empty: "لا طلبات مدفوعة بالانتظار. تظهر الطلبات الجديدة هنا تلقائياً.",
       accept: "قبول", ready: "جاهز", hand_over: "تسليم", asap: "في أقرب وقت", member: "عضو",
-      s_placed: "جديد", s_accepted: "مقبول", s_preparing: "قيد التحضير", s_ready: "جاهز للاستلام",
+      clash: "الرمز نفسه لطلب آخر: تحقّق من الكود", s_placed: "جديد", s_accepted: "مقبول", s_preparing: "قيد التحضير", s_ready: "جاهز للاستلام",
       updated: "حُدّث {time}", refresh: "تحديث", working: "لحظة…", e_network: "مشكلة في الاتصال. ستُعاد المحاولة.", e_error: "لم ينجح ذلك. حدّث وحاول مرة أخرى.",
       e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع." },
   };
@@ -87,12 +95,14 @@
     const groups = new Map();
     for (const r of rows) { const k = r.pickup_slot || r.scheduled_for || ""; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); }
     let html = head;
+    const clashes = Sig ? Sig.collisions(rows.map((r) => r.id)) : new Set();
     for (const [slot, list] of groups) {
       html += `<section class="staff-slot"><h2>${slot ? esc(tf(new Date(slot))) : esc(L("asap"))}</h2>`;
       for (const r of list) {
         const action = NEXT[r.fulfilment_status];
         const items = (r.order_items || []).map((i) => `<li><strong>${esc(i.quantity)}×</strong> ${esc(lang() === "fr" ? i.item_name_fr_snapshot || i.item_name_en_snapshot : i.item_name_en_snapshot)}</li>`).join("");
-        html += `<article class="staff-order is-${esc(r.fulfilment_status)}"><header><span class="staff-code">${esc(code(r.id))}</span><span class="staff-who">${esc(r.guest_name || L("member"))}</span><span class="staff-status">${esc(L("s_" + r.fulfilment_status))}</span></header>` +
+        const clash = clashes.has(r.id);
+        html += `<article class="staff-order is-${esc(r.fulfilment_status)}${clash ? " is-clash" : ""}"><header>${sigilHtml(r.id, clash, esc, L("clash"))}<span class="staff-code">${esc(code(r.id))}</span><span class="staff-who">${esc(r.guest_name || L("member"))}</span><span class="staff-status">${esc(L("s_" + r.fulfilment_status))}</span></header>` +
           `<ul class="staff-items">${items}</ul>` + (r.customer_note ? `<p class="staff-note-guest">“${esc(r.customer_note)}”</p>` : "") +
           `<footer><span>${esc(money(r.total_cents))}</span>${action ? `<button type="button" class="button button-gold staff-act" data-id="${esc(r.id)}" data-action="${action}"${busyId ? " disabled" : ""}>${esc(busyId === r.id ? L("working") : L(action))}</button>` : ""}</footer></article>`;
       }

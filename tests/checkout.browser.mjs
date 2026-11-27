@@ -61,6 +61,7 @@ async function run({ lang = "en", card, second }) {
   ok(/code 9F3C2A/.test(await page.locator("#checkoutMessage").textContent()), "confirmation shows pickup code");
   ok(await page.evaluate(() => JSON.parse(localStorage.getItem("azal-demo-cart-v1") || "[]").length) === 0, "cart cleared after payment");
   ok(await page.locator(".checkout-live").isHidden() && await page.locator("#placeOrder").isHidden(), "form hidden after payment");
+  ok((await page.locator("#checkoutMessage").textContent()).includes("say 🌙 Moon 47 (code 9F3C2A)") && (await page.textContent(".co-sigil")) === "🌙 Moon 47", "V8: confirmation gives the spoken sigil in large type, code kept");
   ok(!/\.\./.test(await page.locator("#checkoutMessage").textContent()), "no doubled period");
   await page.screenshot({ path: process.env.SHOT || "/tmp/checkout-paid.png", fullPage: false });
   await page.close();

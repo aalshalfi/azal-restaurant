@@ -108,7 +108,7 @@
       note: "Note for the kitchen (optional)", notePh: "Allergies, less spice, extra bread…",
       card: "Card number (test cards only)", cardHelp: "Test cards: 4242 4242 4242 4242 pays · 4000 0000 0000 0002 is declined · 4000 0000 0000 9995 has insufficient funds.",
       pay: "Pay {total}", payPlain: "Place order and pay", working: "One moment…",
-      paid: "Paid. Ready at {time}. Show code {code} at the counter.", paidGuest: "Join with {email} to collect the points for this order.",
+      paid: "Paid. Ready at {time}. At the counter, just say {sigil} (code {code}).", paidGuest: "Join with {email} to collect the points for this order.",
       declined: "Card declined. Your order is kept for 15 minutes: try another test card.", insufficient: "Insufficient funds. Your order is kept for 15 minutes: try another test card.",
       e_not_test_card: "Only the test card numbers shown work here.", e_name: "Please add your name.", e_email: "Please check your email address.",
       e_slot_full: "That time just filled up. Choose another time.", e_closed: "We’re closed for orders at that time. Choose another time.", e_too_soon: "That time is too soon now. Choose another time.",
@@ -121,7 +121,7 @@
       note: "Note pour la cuisine (facultatif)", notePh: "Allergies, moins épicé, plus de pain…",
       card: "Numéro de carte (cartes test seulement)", cardHelp: "Cartes test : 4242 4242 4242 4242 paie · 4000 0000 0000 0002 est refusée · 4000 0000 0000 9995 a des fonds insuffisants.",
       pay: "Payer {total}", payPlain: "Commander et payer", working: "Un instant…",
-      paid: "Payé. Prêt à {time}. Montrez le code {code} au comptoir.", paidGuest: "Inscrivez-vous avec {email} pour recevoir les points de cette commande.",
+      paid: "Payé. Prêt à {time}. Au comptoir, dites simplement {sigil} (code {code}).", paidGuest: "Inscrivez-vous avec {email} pour recevoir les points de cette commande.",
       declined: "Carte refusée. Votre commande est gardée 15 minutes : essayez une autre carte test.", insufficient: "Fonds insuffisants. Votre commande est gardée 15 minutes : essayez une autre carte test.",
       e_not_test_card: "Seuls les numéros de carte test indiqués fonctionnent ici.", e_name: "Veuillez indiquer votre nom.", e_email: "Veuillez vérifier votre courriel.",
       e_slot_full: "Cet horaire vient d’être complet. Choisissez un autre horaire.", e_closed: "Les commandes sont fermées à cette heure. Choisissez un autre horaire.", e_too_soon: "Cet horaire est trop proche. Choisissez un autre horaire.",
@@ -134,7 +134,7 @@
       note: "ملاحظة للمطبخ (اختياري)", notePh: "حساسية، حار أقل، خبز إضافي…",
       card: "رقم البطاقة (بطاقات تجريبية فقط)", cardHelp: "بطاقات تجريبية: 4242 4242 4242 4242 تدفع · 4000 0000 0000 0002 تُرفض · 4000 0000 0000 9995 رصيدها غير كافٍ.",
       pay: "ادفع {total}", payPlain: "اطلب وادفع", working: "لحظة…",
-      paid: "تم الدفع. جاهز الساعة {time}. أظهر الرمز {code} عند الكاشير.", paidGuest: "انضم بالبريد {email} لتحصل على نقاط هذا الطلب.",
+      paid: "تم الدفع. جاهز الساعة {time}. عند الكاشير قل فقط {sigil} (الرمز {code}).", paidGuest: "انضم بالبريد {email} لتحصل على نقاط هذا الطلب.",
       declined: "رُفضت البطاقة. طلبك محفوظ 15 دقيقة: جرّب بطاقة تجريبية أخرى.", insufficient: "الرصيد غير كافٍ. طلبك محفوظ 15 دقيقة: جرّب بطاقة تجريبية أخرى.",
       e_not_test_card: "تعمل هنا أرقام البطاقات التجريبية المعروضة فقط.", e_name: "اكتب اسمك.", e_email: "تحقّق من بريدك الإلكتروني.",
       e_slot_full: "امتلأ هذا الوقت للتو. اختر وقتاً آخر.", e_closed: "الطلبات مغلقة في هذا الوقت. اختر وقتاً آخر.", e_too_soon: "هذا الوقت صار قريباً جداً. اختر وقتاً آخر.",
@@ -230,7 +230,10 @@
       $("coCard").value = "";
       if (r.outcome === "paid") {
         const o = co.order;
-        if (msg) msg.textContent = L("paid", { time: timeOf(o.pickup_at), code: String(o.order_id).slice(0, 6).toUpperCase() }) + (guest ? " " + L("paidGuest", { email: guest.email }) : "");
+        if (msg) msg.textContent = L("paid", { time: timeOf(o.pickup_at), code: String(o.order_id).slice(0, 6).toUpperCase(), sigil: root.AzalSigil ? root.AzalSigil.label(o.order_id, lang()) : String(o.order_id).slice(0, 6).toUpperCase() }) + (guest ? " " + L("paidGuest", { email: guest.email }) : "");
+        // V8: the sigil in large type, so the guest can just show the phone at the counter.
+        const sg = root.AzalSigil && root.AzalSigil.sigil(o.order_id);
+        if (msg && sg) { const big = document.createElement("span"); big.className = "co-sigil"; big.textContent = root.AzalSigil.label(o.order_id, lang()); msg.append(big); }
         try { c.clear(); if (typeof renderCart === "function") renderCart(); } catch {}
         co.reset(); unlock(); box.hidden = true; btn.hidden = true; const pk = $("pickup"); if (pk) pk.hidden = true;
       } else {

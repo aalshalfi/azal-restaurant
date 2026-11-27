@@ -705,3 +705,11 @@ html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:n
 .ymap-caption{margin:0;font-size:12px;color:var(--muted)}
 @media(prefers-reduced-motion:reduce){.ymap-halo{transition:none}}
 .ymap-label{font-size:15px;fill:var(--brown);font-weight:600;pointer-events:none}.ymap-dot.is-on .ymap-label{fill:var(--clay)}.language-toggle,.language-quick{font-family:'Source Sans 3','Source Sans Pro',Arial,"AZAL Arabic",sans-serif}
+
+/* V8 Pickup sigil on the staff ticket: the spoken sigil leads; the hex code stays, and grows when two active orders share a sigil. */
+.staff-sigil{font-size:1.6rem;font-weight:700;color:#42220E;margin-inline-end:.4rem;white-space:nowrap}
+.staff-sigil-words{font-size:.85rem;color:#914820;margin-inline-end:.6rem}
+.staff-order.is-clash{outline:3px solid #CD8E2D;outline-offset:2px}
+.staff-order.is-clash .staff-code{font-size:1.4rem;font-weight:700;letter-spacing:.08em}
+.staff-clash{display:block;width:100%;font-size:.85rem;font-weight:700;color:#914820}
+.co-sigil{display:block;margin-top:.9rem;padding:.7rem 1rem;border:2px solid #CD8E2D;border-radius:12px;background:#F8F1E7;color:#42220E;font-size:1.7rem;font-weight:700;text-align:center;line-height:1.2}

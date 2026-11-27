@@ -22,4 +22,8 @@ for (const w of [390, 1280]) {
 { const p = await b.newPage(); await p.addInitScript(() => localStorage.setItem("azal-language", "en")); await p.goto(base + "/story.html"); await p.waitForSelector(".ymap-tab");
   await p.evaluate(() => { document.documentElement.lang = "ar"; }); await p.waitForTimeout(100); const t = await p.textContent("#yemenMap");
   ok(/اختر منطقة/.test(t) && /حضرموت/.test(t) && /خريطة مبسّطة/.test(t), "Arabic hint, region names and caption"); await p.close(); }
+{ const p = await b.newPage(); await p.addInitScript(() => localStorage.setItem("azal-language", "ar")); await p.goto(base + "/story.html"); await p.waitForSelector(".ymap-tab");
+  await p.focus("#ymap-hadramaut"); await p.keyboard.press("ArrowLeft");
+  const a = await p.evaluate(() => document.activeElement.id); await p.keyboard.press("ArrowRight"); const b2 = await p.evaluate(() => document.activeElement.id);
+  ok(await p.evaluate(() => document.documentElement.dir) === "rtl" && a === "ymap-sanaa" && b2 === "ymap-hadramaut", "RTL: ArrowLeft moves to the next region, ArrowRight back (got " + a + ", " + b2 + ")"); await p.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
