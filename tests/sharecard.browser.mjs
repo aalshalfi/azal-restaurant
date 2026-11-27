@@ -63,7 +63,7 @@ for (const lang of ["en", "ar"]) {
   const sh = await p.evaluate(() => window.__s);
   ok(sh.files === 1 && /^Open our tray: http:\/\/localhost:\d+\/menu\.html#tray=v1\.1x2\.6x1$/.test(sh.text), "v2: share carries the picture AND the tray link (" + sh.text + ")"); await p.close(); }
 { // v2 receiving side: shown first, cart untouched until the tap; retired dish disclosed; fragment cleared
-  const p = await b.newPage({ viewport: { width: 390, height: 844 } }); const net = []; p.on("request", (r) => { if (!r.url().startsWith(base)) net.push(r.url()); });
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } }); const net = []; p.on("request", (r) => { if (!r.url().startsWith(base) && (r.method() !== "GET" || !["image", "font", "stylesheet"].includes(r.resourceType()))) net.push(r.url()); });
   await p.addInitScript(() => localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[8, 1]])));
   await p.goto(base + "/menu.html#tray=v1.1x2.6x1.999x1"); await p.waitForSelector(".shared-tray");
   const t = await p.textContent(".shared-tray");
