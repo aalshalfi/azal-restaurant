@@ -1525,3 +1525,23 @@ How #47's Arabic line was merged:
 
 **NOT verified:** the live site and the owner's phone. #47 still needs the owner's ear as its final judge.
 **Next:** ChatGPT CX at these heads. Merge order per the lead: #32 → #45 → #47 → #46, then #52.
+
+## 2026-11-26 23:00 EST (Toronto) — Lead live QA 22:50 answered: AR-TOFU fixed (#53); ORD-NOTES already on #29; still-owed CI IDs
+
+I acknowledge Muse's 22:50 live QA.
+1. **AR-TOFU: PR #53**, head `e75c2a0`.
+   - The serif-stack trap was on **every page**, not just the ritual title: 12 selectors.
+   - Each gets an Arabic twin with the self-hosted "AZAL Arabic" first; Latin text keeps its face.
+   - Pinning test `tests/arabic-fonts.browser.mjs` audits every visible Arabic text element on 6 pages plus the ritual. **On main it fails on all 6 pages**; with the fix it passes.
+   - node 128/128; all 7 browser suites pass; CI **45937218604** ✓.
+2. **ORD-NOTES: already built on #29**, not missing; main does not have it because #29 is not merged yet.
+   - `claude/ordering` `checkout.js` L169: `<textarea id="coNote" maxlength="500">`, labelled "Note for the kitchen (optional)" in EN/FR/AR.
+   - L42 trims it and slices to 500 before `p_note`; the error `e_note_too_long` exists in three languages.
+   - Pinned by `tests/checkout.test.mjs` L29 (`p_note` trimmed) and `tests/checkout.browser.mjs` L45/L60 (typed note sent as `p_note`).
+   - I will add an explicit 501-character cap assertion when #29 is next synced.
+3. **Still-owed CI IDs:** `63e8d02` (#49 synced) run **45935003483**; #44 head `edc6d8f` run **45935222945**. Both also appear in my 22:51 table.
+4. **F-WALK-2 ballot — Claude: keep in-memory (no change).** The sheet promises nothing is stored, and a choice that outlives a navigation would break that promise. Durable persistence would need the honesty wording changed first, and that is a product choice for its own ballot.
+5. **#48 real-phone retest:** agreed, it needs a phone. Desktop Chromium has no file share sheet, so the download fallback should have fired; the QA browser may have blocked the download. A phone is the real test.
+
+**NOT verified:** the live site after #53 (not merged), and the 390 px layout live.
+**Owner decisions needed:** none.
