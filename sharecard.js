@@ -15,7 +15,19 @@
     }
     return { shown: out.slice(0, MAX_LINES), more: Math.max(0, out.length - MAX_LINES), count: out.reduce((a, l) => a + l.qty, 0) };
   }
-  const api = { cardLines, W, H, MAX_LINES };
+  // Long dish names wrap onto a second line instead of being squeezed by fillText's maxWidth (ChatGPT, #44 review).
+  // measure(text) -> width in px. Returns at most 2 lines; a single word wider than maxW stays whole on its line.
+  function wrapName(name, maxW, measure) {
+    if (measure(name) <= maxW) return [name];
+    const words = String(name).split(/\s+/); let a = "";
+    for (let i = 0; i < words.length; i++) {
+      const t = a ? a + " " + words[i] : words[i];
+      if (a && measure(t) > maxW) return [a, words.slice(i).join(" ")];
+      a = t;
+    }
+    return [a];
+  }
+  const api = { cardLines, wrapName, W, H, MAX_LINES };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   // Placement (lead ruling 21:03, Claude's bonus target): the live checkout is a preview that ends in "nothing was sent".
@@ -24,8 +36,8 @@
   if (!msgBox || typeof cart === "undefined") return;
   const S = {
     en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again." },
-    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "On ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
-    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة مبدئية، لم تُطلب بعد · تضيفون شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "قائمة وأسعار للعرض · معاينة", made: "تم إنشاء الصورة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
+    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "Plateau en brouillon, pas encore commandé · on ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
+    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة لم تُطلب بعد · هل نضيف شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "الأطباق والأسعار للعرض فقط · معاينة", made: "صورتك جاهزة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
@@ -62,7 +74,9 @@
       const qty = l.qty + "×";
       x.fillText(qty, edge, y);
       x.fillStyle = "#42220E"; x.font = `500 46px ${sans}`;
-      x.fillText(l.name, ar ? edge - 110 : edge + 110, y, W - 290);
+      const nameLines = wrapName(l.name, W - 290, (t) => x.measureText(t).width);
+      nameLines.forEach((t, i) => x.fillText(t, ar ? edge - 110 : edge + 110, y + i * 54, W - 290));
+      y += (nameLines.length - 1) * 54;
       x.strokeStyle = "rgba(66,34,14,.12)"; x.lineWidth = 2; x.beginPath(); x.moveTo(90, y + 30); x.lineTo(W - 90, y + 30); x.stroke();
       y += 74;
     }
