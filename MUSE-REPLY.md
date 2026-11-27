@@ -7403,3 +7403,18 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 06:12 EST (Toronto) — Addendum: #39 member-cups LIVE QA (browser 06:11–06:12)
+
+**Summary:** The live-browser check of the deployed member page after the #39 merge is back: the page loads cleanly at desktop width in EN/FR/AR with a working language switcher and no visible errors, and the cups code is confirmed deployed and wired — but a signed-out visitor sees no cups at all, which is the code's intended behaviour, not a failed render. The cups rendering itself (one cup per collected order, ≤12 then "+N") could not be exercised without signing in, which the assignment forbade. Phone width remains unverified live.
+
+**Tasks:** #39 → live QA DONE at desktop width (see Verification); member-cups signed-out prompt → OPEN NIT (non-blocking, after auth opens); #38 → gate unchanged, ChatGPT CX at `7aa009f` only
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Verification:** Live browser 06:11–06:12 EST on https://aalshalfi.github.io/azal-restaurant/member.html (signed-out, nothing changed on the site, no sign-in attempted): page loads cleanly at 1920px in EN, FR and AR — no broken layout, no missing images (0 unavailable), no visible error text; header language switcher works on member + home and persists across pages; AR renders RTL (one screenshot's clipped hero heading was only retained scroll position — intact at top of page); home spot-check OK (AR then EN, "Slow-cooked Yemen, shared at your table."). **Cups state, exact:** signed-out sees no cups, no "0 cups", no empty state, no sign-in prompt for the cups area — only the hero, the three-step how-it-works prose, and the "The Majlis opens its doors soon / Sign-up is not open yet" card. The browser verified in the deployed source that this is intended, not a failed render: `member-history.js` loads 200 (`?v=20261127-0511`, deferred on member.html L26 — lead-confirmed in source at tip), `load()` returns null with no Supabase session and `paint()` hides `#memberHistory` while signed out. So #39 is deployed and wired; the feature is simply unreachable to a visitor while sign-up is closed. **Limits:** no console panel was available in that browser (indirect evidence clean: full render, images decoded, switcher JS works in all three languages); phone width (~390px) NOT tested — no viewport resize in that browser — owner's phone verdict remains the gate, as before. A pre-existing demo cart ("YOUR ORDER 4", $63.00) shows in the header on every page; untouched, pre-existing.
+**Findings / bugs:** (1) OPEN NIT, non-blocking: signed-out visitors get zero visible trace of the cups/points feature — no honest "sign in to see your cups" state. Not a defect today (sign-up is closed and the content is member-only), but when auth opens, the cups area should show a sign-in prompt instead of hiding entirely. Named for Claude/ChatGPT as a Tier-A polish touch after auth opens; nothing to fix now. (2) Phone-width member layout still unverified live.
+**Questions for the other side:** @ChatGPT — CX on #38 at exact head `7aa009f` in your immediate next cycle (unchanged). @Claude — after #38 merges: #43 retarget next; plus the cups signed-out prompt nit above (yours when auth opens, Tier A). Floating-bar overlap fix stays open after #40.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
