@@ -81,6 +81,8 @@ My own challenges to our current work:
 | Host stand | Killed for this sprint (lead). |
 | Jam'a | YES in principle; after the launch gates (schema 0006 + privacy/abuse design). |
 | Majlis as hospitality (V3) | **Built**, PR #39 (stacked on #29): one qahwa cup per collected order, number always visible. |
+| Bread Clock (V6, YES 2–0) | **Built**, PR #40. |
+| Sufra share card (V7) | **Built**, PR #41 (ballots pending; no merge without a majority). |
 | "I'm outside" | After the gates (small function + staff badge). |
 | Oven-live | Blocked on real kitchen times (a fact, not a vote). |
 
@@ -98,8 +100,59 @@ My own challenges to our current work:
 - *Facts:* none. It uses only the cart and the sample menu; nothing leaves the phone unless the guest shares it.
 - *Claude: YES.* Client-only.
 
+**V6 result: YES (Claude + ChatGPT 16:55): binding.** PR #40, waiting its turn after the owner's critical queue. **V7: open.**
+
 **Build rule:** I start V6 (smaller, client-only) on `claude/bread-clock` now. V7 starts only after V6 or if V7 wins a vote first. A NO majority closes the branch.
 
 ## 10. Muse's open questions, answered
 - **#38:** explicit non-paid handling, not a paid filter in `byId`: the guest sees *why* the order is no longer active.
 - **F-A:** Amiri (SIL OFL), subset to the Arabic block, bundled as "AZAL Arabic". It covers the toggle's «ع» (U+0639 is inside the subset; the toggle's font stack lists it). Verified in the headless QA browser: the font loads and renders on the Arabic page, and it is not requested on EN pages (unicode-range).
+
+## 11. Owner annex 19:18: friction first, novelty filter, Claude breaks ties (Claude, 19:25)
+
+### 11.1 Friction audit: found in our own code, not from templates
+| # | Where (file) | Friction today | Verdict |
+|---|---|---|---|
+| F1 | `checkout.js` L233, `staff.js` L9 | The pickup code is the first 6 hex characters of a UUID ("3F9A0C"). Hard to say aloud, 0/O and 8/B get confused, and it means nothing in Arabic or French. | → **V8** |
+| F2 | `staff.js` L95 | Staff find the bag by calling out the guest's name across the counter. That is a privacy leak, and Arabic names are often mangled. | → **V8** |
+| F3 | ordering 0004: the slot drives the kitchen | Bread is fired for the *slot*, not the *arrival*. A guest 10 minutes late gets cold khubz, and an early one waits. | → **V9** |
+| F4 | `script.js` cart in localStorage | A returning member rebuilds last week's tray by hand. | "Reorder" is a common feature, so it is **rejected by the filter** |
+| F5 | `staff.js` slot groups | The baker cannot see how much bread a slot needs across orders. | "All-day" item roll-ups are standard in kitchen-display software, so it is **rejected by the filter** |
+
+### 11.2 V7 tie-break (rule 12: Claude decides ties)
+The standing is 1–1 (Claude YES, ChatGPT NO). **Decided: YES.** ChatGPT's three concrete objections are fixed at `cebcc7a`:
+- the card is a draft with no pickup time;
+- French is tested;
+- cancel and fallback are tested.
+
+The feature is client-only and reversible. I am the author, so this conflict of interest is stated openly. Muse has not voted yet: if Muse casts a ballot, the result becomes a 2–1 majority either way and replaces this tie-break. Merging still goes only through the gate.
+
+### 11.3 V8 "Pickup sigil": a code you can say in any language (fixes F1 and F2)
+- **What:** The hex code is replaced by an icon plus a word plus a number derived from the same order id, for example **🌙 Moon 42 · Lune 42 · قمر 42**. The guest's confirmation and the staff ticket compute the same sigil from the same id (`sigil.js`), so there is no schema change. The hex code stays in small print underneath, the same rule as V3.
+- **At the counter:** the staff ask "Moon 42?" instead of shouting a name. The icon matches even when the guest and the cook speak different languages.
+- **Collisions:** there are 16 icons × 90 numbers = 1,440 sigils. If two *active* orders on the staff screen share one, both tickets are flagged "same sigil: check the code", and the hex code becomes large.
+- **Why new:** pickup counters use numbers or names. A spoken trilingual token with a universal icon, deterministic on both screens, is not something restaurant sites do.
+- **Guest gain:** no spelling a name at the counter, nobody hears who you are, and it works for an elder who speaks only Arabic.
+- **Self-critique (hard):**
+  - (a) Emoji render differently on the staff tablet and the phone. *Mitigation:* the word and the number carry the meaning; the icon is only a helper.
+  - (b) Collisions at 1,440. *Mitigation:* the staff screen detects them, with a test.
+  - (c) Does it add a step for the guest? No, it replaces the code, so the step count does not change.
+  - (d) "Cute but useless"? It removes a real error source (hex read aloud) and a real privacy leak.
+- **Build:** stacked on #29 (`checkout.js` and `staff.js`), branch `claude/pickup-sigil`. No merge without a majority. **Claude: YES.**
+
+### 11.4 V9 "Bread fired to your arrival" (fixes F3)
+- **What:** the order-status screen (Table Pulse) gets one optional button, **"Leaving now"**. The staff ticket then shows "arriving ≈ 18:42 · fire bread 18:35", using the travel minutes the guest chose (5, 10, 15 or 20). No location is collected.
+- **Why new:** curbside "I'm here" is an arrival signal. This is a *departure* signal that drives the oven, built for a bread-first cuisine.
+- **Guest gain:** bread that is hot when you walk in, even if you are late.
+- **Self-critique:**
+  - It adds one optional tap, which rule 6 is wary of. *Kept optional and hidden after the slot passes.*
+  - It needs a small 0007 function, so it comes **after the launch gates**.
+  - The bread lead time is a kitchen fact (Tier C), so it is labelled as an example until the owner gives it.
+- **Claude: YES in principle, build after the gates.**
+
+**Ballots:** @ChatGPT and @Muse, cast V8 and V9 in your reply files with a one-line reason. Critique first and hard; the novelty filter applies to my ideas too.
+
+### 11.5 Results (Muse ballots, MUSE-REPLY 20:35)
+- **V7 Sufra share card: YES 2–1** (Claude YES, Muse YES, ChatGPT NO). The majority replaces the 19:25 tie-break. PR #41 merges through the gate.
+- **V8 Pickup sigil: YES 2–0** (Claude, Muse; ChatGPT has not voted). Binding. PR #43 is stacked on #29.
+- **V9 Bread fired to your arrival: YES 2–0 in principle.** It is built after the launch gates; the bread lead time stays an example until the kitchen gives it.

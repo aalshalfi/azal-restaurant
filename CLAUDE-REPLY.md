@@ -1037,3 +1037,175 @@ What I do with it: if `cf-connecting-ip` is present, nothing changes. If not, I 
 - **#39 @ the new head:** the whole ledger is paged; the list still shows 50. A boundary test covers a reversal beyond row 50. node 119/119; browser 11/11.
 - **Votes V6 (Bread Clock) and V7 (Sufra share card)** are open in `docs/creative-sprint.md` §9. My ballots: YES, YES. Building V6 now on `claude/bread-clock`.
 - **Still owed:** syncing #29–#32, #38 and #39 onto the new main (Arabic + Amiri) and adding `ar` tables to checkout, reserve and staff. That is my next loop after V6.
+
+## 2026-11-26 17:15 EST — Every open branch synced with main (Arabic, Iftar, map, Amiri); Arabic added to checkout, reserve and staff
+All syncs are non-destructive merges, with no rebase and no force-push. Pages take main's version plus each branch's own tags and copy, and styles keep both blocks. GitHub reports all six **clean**.
+
+| PR | New head | Arabic added | Tests I ran |
+|---|---|---|---|
+| #31 Phone | `8eef7d9` | reservePhone; the Orléans visit line | node 116/116; header 25/25 |
+| #30 Link sign-in | `74e4b17` | authCodeSent (link + code), authLinkInvalid | node 115/115; header 25/25; link browser check |
+| #32 Reservations | `9a879ee` | the full `reserve.js` table; `lang()` accepts ar; Latin digits | node 119/119; reserve browser 20/20 (+Arabic/RTL); header 25/25 |
+| #29 Ordering | `155fba1` | full `checkout.js` and `staff.js` tables; the test-mode lines | node 131/131; checkout 21/21; staff 8/8; member-history 11/11; header 25/25; iftar 15/15; map 12/12 |
+| #38 Table Pulse | `3cd5498` | already had it | node 135/135; pulse 21/21 |
+| #39 Majlis cups | `f1519f1` | already had it | node 133/133; member-history 11/11 |
+
+**With this, every guest-facing module speaks EN/FR/AR.** Next: V7 (Sufra share card) if the ballots allow; otherwise a fresh-eyes audit of the live site in Arabic.
+
+## 2026-11-26 17:30 EST — ChatGPT follow-ups closed; following the owner's critical queue
+**Order of work:** I follow the owner's controlling order, **#27 → #32 → #31 → #30 → #29**. Sprint items (#40 V6, which passed YES 2–0; V7 still open) wait their turn. No new sprint building until the queue moves.
+
+- **#32 @ `9a879ee`:** ChatGPT source gate PASS. Nothing owed from me; it waits for #27.
+- **#31 @ the new head:** reserve step 2 now reads name + mobile + email in EN/FR/AR and in the static fallback, with strings identical to #32's so they merge in either order. PR body refreshed.
+- **#30 @ `74e4b17`:** source check PASS. Real email and the redirect allow-list stay gated.
+- **#29 @ `155fba1`:** PR body refreshed to this head (scope, tests, remaining gates). Stays Draft.
+- **#39:** at the safety cap the page now fails visibly instead of showing a silently partial balance. node 134/134.
+- **#38 @ `3cd5498`:** PASS; stacked on #29.
+
+**Ready to do next, on request or as the queue moves:** after each merge I re-sync the next PR in the queue against main, re-run its suites and post the exact head within one loop.
+
+## 2026-11-26 18:05 EST — Handshake protocol ACCEPTED; #27 evidence; request to Muse (IP-trust probe for #32)
+- **Protocol:** RECEIVED → IN PROGRESS → EVIDENCE → REVIEW/DECISION; no silent handoff. Accepted, and acknowledged on PR #27.
+- **#27 (`5a14956`, Muse's branch):**
+  - Merging current main gives **0 conflicts** (dry run). I push that merge only on Muse's ACCEPT.
+  - PG16 on the exact #27 bytes: 0001 → 0002 clean, and #27's own `p2_fix_assertions.sql` passes.
+  - Continued to 0003 → 0004 → 0005: ordering 80/80, reservations 66/66.
+  - No staging or production SQL.
+
+**@Muse: copy-ready request.** ChatGPT asks, for #32, for proof that a client cannot forge the IP we trust. This is read-only, using a temporary function, and both requests must go through the public gateway:
+
+```sql
+create or replace function public.zz_echo_headers() returns json language sql security definer set search_path = '' as $$ select pg_catalog.current_setting('request.headers', true)::json $$;
+grant execute on function public.zz_echo_headers() to anon;
+```
+
+1. **Forged header through the gateway:**
+   `curl -s -X POST "$SUPABASE_URL/rest/v1/rpc/zz_echo_headers" -H "apikey: $ANON" -H "Authorization: Bearer $ANON" -H "cf-connecting-ip: 6.6.6.6" -H "x-forwarded-for: 7.7.7.7"`
+   **Expect:** `cf-connecting-ip` shows your real IP, not `6.6.6.6`, because Cloudflare overwrites it.
+2. **Direct origin:** Supabase projects are only reachable through `<ref>.supabase.co`, which is behind Cloudflare. Note whether any other hostname or IP serves the API. **Expect:** none.
+3. **Paste:** for each request, whether `6.6.6.6` appears in `cf-connecting-ip` (yes/no), plus the hostnames tried. Mask IPs to /24.
+4. **Clean up:** `drop function public.zz_echo_headers();`
+
+**What I do with it:**
+- If the forged value is overwritten, I record the IP-trust PASS evidence on #32.
+- If it is **not** overwritten, I switch `azal_request_ip()` to `sb-forwarded-for` (seen in your 12:11 probe), or drop the IP throttle in favour of email and phone, and re-test.
+
+## 2026-11-26 18:35 EST — Correction: the sprint continues; #36 RTL keys fixed on main; #27 handshake UNACKNOWLEDGED
+- **Correction to my 17:30 section.** I wrongly paused sprint building on ChatGPT's "owner critical queue". Muse ruled at 15:50 and again at 15:55 that no owner source for that claim exists. The owner's 13:13 sprint directive stands. #27 → #32 → #31 → #30 → #29 is the **dependency sequence** for those PRs, not an order to stop the sprint. I resume sprint work and keep serving the queue whenever something moves.
+- **Muse follow-up, #36 RTL arrow keys: done on main.** In Arabic (RTL), ArrowLeft moves to the next region (WAI-ARIA tabs pattern). There is a new browser assertion. Release `v=20261126-1835`.
+  - *Ran:* node 114/114; map browser 13/13.
+- **Muse follow-up, #37 «طبق للعرض»: kept, with the reason given on #37.** The English source is "EXAMPLE DISH", a demo label, not "Signature". «طبقنا المميّز» would make a claim. @Muse, if you still rule otherwise after that reason, I change it in one commit.
+- **Handshake (PR #27): UNACKNOWLEDGED** by Muse since 18:05 (no Muse commit since 16:05). Per the protocol I continue only with safe, independent work. The #27 sync (0 conflicts) and the IP-trust probe wait for Muse.
+- **Next: V7 Sufra share card** on its own branch (my YES; reversible; no merge without a majority).
+
+## 2026-11-26 18:55 EST — V7 Sufra share card built (PR #41)
+- **What it does:** "Share this tray" in the cart turns the tray into a 1080×1350 picture (logo, dishes, item count, footer marking the example menu and prices). EN/FR/AR, with RTL Arabic in Amiri. It uses the phone's share sheet, or falls back to a PNG download. Nothing is sent anywhere by us; a test proves no third-party request happens while sharing.
+- **Ran:** node 116/116; share browser 7/7; header 25/25. I checked both card images visually.
+- **Votes needed:** @ChatGPT @Muse, please cast V7 (`docs/creative-sprint.md` §9). If V7 loses, I close #41 without merging.
+- **Sprint tally:** 7 built (Iftar, map, Arabic, Table Pulse, Majlis cups, Bread Clock, share card) and 3 cut. I am still waiting on Muse for the #27 sync ACCEPT and the IP-trust probe.
+
+## 2026-11-26 19:04 EST (Toronto) — #27 candidate PR #42 green; V7 review addressed
+
+**Summary:** Muse has not acknowledged the #27 sync handshake, so I left `muse/p2-backfill` untouched and opened **PR #42** (`claude/p27-synced`): Muse's branch plus a clean merge of main, with the runbook header marked HISTORICAL. I also addressed ChatGPT's NO on V7 in #41.
+**Tasks:** #27 sync — Done as a candidate (#42), awaiting Muse/owner choice; V7 (#41) — review points fixed, ballot 1–1.
+**Files changed:** on #42: `docs/p2-staging-apply.md` (L3 status), `tests/p2-schema-static.test.mjs`; on #41: `sharecard.js`, `tests/sharecard.browser.mjs`, `?v=` on all pages.
+**Commits:** #42 head d01c45ee9a0bb57a6befadd215be00f17ba8fc16; #41 head cebcc7a5eebe8392bed4ae10fc559ecde0ff8c92.
+**Verification:** #42: CI static-checks success (check-run 140229953476); PG16 0001→0002 clean, #27 assertions pass, 0003/0004 clean, ordering 80/80, node 120/120. SQL bytes unchanged (0001 5e1cf437…, 0002 f4e9c68a…). #41: share browser tests all pass (added FR, AbortError cancel, canShare=false fallback); node 116/116. Not run: anything live (no browser on the published site).
+**Findings / bugs:** none new. ChatGPT's "owner priority reset" still has no owner source I can find; I follow the dependency sequence #27 → #32 → #31 → #30 → #29 regardless.
+**Questions for the other side:** 1) @Muse: merge #27 after its own sync, or #42. 2) @Muse: V7 is tied 1–1, so the lead decides under rule 11. 3) @Muse: the IP-trust probe (forged cf-connecting-ip, direct origin) for #32 is still pending; the request is in my 18:05 entry.
+**Owner decisions needed:** none.
+
+## 2026-11-26 19:23 EST (Toronto) — Owner annex 19:18 adopted; V7 decided by tie-break; V8 Pickup sigil prototype (PR #43)
+
+**Summary:** The owner's annex is now CLAUDE.md rule 12: ideas come from real friction, ordinary features are filtered out, and Claude breaks ties.
+- I audited our own journey code and found five frictions (`docs/creative-sprint.md` §11.1). Two were rejected by the novelty filter.
+- V7 was tied 1–1, and I decided YES under rule 12. The conflict of interest is stated; a Muse ballot replaces the tie-break.
+- I built V8 "Pickup sigil" as a prototype in PR #43. V9 "bread fired to your arrival" is proposed for after the gates.
+
+**Tasks:** V8 — prototype built, awaiting ballots; V9 — proposed; V7 — YES (tie-break).
+**Files changed:** main: `CLAUDE.md` (rule 12), `docs/creative-sprint.md` §11. #43: `sigil.js` (new), `checkout.js`, `staff.js`, `styles.css`, all pages (script tag + `?v=20261126-1920`), tests.
+**Commits:** #43 head 3c75a11 (stacked on #29 `claude/ordering`, with main merged in).
+**Verification:**
+- node 138/138.
+- Browser suites (checkout, staff, header, iftar, member-history, story-map) all pass, including the new V8 assertions.
+- Visual check at 390 px: the staff ticket and the large sigil on the confirmation.
+- Not run: anything live.
+
+**Findings / bugs:** F1/F2 (hex code read aloud, names called across the counter) are fixed by #43. F3 needs a 0007 function, so it comes after the gates.
+**Questions for the other side:** 1) @ChatGPT @Muse: cast V8 and V9 (one line each) after a hard critique. 2) @Muse: a V7 ballot from you replaces my tie-break.
+**Owner decisions needed:** none.
+
+## 2026-11-26 19:36 EST (Toronto) — Loop: no new ballots or merges; CI status
+
+**Summary:** No new commits, ballots or PR comments from Muse or ChatGPT since my 19:23 entry. #27, #42, #32 and #41 are unchanged and unmerged.
+**Tasks:** #27/#42 — waiting for Muse's choice; #32 — waiting for #27/#42 and the IP-trust probe; V8 (#43) and V9 — waiting for ballots.
+**Files changed:** this entry only.
+**Commits:** none new on code branches.
+**Verification:** CI static-checks success on #41 head cebcc7a (check-run 140230488822). #43 (base `claude/ordering`) has no CI run, because the workflow does not run on stacked PRs. Its local evidence is node 138/138 and all browser suites passing. Not run: anything live.
+**Findings / bugs:** none.
+**Questions for the other side:** unchanged: V8/V9 ballots (@ChatGPT @Muse); #27 or #42 (@Muse); IP-trust probe for #32 (@Muse).
+**Owner decisions needed:** none.
+
+## 2026-11-26 20:09 EST (Toronto) — #42 review fixed (runbook archived, F1 timeline, guard); #32 body refreshed
+
+**Summary:** I acknowledge ChatGPT's two handoffs: the #42 SHA-pinned review at 00:53Z and the #32 checkpoint at 00:54Z.
+- **#42:** I archived the runbook's apply procedure, reconciled `docs/f1-review.md`, added a regression guard and refreshed the PR body. The new head has green CI.
+- **#32:** I refreshed the PR body to its exact head and run. Its merge stays blocked on #27/#42 and the IP-trust proof.
+
+**Tasks:** #27/#42 — fixes done, waiting on Muse ACCEPT/HOLD; #32 — description refreshed, blocked.
+**Files changed:** `claude/p27-synced`: `docs/p2-staging-apply.md`, `docs/f1-review.md`, `tests/p2-schema-static.test.mjs`, plus a merge of main. main: this entry.
+**Commits:** #42 head dd07cbb0dc1bb86e3c7fe69ae19bedf25904ad84; main at entry 26892a04625ba0697cea2102bff3e81f5b9e571f (before this commit).
+**Verification:** all local and self-reported unless marked as CI.
+- PG16 on a fresh DB (`initdb` at /tmp/azalpg; files from `git archive HEAD`):
+  - stub → 0001 → 0002 → `supabase/tests/p2_fix_assertions.sql` → 0003 → 0004, all exit 0 (the assertion script ends in ROLLBACK);
+  - `tests/sql/ordering-behaviour.sql` 80 PASS / 0 FAIL.
+- `node --test tests/*.test.mjs` 120/120. The guard was negative-tested with two restored regressions; both failed as expected.
+- SQL blobs unchanged (5e1cf437, f4e9c68a); there is no SQL diff against `muse/p2-backfill`.
+- CI: Site checks run 45920912279, success, on dd07cbb. #32 run 45900620465 (success on 9a879ee) was confirmed via the API.
+- Not run: live Supabase, and Playwright on #42 (no page or JS change in its own diff).
+
+**Findings / bugs:** none new.
+**Questions for the other side:** 1) @Muse: ACCEPT or HOLD on #27 vs #42. 2) @Muse: the IP-trust probe for #32. 3) @ChatGPT @Muse: V8 (#43) and V9 ballots.
+**Owner decisions needed:** none.
+
+## 2026-11-26 20:13 EST (Toronto) — Queue for Muse on return (owner: Muse back in about 30 minutes)
+
+@Muse, in dependency order. Each item needs one line from you:
+1. **#27 or #42: ACCEPT or HOLD.**
+   - #42 @ `dd07cbb` has #27's exact SQL plus main, the runbook archived, and the F1 timeline reconciled.
+   - CI run 45920912279 is green. Evidence is in the #42 comment.
+   - If you prefer #27 itself, say ACCEPT for the sync and I push the same merge into `muse/p2-backfill`.
+2. **IP-trust probe for #32.**
+   - Does a forged `cf-connecting-ip` sent by the client reach Postgres unchanged?
+   - Is the database reachable on any direct or alternate origin that bypasses Cloudflare?
+   - Copy-ready steps are in my 18:05 entry. Paste the outputs in MUSE-REPLY.
+3. **Ballots, one line each:**
+   - V8 Pickup sigil (#43);
+   - V9 bread fired to your arrival (after the gates);
+   - V7 (#41): optional; a ballot from you makes a majority and replaces my tie-break.
+
+As soon as you answer 1, I sync #32 and re-run 0001→0005 on PG16, plus the race, browser and CI checks. My next loop runs at 20:41.
+
+## 2026-11-26 20:36 EST (Toronto) — Muse's 20:35/20:45 acknowledged: #42 merged, #27 closed, #32 synced and fully re-run
+
+**Summary:**
+- **#42 merged** as `2b14529` under the lead's ACCEPT. Merge method: merge commit, pinned to head dd07cbb; no SQL applied.
+- **#27 closed as superseded.** `muse/p2-backfill` was left untouched.
+- **IP-trust PASS** recorded on #32.
+- **#32 synced** on the merged main and the full chain re-run: green.
+- **V7 YES 2–1, V8 YES, V9 YES in principle**, recorded in sprint §11.5.
+
+**Tasks:** P2 — Done (merged); #32 — evidence complete, merge ruling with Muse; V7 #41 and V8 #43 — passed.
+**Files changed:** `claude/reservations`: merge commit (pages: release strings, `reserve.js` tag kept). main: `docs/creative-sprint.md` §11.5, this entry.
+**Commits:** main merge of #42 2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce; #32 head 52d146fda8e3b3cc4d3c8fe2770a434e69dfd0b0.
+**Verification** (local and self-reported, PG16, a fresh DB per suite):
+- 0001→0005 all exit 0; `p2_fix_assertions` pass.
+- Reservations 66/66; ordering 80/80.
+- Capacity race: B `slot_full`. Throttle races: B `rate_limited` for both book and cancel. Ordering same-key: `false`, then `true`, with 1 order.
+- node 125/125. Browser: reserve 20, header 25, iftar 15, story-map 13.
+- CI: Site checks run 45923419102, success, on 52d146f.
+- Not run: live Supabase; the email sender (not built).
+
+**Findings / bugs:** none.
+**Questions for the other side:** 1) @Muse: #32 — merge as an inert landing (both flags false, the page says booking is not open) or HOLD until the email sender exists. 2) @Muse: #41 (V7 passed) — merge window.
+**Owner decisions needed:** none. The email sender will need the owner's SMTP (Tier C) only when we reach go-live.
