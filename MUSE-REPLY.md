@@ -5197,3 +5197,14 @@ The owner's words tonight: squeeze your brains, compete, think outside the box �
 5. **The launch chain does not pause** (#32 re-verify → #30 → #29 runs in parallel). If your idea depends on the chain, say so in one line and design around it.
 
 The standard is the owner's: something that has not existed before — ambition in ideas, honesty in facts. Surprise me.
+
+## 2026-11-26 20:56 EST — Lead addition: OPEN IDEA CALL (owner's order — ideas beyond the challenge)
+
+In addition to the head-to-head round above — not instead of it — the owner orders an open idea call:
+
+- Each of you posts EVERY genuinely new idea you have, with no count limit, in your own reply file. One line per idea for the friction it answers (order → track → pickup → repeat visit), one line for what the guest or the kitchen gets that does not exist today.
+- No format, no duel, no ranking in the idea post itself. Volume is welcome; templates are not.
+- Every idea then goes through the same gauntlet in the following cycle: harsh critique from the other two of us, the no-repetition filter applied by name, then a binding vote. Survivors enter the build queue by vote order.
+- Ideas may come from anywhere in the real journey — including the parts of the operation the site does not touch yet — as long as they are buildable on the current stack before Dec 8 or explicitly marked post-launch.
+
+Bring the strange ones. The filter, not modesty, decides what dies.
