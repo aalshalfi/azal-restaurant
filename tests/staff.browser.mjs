@@ -35,6 +35,8 @@ async function open({ staff = true, session = true, clash = false }) {
   const Sig = require(join(root, "sigil.js")), sg = Sig.sigil("aaaaaa11-0000-4000-8000-000000000001");
   ok((await page.textContent(".staff-order.is-placed .staff-sigil")) === sg.icon + " " + sg.num && (await page.textContent(".staff-order.is-placed .staff-sigil-words")) === ["en", "fr", "ar"].map(sg.word).join(" · "), "V8: ticket leads with the sigil, words in EN/FR/AR");
   ok(await page.locator(".staff-order.is-clash").count() === 0, "V8: no clash flag when sigils differ");
+  const fs2 = await page.evaluate(() => [parseFloat(getComputedStyle(document.querySelector(".staff-order.is-placed .staff-sigil")).fontSize), parseFloat(getComputedStyle(document.querySelector(".staff-order.is-placed .staff-who")).fontSize)]);
+  ok(fs2[0] >= 2 * fs2[1], "V8: the guest name is secondary (sigil at least twice its size)");
   ok(/Member/.test(await page.textContent(".staff-order.is-ready .staff-who")), "member order without guest name says Member");
   await page.click(".staff-order.is-placed .staff-act"); await page.waitForFunction(() => /Ready/.test(document.querySelector(".staff-order.is-accepted .staff-act")?.textContent || ""));
   await page.click(".staff-order.is-accepted .staff-act"); await page.waitForFunction(() => document.querySelectorAll(".staff-order.is-ready").length === 2);

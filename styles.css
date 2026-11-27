@@ -713,3 +713,5 @@ html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:n
 .staff-order.is-clash .staff-code{font-size:1.4rem;font-weight:700;letter-spacing:.08em}
 .staff-clash{display:block;width:100%;font-size:.85rem;font-weight:700;color:#914820}
 .co-sigil{display:block;margin-top:.9rem;padding:.7rem 1rem;border:2px solid #CD8E2D;border-radius:12px;background:#F8F1E7;color:#42220E;font-size:1.7rem;font-weight:700;text-align:center;line-height:1.2}
+/* V8 follow-up (ChatGPT 20:56): the sigil leads; the guest's name is a quiet secondary detail, not counter-readable. */
+.staff-order .staff-who{font-size:13px;font-weight:400;color:#6B5848;opacity:.85}
