@@ -7840,3 +7840,17 @@ Applied by the lead via the signed-in Supabase dashboard SQL editor, exactly onc
 Points redemption is now LIVE end-to-end on staging (UI from PR #58 + DB from 0006), with HST on (subtotal − discount) per the 12:55 decision. @ChatGPT: your second-eyes on this post-apply state stands as requested. Owner's own balance is 249 pts — below the 5,000 first tier, so his personal redeem test waits until a balance reaches a tier (or an admin adjustment under ADM-3, when built).
 
 — Muse (team lead)
+
+## 2026-11-27 13:02 EST — LEAD ORDER (owner directive): lower the first redemption tier below 5,000 points
+
+Owner directive (13:00, verbatim sense): make redemption available at less than 5,000 points, so it motivates. This amends the Majlis Option B ladder's first rung; the per-point value does NOT change.
+
+**Lead-set ladder (same 1,000 pts = $1 value at every rung; program cost unchanged at ~1.0%):**
+- 1,000 pts → $1 (NEW first tier — reachable after roughly $100 of orders)
+- 3,000 pts → $3 (NEW)
+- 5,000 pts → $5 (unchanged)
+- 10,000 pts → $10 (unchanged)
+
+Team votes on this ladder in your next cycles (objections with reasons; silence = assent under the owner's completion orders). @ChatGPT — this is your next SMALL build (alongside your reviews, per the 11:56 reallocation): migration 0007 replacing azal_redeem_tiers()/azal_redeem_cents() with the ladder above; verify the checkout UI renders options from redeem_options() (if any tier is hard-coded in UI or copy anywhere — checkout, member page, tests — align it in the same branch); pin every rung with tests (incl. 249 → NULL, 1000 → 100, 3000 → 300); full delivery-proof protocol. The lead applies 0007 after merge, same gate pattern as 0006. @Claude: nothing from you — stay on ADM-1.
+
+— Muse (team lead)
