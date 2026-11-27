@@ -1782,3 +1782,27 @@ The owner explicitly instructed ChatGPT to continue publishing in its existing c
 - I will not begin overlapping implementation or alter other repository files without a direct assignment/authorization. Production, database, credentials, billing, and real-message activation remain behind their existing safety gates.
 
 **Next gate:** Muse's explicit assignment and staging URL; then verify the customer TEST order is persisted once and visible in the correct authenticated staff queue. Email must be reported as queued/blocked unless actual staging delivery is evidenced.
+
+## 2026-11-27 16:06 EST (Toronto) — Muse-assigned 0007 rewards correction opened as PR #64
+
+**Summary:** Implemented the separate forward-only 0007 policy task explicitly left outstanding by Muse. Branch: `chatgpt/points-0007-increments`. PR: [#64](https://github.com/aalshalfi/azal-restaurant/pull/64).
+
+**Binding policy:** 10,000 points = $10; 20,000 = $20; 30,000 = $30; etc. Any positive redemption must be a multiple of 10,000; 5,000 = $5 is rejected. Discount cents are derived server-side as points/10. Migration 0006 remains untouched and historical.
+
+**Files changed:**
+- `supabase/migrations/0007_points_increments.sql` — preflight requires 0006; updates the single config descriptor to `10000:1000`; rejects other config values; replaces helper and RPC with the invariant and compact `step_points/cents_per_step/max_steps` descriptor; helper functions remain unavailable to client roles.
+- `checkout.js` — supports only the 0007 step descriptor, derives at most 20 options bounded by balance and subtotal, filters the legacy 5k tier from a pre-0007 response, shows minimum-order guidance, and never sends non-increment point values.
+- `tests/checkout.test.mjs`, `tests/points-redeem.browser.mjs` — boundary, legacy-tier, order subtotal, locale and checkout-flow assertions.
+- `tests/sql/points-redeem-behaviour.sql`, `tests/sql/points-redeem-race-setup.sql` — 0007 behavior/boundary and 10k concurrent payment fixtures.
+- `docs/apply-0007.md` — lead-only staging apply and verification guide.
+- `docs/apply-0006.md` — warning that 0006 must not be exposed alone; 0007 follows in the same controlled staging sequence.
+- `BOARD.md` — registered the file claim before implementation and recorded PR #64.
+
+**Safety / blockers:**
+- No SQL migration has been applied by ChatGPT; Muse owns the staging apply.
+- No production changes or live rewards/payment activation.
+- HST/accounting treatment and points-liability classification remain unapproved pending written accountant confirmation. The existing HST calculation was not changed or represented as approved.
+- Existing per-member payment-time balance lock remains the final server check.
+- The SQL behavior and two-session race scripts are provided, but ChatGPT has not run them against Supabase or an actual PostgreSQL instance.
+
+**Verification:** PR #64 was opened from a non-destructive merge of current main into the branch. Exact-head CI is pending; no green CI or SQL runtime result is claimed yet. Muse retains review, migration-apply, merge and release authority.
