@@ -8,7 +8,9 @@ let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); 
 const b = await chromium.launch(); const base = `http://localhost:${srv.address().port}`; const out = process.env.SHOT ? dirname(process.env.SHOT) : "/tmp";
 for (const lang of ["en", "ar"]) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, acceptDownloads: true }); const net = [];
-  // Count only what carries data out (fetch/XHR/beacon/socket or any non-GET); lazy menu photos are not "sending".
+  // "Sends" = anything that carries data out: fetch/XHR/beacon/websocket/form, or any non-GET. The menu's own lazy dish
+  // photos (GET images from the photo CDN) can still be loading while the test runs, so they do not count (CI has open
+  // network; the sandbox does not, which hid this). Failures print the offending requests.
   p.on("request", (r) => { if (!r.url().startsWith(base) && (r.method() !== "GET" || !["image", "font", "stylesheet"].includes(r.resourceType()))) net.push(r.method() + " " + r.resourceType() + " " + r.url()); });
   await p.addInitScript(([l]) => { localStorage.setItem("azal-language", l); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1], [8, 2]])); }, [lang]);
   if (lang === "ar") await p.addInitScript(() => { window.__shared = null; navigator.canShare = () => true; navigator.share = async (d) => { const u = await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(d.files[0]); }); window.__shared = { n: d.files.length, type: d.files[0].type, size: d.files[0].size, name: d.files[0].name, url: u }; }; });
@@ -29,18 +31,18 @@ for (const lang of ["en", "ar"]) {
     ok(s.n === 1 && s.type === "image/png" && s.size > 20000 && s.name === "azal-sufra.png", "share sheet receives one PNG file");
     writeFileSync(join(out, "share-ar.png"), Buffer.from(s.url.split(",")[1], "base64"));
   }
-  ok(net.length === 0, `${lang}: sharing sends nothing to any other host`);
+  ok(net.length === 0, `${lang}: sharing sends nothing to any other host` + (net.length ? " " + JSON.stringify(net) : ""));
   await p.close();
 }
 { const p = await b.newPage(); await p.goto(base + "/menu.html");
   ok(await p.locator("#shareTray").isHidden(), "empty tray: no share button"); await p.close(); }
-{ // the tray is captured before the preview clears the cart; reopening checkout hides the button again
+{ // the tray is captured at the preview (F-WALK-1, #49: the preview now keeps the cart); reopening checkout hides the button again
   const p = await b.newPage({ acceptDownloads: true });
   await p.addInitScript(() => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1]])); navigator.canShare = () => false; });
   await p.goto(base + "/menu.html"); await toPreview(p);
-  ok(await p.evaluate(() => cart.size) === 0, "preview cleared the cart as before");
+  ok(await p.evaluate(() => cart.size) === 2, "the preview keeps the tray (F-WALK-1 on main)");
   const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#shareTray")]);
-  const buf = readFileSync(await dl.path()); ok(buf.length > 20000, "card still drawn from the captured tray after the cart was cleared");
+  const buf = readFileSync(await dl.path()); ok(buf.length > 20000, "card drawn from the captured tray");
   await p.click("#modalClose"); await p.evaluate(() => { cart.set(5, 1); renderCart(); document.getElementById("cartOpen").click(); }); await p.click("#checkoutButton");
   ok(await p.locator("#shareTray").isHidden(), "reopening checkout hides the old share button"); await p.close(); }
 { // French + the guest cancelling the share sheet: no fallback download, no message
