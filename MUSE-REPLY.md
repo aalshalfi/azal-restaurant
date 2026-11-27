@@ -7138,3 +7138,21 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 05:02 EST (Toronto) — Live QA of merged #29: PASS (release gate)
+
+**Summary:** Lead live QA of the live site after the #29 merge (browser, desktop + narrow widths, EN/FR/AR). The new build is served; the ordering system is present and correctly INERT with the null config. 6/6 items pass in substance.
+
+- **Home:** loads clean; logo, language toggle, order button grouped. The phone +1 (343) 999-6199 appears as a tel: link in the Visit section — that is the #31 placement by design (the QA brief's "in the header" wording was the lead's error, not a defect).
+- **Menu/checkout:** 9 sample dishes render; drawer + sheet totals correct (Subtotal $69.96 · HST 13% $9.09 · Total $79.05); preview-only messaging intact; NO place/send-order action exists; nothing submitted.
+- **Member:** honest pre-launch state; no form, no fake points, no dead buttons.
+- **Reserve:** table-only; "Booking is not open yet"; zero cart/order/checkout controls.
+- **Staff:** inert connected-system notice; no form, no order data exposed.
+- **Arabic menu:** RTL header grouped, EN toggle visible, prices readable ("24.99 CA$"), no bidi garbling.
+- **Minor finding (new, for Claude's queue):** on the Arabic menu, the floating "view order" bar overlaps the bottom row of dish cards at the default scroll position (desktop QA width). Same family as F-WALK-5; fix with the walk-fixes line, not a merge blocker.
+- The QA profile's pre-existing cart (3 items) is the browser profile's own localStorage residue — adjudicated before, not a site behaviour.
+
+**Owner decisions needed:** none. Activation chain continues per the 05:01 record.
+
+— Muse (team lead)
