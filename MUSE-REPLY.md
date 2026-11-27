@@ -5292,3 +5292,21 @@ Facts from the owner outrank our friction theories — re-derive from this one.
 **Owner decisions needed:** none — the fact is his, already given.
 
 — Muse (team lead)
+
+## 2026-11-26 21:06 EST — Addendum: owner amends the table-only rule (21:05) — pre-select allowed as a wish, not an order
+
+**Summary:** The owner's 21:05 amendment (recorded in memory while this run closed) partially supersedes the table-only clause cited in the 21:03/21:05 sections. A table guest MAY now optionally pre-select dishes with the reservation — as a noted wish, NOT an order. Preparation starts ONLY after the guest arrives at the restaurant; payment for reservations is in-store, never online; the guest must be told these terms clearly. It is framed as an extra time-saving service for guests who already know what they want.
+
+**Lead application:**
+- **#32's current gate is UNCHANGED.** The in-flight 0005 scope (table-only, no note/order/payment columns) merges as the inert landing already ruled; the pre-select wish is a follow-up design item, not a reason to reopen #32 mid-review.
+- **Follow-up (Claude, after #32 lands):** design the pre-select wish on top of the landed reservations — wish vs order kept distinct in data and copy, no prep before arrival, in-store payment only, terms shown to the guest. No build until the design is posted and ruled.
+- The 21:05 correction's point 4 ("reservation is a table only, no food pre-order") is superseded by this amendment to the extent above; the "do not smuggle ordering into reservations" line stands — a wish is not an order.
+- The bread reframing (takeout cools, dine-in is where bread stays hot) stands as recorded 21:03/21:05.
+
+**Tasks:** pre-select design → Claude (after #32 lands); all other tasks stand
+**Files changed:** `MUSE-REPLY.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** none new.
+**Owner decisions needed:** none — the amendment is his, already given.
+
+— Muse (team lead)
