@@ -93,27 +93,28 @@ test("kitchen note: 500 characters pass unchanged; 501 are refused, never cut in
 
 test("F-OWN-4: buildOrder sends p_redeem_points only for a member who chose a reward", () => {
   const base = { cart: new Map([[1, 1]]), choice: "asap", key: "k".repeat(20), nowMs: Date.parse("2026-11-26T17:00:00Z") };
-  assert.equal(C.buildOrder(Object.assign({}, base, { redeem: 5000 })).p_redeem_points, 5000);
+  assert.equal(C.buildOrder(Object.assign({}, base, { redeem: 10000 })).p_redeem_points, 10000);
   assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 0 }))), "0 is not sent (old servers keep working)");
   assert.ok(!("p_redeem_points" in C.buildOrder(base)), "absent is not sent");
-  assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 5000, guest: { name: "A", email: "a@example.invalid" } }))), "guests never send points");
+  assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 10000, guest: { name: "A", email: "a@example.invalid" } }))), "guests never send points");
   assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 2.5 }))), "non-integers are not sent");
 });
 
-test("F-OWN-4: redeemView shows usable rewards only, and the next goal", () => {
-  const tiers = [{ points: 10000, cents: 1000 }, { points: 5000, cents: 500 }];
-  const owner = C.redeemView({ balance: 249, tiers }, 5597);
-  assert.deepEqual([owner.usable.length, owner.next.points, owner.first], [0, 5000, true], "the owner's 249 points: nothing usable, first reward at 5,000");
-  const rich = C.redeemView({ balance: 12000, tiers }, 5597);
-  assert.deepEqual(rich.usable.map((t) => t.points), [5000, 10000]);
-  assert.equal(rich.next, null);
-  const mid = C.redeemView({ balance: 7000, tiers }, 5597);
-  assert.deepEqual([mid.usable.map((t) => t.points), mid.next.points, mid.first], [[5000], 10000, false], "7,000: 5,000 usable, next reward (not first) at 10,000");
-  assert.deepEqual(C.redeemView({ balance: 12000, tiers }, 800).usable.map((t) => t.points), [5000], "a reward larger than the subtotal is not offered");
-  const small = C.redeemView({ balance: 12000, tiers }, 399);
-  assert.deepEqual([small.usable.length, small.next, small.min && small.min.points], [0, null, 5000], "CX-2: enough points, order under $5: nothing usable, no next goal, min reward 5,000 (the UI says so)");
+test("F-OWN-4 / 0007: only 10,000-point increments are usable and order-bounded", () => {
+  const rule = (balance, subtotal = 1000000) => C.redeemView({ balance, step_points: 10000, cents_per_step: 1000, max_steps: 20 }, subtotal);
+  assert.deepEqual([rule(9999).usable, rule(9999).next, rule(9999).first], [[], { points: 10000, cents: 1000 }, true], "9,999: no redemption; first reward is 10,000");
+  assert.deepEqual(rule(10000).usable, [{ points: 10000, cents: 1000 }], "10,000: $10");
+  assert.deepEqual([rule(19999).usable.map((x) => x.points), rule(19999).next.points], [[10000], 20000], "19,999: only $10; next $20");
+  assert.deepEqual(rule(20000).usable.map((x) => x.points), [10000, 20000], "20,000: $10/$20");
+  assert.deepEqual([rule(29999).usable.map((x) => x.points), rule(29999).next.points], [[10000, 20000], 30000], "29,999: only $10/$20");
+  assert.deepEqual(rule(30000).usable.map((x) => x.points), [10000, 20000, 30000], "30,000: $10/$20/$30");
+  const belowSubtotal = rule(30000, 999);
+  assert.deepEqual([belowSubtotal.usable, belowSubtotal.min], [[], { points: 10000, cents: 1000 }], "discount cannot exceed the order subtotal");
+  assert.equal(rule(9000000).usable.length, 20, "large balances never create an unbounded choices array");
+  const legacy = C.redeemView({ balance: 12000, tiers: [{ points: 5000, cents: 500 }, { points: 10000, cents: 1000 }] }, 5597);
+  assert.deepEqual(legacy.usable.map((x) => x.points), [10000], "pre-0007 compatibility hides the legacy 5,000-point tier");
   assert.equal(C.redeemView(null, 5597).any, false);
-  assert.equal(C.redeemView({ balance: 9e9, tiers: [{ points: -1, cents: 500 }, { points: 5000, cents: 0 }] }, 5597).any, false, "malformed tiers are ignored");
+  assert.equal(C.redeemView({ balance: 999999, tiers: [{ points: -1, cents: 500 }, { points: 5000, cents: 500 }] }, 5597).any, false, "invalid/legacy tiers are ignored");
 });
 
 test("F-OWN-4: 0006 keeps points server-side (grants, members only, debit on payment)", () => {
@@ -124,4 +125,19 @@ test("F-OWN-4: 0006 keeps points server-side (grants, members only, debit on pay
   assert.match(sql, /'redeem:' \|\| v_o\.id, 'redeem', -v_o\.redeemed_points/);
   assert.match(sql, /pg_advisory_xact_lock\(pg_catalog\.hashtext\('points\|' \|\| v_o\.user_id::text\)\)/);
   assert.match(sql, /\('redeem_tiers', '5000:500,10000:1000'\) on conflict \(key\) do nothing/);
+});
+
+test("0007 is forward-only and pins the server redemption invariant", () => {
+  const m6 = readFileSync(new URL("../supabase/migrations/0006_points_redeem.sql", import.meta.url), "utf8");
+  const m7 = readFileSync(new URL("../supabase/migrations/0007_points_increments.sql", import.meta.url), "utf8");
+  assert.match(m6, /\('redeem_tiers', '5000:500,10000:1000'\) on conflict \(key\) do nothing/, "0006 stays immutable historical source");
+  assert.match(m7, /p_points > 0/);
+  assert.match(m7, /p_points % 10000 = 0/);
+  assert.match(m7, /then p_points \/ 10/);
+  assert.match(m7, /'step_points', 10000/);
+  assert.match(m7, /'cents_per_step', 1000/);
+  assert.match(m7, /'max_steps', 20/);
+  assert.match(m7, /on conflict/i) === false;
+  assert.match(m7, /invalid_redeem_config/);
+  assert.match(m7, /revoke all on function public\.azal_redeem_cents\(integer\) from public, anon, authenticated/);
 });
