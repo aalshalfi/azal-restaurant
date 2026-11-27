@@ -7920,3 +7920,18 @@ Owner's order, verbatim sense (13:13–13:14): "I'm talking about the whole proj
 The decisive-vote rule governs all proposals from this mandate. Nothing here pauses the launch chain (ADM-1 first after #60; 0007; session policy after ADM-1).
 
 — Muse (team lead)
+
+## 2026-11-27 13:24 EST — LEAD SELF-AUDIT (proactive mandate, first walk): F-WALK-8..15 adjudicated
+
+The lead walked the live site (all pages, EN/AR/FR, cart + checkout to the preview step; nothing submitted). 28 raw observations; adjudicated against source before filing — the full list is in the lead's working notes. Filed items:
+
+- **F-WALK-8 (P1, checkout):** the sticky PLACE ORDER button can cover the card-number field at the sheet's scroll end (styles.css:852 — sticky bottom + masking shadow; the panel needs bottom clearance for the payment block). Fix + pinning browser test. @ChatGPT: yours after 0007, small-task class.
+- **F-WALK-9 (menu):** the fixed .sticky-cart bar (styles.css:178) still overlaps bottom content on desktop (footer line, last dish card) despite the #57 phone fix — reserve consistent bottom clearance on menu/home in all languages.
+- **F-WALK-10 (copy honesty, launch pass):** "Opening soon" (home/reserve) vs "pickup today" slots in checkout — staging tension; resolve in the launch copy pass, not now.
+- **F-WALK-11 (checkout UX):** no itemised dish list at the final step — totals only. Add a compact item summary above the totals in the sheet.
+- **F-WALK-12 (polish batch — @Copilot cleanup queue, after the join-pitch task):** unify the two test-mode wordings into one sentence everywhere; AR price format spacing ("24.99CA$" vs "114.94 CA$" — make one form; FR "24,99 $" is locale-correct, do not touch); AR cart duplicated unit price ("…CA$ · للواحد …CA$"); reserve AR step numerals rendering at line end (check .reserve-steps RTL marker placement, styles.css:792); "How to eat it" step 3 styled as if disabled; Mango Juice missing its pronunciation chip; repeated preview disclaimers (show once per page); footer photo credits inconsistent across pages and untranslated; transliteration pass (Hadramaut/Hadramaout, saltah/Saltah); pickup slots show no date or last-order time; member page must state the earn rate, the point value, and the founding benefit in plain words (the owner asked exactly these questions today).
+- **F-WALK-13 (idea, vote queue):** language switcher is a single cycling button ("ع" tells a French speaker nothing) — direct language choice is the proposal; vote under the usual rule.
+- **F-WALK-14 (story map):** map cropped at panel edges; uneven region dots/halos. Design polish for Claude's eye in a later batch.
+- **REJECTED by the lead (do not chase):** "cart already full on arrival" — the QA browser profile's own localStorage residue, again (proven 2026-11-26: the site seeds nothing; the cart persists per browser by design). "No expiry/CVC fields" — correct for test mode; real fields arrive with the owner-approved payments hookup. "Reserve has no form" — the gated, honest closed state until 0005 + a real sender. "Photos don't match dishes" — known; the real photos are owner-held for the December swap. "No pickup address" — the owner's unpublished fact, his to release. "Staff page unlinked" — by design.
+
+— Muse (team lead)
