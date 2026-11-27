@@ -1,5 +1,5 @@
 /* AZAL "Sufra share card" (Claude, creative sprint V7). Scope (revised after ChatGPT's review): a DRAFT of the tray
-   from the cart, before ordering, so it carries no pickup time; the card says "not ordered yet". One tap in the cart turns the tray into a clean picture the
+   from the cart, before ordering, so it carries no pickup time; the card says "not ordered yet". One tap at the end of the preview turns the tray into a clean picture the
    guest can send to the family group with the phone's own share sheet ("here's what I'm getting, add anything?").
    Drawn on a <canvas> in the browser from the cart and the sample menu only. Nothing is uploaded or sent anywhere
    by us: the image goes only where the guest chooses to share it. Falls back to a download. EN/FR/AR. */
@@ -15,15 +15,29 @@
     }
     return { shown: out.slice(0, MAX_LINES), more: Math.max(0, out.length - MAX_LINES), count: out.reduce((a, l) => a + l.qty, 0) };
   }
-  const api = { cardLines, W, H, MAX_LINES };
+  // Long dish names wrap onto a second line instead of being squeezed by fillText's maxWidth (ChatGPT, #44 review).
+  // measure(text) -> width in px. Returns at most 2 lines; a single word wider than maxW stays whole on its line.
+  function wrapName(name, maxW, measure) {
+    if (measure(name) <= maxW) return [name];
+    const words = String(name).split(/\s+/); let a = "";
+    for (let i = 0; i < words.length; i++) {
+      const t = a ? a + " " + words[i] : words[i];
+      if (a && measure(t) > maxW) return [a, words.slice(i).join(" ")];
+      a = t;
+    }
+    return [a];
+  }
+  const api = { cardLines, wrapName, W, H, MAX_LINES };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
-  const bottom = document.querySelector(".cart-bottom");
-  if (!bottom || typeof cart === "undefined") return;
+  // Placement (lead ruling 21:03, Claude's bonus target): the live checkout is a preview that ends in "nothing was sent".
+  // The share button lives in that preview result, so the dead end becomes the payoff: the guest leaves with the tray picture.
+  const msgBox = document.getElementById("checkoutMessage");
+  if (!msgBox || typeof cart === "undefined") return;
   const S = {
     en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again." },
-    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "On ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
-    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة مبدئية، لم تُطلب بعد · تضيفون شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "قائمة وأسعار للعرض · معاينة", made: "تم إنشاء الصورة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
+    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "Plateau en brouillon, pas encore commandé · on ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
+    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة لم تُطلب بعد · هل نضيف شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "الأطباق والأسعار للعرض فقط · معاينة", made: "صورتك جاهزة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
@@ -32,8 +46,11 @@
   const btn = document.createElement("button");
   btn.type = "button"; btn.className = "button share-tray"; btn.id = "shareTray";
   const status = document.createElement("p"); status.className = "share-status"; status.setAttribute("role", "status");
-  bottom.append(btn, status);
-  function paint() { btn.textContent = L("btn"); btn.hidden = !(cart && cart.size > 0); }
+  msgBox.after(btn, status);
+  // The preview clears the cart, so the tray is copied on the way in (capture phase runs before script.js's handler).
+  let tray = [];
+  document.addEventListener("click", (e) => { if (e.target && e.target.closest && e.target.closest("#placeDemoOrder")) tray = [...cart.entries()].filter(([, q]) => q > 0); }, true);
+  function paint() { btn.textContent = L("btn"); btn.hidden = !(tray.length && msgBox.textContent.trim()); if (btn.hidden) status.textContent = ""; }
 
   function loadImage(src) { return new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
   async function draw() {
@@ -50,14 +67,16 @@
     const edge = ar ? W - 90 : 90;
     x.fillStyle = "#42220E"; x.font = `600 64px ${fontFam}`; x.fillText(L("title"), edge, 420);
     x.fillStyle = "#914820"; x.font = `400 40px ${sans}`; x.fillText(L("sub"), edge, 480);
-    const { shown, more, count } = cardLines(cart.entries(), byId, lang());
+    const { shown, more, count } = cardLines(tray, byId, lang());
     let y = 590;
     for (const l of shown) {
       x.fillStyle = "#CD8E2D"; x.font = `700 44px ${sans}`;
       const qty = l.qty + "×";
       x.fillText(qty, edge, y);
       x.fillStyle = "#42220E"; x.font = `500 46px ${sans}`;
-      x.fillText(l.name, ar ? edge - 110 : edge + 110, y, W - 290);
+      const nameLines = wrapName(l.name, W - 290, (t) => x.measureText(t).width);
+      nameLines.forEach((t, i) => x.fillText(t, ar ? edge - 110 : edge + 110, y + i * 54, W - 290));
+      y += (nameLines.length - 1) * 54;
       x.strokeStyle = "rgba(66,34,14,.12)"; x.lineWidth = 2; x.beginPath(); x.moveTo(90, y + 30); x.lineTo(W - 90, y + 30); x.stroke();
       y += 74;
     }
@@ -79,8 +98,7 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     status.textContent = L("made");
   });
-  const cartItems = document.getElementById("cartItems");
-  if (cartItems) new MutationObserver(paint).observe(cartItems, { childList: true, subtree: true });
+  new MutationObserver(paint).observe(msgBox, { childList: true, characterData: true, subtree: true });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   paint();
 })(typeof window !== "undefined" ? window : globalThis);

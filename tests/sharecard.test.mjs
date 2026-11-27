@@ -18,3 +18,15 @@ test("nothing is sent anywhere: no fetch/XHR/beacon in the module; no innerHTML"
   const src = readFileSync(new URL("../sharecard.js", import.meta.url), "utf8");
   assert.doesNotMatch(src, /fetch\(|XMLHttpRequest|sendBeacon|innerHTML/);
 });
+
+test("long dish names wrap to a second line instead of being squeezed (EN/FR/AR)", () => {
+  const m = (t) => t.length * 10; // 10px per character
+  assert.deepEqual(C.wrapName("Mandi", 100, m), ["Mandi"]);
+  assert.deepEqual(C.wrapName("Agneau mandi lentement fumé du Hadramaout", 200, m), ["Agneau mandi", "lentement fumé du Hadramaout"]);
+  assert.deepEqual(C.wrapName("مندي لحم ضأن مدخّن على الطريقة الحضرمية", 200, m), ["مندي لحم ضأن مدخّن", "على الطريقة الحضرمية"]);
+  assert.deepEqual(C.wrapName("Supercalifragilistic", 100, m), ["Supercalifragilistic"], "one long word stays whole");
+});
+test("every language says the tray is a draft, not ordered (ChatGPT #44: FR lacked it)", () => {
+  const src = readFileSync(new URL("../sharecard.js", import.meta.url), "utf8");
+  assert.ok(src.includes("not ordered yet") && src.includes("pas encore commandé") && src.includes("لم تُطلب بعد"));
+});

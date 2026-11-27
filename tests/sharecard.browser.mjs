@@ -3,6 +3,7 @@ import { createRequire } from "node:module"; import http from "node:http"; impor
 const require = createRequire(process.env.NODE_PATH ? join(process.env.NODE_PATH, "x") : import.meta.url); const { chromium } = require("playwright");
 const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".woff": "font/woff", ".woff2": "font/woff2" };
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
+const toPreview = async (p) => { await p.evaluate(() => document.getElementById("cartOpen").click()); await p.click("#checkoutButton"); await p.click("#placeDemoOrder"); await p.waitForSelector("#shareTray:not([hidden])"); };
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = await chromium.launch(); const base = `http://localhost:${srv.address().port}`; const out = process.env.SHOT ? dirname(process.env.SHOT) : "/tmp";
 for (const lang of ["en", "ar"]) {
@@ -14,7 +15,11 @@ for (const lang of ["en", "ar"]) {
   await p.addInitScript(([l]) => { localStorage.setItem("azal-language", l); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1], [8, 2]])); }, [lang]);
   if (lang === "ar") await p.addInitScript(() => { window.__shared = null; navigator.canShare = () => true; navigator.share = async (d) => { const u = await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(d.files[0]); }); window.__shared = { n: d.files.length, type: d.files[0].type, size: d.files[0].size, name: d.files[0].name, url: u }; }; });
   await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
-  ok(await p.locator("#shareTray").isVisible(), `${lang}: share button shows when the tray has dishes`);
+  ok(await p.locator("#cartDrawer #shareTray, .cart-bottom #shareTray").count() === 0, `${lang}: no share button in the cart drawer any more`);
+  await p.click("#checkoutButton");
+  ok(await p.locator("#shareTray").isHidden(), `${lang}: hidden before the preview runs`);
+  await p.click("#placeDemoOrder"); await p.waitForSelector("#shareTray:not([hidden])");
+  ok(await p.locator("#checkoutModal #shareTray").isVisible(), `${lang}: share button appears in the preview result (dead end becomes the payoff)`);
   net.length = 0; // the menu's own photos load from an image CDN; only requests caused by sharing count
   if (lang === "en") {
     const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#shareTray")]);
@@ -29,19 +34,28 @@ for (const lang of ["en", "ar"]) {
   ok(net.length === 0, `${lang}: sharing sends nothing to any other host` + (net.length ? " " + JSON.stringify(net) : ""));
   await p.close();
 }
-{ const p = await b.newPage(); await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
+{ const p = await b.newPage(); await p.goto(base + "/menu.html");
   ok(await p.locator("#shareTray").isHidden(), "empty tray: no share button"); await p.close(); }
+{ // the tray is captured at the preview (F-WALK-1, #49: the preview now keeps the cart); reopening checkout hides the button again
+  const p = await b.newPage({ acceptDownloads: true });
+  await p.addInitScript(() => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1]])); navigator.canShare = () => false; });
+  await p.goto(base + "/menu.html"); await toPreview(p);
+  ok(await p.evaluate(() => cart.size) === 2, "the preview keeps the tray (F-WALK-1 on main)");
+  const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#shareTray")]);
+  const buf = readFileSync(await dl.path()); ok(buf.length > 20000, "card drawn from the captured tray");
+  await p.click("#modalClose"); await p.evaluate(() => { cart.set(5, 1); renderCart(); document.getElementById("cartOpen").click(); }); await p.click("#checkoutButton");
+  ok(await p.locator("#shareTray").isHidden(), "reopening checkout hides the old share button"); await p.close(); }
 { // French + the guest cancelling the share sheet: no fallback download, no message
   const p = await b.newPage({ acceptDownloads: true }); let downloads = 0; p.on("download", () => downloads++);
   await p.addInitScript(() => { localStorage.setItem("azal-language", "fr"); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[5, 1]])); navigator.canShare = () => true; navigator.share = async () => { throw Object.assign(new Error("cancel"), { name: "AbortError" }); }; });
-  await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
+  await p.goto(base + "/menu.html"); await toPreview(p);
   ok(/Partager ce plateau/.test(await p.textContent("#shareTray")), "French button");
   await p.click("#shareTray"); await p.waitForTimeout(800);
   ok(downloads === 0 && (await p.textContent(".share-status")) === "", "share sheet cancelled: nothing downloaded, no message"); await p.close(); }
 { // share sheet unavailable for files -> download fallback with a confirmation
   const p = await b.newPage({ acceptDownloads: true });
   await p.addInitScript(() => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[5, 1]])); navigator.canShare = () => false; });
-  await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
+  await p.goto(base + "/menu.html"); await toPreview(p);
   const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#shareTray")]);
   ok(dl.suggestedFilename() === "azal-sufra.png" && /Picture made/.test(await p.textContent(".share-status")), "canShare false: PNG download + 'Picture made'"); await p.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
