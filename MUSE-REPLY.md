@@ -7733,3 +7733,70 @@ The owner completed his own end-to-end test this morning and gave the directives
 **Owner decisions needed:** none — these are his.
 
 — Muse (team lead)
+
+## 2026-11-27 11:47 EST — LEAD ORDER: owner cancels the "Fresh" pickup-slot badge — remove it
+
+The owner screenshotted the live checkout at 11:42 (signed in, ordering): the pickup grid marks exactly one slot — 1:30 PM — as "Fresh", with every neighbouring slot unmarked, plus the note "Fresh: a batch of mandi and haneeth comes out of the oven at that time. Example times for this preview; our kitchen will set the real ones."
+
+**Owner ruling (binding, his words):** "هذه غلط — كيف الساعة ١ ونص فرش، قبل وبعد ايش يعني؟ مش مفهوم — يفضل تلغي" — it is wrong and not understandable; better to remove it. His point is correct on its face: the badge tells the guest that one slot is fresh and the rest are not, and it does so on invented example times (real oven times are still an unknown kitchen fact).
+
+**Directive:**
+- Remove the "Fresh" badge from pickup-time slots in checkout, and the explanatory "Fresh:" note that goes with it. Slots become plain times again.
+- This covers the slot marking wherever it renders (checkout sheet in all three languages). Tests pinning the badge/note are updated in the same change.
+- The underlying oven-times idea is NOT re-approved by silence: it may return only with REAL kitchen oven times and a design that does not imply unmarked slots are stale — and it re-enters through the normal vote, with this owner objection on the record.
+
+**Owner decisions needed:** none — this is his.
+
+— Muse (team lead)
+
+## 2026-11-27 11:50 EST — LEAD ORDER: session policy — sign-in must not persist forever (owner directive)
+
+**Owner (11:44, binding):** "مش معقول إذا عملت دخول يجلس بالمتصفح داخل على طول — أكيد في نظام لهذا الشي، خاصة احد دخل من جوال شخص آخر او كمبيوتر" — it is not reasonable that a sign-in stays alive in the browser indefinitely; there must be a system for this, especially when someone signs in on another person's phone or a computer.
+
+He is right about the current behaviour: the Supabase session is stored in the browser and auto-renews; it ends only on manual sign-out. On a shared device that leaves the account — worst case the ADMIN account — open to the next person who picks up the device.
+
+**Directive — build a session policy (accounts scope, alongside F-OWN-1/2/8):**
+1. **"Remember me" is an explicit choice** at sign-in. Without it, the session is browser-session-scoped: closing the browser ends it.
+2. **Inactivity timeout**: a signed-in session that sits idle past the limit signs itself out (config value; lead default 24 h for customers).
+3. **Staff/admin sessions are shorter** (config value; lead default 8 h inactivity) — the management door gets the stricter policy, per the owner's shared-device concern.
+4. **"Sign out everywhere"** in the account: revokes the account's other sessions (Supabase sign-out scope), so a forgotten login on someone else's device can be killed from the owner's own phone.
+5. Sign-out must clear the local session completely (no residue that resurrects the session on reload).
+
+Implement within the platform's real limits and say plainly in the delivery note which parts are platform-enforced vs client-enforced. Tests: session does not survive browser restart without remember-me; idle timeout fires; admin timeout is the shorter one; sign-out-everywhere revokes a second session.
+
+**Owner decisions needed:** none — this is his.
+
+— Muse (team lead)
+
+## 2026-11-27 12:00 EST — LEAD ORDER: capacity reallocation — ChatGPT takes small bounded builds; Muse reviews (owner directive)
+
+**Owner (11:56, binding):** Claude is running out of capacity. ChatGPT is to take **specific small tasks he can finish quickly** ("مهام محدده صغيره ينجزها بسرعه"), and **Muse reviews his work after him**. This amends the 07:16 annex allocation for build work; everything else in the annex stands.
+
+**@ChatGPT — two tasks, both small, both yours now, in this order:**
+
+1. **Fresh-badge removal** (owner directive 11:47, posted above). One branch (`chatgpt/fresh-badge-removal`): remove the "Fresh" slot badge + its explanatory note from checkout in all three languages; update the pinning tests in the same branch. Nothing else in scope — no oven-times redesign, no copy changes beyond the removal.
+2. **PR #58 sync + fresh CI.** Your re-review verdict was PASS + HOLD (sync onto current main + fresh exact-head CI). Do that sync on the #58 branch (union discipline on reply files; code must stay byte-identical in intent — this is a sync, not a rebuild), get CI green at the new head, and post the new head + CI run id.
+
+**Delivery, both tasks:** per the delivery-proof protocol — exact head, full suite output line, CI run id, pinning tests, an explicit "NOT verified" line, self-review against the defect ledger. Post deliveries in CHATGPT-REPLY.md.
+
+**Review & merge:** Muse (lead) reviews each delivery at its exact head — source, tests, CI, and live QA where the change is user-visible — and merges on PASS. Claude does not spend capacity reviewing these two.
+
+**@Claude:** conserve capacity. No new builds from you until these land; ADM-1/ADM-2 remain yours when capacity allows — they are the large builds this reallocation protects. Your design/schema authority and product-vote tie-break are unchanged.
+
+— Muse (team lead)
+
+**Clarification to the 12:00 order (owner, 11:58):** ChatGPT's small builds run **alongside** his existing review duty over Claude's work — that duty is unchanged (his owed re-reviews of #59/#60 and post-merge reviews continue as before). The split is: Claude builds large, ChatGPT reviews Claude + builds small, Muse reviews ChatGPT's builds and merges. Nobody reviews his own work.
+
+— Muse (team lead)
+
+## 2026-11-27 12:15 EST — LEAD NOTE: Claude capacity rationing (owner evidence)
+
+The owner shared Claude's usage screen at 12:13: **weekly limit 79% used**, with the app's own warning "at this pace you'll run out tomorrow night, before Sunday's reset" (weekly reset **Sunday 04:00**; current session 30% used, resets 14:10 today).
+
+Rationing, effective now:
+- **@Claude:** your remaining weekly capacity is reserved for **one thing: the ADM-1 build**. No documentation batches, no merge chores, no side reviews. If you finish ADM-1 with capacity to spare, ADM-2 is next — nothing else. If the wall hits first, stop cleanly mid-state with a handover note in CLAUDE-REPLY.md (head, what is done, what remains) and resume after the Sunday 04:00 reset.
+- **Merges:** the lead merges reviewed work meanwhile (as with PR #29) — Claude spends nothing on merge mechanics.
+- **Documentation:** the lead + the 5-minute loop carry it; Claude's batch sections are suspended until the reset.
+- **@ChatGPT:** unchanged — reviews of Claude's work + your two small builds (Fresh removal; #58 sync + CI), Muse reviews and merges yours.
+
+— Muse (team lead)

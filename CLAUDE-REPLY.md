@@ -2057,3 +2057,61 @@ Next: the member page showing order history and the points ledger, then reservat
   - dead controls: none (unreachable rewards are text);
   - state reset: the reward is cleared after payment, and a changed choice gets a fresh key;
   - silent loss: `p_redeem_points` is always sent for a chosen reward (tested).
+
+## 2026-11-27 10:55 EST (Toronto) — Annex batch 5: #58 CX fixes (re-review owed); F-OWN-3 built as PR #59
+
+1. **#58 F-OWN-4: all three ChatGPT findings (15:39Z) fixed.** New head `abd1dbc`, synced with a normal merge of main `efa000f` (4 ahead / 0 behind). CI **46028643334** ✓.
+   - **CX-1:** the drawer and the sheet show one set of totals once a reward is chosen.
+   - **CX-2:** enough points but an order below the smallest reward now shows a plain line about the minimum order, not a blank box.
+   - **CX-3:** empty tiers clear a chosen reward from the totals and from the request.
+   - **Pins:** 4 new browser checks **fail on the old head** and pass now.
+   - Local: node 32/32 files, browser 19/19 files (366 checks). SQL unchanged and still green; race pinned.
+   - **Gate accepted:** 0006 is not applied until the accountant/owner HST decision is recorded. That is a real-world fact, not a vote. Merging the client is safe, because it stays hidden without 0006.
+2. **F-OWN-3: PR #59** at `adecc14`, CI **46027566405** ✓.
+   - An "Order details" panel per order: lines with unit and line prices, subtotal, points used, HST, total, pickup, note, and a timeline.
+   - Own rows only. No schema change, because the baseline RLS already lets owners read orders, items and events.
+   - **Defects fixed on the way:**
+     - Arabic history said «استُلم» for a received order, so it now says «وصلنا طلبك»;
+     - Arabic prices in the history were not isolated (bidi).
+   - Tests: `order-detail.browser.mjs` (16 checks), plus unit guards.
+   - Awaiting ChatGPT CX. It merges after #58, synced onto it.
+3. **Next:** F-OWN-1/2/8 (password-first sign-in; name, email and mobile at sign-up; customers editing their profile). They touch `auth.js` and `profiles`, so I check the profile columns first.
+- **NOT verified:** live Supabase (0006 not applied); HST on a store-funded reward (accountant); real phone.
+- **Defect ledger:**
+  - bidi: one fixed (#59);
+  - state reset: open panels survive a language switch (#59), and the reward is cleared after payment (#58);
+  - dead controls: none; rewards out of reach are text;
+  - silent loss: none; a stale hidden reward is now impossible (#58 CX-3).
+
+## 2026-11-27 11:40 EST (Toronto) — Annex batch 6: F-OWN-1/2/8 built as PR #60 (green); #58/#59 reviews still owed
+
+1. **PR #60** at `87805c8f2766ee20c4679765cb862b04587cd955`, CI **46034716214** ✓.
+   - **F-OWN-1:** the email + password form opens first; the email link is one tap away.
+   - **F-OWN-2:** the join form asks for name, email, mobile and password, and checks them before sending. Name and mobile go as sign-up metadata.
+   - **F-OWN-8:** a "Your details" section with Edit. Name and mobile save through `update_my_profile`; an email change goes through Supabase Auth's own confirmation.
+   - **`0007_profile_contact.sql`:** adds `profiles.phone` (E.164 format); `handle_new_user()` stores the cleaned metadata and keeps the 0003 membership step; clients cannot write `phone` directly. The lead applies it per `docs/apply-0007.md`. No money is involved, so there is no accountant gate.
+   - **Evidence:** SQL 16/16 (0007 applied twice); ordering still 80/80 with 0007; `account.browser.mjs` 18/18. Local: node 32/32 files, browser 19/19 files (359 checks).
+   - **Before 0007:** the details are read-only and no Edit button is shown (tested).
+2. **Reviews:** ChatGPT's re-review of #58 at `abd1dbc` and its CX on #59 at `adecc14` are still owed; no ChatGPT post since 15:39Z.
+   - I am holding #58, because ChatGPT asked to re-review its moved head.
+   - **Merge order:** #58, then #59, then #60, each synced onto the one before.
+   - All three are inert on the live site until their migrations are applied: 0006 (needs the HST decision) and 0007 (lead).
+3. **Next:** I stop opening new feature branches until these three land; the queue is long enough. ChatGPT's READY ADM-1/ADM-2 (admin shell, full order history for staff and admin) come after, under the vote rule.
+- **NOT verified:** live Supabase (0006 and 0007 not applied); Supabase's email-change confirmation; real phone.
+- **Defect ledger (#60):**
+  - dead controls: no Edit without 0007;
+  - bidi: mobile and email shown LTR;
+  - overflow: Arabic at 320px tested;
+  - silent loss: bad sign-up values are refused visibly, and the server drops them rather than storing junk.
+
+## 2026-11-27 12:12 EST (Toronto) — Lead orders 11:47–12:00 acknowledged; holding builds
+
+- **#58:** ChatGPT re-review PASS at `abd1dbc` (16:40Z), with an integration HOLD until it is synced onto main. Per the 12:00 order **ChatGPT does that sync**, so I will not push to `claude/points-redeem` meanwhile, to avoid a collision. Muse merges on PASS.
+- **Fresh-badge removal:** ChatGPT's task. I am not touching the checkout slot grid.
+- **Session policy (owner 11:44):** acknowledged and queued for me after the current queue.
+  - Splitting what the platform enforces from what the client enforces is a design point; I will spell it out in the delivery.
+  - Platform side: Supabase refresh-token rotation, and the `scope=global` sign-out that revokes all sessions.
+  - Client side: remember-me in `sessionStorage` vs `localStorage`, and idle timers of 24 h (customers) and 8 h (staff/admin).
+  - Platform-enforced inactivity needs the Supabase session time-box or inactivity settings (dashboard, possibly a paid plan). That is an owner-held setting; I will name it, not assume it.
+- **No new builds from me** until ChatGPT's two tasks land. #59 and #60 are still waiting for ChatGPT's CX.
+- NOT verified: nothing new run in this batch.
