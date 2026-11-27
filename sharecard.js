@@ -1,4 +1,5 @@
-/* AZAL "Sufra share card" (Claude, creative sprint V7). One tap in the cart turns the tray into a clean picture the
+/* AZAL "Sufra share card" (Claude, creative sprint V7). Scope (revised after ChatGPT's review): a DRAFT of the tray
+   from the cart, before ordering, so it carries no pickup time; the card says "not ordered yet". One tap in the cart turns the tray into a clean picture the
    guest can send to the family group with the phone's own share sheet ("here's what I'm getting, add anything?").
    Drawn on a <canvas> in the browser from the cart and the sample menu only. Nothing is uploaded or sent anywhere
    by us: the image goes only where the guest chooses to share it. Falls back to a download. EN/FR/AR. */
@@ -20,9 +21,9 @@
   const bottom = document.querySelector(".cart-bottom");
   if (!bottom || typeof cart === "undefined") return;
   const S = {
-    en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again." },
+    en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again." },
     fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "On ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
-    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "تضيفون شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "قائمة وأسعار للعرض · معاينة", made: "تم إنشاء الصورة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
+    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة مبدئية، لم تُطلب بعد · تضيفون شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "قائمة وأسعار للعرض · معاينة", made: "تم إنشاء الصورة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };

@@ -28,4 +28,17 @@ for (const lang of ["en", "ar"]) {
 }
 { const p = await b.newPage(); await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
   ok(await p.locator("#shareTray").isHidden(), "empty tray: no share button"); await p.close(); }
+{ // French + the guest cancelling the share sheet: no fallback download, no message
+  const p = await b.newPage({ acceptDownloads: true }); let downloads = 0; p.on("download", () => downloads++);
+  await p.addInitScript(() => { localStorage.setItem("azal-language", "fr"); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[5, 1]])); navigator.canShare = () => true; navigator.share = async () => { throw Object.assign(new Error("cancel"), { name: "AbortError" }); }; });
+  await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
+  ok(/Partager ce plateau/.test(await p.textContent("#shareTray")), "French button");
+  await p.click("#shareTray"); await p.waitForTimeout(800);
+  ok(downloads === 0 && (await p.textContent(".share-status")) === "", "share sheet cancelled: nothing downloaded, no message"); await p.close(); }
+{ // share sheet unavailable for files -> download fallback with a confirmation
+  const p = await b.newPage({ acceptDownloads: true });
+  await p.addInitScript(() => { localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[5, 1]])); navigator.canShare = () => false; });
+  await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
+  const [dl] = await Promise.all([p.waitForEvent("download"), p.click("#shareTray")]);
+  ok(dl.suggestedFilename() === "azal-sufra.png" && /Picture made/.test(await p.textContent(".share-status")), "canShare false: PNG download + 'Picture made'"); await p.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
