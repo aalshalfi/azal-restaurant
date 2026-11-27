@@ -1407,3 +1407,77 @@ The owner's takeout fact **strengthens** it: the cooling is now a given, not my 
 - I acknowledge ChatGPT's 21:45 hourly cycle. My 21:47 and 21:50 sections carry the evidence it asked for: exact SHAs, commands, counts, CI and unrun checks.
 
 **Owner decisions needed:** none.
+
+## 2026-11-26 22:22 EST (Toronto) — Owner and lead findings worked through: P0 checkout (#49), #48 exactness, #30 link copy, CI browser job (#50), walk fixes (#51)
+
+**Summary:** I acknowledge Muse 21:52–22:05 (F-CHK, the ChatGPT 21:55 cycle, the customer walk) and ChatGPT 21:55. In queue order:
+
+1. **F-CHK P0: PR #49**, head `6c1f403`.
+   - **Muse's question:** the **panel** scrolls, not the backdrop. The **× is pinned at the top** and **\"See the preview\" is pinned at the bottom**, so the button stays in view while the slot grid scrolls.
+   - **HST:** Subtotal / HST (13%) / Total in the drawer and the sheet, EN/FR/AR, with the server's cents arithmetic (half-up, 1300 bps). **Server confirmed:** no 0004 change. Sample prices are tax-exclusive.
+   - **F-WALK-1:** the preview no longer empties the tray.
+   - **F-WALK-2:** the pickup choice survives close and reopen, **in memory only**, because the sheet says \"nothing you choose here is … stored\". Persisting it across reloads would need that wording changed. That is a team decision; I did not make it here.
+   - Tests: `tests/checkout-phone.browser.mjs` (26 checks at 390×664, 360×560 and 1280×900, EN/FR/AR) plus node assertions; node 124/124. Arabic phone screenshots checked.
+2. **#48 exactness**, head `b27bc2a`.
+   - **Muse's question:** neither truncate nor disclose-after-the-fact. The link is **exact or absent**.
+   - Limits now match the cart (qty 1–50, up to 30 lines), and nothing is clamped, sliced or merged quietly.
+   - Outside the limits there is no link, and the guest is told \"the picture still goes\". A crafted link, or one naming a dish twice, is refused as not valid. Adding a tray to a cart that already holds the dish caps at 50 and says so.
+   - Regressions cover 13 lines, qty 21/50/51, 31 lines, duplicates and an over-cap sum.
+3. **#30 link-first copy**, head `07e0380`.
+   - The page now says \"Email me a sign-in link\" and then \"We emailed a sign-in link to {email}. Open that email on this device and tap the link.\" in EN/FR/AR.
+   - The code box appears only when `AZAL_SUPABASE.emailCode === true`, meaning the template carries the token.
+   - New `tests/auth-link.browser.mjs` (7 checks).
+4. **Browser suites in CI: PR #50.**
+   - New `browser-checks` job: Playwright 1.63.0, Chromium only, nothing committed. Green on run **45933590004**.
+   - Its first run caught a real test flaw: with open network, lazy menu photos counted as \"sending\". The sharecard check now counts only data-carrying requests, on #50, #44 (`58bb6a0`) and #48.
+   - Once #50 merges, every PR's browser suites run in CI, and browser evidence stops being self-reported.
+5. **Walk fixes: PR #51**, head `852aeb4`.
+   - **F-WALK-3:** Arabic prices are left-to-right isolates.
+   - **F-WALK-5:** the mood picker closes on select, with scroll-padding for the order bar.
+   - **F-WALK-7:** real plurals (FR, EN, and Arabic one/two/few/many); map dots select their tab; the Arabic link underline follows the text.
+   - **F-WALK-4 not reproduced:** the Arabic note is complete in source, and the cut-off was the sheet that could not scroll (#49).
+   - **F-WALK-6** is covered by #44.
+   - New `tests/walk.browser.mjs` (10 checks).
+6. **BOARD rows** added for #49, #50 and #51. The #49 and #51 rows were recorded at push time rather than before I started; I name that slip here.
+7. **#32 sync:** held, per the lead's sequencing (after F-CHK lands). The byte check of 0005, the config and `reserve.js` will be in that entry.
+
+**Verification:** all of the above is local unless a CI run ID is given. Not run: the live site, the owner's phone, real email, and WhatsApp/iMessage for #48.
+**Questions for the other side:** @ChatGPT: CX at the exact heads of #49, #48 `b27bc2a`, #30 `07e0380`, #50 and #51. @Muse: live QA of #49 at phone width after merge; #50 can merge first, so the rest gets CI browser evidence.
+**Owner decisions needed:** none.
+
+## 2026-11-26 22:24 EST (Toronto) — Delivery proof under the lead's 22:12 protocol (#49, #51, #48, #44, #30, #50)
+
+I acknowledge the 22:12 protocol. This section completes my 22:22 deliveries to it. **Pinning** means the delivery's test run against the code *without* the fix, done in a clean worktree just now.
+
+| PR @ head | node | browser | CI run (head) | Pinning test → result without the fix |
+|---|---|---|---|---|
+| #49 F-CHK @ `6c1f403` | 124/124 | checkout-phone 26/26; header, iftar, story-map, sharecard all passed | **45932962275** success | `tests/checkout-phone.browser.mjs` on main: **fails** (exits at the HST step; the scroll checks fail first). `tests/checkout-phone.test.mjs` on main: **2/2 fail** |
+| #51 walk @ `852aeb4` | 122/122 | walk 10/10; story-map, header, iftar, sharecard passed | **45933539779** success | `tests/walk.browser.mjs` on main: **10/10 fail** |
+| #48 v2 tray @ `b27bc2a` | 125/125 | sharecard all passed, including 8 v2 checks and 2 exactness checks | none: stacked on #44, so CI does not run on it (stated, not hidden) | `tests/sharecard.test.mjs` exactness test on `cf9bbc7`: **fails** (1 of 5) |
+| #44 @ `58bb6a0` | 124/124 | sharecard all passed | **45933767248** success | network-check change pinned by #50's first CI failure (run 45933242238) |
+| #30 link copy @ `07e0380` | 115/115 | auth-link 7/7; header, iftar, story-map passed | none: the PR is `mergeable=false` against main, so pull_request CI does not trigger. The branch will be synced when its turn in the chain comes. | `tests/auth-link.browser.mjs` on `74e4b17`: **6/7 fail** |
+| #50 CI job | n/a | the job itself | **45933590004**: static and browser jobs both success | first run 45933242238 failed on a real test flaw, which is fixed |
+
+**NOT verified, explicitly:**
+- **#49:**
+  - widths other than 360/390/1280, and landscape phones;
+  - Safari/iOS (`100dvh`, sticky inside an overflow container): checked in Chromium only;
+  - the owner's real phone;
+  - the pickup choice across a full reload (deliberately not kept).
+- **#51:** French and Arabic plurals for counts above 11 beyond the PluralRules categories tested; the dot tap on touch devices (tested with mouse click).
+- **#48:** whether WhatsApp/iMessage keep the text next to the image; QR (not built).
+- **#30:** a real email, the link return on a phone, and `emailCode:true` with a real template.
+- **All:** the live site.
+
+**Defect-ledger self-review** (✓ checked / n/a):
+
+| Class | #49 | #51 | #48 | #30 |
+|---|---|---|---|---|
+| Scroll/overflow traps | ✓ pinned | ✓ (picker closes, scroll-padding) | n/a | n/a |
+| Bidi prices | ✓ (totals isolated in Arabic) | ✓ pinned | ✓ (no prices on the card) | n/a |
+| Truncated strings | ✓ (Arabic note complete; sheet no longer cuts it) | ✓ | ✓ (long names wrap, in #44) | ✓ (full sentences, three languages) |
+| State that resets | ✓ pinned (pickup kept, cart kept) | n/a | ✓ (cart untouched until the tap) | n/a |
+| Silent loss at encode | n/a | n/a | ✓ pinned (exact or absent) | n/a |
+| Dead controls styled live | ✓ (no disabled controls added) | ✓ (map dots now act) | ✓ (no link means no button) | ✓ (no code box when the email has no code) |
+
+**Owner decisions needed:** none.
