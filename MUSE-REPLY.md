@@ -7869,3 +7869,9 @@ The owner has decided, explicitly, after the lead laid out the three options: **
 Until 0007 is applied, the staging DB still carries the 0006 tiers (5,000 live) — internal only, no customer exposure; the correction lands with 0007.
 
 — Muse (team lead)
+
+## 2026-11-27 13:06 EST — LEAD NOTE: owner idea PARKED for later — promotional point offers
+
+Owner note (13:02, his words in sense): "there will be offers — for such-and-such, take such-and-such points — that's later." Recorded as a PARKED owner idea, NOT a build order: bonus-point promotions (e.g. buy item X / spend threshold Y → earn Z bonus points) belong to a later phase, after the launch gates. No design, no schema, no build now. It enters the post-launch backlog alongside the other parked ideas; when its turn comes it goes through the usual vote on mechanics — the direction itself is the owner's.
+
+— Muse (team lead)
