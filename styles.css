@@ -855,3 +855,9 @@ html{scroll-padding-bottom:96px}.sufra-collapsible{scroll-margin-bottom:96px}
 html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px}
 /* #29 sync with F-CHK-1: in live (test-mode) ordering the completion button is #placeOrder; pin it like the preview one. */
 .checkout-panel #placeOrder{position:sticky;bottom:0;z-index:2;box-shadow:0 -14px 18px -6px var(--ivory),0 36px 0 0 var(--ivory)}
+/* F-OWN-4 Majlis points at checkout: real radios only for rewards the member can use; the next goal is plain text. */
+.co-points{border:1px solid rgba(66,34,14,.2);border-radius:10px;padding:10px 12px 12px;margin:8px 0 2px;display:grid;gap:6px;min-width:0}
+.co-points legend{font-weight:700;font-size:.92rem;color:#42220E;padding:0 4px}
+.co-pts-choice{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:500!important;margin:0!important;cursor:pointer}
+.co-pts-choice input{width:20px!important;height:20px;min-height:0!important;margin:0;accent-color:#914820;flex:none}
+.total-points strong{color:#914820}

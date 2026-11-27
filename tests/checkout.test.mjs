@@ -88,5 +88,38 @@ test("kitchen note: 500 characters pass unchanged; 501 are refused, never cut in
   assert.equal(C.buildOrder({ ...base, note: "   " }).p_note, null, "a blank note is no note");
   const src = readFileSync(new URL("../checkout.js", import.meta.url), "utf8");
   assert.match(src, /<textarea id="coNote" maxlength="500"/, "the field itself stops at 500");
-  assert.match(src, /"idempotency_conflict", "note_too_long"\]/, "a refused note unlocks the form");
+  assert.match(src, /"idempotency_conflict", "note_too_long"[,\]]/, "a refused note unlocks the form");
+});
+
+test("F-OWN-4: buildOrder sends p_redeem_points only for a member who chose a reward", () => {
+  const base = { cart: new Map([[1, 1]]), choice: "asap", key: "k".repeat(20), nowMs: Date.parse("2026-11-26T17:00:00Z") };
+  assert.equal(C.buildOrder(Object.assign({}, base, { redeem: 5000 })).p_redeem_points, 5000);
+  assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 0 }))), "0 is not sent (old servers keep working)");
+  assert.ok(!("p_redeem_points" in C.buildOrder(base)), "absent is not sent");
+  assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 5000, guest: { name: "A", email: "a@example.invalid" } }))), "guests never send points");
+  assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 2.5 }))), "non-integers are not sent");
+});
+
+test("F-OWN-4: redeemView shows usable rewards only, and the next goal", () => {
+  const tiers = [{ points: 10000, cents: 1000 }, { points: 5000, cents: 500 }];
+  const owner = C.redeemView({ balance: 249, tiers }, 5597);
+  assert.deepEqual([owner.usable.length, owner.next.points, owner.first], [0, 5000, true], "the owner's 249 points: nothing usable, first reward at 5,000");
+  const rich = C.redeemView({ balance: 12000, tiers }, 5597);
+  assert.deepEqual(rich.usable.map((t) => t.points), [5000, 10000]);
+  assert.equal(rich.next, null);
+  const mid = C.redeemView({ balance: 7000, tiers }, 5597);
+  assert.deepEqual([mid.usable.map((t) => t.points), mid.next.points, mid.first], [[5000], 10000, false], "7,000: 5,000 usable, next reward (not first) at 10,000");
+  assert.deepEqual(C.redeemView({ balance: 12000, tiers }, 800).usable.map((t) => t.points), [5000], "a reward larger than the subtotal is not offered");
+  assert.equal(C.redeemView(null, 5597).any, false);
+  assert.equal(C.redeemView({ balance: 9e9, tiers: [{ points: -1, cents: 500 }, { points: 5000, cents: 0 }] }, 5597).any, false, "malformed tiers are ignored");
+});
+
+test("F-OWN-4: 0006 keeps points server-side (grants, members only, debit on payment)", () => {
+  const sql = readFileSync(new URL("../supabase/migrations/0006_points_redeem.sql", import.meta.url), "utf8");
+  assert.match(sql, /revoke all on function public\.azal_points_balance\(uuid\) from public, anon, authenticated;/);
+  assert.match(sql, /revoke all on function public\.redeem_options\(\) from public, anon;\s*grant execute on function public\.redeem_options\(\) to authenticated;/);
+  assert.match(sql, /raise exception 'redeem_members_only'/);
+  assert.match(sql, /'redeem:' \|\| v_o\.id, 'redeem', -v_o\.redeemed_points/);
+  assert.match(sql, /pg_advisory_xact_lock\(pg_catalog\.hashtext\('points\|' \|\| v_o\.user_id::text\)\)/);
+  assert.match(sql, /\('redeem_tiers', '5000:500,10000:1000'\) on conflict \(key\) do nothing/);
 });
