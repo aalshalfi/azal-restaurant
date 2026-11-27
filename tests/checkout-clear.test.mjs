@@ -20,9 +20,10 @@ test("D1: stale preview result is cleared on language switch", () => {
   assert.match(fn[0], /if\(checkoutMessage\)checkoutMessage\.textContent=""/);
 });
 
-test("D2: preview clears the cart AND re-renders the dish buttons", () => {
+test("F-WALK-1 (lead 22:05, supersedes D2): the preview never empties the cart; it still re-renders", () => {
   const handler = js.match(/\$\("placeDemoOrder"\)\?\.\s*addEventListener\("click",\(\)=>\{[\s\S]*?\}\);/);
   assert.ok(handler, "placeDemoOrder handler not found");
-  assert.match(handler[0], /cart\.clear\(\);renderCart\(\)/);
+  assert.doesNotMatch(handler[0], /cart\.clear\(\)/);
+  assert.match(handler[0], /renderCart\(\)/);
   assert.match(handler[0], /renderProducts\(active\?\.dataset\.category\|\|"All",search\?\.value\|\|""\)/);
 });
