@@ -849,7 +849,7 @@ html[lang="ar"] .welcome-grid p{font-family:"AZAL Arabic",'Source Serif 4',Georg
 /* Lead walk 22:05 fixes. F-WALK-7: map dots select their tab on tap. F-WALK-5: on phones the fixed order bar must not hide
    what keyboard focus or a scroll-into-view brings up (the third mood option). */
 .ymap-dot{pointer-events:auto;cursor:pointer}
-@media(max-width:800px){html{scroll-padding-bottom:96px}.sufra-collapsible{scroll-margin-bottom:96px}}
+html{scroll-padding-bottom:96px}.sufra-collapsible{scroll-margin-bottom:96px}
 /* F-WALK-7: Arabic text links ("قصتنا" beside the hero button) drew their border far below the taller Arabic glyphs and
    looked detached. In Arabic the underline follows the text instead. */
 html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:7px}
