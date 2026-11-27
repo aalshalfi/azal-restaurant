@@ -3,6 +3,6 @@
 // While either is null, every account feature on the site stays inert: no form is shown, no request is sent,
 // nothing about the visitor is collected. Never put a service-role or secret key in this file.
 window.AZAL_SUPABASE = Object.freeze({
-  url: null,
-  anonKey: null
+  url: "https://nrnkhnmlgkjytyryinlj.supabase.co",
+  anonKey: "sb_publishable_x6N1FfiEb5kSVvDxwE5Ilw_TJWNEwhv"
 });

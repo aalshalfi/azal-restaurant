@@ -91,3 +91,53 @@ The owner re-issued the instant-decision rule together with its supplement, unch
 - Tie-breaks: on product/feature/idea votes, **Claude decides** (per the 19:19 supplement); on any other decision, **the lead (Muse) decides** (per the base rule).
 - Ideas are derived from real friction in this project's customer/kitchen journey (order → track → pickup → repeat visit), never from templates and never waiting for owner suggestions; the no-repetition filter rejects anything an ordinary restaurant site already has, immediately.
 - The owner is reached only for: a brief Arabic notice when a prototype is complete, a real technical blocker that stops execution, or a financial/security action needing his direct intervention. Any reply ending in consultative questions or an approval request violates this rule.
+
+
+## Amendment 2026-11-26 21:05 EST — Reservations gain OPTIONAL dish pre-selection (owner; supersedes the 07:48 no-food clause)
+
+The owner amends the reservations spec himself:
+
+- A guest reserving a table MAY optionally pre-select dishes with the reservation. This is a **noted wish, not an order**: no order is created, nothing enters the kitchen queue, and **preparation starts only after the guest arrives** at the restaurant.
+- **Payment for anything reservation-related is in-store only — never online.** No card, no deposit, no online charge attaches to a reservation or its pre-selection.
+- The guest must be told these terms clearly at the point of choosing (all site languages): your dishes are noted to save you time; cooking begins when you arrive; you pay at the restaurant.
+- The reservation itself is unchanged otherwise (name · mobile · email · party size · date/time; capacity/hours/dwell defaults stand), and pre-selection is fully optional — a reservation without dishes is complete.
+- Purpose, in the owner's framing: an extra service for the guest who already knows what he wants to eat — he saves the ordering wait after being seated.
+
+Implementation consequences: PR #32 / migration 0005 has NOT been applied yet — fold the pre-selection into the reservations chain before apply (a wishes list on the booking: dish references + quantities, no prices charged, no order link). This also supersedes the restriction in the lead's 21:03 note: pre-selection under exactly these conditions is owner-approved, and the dine-in journey — where prep, including bread, starts at arrival — is its legitimate home.
+
+
+## Correction 2026-11-26 21:07 EST — The 21:05 pre-selection item is an IDEA FOR VOTE, not an owner amendment
+
+The owner clarifies, in his own words: the dish pre-selection idea is **not an order**. The team is to study it and vote on it under the decisive-vote rule, like any other idea. Accordingly:
+
+- The 21:05 entry above is reclassified from "owner amendment" to **owner-submitted idea, pending ballot**. The 07:48 table-only reservations spec **remains in force** unless and until the vote adopts the idea.
+- The idea, as the owner framed it: a table guest may optionally note dishes with his reservation; the note is not an order; preparation starts only after he arrives; payment is in-store, never online; the guest is told these terms clearly; the value is time saved for the guest who already knows what he wants.
+- The ballot is opened in MUSE-REPLY.md (21:07 section) with the study points. Majority binds; tie on this product vote → Claude decides.
+
+## Ballot closed 2026-11-26 21:15 EST — Pre-selection ADOPTED (2–0, decisive-vote rule)
+
+The owner's pre-selection idea (21:07 correction: an idea for vote, not an order) is **adopted**: Muse YES conditional (21:07) + Claude YES conditional (21:15); majority binds, ChatGPT's vote outstanding for the ledger only. The 07:48 table-only reservations spec is amended accordingly:
+
+- A table guest MAY optionally note dishes (dish references + quantities) with the reservation. This is a **wish, not an order**: no order object before arrival check-in, no online payment path anywhere near it, preparation starts only after the guest arrives, payment is in-store only.
+- Terms shown to the guest in EN/FR/AR on the dish chooser itself AND in the confirmation (first-time-reader-proof; Claude's proposed EN copy: "Noted, not ordered. We start cooking when you sit down. You pay at the restaurant.").
+- Wish quantities capped at ≤ 2× party size per dish. The chooser never looks like a cart: no prices summed, no total, no "checkout" verb.
+- Per-table wish visible only at check-in; the kitchen sees only aggregate counts before arrival.
+- Implementation: migration **0006, after #32 lands** — never folded into #32 mid-review.
+
+
+---
+
+## Amendment — Production-line & cadence annex (OWNER, binding immediately, 2026-11-27 07:16 EST)
+
+Issued by the owner as an operating annex; it does not repeal earlier direction — it governs rhythm, merge authority and collision control from this commit onward.
+
+**1. Cadence and the assembly line**
+- **Muse (every 5 minutes — operations & monitoring):** executes the sequential activation steps, checks CI status, and batches documentation notes into ONE draft — never pushes them to main individually. **Silence rule:** if there is no new work and no real blocker, the run exits immediately without touching the repo.
+- **Claude (every 30 minutes — build & EXCLUSIVE merge):** the only party authorized to merge to main. He takes the ready task + Muse's batched documentation notes, builds, tests and merges in one clean batch every half hour, and breaks any tie immediately.
+- **ChatGPT (hourly — architectural review & path preparation):** reviews the outputs of the last two merges for edge cases and gaps, and always keeps TWO ready, pre-voted tasks in the Ready Queue, drawn from the real restaurant experience, so Claude never stops.
+
+**2. Collision and distraction control**
+- No model moves main with small documentation edits, and no side paths outside the approved queue.
+- No questions to the owner. The owner receives a brief Arabic notice only when a test-ready prototype is complete, or a technical/financial blocker requires him.
+
+**Composition with standing rules (lead's note):** ChatGPT's post-merge architectural review of the last two merges is the second-eyes mechanism under this annex; any defect he finds enters the Ready Queue as a fix task for the next batch. The decisive-vote rule, the delivery-proof protocol, Tier-C boundaries and the confidentiality rule are unchanged.

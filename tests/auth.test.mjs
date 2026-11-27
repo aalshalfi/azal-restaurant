@@ -91,10 +91,12 @@ test("server errors map to stable codes", async () => {
   await assert.rejects(n.signIn("x@example.invalid", "y"), { code: "network" });
 });
 
-test("repo ships inert: config empty, no secret-looking keys, member page has no form in HTML", () => {
+test("shipped config is null or publishable-only; no secret-looking keys; member page has no form in HTML", () => {
   const cfg = fs.readFileSync(path.join(root, "supabase-config.js"), "utf8");
-  assert.match(cfg, /url: null,\s*anonKey: null/);
-  for (const f of ["supabase-config.js", "auth.js", "script.js"]) assert.ok(!/service_role|eyJ[A-Za-z0-9_-]{20,}/.test(fs.readFileSync(path.join(root, f), "utf8")), f);
+  const inert = /url: null,\s*anonKey: null/.test(cfg);
+  const live = /url: "https:\/\/[a-z0-9]{20}\.supabase\.co",\s*anonKey: "sb_publishable_[A-Za-z0-9_-]+"/.test(cfg);
+  assert.ok(inert || live, "config must be both-null or a supabase.co URL + sb_publishable_ key");
+  for (const f of ["supabase-config.js", "auth.js", "script.js"]) assert.ok(!/service_role|sb_secret_|eyJ[A-Za-z0-9_-]{20,}/.test(fs.readFileSync(path.join(root, f), "utf8")), f);
   const member = fs.readFileSync(path.join(root, "member.html"), "utf8");
   assert.ok(!/<form|<input/.test(member));
 });
@@ -139,4 +141,17 @@ test("requestCode refuses a malformed email before sending anything", async () =
   const a = createAuth({ config: CFG, fetch: s.fetch, storage: mem(), now: () => 1e12 });
   for (const bad of ["", "nobody", "a@b", "a b@c.de"]) await assert.rejects(a.requestCode(bad), { code: "invalid_email" });
   assert.equal(s.calls.length, 0);
+});
+
+test("emailed link: requestCode passes redirect_to; adoptLink stores the session from the URL fragment", async () => {
+  const s = server([[/\/otp/, () => json(200, {})], [/\/auth\/v1\/user/, (u, i) => json(i.headers.Authorization === "Bearer LA" ? 200 : 401, { id: "u-9", email: "link@example.invalid" })]]);
+  const st = mem();
+  const a = createAuth({ config: CFG, fetch: s.fetch, storage: st, now: () => 1e12 });
+  await a.requestCode("link@example.invalid", "https://aalshalfi.github.io/azal-restaurant/member.html");
+  assert.match(s.calls[0].url, /\/auth\/v1\/otp\?redirect_to=https%3A%2F%2Faalshalfi\.github\.io%2Fazal-restaurant%2Fmember\.html$/);
+  const r = await a.adoptLink("#access_token=LA&refresh_token=LR&expires_in=3600&token_type=bearer&type=magiclink");
+  assert.equal(r.session.user.email, "link@example.invalid");
+  assert.equal((await a.session()).access_token, "LA");
+  assert.deepEqual(await a.adoptLink("#error=access_denied&error_code=otp_expired"), { error: "link_invalid" });
+  assert.equal(await a.adoptLink("#menu"), null);
 });

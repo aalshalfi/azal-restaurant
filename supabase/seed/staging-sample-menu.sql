@@ -1,7 +1,10 @@
 -- AZAL STAGING seed: the 9 ILLUSTRATIVE sample dishes and prices from the public preview, on the existing
 -- fixture branch 'ottawa' ("AZAL Ottawa (concept)" from 0001). For the owner's end-to-end test only.
 -- NOT real menu, prices or hours (Tier C, owner-supplied later). Hours: provisional 11:00-21:00 daily (lead default).
--- Idempotent: safe to run twice. Apply after 0001-0004. Run by the lead only; never on production.
+-- Repeatable ON THE CLEAN SAMPLE FIXTURE ONLY. Apply after 0001-0004. Run by the lead only; never on production.
+-- WARNING: every ON CONFLICT here is DO UPDATE. A re-run OVERWRITES category names/order, item names/category/active,
+-- branch prices/availability/sort order and all seven branch hours. NEVER re-run once the owner has entered real menu
+-- data. Before any run: prove the target is staging, record pre-apply counts, and take a backup or row export.
 -- Stable ids: the site maps its product ids 1..9 to a2a10000-0000-4000-8000-00000000000N.
 begin;
 
