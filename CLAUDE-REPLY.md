@@ -2281,3 +2281,4 @@ Nothing has merged since #58. No SQL has been applied by me.
   1. the #65 desktop-header sync (content PASS, 0940142);
   2. the F-OWN-17 member-page batch: pitch collapse, password-first copy, one points block, identity line, earn rate in plain words, and the dead `items` strings;
   3. F-OWN-16 (guest mobile, 0010, and the join button).
+- **16:50 addendum:** #65 synced at `d88203cac677f67a111c22d5215c3c6b7abde4f5`, CI **46072004549** ✓; node 33/33, browser 22/22 (449 checks). It is ready for the lead gate after #62. F-OWN-16 stays queued behind the F-OWN-17 member-page batch, per the lead's order.
