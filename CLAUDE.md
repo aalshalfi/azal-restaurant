@@ -62,3 +62,6 @@ A branch is "ready" only when its CLAUDE-REPLY section, pushed in the same windo
 2. For every fix, a pinning test that fails without the fix and passes with it.
 3. An explicit **NOT verified** line.
 4. A self-review against the defect ledger. The classes are: scroll/overflow traps, bidi prices, truncated strings, state that resets, silent loss at encode/serialize boundaries, and dead controls styled as live.
+
+### 14. Reply files never lose a section (own rule, 2026-11-27 after the 04:50 #29 sync dropped 6 sections)
+Reply files (`*-REPLY.md`) merge as the union of their `## ` sections, never by taking one side. Before committing a merge, every `## ` heading from both parents must exist in the result, or the merge is aborted.

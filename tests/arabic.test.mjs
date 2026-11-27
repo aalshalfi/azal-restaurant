@@ -62,6 +62,13 @@ test("owner rule: the reservation step asks for name + mobile + email in all thr
   assert.match(readFileSync(new URL("../reserve.html", import.meta.url), "utf8"), /data-i18n="reserveHow2">Leave your name, mobile number and email/);
 });
 
+test("AR-REWRITE follow-up: reserve.js Arabic is written from meaning (ChatGPT examples)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const r = readFileSync(new URL("../reserve.js", import.meta.url), "utf8");
+  for (const calque of ["نحمّل الأوقات", "تعال واجلس معنا: على طريقة المجلس، حول صحون مشتركة", "حُفظ حجزك باسم", "البريد المستخدم في الحجز"]) assert.ok(!r.includes(calque), "calque is back: " + calque);
+  for (const fact of ["30 يوماً", "{n} أشخاص", "{code}", "{email}"]) assert.ok(r.includes(fact), "fact/placeholder kept: " + fact);
+});
+
 test("checkout.js and staff.js: Arabic from meaning, and prices isolated in Arabic (bidi class)", async () => {
   const { readFileSync } = await import("node:fs");
   for (const f of ["checkout.js", "staff.js"]) {
@@ -69,4 +76,12 @@ test("checkout.js and staff.js: Arabic from meaning, and prices isolated in Arab
     assert.match(s, /lang\(\) === "ar" \? "\\u2066" \+ s\.replace\(\/\\u200f\/g, ""\) \+ "\\u2069"/, f + ": Arabic prices are LTR isolates");
     for (const calque of ["انضم بالبريد", "طلبات غير مدفوعة كثيرة", "غير مُعدّ كموظف", "شيء في طلبك"]) assert.ok(!s.includes(calque), f + ": calque is back: " + calque);
   }
+});
+
+test("pulse.js Arabic: 'placed' and 'handed over' can never read alike (both used to say استلام)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const p = readFileSync(new URL("../pulse.js", import.meta.url), "utf8");
+  const ar = p.slice(p.indexOf("ar: {"));
+  const placed = ar.match(/placed: "([^"]*)"/)[1], handed = ar.match(/handed_over: "([^"]*)"/)[1];
+  assert.ok(!/استُلم|استلم/.test(placed) && /الاستلام/.test(handed), `placed="${placed}" handed_over="${handed}"`);
 });
