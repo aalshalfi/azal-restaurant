@@ -61,3 +61,10 @@ test("owner rule: the reservation step asks for name + mobile + email in all thr
   assert.match(v[0], /name.*mobile.*email/i); assert.match(v[1], /nom.*mobile.*courriel/i); assert.match(v[2], /اسم.*جوال.*بريد/);
   assert.match(readFileSync(new URL("../reserve.html", import.meta.url), "utf8"), /data-i18n="reserveHow2">Leave your name, mobile number and email/);
 });
+
+test("AR-REWRITE follow-up: reserve.js Arabic is written from meaning (ChatGPT examples)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const r = readFileSync(new URL("../reserve.js", import.meta.url), "utf8");
+  for (const calque of ["نحمّل الأوقات", "تعال واجلس معنا: على طريقة المجلس، حول صحون مشتركة", "حُفظ حجزك باسم", "البريد المستخدم في الحجز"]) assert.ok(!r.includes(calque), "calque is back: " + calque);
+  for (const fact of ["30 يوماً", "{n} أشخاص", "{code}", "{email}"]) assert.ok(r.includes(fact), "fact/placeholder kept: " + fact);
+});
