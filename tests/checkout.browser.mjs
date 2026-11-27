@@ -48,7 +48,7 @@ async function run({ lang = "en", card, second }) {
   await page.locator("#placeOrder").click();
   ok((await page.locator("#coError").textContent()).includes("name"), "missing name blocks submit");
   ok(sent.length === 0, "nothing sent before guest details are valid");
-  await page.fill("#coName", "Test Guest"); await page.fill("#coEmail", "guest@example.invalid");
+  await page.fill("#coName", "Test Guest"); await page.fill("#coEmail", "guest@example.invalid"); await page.fill("#coPhone", "343 999 0002"); // T-02: guests give a mobile
   await page.fill("#coNote", "Less spice please");
   await page.fill("#coCard", "4111 1111 1111 1111"); await page.locator("#placeOrder").click();
   ok(sent.length === 0, "a non-test card number sends nothing");

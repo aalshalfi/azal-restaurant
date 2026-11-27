@@ -27,16 +27,18 @@
       try { res = await fetchFn(base + path, { method, headers: { apikey: config.anonKey, Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined }); }
       catch { throw Object.assign(new Error("network"), { code: "network" }); }
       let data = null; try { data = await res.json(); } catch {}
-      if (!res.ok) { const m = String((data && data.message) || "error"); throw Object.assign(new Error(m), { code: res.status === 401 ? "signed_out" : /^[a-z_]+$/.test(m) ? m : "error" }); }
+      if (!res.ok) { const m = String((data && data.message) || "error"); throw Object.assign(new Error(m), { code: res.status === 401 ? "signed_out" : /^[a-z_]+$/.test(m) ? m : "error", status: res.status }); }
       return data;
     }
     return {
       enabled,
       async isStaff() { return (await call("/rest/v1/rpc/azal_staff_can_access", { method: "POST", body: { p_branch_slug: branch } })) === true; },
       async list() {
-        const q = "select=id,pickup_slot,scheduled_for,guest_name,customer_note,fulfilment_status,total_cents,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
+        // T-02: contact_phone (0010) so the kitchen can call; one fallback for a server without 0010 (400, unknown column).
+        const q = (extra) => "select=id,pickup_slot,scheduled_for,guest_name,customer_note,fulfilment_status,total_cents" + extra + ",order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
           "&branch_slug=eq." + encodeURIComponent(branch) + "&payment_status=eq.paid&fulfilment_status=not.in.(handed_over,cancelled)&order=pickup_slot.asc.nullslast,placed_at.asc";
-        return (await call("/rest/v1/orders?" + q)) || [];
+        try { return (await call("/rest/v1/orders?" + q(",contact_phone"))) || []; }
+        catch (e) { if (e.status !== 400) throw e; return (await call("/rest/v1/orders?" + q(""))) || []; }
       },
       async act(orderId, action) {
         if (!Object.values(NEXT).includes(action)) throw Object.assign(new Error("bad_transition"), { code: "bad_transition" });
@@ -60,19 +62,19 @@
       accept: "Accept", ready: "Ready", hand_over: "Hand over", asap: "As soon as possible", member: "Member",
       clash: "Same sigil as another order: check the code", s_placed: "New", s_accepted: "Accepted", s_preparing: "Preparing", s_ready: "Ready for pickup",
       updated: "Updated {time}", refresh: "Refresh", working: "One moment…", e_network: "Connection problem. The list will retry.", e_error: "That did not work. Refresh and try again.",
-      e_bad_transition: "That order already moved on. Refreshed.", e_order_closed: "That order is already closed. Refreshed.", e_not_staff: "This account is not staff for this branch.", signedAs: "Signed in as {email}", signOut: "Sign out", signingOut: "Signing out…" },
+      e_bad_transition: "That order already moved on. Refreshed.", e_order_closed: "That order is already closed. Refreshed.", e_not_staff: "This account is not staff for this branch.", signedAs: "Signed in as {email}", call: "Call", signOut: "Sign out", signingOut: "Signing out…" },
     fr: { title: "Commandes cuisine", inert: "L’écran des commandes s’active quand le site est relié au système AZAL.", signIn: "Connectez-vous d’abord avec votre courriel du personnel sur la page Majlis.", signInLink: "Aller à la connexion",
       notStaff: "Ce compte n’est pas configuré comme personnel de cette succursale.", empty: "Aucune commande payée en attente. Les nouvelles apparaissent ici d’elles-mêmes.",
       accept: "Accepter", ready: "Prête", hand_over: "Remettre", asap: "Dès que possible", member: "Membre",
       clash: "Même signe qu’une autre commande : vérifiez le code", s_placed: "Nouvelle", s_accepted: "Acceptée", s_preparing: "En préparation", s_ready: "Prête à emporter",
       updated: "Mis à jour à {time}", refresh: "Actualiser", working: "Un instant…", e_network: "Problème de connexion. La liste va réessayer.", e_error: "Ça n’a pas marché. Actualisez et réessayez.",
-      e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale.", signedAs: "Connecté : {email}", signOut: "Se déconnecter", signingOut: "Déconnexion…" },
+      e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale.", signedAs: "Connecté : {email}", call: "Appeler", signOut: "Se déconnecter", signingOut: "Déconnexion…" },
     ar: { title: "طلبات المطبخ", inert: "تعمل شاشة الطلبات حين يُربط الموقع بنظام أزال.", signIn: "سجّل الدخول أولاً ببريد الموظف من صفحة المجلس.", signInLink: "اذهب لتسجيل الدخول",
       notStaff: "هذا الحساب ليس حساب موظف في هذا الفرع.", empty: "لا طلبات مدفوعة تنتظر. تظهر الطلبات الجديدة هنا وحدها.",
       accept: "قبول", ready: "جاهز", hand_over: "تسليم", asap: "في أقرب وقت", member: "عضو",
       clash: "الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته", s_placed: "جديد", s_accepted: "مقبول", s_preparing: "قيد التحضير", s_ready: "جاهز للاستلام",
       updated: "حُدّث {time}", refresh: "تحديث", working: "لحظة…", e_network: "مشكلة في الاتصال. ستُعاد المحاولة.", e_error: "لم تنجح العملية. حدّث الصفحة وحاول مرة أخرى.",
-      e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع.", signedAs: "مسجّل باسم {email}", signOut: "تسجيل الخروج", signingOut: "جارٍ تسجيل الخروج…" },
+      e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع.", signedAs: "مسجّل باسم {email}", call: "اتصل بـ", signOut: "تسجيل الخروج", signingOut: "جارٍ تسجيل الخروج…" },
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const locOf = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
@@ -105,7 +107,7 @@
         const action = NEXT[r.fulfilment_status];
         const items = (r.order_items || []).map((i) => `<li><strong>${esc(i.quantity)}×</strong> ${esc(lang() === "fr" ? i.item_name_fr_snapshot || i.item_name_en_snapshot : i.item_name_en_snapshot)}</li>`).join("");
         const clash = clashes.has(r.id);
-        html += `<article class="staff-order is-${esc(r.fulfilment_status)}${clash ? " is-clash" : ""}"><header>${sigilHtml(r.id, clash, esc, L("clash"))}<span class="staff-code">${esc(code(r.id))}</span><span class="staff-who">${esc(r.guest_name || L("member"))}</span><span class="staff-status">${esc(L("s_" + r.fulfilment_status))}</span></header>` +
+        html += `<article class="staff-order is-${esc(r.fulfilment_status)}${clash ? " is-clash" : ""}"><header>${sigilHtml(r.id, clash, esc, L("clash"))}<span class="staff-code">${esc(code(r.id))}</span><span class="staff-who">${esc(r.guest_name || L("member"))}</span>${r.contact_phone ? `<a class="staff-phone" dir="ltr" href="tel:${esc(r.contact_phone)}" aria-label="${esc(L("call"))} ${esc(r.contact_phone)}">${esc(r.contact_phone)}</a>` : ""}<span class="staff-status">${esc(L("s_" + r.fulfilment_status))}</span></header>` +
           `<ul class="staff-items">${items}</ul>` + (r.customer_note ? `<p class="staff-note-guest">“${esc(r.customer_note)}”</p>` : "") +
           `<footer><span>${esc(money(r.total_cents))}</span>${action ? `<button type="button" class="button button-gold staff-act" data-id="${esc(r.id)}" data-action="${action}"${busyId ? " disabled" : ""}>${esc(busyId === r.id ? L("working") : L(action))}</button>` : ""}</footer></article>`;
       }

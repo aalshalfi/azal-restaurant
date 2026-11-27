@@ -915,3 +915,6 @@ html.role-leaving .member-card,html.role-leaving #memberHistory,html.role-leavin
 .admin-who-bar .admin-who,.staff-who-line{margin:0;color:var(--clay);font-weight:600;overflow-wrap:anywhere}
 .admin-signout,.staff-signout{min-height:44px;padding:0 16px;background:transparent;border:1px solid var(--brown);color:var(--brown);cursor:pointer}
 .admin-signout:disabled,.staff-signout:disabled{opacity:.6;cursor:default}
+/* T-02 guest mobile + join action */
+.staff-phone{margin-inline-start:auto;font-weight:700;color:var(--clay);min-height:44px;display:inline-flex;align-items:center;text-decoration:underline;text-underline-offset:3px}
+.co-join{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:12px;text-decoration:none}

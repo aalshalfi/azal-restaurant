@@ -142,3 +142,12 @@ test("0007 is forward-only and pins the server redemption invariant", () => {
   assert.match(m7, /invalid_redeem_config/);
   assert.match(m7, /revoke all on function public\.azal_redeem_cents\(integer\) from public, anon, authenticated/);
 });
+
+test("T-02: guest mobile rule (same as profiles) and the request body", () => {
+  const n = C.normalizePhone;
+  assert.deepEqual(["(343) 999-0002", "1 343 999 0002", "+44 20 7946 0958", "343abc9990002", "++1 343 999 0002", "٣٤٣٩٩٩٠٠٠٢", "", null].map(n), ["+13439990002", "+13439990002", "+442079460958", null, null, null, null, null]);
+  const base = { cart: new Map([[1, 1]]), choice: "asap", key: "k".repeat(20), nowMs: Date.parse("2026-11-26T17:00:00Z") };
+  assert.equal(C.buildOrder({ ...base, guest: { name: "A", email: "a@example.invalid" }, phone: "+13439990002" }).p_guest_phone, "+13439990002");
+  assert.ok(!("p_guest_phone" in C.buildOrder(base)), "no phone given: not sent");
+  assert.equal(C.joinHref("Amal@Example.invalid "), "member.html#join=amal%40example.invalid", "email only in the fragment, normalised");
+});

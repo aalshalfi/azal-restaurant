@@ -206,6 +206,9 @@
   const fmtPoints = (n) => new Intl.NumberFormat(document.documentElement.lang === "fr" ? "fr-CA" : "en-CA").format(n);
   // F-OWN-1 (owner): a password is the main way in; the email link stays one tap away.
   let last = null, mode = "signin", codeSentTo = "", message = "", lastSentAt = 0, editing = false, detailMsg = "";
+  // T-02: a guest arriving from their order confirmation ("Join & collect these points") lands on the join form with
+  // that order's email filled in and locked, so the order's pending points attach to the account they create.
+  let joinEmail = "";
 
   function errorKey(e) {
     return { invalid_credentials: "authErrCredentials", email_not_confirmed: "authErrConfirm", already_registered: "authErrExists",
@@ -298,7 +301,9 @@
       `<h2 class="auth-title">${tr(isUp ? "authJoinTitle" : "authSignInTitle")}</h2>` +
       `<form class="auth-form" id="authForm" novalidate>` +
       (isUp ? `<label for="authName">${tr("authName")}</label><input id="authName" name="name" autocomplete="name" maxlength="80" required>` : "") +
-      `<label for="authEmail">${tr("authEmail")}</label><input id="authEmail" name="email" type="email" autocomplete="email" required>` +
+      (isUp && joinEmail
+        ? `<label for="authEmail">${tr("authEmail")}</label><input id="authEmail" name="email" type="email" autocomplete="email" required readonly aria-describedby="authJoinNote" value="${esc(joinEmail)}"><p class="auth-note" id="authJoinNote">${esc(tr("authJoinLocked"))}</p>`
+        : `<label for="authEmail">${tr("authEmail")}</label><input id="authEmail" name="email" type="email" autocomplete="email" required>`) +
       (isUp ? `<label for="authPhone">${tr("authPhone")}</label><input id="authPhone" name="phone" type="tel" dir="ltr" autocomplete="tel" maxlength="24" required>` : "") +
       `<label for="authPassword">${tr("authPassword")}</label><input id="authPassword" name="password" type="password" autocomplete="${isUp ? "new-password" : "current-password"}" minlength="8" required>` +
       `<p class="auth-message" id="authMessage" role="status" aria-live="polite">${esc(message)}</p>` +
@@ -321,7 +326,7 @@
   }
 
   document.addEventListener("click", async (e) => {
-    if (e.target && e.target.id === "authSwitch") { mode = mode === "signin" ? "signup" : "signin"; message = ""; renderCard(last); }
+    if (e.target && e.target.id === "authSwitch") { mode = mode === "signin" ? "signup" : "signin"; message = ""; if (mode === "signin") joinEmail = ""; renderCard(last); }
     if (e.target && e.target.id === "authSignOut") { await auth.signOut(); message = ""; mode = "signin"; codeSentTo = ""; editing = false; detailMsg = ""; refresh(); }
     if (e.target && e.target.id === "authEditDetails") { editing = true; detailMsg = ""; renderCard(last); }
     if (e.target && e.target.id === "authCancelDetails") { editing = false; detailMsg = ""; renderCard(last); document.getElementById("authEditDetails")?.focus(); }
@@ -416,6 +421,12 @@
   document.getElementById("languageToggle")?.addEventListener("click", () => setTimeout(() => { headerState(last); renderCard(last || { status: "signed_out" }); }, 0));
   (async () => {
     const h = root.location && root.location.hash;
+    const jm = h && /^#join=([^&]+)$/.exec(h);
+    if (jm) {
+      let e = ""; try { e = decodeURIComponent(jm[1]).trim().toLowerCase(); } catch {}
+      if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e) && e.length <= 254) { joinEmail = e; mode = "signup"; }
+      try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch {} // the email does not stay in the address bar
+    }
     if (h && /access_token=|error=/.test(h)) {
       const r = await auth.adoptLink(h);
       try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch {} // tokens never stay in the address bar

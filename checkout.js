@@ -14,6 +14,17 @@
   const cardToToken = (raw) => TEST_CARDS[String(raw || "").replace(/[\s-]/g, "")] || null;
 
   const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  // T-02: the same mobile rule as profiles and 0008/0010 azal_phone(): ASCII digits, spaces, dots, dashes, brackets
+  // and one leading "+"; 10 digits -> +1, 11 starting with 1 -> +, or "+" and 10-15 digits. Anything else is refused.
+  function normalizePhone(raw) {
+    const s = String(raw || "");
+    if (!/^\s*\+?[0-9 ().-]+$/.test(s)) return null;
+    const d = s.replace(/[^0-9]/g, "");
+    if (/^\d{10}$/.test(d)) return "+1" + d;
+    if (/^1\d{10}$/.test(d)) return "+" + d;
+    if (/^\s*\+/.test(s) && /^[1-9]\d{9,14}$/.test(d)) return "+" + d;
+    return null;
+  }
   function validateGuest(name, email) {
     const n = String(name || "").trim(), e = String(email || "").trim().toLowerCase();
     if (n.length < 1 || n.length > 80) return { ok: false, field: "name" };
@@ -43,7 +54,7 @@
     if ([...t].length > NOTE_MAX) throw Object.assign(new Error("note_too_long"), { code: "note_too_long" });
     return t || null;
   }
-  function buildOrder({ cart, choice, day, note, guest, branch, key, nowMs, redeem }) {
+  function buildOrder({ cart, choice, day, note, guest, branch, key, nowMs, redeem, phone }) {
     const items = [];
     for (const [id, q] of cart) { const u = itemUuid(Number(id)); if (!u) return null; items.push({ menu_item_id: u, quantity: Number(q) }); }
     if (!items.length) return null;
@@ -56,6 +67,8 @@
     if (guest) { body.p_guest_name = guest.name; body.p_guest_email = guest.email; }
     // F-OWN-4: only sent when the member chose a reward, so a server without 0006 keeps working for everyone else.
     if (!guest && Number.isSafeInteger(redeem) && redeem > 0 && redeem % 10000 === 0) body.p_redeem_points = redeem;
+    // T-02: a guest always sends a mobile (checked before this); a member sends one only when given for this order.
+    if (phone) body.p_guest_phone = phone;
     return body;
   }
 
@@ -116,7 +129,13 @@
         if (order) return order; // already placed in this attempt: go straight to payment
         const body = buildOrder(Object.assign({}, args, { key }));
         if (!body) throw Object.assign(new Error("invalid_items"), { code: "invalid_items" });
-        order = await rpc("place_order", body);
+        try { order = await rpc("place_order", body); }
+        catch (e) {
+          // Until the lead applies 0010, place_order has no p_guest_phone (PostgREST: 404, no matching function).
+          // Retry once without it; nothing was created by the refused call. After 0010 this branch never runs.
+          if (e.status === 404 && "p_guest_phone" in body) { const b2 = Object.assign({}, body); delete b2.p_guest_phone; order = await rpc("place_order", b2); }
+          else throw e;
+        }
         return order;
       },
       async pay(cardNumber, guestEmail) {
@@ -130,7 +149,9 @@
     };
   }
 
-  const api = { NOTE_MAX, createCheckout, cardToToken, validateGuest, buildOrder, redeemView, torontoInstant, itemUuid, TEST_CARDS };
+  // The guest's join link: the email travels in the URL FRAGMENT (never sent to any server) to member.html.
+  const joinHref = (email) => "member.html#join=" + encodeURIComponent(String(email || "").trim().toLowerCase());
+  const api = { NOTE_MAX, createCheckout, cardToToken, validateGuest, normalizePhone, buildOrder, redeemView, torontoInstant, itemUuid, TEST_CARDS, joinHref };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -142,7 +163,7 @@
 
   const S = {
     en: { kicker: "TEST MODE", title: "Your order", text: "Payment is in test mode: use a test card below. No real money moves.",
-      guestName: "Your name", guestEmail: "Email for your receipt and points", signedAs: "Ordering as {email}",
+      guestName: "Your name", guestEmail: "Email for your receipt and points", phone: "Mobile number (so the kitchen can call you)", phoneMember: "Mobile for this order (so the kitchen can call you)", joinBtn: "Join & collect these points", e_phone: "Please check your mobile number (10 digits, or + and country code).", e_phone_required: "Please add your mobile number.", e_invalid_phone: "Please check your mobile number (10 digits, or + and country code).", signedAs: "Ordering as {email}",
       note: "Note for the kitchen (optional)", notePh: "Allergies, less spice, extra bread…",
       card: "Card number (test cards only)", cardHelp: "Test cards: 4242 4242 4242 4242 pays · 4000 0000 0000 0002 is declined · 4000 0000 0000 9995 has insufficient funds.",
       pay: "Pay {total}", payPlain: "Place order and pay", working: "One moment…",
@@ -158,7 +179,7 @@
       ptsNext: "Your first reward, {amount} off, comes at {points} points.", ptsNextMore: "Your next reward, {amount} off, comes at {points} points.", ptsMinOrder: "Your points can take {amount} off an order of {amount} or more.",
       e_points_insufficient: "Your points balance changed. Choose again.", e_invalid_redeem: "That reward is not available. Choose again.", e_redeem_exceeds_order: "That reward is larger than this order. Choose a smaller one.", e_redeem_members_only: "Sign in to use your points." },
     fr: { kicker: "MODE TEST", title: "Votre commande", text: "Le paiement est en mode test : utilisez une carte test ci-dessous. Aucun paiement réel n’est effectué.",
-      guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", signedAs: "Commande au nom de {email}",
+      guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", phone: "Numéro de cellulaire (pour que la cuisine puisse vous appeler)", phoneMember: "Cellulaire pour cette commande (pour que la cuisine puisse vous appeler)", joinBtn: "S’inscrire et recevoir ces points", e_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", e_phone_required: "Veuillez indiquer votre numéro de cellulaire.", e_invalid_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", signedAs: "Commande au nom de {email}",
       note: "Note pour la cuisine (facultatif)", notePh: "Allergies, moins épicé, plus de pain…",
       card: "Numéro de carte (cartes test seulement)", cardHelp: "Cartes test : 4242 4242 4242 4242 paie · 4000 0000 0000 0002 est refusée · 4000 0000 0000 9995 a des fonds insuffisants.",
       pay: "Payer {total}", payPlain: "Commander et payer", working: "Un instant…",
@@ -174,7 +195,7 @@
       ptsNext: "Votre première récompense, {amount} de rabais, arrive à {points} points.", ptsNextMore: "Votre prochaine récompense, {amount} de rabais, arrive à {points} points.", ptsMinOrder: "Vos points donnent {amount} de rabais sur une commande de {amount} ou plus.",
       e_points_insufficient: "Votre solde de points a changé. Choisissez de nouveau.", e_invalid_redeem: "Cette récompense n’est pas disponible. Choisissez de nouveau.", e_redeem_exceeds_order: "Cette récompense dépasse le montant de la commande. Choisissez-en une plus petite.", e_redeem_members_only: "Connectez-vous pour utiliser vos points." },
     ar: { kicker: "وضع التجربة", title: "طلبك", text: "الدفع هنا تجريبي: استخدم إحدى البطاقات التجريبية أدناه، ولن تُنقل أي أموال حقيقية.",
-      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", signedAs: "تطلب بحسابك {email}",
+      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", phone: "رقم الجوال (ليتصل بك المطبخ عند الحاجة)", phoneMember: "رقم الجوال لهذا الطلب (ليتصل بك المطبخ عند الحاجة)", joinBtn: "انضم واجمع نقاط هذا الطلب", e_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", e_phone_required: "اكتب رقم جوالك.", e_invalid_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", signedAs: "تطلب بحسابك {email}",
       note: "ملاحظة للمطبخ (اختياري)", notePh: "حساسية، حار أقل، خبز إضافي…",
       card: "رقم البطاقة (بطاقات تجريبية فقط)", cardHelp: "بطاقات تجريبية: 4242 4242 4242 4242 تدفع · 4000 0000 0000 0002 تُرفض · 4000 0000 0000 9995 رصيدها غير كافٍ.",
       pay: "ادفع {total}", payPlain: "اطلب وادفع", working: "لحظة…",
@@ -213,6 +234,7 @@
   const box = document.createElement("div");
   box.className = "checkout-live";
   box.innerHTML = '<div class="co-guest" id="coGuest" hidden><label for="coName"></label><input id="coName" autocomplete="name" maxlength="80"><label for="coEmail"></label><input id="coEmail" type="email" autocomplete="email" maxlength="254"></div>' +
+    '<label for="coPhone"></label><input id="coPhone" type="tel" dir="ltr" autocomplete="tel" maxlength="24">' +
     '<p class="co-signed" id="coSigned" hidden></p>' +
     '<fieldset class="co-points" id="coPoints" hidden><legend id="coPtsTitle"></legend><p class="co-help" id="coPtsBalance"></p><div id="coPtsChoices"></div><p class="co-help" id="coPtsNext" hidden></p></fieldset>' +
     '<label for="coNote"></label><textarea id="coNote" maxlength="500" rows="2"></textarea>' +
@@ -270,6 +292,7 @@
     if (demoNote) demoNote.hidden = true;
     box.querySelector("label[for=coName]").textContent = L("guestName");
     box.querySelector("label[for=coEmail]").textContent = L("guestEmail");
+    box.querySelector("label[for=coPhone]").textContent = L(guestMode ? "phone" : "phoneMember");
     box.querySelector("label[for=coNote]").textContent = L("note");
     $("coNote").placeholder = L("notePh");
     box.querySelector("label[for=coCard]").textContent = L("card");
@@ -284,10 +307,12 @@
     $("coGuest").hidden = !guestMode;
     $("coSigned").hidden = guestMode;
     if (s) $("coSigned").textContent = L("signedAs", { email: (s.user && s.user.email) || "" });
+    // Members: the profile mobile (0008) is filled in; changing it here applies to this order only.
+    if (s && !$("coPhone").value) { try { const st = auth && (await auth.state()); if (st && st.phone) $("coPhone").value = st.phone; } catch {} }
     paint();
     await loadPoints();
   }
-  const unlock = () => { $("coName").disabled = $("coEmail").disabled = false; };
+  const unlock = () => { $("coName").disabled = $("coEmail").disabled = $("coPhone").disabled = false; };
   const showError = (code) => { $("coError").textContent = L("e_" + code) === "e_" + code ? L("e_error") : L("e_" + code); };
 
   const sig = () => { try { return JSON.stringify([...cart.entries()].sort()) + "|" + (pickupState.choice || "") + "|" + redeem; } catch { return ""; } };
@@ -304,6 +329,10 @@
       if (!g.ok) { showError(g.field); $(g.field === "name" ? "coName" : "coEmail").focus(); return; }
       guest = { name: g.name, email: g.email };
     }
+    const rawPhone = $("coPhone").value.trim();
+    const phone = rawPhone ? normalizePhone(rawPhone) : null;
+    if (guestMode && !rawPhone) { showError("phone_required"); $("coPhone").focus(); return; }
+    if (rawPhone && !phone) { showError("phone"); $("coPhone").focus(); return; }
     if (!cardToToken($("coCard").value)) { showError("not_test_card"); $("coCard").focus(); return; }
     busy = true; paint();
     try {
@@ -311,8 +340,8 @@
       const c = typeof cart !== "undefined" ? cart : null;
       const ps = typeof pickupState !== "undefined" ? pickupState : { choice: "asap", plan: { day: "today" } };
       placedSig = sig();
-      await co.place({ cart: c, choice: ps.choice || "asap", day: ps.plan && ps.plan.day, note: $("coNote").value, guest, nowMs: Date.now(), redeem: guest ? 0 : redeem });
-      $("coName").disabled = $("coEmail").disabled = true; // the order is tied to this email now
+      await co.place({ cart: c, choice: ps.choice || "asap", day: ps.plan && ps.plan.day, note: $("coNote").value, guest, nowMs: Date.now(), redeem: guest ? 0 : redeem, phone });
+      $("coName").disabled = $("coEmail").disabled = $("coPhone").disabled = true; // the order is tied to these details now
       paint();
       const r = await co.pay($("coCard").value, guest && guest.email);
       $("coCard").value = "";
@@ -322,6 +351,8 @@
         // V8: the sigil in large type, so the guest can just show the phone at the counter.
         const sg = root.AzalSigil && root.AzalSigil.sigil(o.order_id);
         if (msg && sg) { const big = document.createElement("span"); big.className = "co-sigil"; big.textContent = root.AzalSigil.label(o.order_id, lang()); msg.append(big); }
+        // T-02 / F-OWN-16: the join line is a real action for guests: the join form with this order's email, locked.
+        if (msg && guest) { const a = document.createElement("a"); a.className = "button button-gold co-join"; a.id = "coJoin"; a.href = joinHref(guest.email); a.textContent = L("joinBtn"); msg.append(a); }
         root.AZAL_REDEEM_CENTS = 0; redeem = 0;
         try { c.clear(); if (typeof renderCart === "function") renderCart(); } catch {}
         co.reset(); unlock(); box.hidden = true; btn.hidden = true; const pk = $("pickup"); if (pk) pk.hidden = true;
@@ -330,7 +361,7 @@
       }
     } catch (e) {
       const code = (e && e.code) || "error";
-      if (["slot_full", "closed", "too_soon", "payment_window_expired", "item_unavailable", "invalid_items", "idempotency_conflict", "note_too_long", "points_insufficient", "invalid_redeem", "redeem_exceeds_order", "redeem_members_only"].includes(code)) { co.reset(); unlock(); }
+      if (["slot_full", "closed", "too_soon", "payment_window_expired", "item_unavailable", "invalid_items", "idempotency_conflict", "note_too_long", "points_insufficient", "invalid_redeem", "redeem_exceeds_order", "redeem_members_only", "phone_required", "invalid_phone"].includes(code)) { co.reset(); unlock(); }
       if (["points_insufficient", "invalid_redeem", "redeem_exceeds_order", "redeem_members_only"].includes(code)) { setRedeem(0, 0); loadPoints(); }
       showError(code);
     } finally { busy = false; paint(); }

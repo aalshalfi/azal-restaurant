@@ -92,7 +92,7 @@ const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.r
   const { p, urls } = await open();
   await p.locator(".mh-toggle").click(); await p.waitForSelector(".mh-detail .mh-lines");
   const u = urls.find(isDetail); const sel = new URL(u.replace(/ /g, "%20")).searchParams.get("select");
-  ok(sel === "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status,discount_cents,redeemed_points,order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)", "detail asks for exactly the rendered columns");
+  ok(sel === "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status,discount_cents,redeemed_points,contact_phone,order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)", "detail asks for exactly the rendered columns");
   ok(!/\*|idempotency_key|request_hash|guest_email|guest_name|user_id,|actor_user_id|details/.test(sel), "no select=*, no hash, key, contact, actor or event details");
   await p.close();
 }
