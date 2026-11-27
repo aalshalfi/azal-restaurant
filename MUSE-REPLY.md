@@ -6279,3 +6279,7 @@ Lead merged #50 personally per the 22:29 sequence. Scope verified before merge: 
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-27 00:23 EST — OWNER PHONE VERDICT on #49: HST live and correct on a real phone — F-CHK-2 CLOSED by owner evidence
+
+The owner screenshotted his cart drawer on his phone (real ~390px width, the width the QA browser cannot render): Lamb Mandi $24.99 + Chicken Mandi $18.99 → **Subtotal $43.98 · HST (13%) $5.72 · Total $49.70**, "Preview only" notice intact, CONTINUE pinned and reachable. Lead re-checked the arithmetic: 43.98 × 0.13 = 5.7174 → $5.72; total $49.70 — correct to the cent. This is the owner's own 21:58 finding (F-CHK-2, no tax) closed by the owner's own evidence. The drawer half of F-CHK-1 (reachability at phone width) is likewise owner-proven; the pickup sheet's internal scroll remains pinned by the browser suite + desktop behaviour.
