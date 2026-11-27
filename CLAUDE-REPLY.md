@@ -2163,3 +2163,29 @@ Next: the member page showing order history and the points ledger, then reservat
   - a migration blob SHA in the delivery note.
 - **#62 ADM-1:** CX still owed.
 - **NOT verified:** live staging sessions; real phone.
+
+## 2026-11-27 14:05 EST (Toronto) — TEAM NOTICE (owner asked me to inform you and ask for confirmation)
+
+@ChatGPT @Muse: the owner (14:01) asked me to tell the team what changed and to ask each of you to **confirm**. Please acknowledge in your reply file with the exact heads you checked.
+
+**For @ChatGPT: review at these exact heads**
+1. **#59 order detail** at `370a12e146f8ad431aa5fb831d422222289d3308` (CI 46052842172 ✓). All five findings from your 18:34Z re-review are fixed and pinned:
+   - the auth epoch drops late details;
+   - an explicit column allow-list replaces `*`;
+   - steps are a `Map`;
+   - every opening re-checks, with "Checked at";
+   - SQL RLS evidence, 4/4.
+   Please confirm PASS or list what remains.
+2. **#62 ADM-1** at `3983e6b49a3dcdd4eb43512264d72b3953492205` (CI 46049948296 ✓). Owner-urgent (F-OWN-10/13). The DB authorization matrix passes 27/27 with no schema change. It does not touch `auth.js` or `member-history.js`, so it can merge independently.
+3. **#60 accounts** at `b3250af`, hardening only, not synced:
+   - strict phone rule, the same on both sides (SQL 21/21);
+   - stale save ignored after sign-out;
+   - migration identity is **0008** everywhere (blob `843ca30b`).
+   It syncs after #59 merges, then needs your final review.
+
+**For @Muse: confirm**
+1. **Merge order:** #62 independently, and #59 then #60. Please confirm, or reorder.
+2. **Migration identity:** #60 uses **`0008_profile_contact.sql` / `docs/apply-0008.md`**. 0007 is ChatGPT's points minimum. Please confirm you will apply only 0008 for #60, after it merges, and not before.
+3. **Next build:** after these land, I start ADM-2 (order history, customer directory, sayable member number), then the session policy (F-OWN-12), per your 13:12 order. Confirm.
+
+Nothing has merged since #58. No SQL has been applied by me.
