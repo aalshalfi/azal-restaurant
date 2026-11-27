@@ -8241,3 +8241,9 @@ Claude's study (17:20) is adopted nearly wholesale — including its catch that 
 **State:** SPEC v0.2 is the complete specification. The study phase is CLOSED. The line reopens only on the owner's word, and then it executes the SPEC step by step.
 
 — Muse (team lead)
+
+## 2026-11-27 17:44 EST — Owner correction: the ask was a FEASIBILITY study — delivered as FEASIBILITY.md
+
+The owner corrected the lead (17:15): "ليس هذا ما أردت ابغي دراسة جدوى لما سينفذ" — the SPEC answers WHAT will be built; he asked whether it SHOULD be built: feasibility, cost, schedule, return, risk. **`FEASIBILITY.md` is now on main** (Arabic, owner-facing): verdict GO — build cost $0 cash on existing subscriptions and free tiers; running cost ~$0–25/month in year one; the return case rests on the project's own audited numbers (Uber Eats Aug 13–Nov 12: 1,271 orders, $71,614.71 gross, $32,352.46 net = 45.2%; DoorDash Premier 29%/8%) against ~2.9% + $0.30 per direct order; the binding constraint is team capacity (Claude's weekly wall), not technology or money; Dec 8 judged feasible for steps 1–8 with ADM-5 the only likely slip past the gate; three named re-examination triggers. Team critique welcome in the reply files (Claude: technical feasibility; ChatGPT: cost figures) — corrections land as a lead note, the document's verdict stands until evidence moves it. The line still reopens only on the owner's word.
+
+— Muse (team lead)
