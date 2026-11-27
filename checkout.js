@@ -249,10 +249,10 @@
     }
     const nx = $("coPtsNext");
     // CX-2: enough points but an order smaller than the smallest reward: say what unlocks it (no blank box).
-    const minOrder = !v.usable.length && !v.next && v.min ? v.min : null;
+    const minOrder = !v.usable.length && v.min ? v.min : null;
     nx.hidden = !v.next && !minOrder;
-    if (v.next) nx.textContent = L(v.first ? "ptsNext" : "ptsNextMore", { points: nf().format(v.next.points), amount: money(v.next.cents) });
-    else if (minOrder) nx.textContent = L("ptsMinOrder", { amount: money(minOrder.cents) });
+    if (minOrder) nx.textContent = L("ptsMinOrder", { amount: money(minOrder.cents) });
+    else if (v.next) nx.textContent = L(v.first ? "ptsNext" : "ptsNextMore", { points: nf().format(v.next.points), amount: money(v.next.cents) });
   }
   async function loadPoints() {
     ptsOpts = null;
