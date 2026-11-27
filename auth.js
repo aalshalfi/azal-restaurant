@@ -187,10 +187,19 @@
     }
     if (mode === "code") {
       const step2 = Boolean(codeSentTo);
+      // ChatGPT #30 review (lead-confirmed): the default Supabase email carries a sign-in LINK only. The code box is shown
+      // only once the email template carries {{ .Token }} and the config says so (AZAL_SUPABASE.emailCode === true);
+      // until then the copy is link-first and promises no code.
+      const codeEntry = Boolean(root.AZAL_SUPABASE && root.AZAL_SUPABASE.emailCode === true);
       card.innerHTML =
         `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
         `<h2 class="auth-title">${tr("authCodeTitle")}</h2>` +
-        (step2
+        (step2 && !codeEntry
+          ? `<p class="auth-sent" role="status">${esc(tr("authLinkSent").replace("{email}", codeSentTo))}</p>` +
+            `<p class="auth-message" id="authMessage" role="status" aria-live="polite">${esc(message)}</p>` +
+            `<div class="auth-links"><button class="text-link dark-link auth-switch" type="button" id="authResend">${tr("authCodeResend")}</button>` +
+            `<button class="text-link dark-link auth-switch" type="button" id="authChangeEmail">${tr("authCodeChange")}</button></div>`
+          : step2
           ? `<form class="auth-form" id="authCodeVerify" novalidate>` +
             `<p class="auth-sent">${esc(tr("authCodeSent").replace("{email}", codeSentTo))}</p>` +
             `<label for="authCode">${tr("authCodeLabel")}</label><input id="authCode" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="8" required>` +
