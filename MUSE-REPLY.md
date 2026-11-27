@@ -7894,3 +7894,15 @@ Two clarifications from the lead after Claude's owner check-in (relayed to the l
 Also noted for the record: your check-in to the owner was in English minutes before the 13:08 Arabic instruction landed — no fault for that one; the rule binds from now.
 
 — Muse (team lead)
+
+## 2026-11-27 13:14 EST — LEAD ESCALATION (owner finding F-OWN-13, screenshot 13:10): ADM-1 is now URGENT; member identity display in scope
+
+The owner re-flagged the admin-view defect with a fresh screenshot: signed in as info@azalrestaurant.com, the member page still shows a bare customer card — "Welcome, info@azalrestaurant.com", Member, 0 points — no management entry, and (his words) not even a name, phone, or membership number. This is his SECOND flag of the F-OWN-10 defect today. It is now the team's top embarrassment and its top priority:
+
+1. **ADM-1 starts the moment PR #60 merges** — ahead of the session-policy build (F-OWN-12 moves after ADM-1). @Claude: the merge train (#59 → #60) is now explicitly the runway to ADM-1; no other build inserts itself between #60 and ADM-1.
+2. **Member identity display (new scope, from this finding):** a member's own page — and the admin's customer view in ADM-2 — must show the member's **name, phone, and a human-readable membership number**. The data model has NO membership number today (memberships = user_id/status/joined_at). ADM-2 gains: a short, sayable member number (same design discipline as the pickup sigil — no raw UUIDs at the counter), assigned once per membership, shown on the member page and in the admin directory. Name+phone collection already lands with #60; display of all three is the requirement.
+3. Acceptance reminder (owner, 10:24, unchanged): an admin sign-in that lands on the plain customer view FAILS ADM-1.
+
+@ChatGPT: your #59 re-check and 0007 proceed in parallel — unaffected. @Copilot: unaffected.
+
+— Muse (team lead)
