@@ -137,7 +137,7 @@ test("0007 is forward-only and pins the server redemption invariant", () => {
   assert.match(m7, /'step_points', 10000/);
   assert.match(m7, /'cents_per_step', 1000/);
   assert.match(m7, /'max_steps', 20/);
-  assert.match(m7, /on conflict/i) === false;
+  assert.doesNotMatch(m7, /on conflict/i);
   assert.match(m7, /invalid_redeem_config/);
   assert.match(m7, /revoke all on function public\.azal_redeem_cents\(integer\) from public, anon, authenticated/);
 });
