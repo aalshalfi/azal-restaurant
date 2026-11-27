@@ -727,6 +727,23 @@ html[dir="rtl"] .checkout-panel .modal-close{float:left;margin:-22px 0 0 -22px}
 .checkout-totals:empty{display:none}
 html[dir="rtl"] #cartTax,html[dir="rtl"] #cartGrand,html[dir="rtl"] .checkout-totals strong{direction:ltr;unicode-bidi:isolate}
 
+
+/* AR-TOFU (lead live QA 22:50): the Arabic ritual title rendered as tofu boxes because .ritual-title sets a Latin-only
+   serif stack. Sweep: every rule in this file that sets a Latin-only font-family gets an Arabic twin that puts the
+   self-hosted "AZAL Arabic" (Arabic code points only, via unicode-range) first, so Arabic glyphs always exist while
+   Latin text keeps its original face. tests/arabic-fonts.browser.mjs pins it across pages. */
+html[lang="ar"] .footer p{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .iftar-line{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .majlis-preview h2{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .member-stat strong{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .page-banner h1{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .page-story .welcome-grid p{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .ritual-title{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .signature-card h3{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .signature-heading h2{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .story-values h2{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .sufra-choice-title{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
+html[lang="ar"] .welcome-grid p{font-family:"AZAL Arabic",'Source Serif 4',Georgia,serif}
 /* Lead walk 22:05 fixes. F-WALK-7: map dots select their tab on tap. F-WALK-5: on phones the fixed order bar must not hide
    what keyboard focus or a scroll-into-view brings up (the third mood option). */
 .ymap-dot{pointer-events:auto;cursor:pointer}
