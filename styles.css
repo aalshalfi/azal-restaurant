@@ -678,6 +678,31 @@ html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:n
 .share-tray[hidden]{display:none!important}
 .share-status{margin:6px 0 0;font-size:13px;color:var(--muted);min-height:1em}
 .share-status:empty{display:none}
+
+/* AR-RTL pass (Claude, design lead, owner findings 21:28/21:30/21:33). Design ruling: in Arabic the header is the exact
+   mirror of the #33 family, not a different layout: logo anchored at the START edge (right), the controls GROUPED at the
+   END edge (left) in the same logical order (language, account, order, menu), 64px bar, 44px targets. Done with logical
+   properties so both directions share one rule; physical margins/offsets that only worked left-to-right are neutralised.
+   The same pass fixes every other physical-only rule that breaks in RTL. LTR rendering is unchanged. */
+@media(max-width:800px){
+ .brand{margin-right:0;margin-inline-end:auto}
+ .menu-toggle{margin-left:0;margin-inline-start:2px}
+ .cart-open #cartCount{right:auto;inset-inline-end:1px}
+}
+.modal-close{right:auto;inset-inline-end:22px}
+.skip-link{left:auto;inset-inline-start:16px}
+.member-steps{padding-left:0;padding-inline-start:22px}
+.reserve-steps{padding-left:0;padding-inline-start:22px}
+.ritual ol{padding-left:0;padding-inline-start:20px}
+.detail-row strong{text-align:end}
+.sufra-choice{text-align:start}
+.sufra-arrow,.sufra-n summary::after,.sufra-collapsible summary::after{margin-left:0;margin-inline-start:auto}
+.pickup .pickup-asap{text-align:start}
+html[dir="rtl"] .product-tag{left:auto;right:14px}
+html[dir="rtl"] .sufra-arrow{display:inline-block;transform:scaleX(-1)}
+@media(max-width:480px){html[dir="rtl"] .product-tag{right:6px}html[dir="rtl"] .hero-bottom span:last-child{text-align:left}}
+@media(max-width:600px){html[dir="rtl"] .iftar-line{padding-right:0;padding-left:34px}html[dir="rtl"] .iftar-banner::after{right:auto;left:-14px}}
+html[dir="rtl"] .dir-arrow{display:inline-block;transform:scaleX(-1)}
 /* v2 openable tray: a shared tray is shown first, added only on the guest's tap. */
 .shared-tray{margin:18px 0 6px;padding:18px 20px;background:var(--cream);border:1px solid #dfcfbb;border-inline-start:4px solid var(--gold)}
 .shared-tray-title{font-size:24px;margin:0 0 8px}
