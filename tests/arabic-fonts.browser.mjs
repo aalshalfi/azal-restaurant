@@ -15,10 +15,14 @@ const audit = () => { const bad = []; let n = 0;
     if (!getComputedStyle(el).fontFamily.includes("AZAL Arabic")) bad.push(el.tagName.toLowerCase() + "." + [...el.classList].join(".") + " → " + getComputedStyle(el).fontFamily.slice(0, 40));
   } return { n, bad: [...new Set(bad)] }; };
 for (const pg of ["index", "menu", "story", "member", "reserve", "404"]) {
-  const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } }); const woff = [];
+  // ChatGPT #53 review: the family name alone is not proof; the WOFF must actually arrive and the face must load.
+  p.on("response", (r) => { if (r.url().includes("Amiri-Arabic.woff")) woff.push(r.status()); });
   await p.addInitScript(() => { localStorage.setItem("azal-language", "ar"); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 1], [4, 1], [8, 1]])); });
   await p.goto(`${base}/${pg}.html`);
   if (pg === "menu") { await p.evaluate(() => document.getElementById("cartOpen").click()); await p.click("#checkoutButton"); await p.click("#placeDemoOrder"); await p.waitForSelector(".ritual-title"); }
+  const face = await p.evaluate(async () => { await document.fonts.ready; try { await document.fonts.load('400 20px "AZAL Arabic"', "سفرة"); } catch {} const f = [...document.fonts].filter((x) => x.family.replace(/"/g, "") === "AZAL Arabic"); return { faces: f.length, loaded: f.some((x) => x.status === "loaded"), check: document.fonts.check('400 20px "AZAL Arabic"', "سفرة") }; });
+  ok(woff.includes(200) && face.loaded && face.check, `${pg}: the Arabic WOFF arrived (HTTP ${woff.join(",") || "none"}) and the "AZAL Arabic" face is loaded`);
   const r = await p.evaluate(audit);
   ok(r.n > 5 && r.bad.length === 0, `${pg}: all ${r.n} Arabic text elements carry "AZAL Arabic"` + (r.bad.length ? " — missing on: " + r.bad.join(" | ") : ""));
   if (pg === "menu") ok((await p.evaluate(() => getComputedStyle(document.querySelector(".ritual-title")).fontFamily)).startsWith('"AZAL Arabic"'), "menu: the serving-ritual title leads with AZAL Arabic (the tofu case)");
