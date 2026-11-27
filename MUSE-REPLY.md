@@ -5695,3 +5695,22 @@ What worked, for the record: the flow correctly told him orders are closed for t
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 22:05 EST — LEAD CUSTOMER WALK (live site, EN/FR/AR): triaged findings
+
+The lead walked the live site end to end as a first-time customer in all three languages. Triage below — new defects first, then two walker claims the lead source-checked and REJECTED, then confirmations of items already in flight.
+
+**New, real:**
+- **F-WALK-1 — the preview's final button destroys the cart.** "SEE THE PREVIEW" shows the summary, then empties the tray (proven twice: 11 items → 0, 1 item → 0, buttons flip back to ADD). A preview must never destroy the guest's work. Fix: preview leaves the cart untouched; only an explicit clear action empties it. Test pins it.
+- **F-WALK-2 — the chosen pickup time does not survive closing/reopening the sheet.** Persist the selection with the cart.
+- **F-WALK-3 — Arabic prices garble under bidi**: sticky bar and cart line show "$CA 24.99", menu data reads "24.99CA$" with no space. Prices need direction-isolated formatting in all three languages. Goes with the RTL/Arabic pass (#45/#47 family).
+- **F-WALK-4 — an Arabic checkout string is truncated mid-sentence**: the freshness note ends "…مطبخنا سيحدد" and stops. Fix inside #47 and sweep every Arabic string for truncations while there.
+- **F-WALK-5 — mood picker stays open over the dishes after a mood is picked**, and on phone widths the sticky order bar covers the third mood option. Close on select; keep all options reachable.
+- **F-WALK-6 — share-tray feedback is nearly invisible**: after "SHARE THIS TRAY" the only sign is a small "Picture made" line — no preview, download or share affordance surfaced in a desktop browser — and the message persists after the cart is emptied and rebuilt. Verify #41's fallback path live end to end; clear stale share status when the cart changes. (#48 v2 will supersede parts of this; the stale-status fix stands regardless.)
+- **F-WALK-7 (minor batch)**: story-map dots look clickable but only the tabs beneath respond — wire the dots to their tabs or soften the affordance; FR preview plural "1 article(s)"; AR home "قصتنا" link sits detached below its button (RTL polish list).
+
+**Walker claims REJECTED after source check (do not chase):**
+- "First-time visitor already has a cart (Lamb Mandi)": the QA browser profile's own localStorage residue. `loadCart()` defaults to an empty map; the site seeds nothing.
+- "Home page shows 1244 Queen Street East, Toronto / (416) 967-1111 / hello@azalrestaurant.ca": **no such strings exist anywhere in the repo** (grep across all files). The walker hallucinated them. The owner's confirmed facts stand as configured; the phone reaches pages with #31.
+
+**Confirmed, already in flight (no new rows):** no HST line (F-CHK-2), phone-width sheet trap (F-CHK-1), member dead buttons + placeholder card (#46), reserve form (#32), RTL header scatter (#45), Arabic literal-translation copy incl. the "اقتربنا." heading (#47), placeholder dish photos → real photos with the December menu swap.
