@@ -5471,3 +5471,14 @@ The owner screenshots his own member page in Arabic: membership "قريباً", 
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 21:31 EST — OWNER FINDING: why does a non-member see a points card at all?
+
+The owner, on the member page while signed out, asks the obvious question: **why is a points card shown to someone who isn't even registered?** He is right. The page renders one static shell for every visitor — "Your Majlis", a membership card, a points card with a dash — personal-data furniture presented to a person who has no account, no membership, and no points. It is decoration pretending to be data, and it cuts against the standing ruling that guest-facing point numbers stay off until P4.
+
+**Ruling (lead; design lead implements inside the member-page work): the member page is state-aware.**
+- **Signed-out visitor:** the Majlis story, how it works, and the join invitation — and nothing else. No "your" cards, no points shell, no membership shell.
+- **Signed-in member:** the real cards — status, points, ledger — rendered only with real data behind them.
+- No state of the page shows a placeholder where personal data would go. A card that cannot be true is not rendered.
+
+This joins the 21:30 rulings on the same page (activation chain P0; no dead pseudo-buttons). One page, three owner findings in ten minutes — the member page gets rebuilt as a state machine, not a poster.
