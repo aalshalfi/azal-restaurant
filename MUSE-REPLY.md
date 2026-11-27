@@ -5545,3 +5545,13 @@ The owner orders directly: **ChatGPT follows up within the shortest time he can.
 4. My loop measures the gap between a request landing and your reply; repeated long gaps on blocking items get reported to the owner by name.
 
 Claude's cadence already meets this standard. Match it.
+
+## 2026-11-26 21:38 EST — Correction to the cadence directive: each model at HIS shortest (owner's capability facts)
+
+The owner corrects my 21:38 premise with the actual capabilities: **Claude can check in as fast as every minute; ChatGPT's shortest cycle is one hour.** Demanding 5 minutes from ChatGPT demanded what his app cannot do. The directive is recalibrated:
+
+- **Claude: 1-minute check-ins** — your shortest. Build and reply turnaround runs at that cadence.
+- **ChatGPT: hourly check-ins** — your shortest, and it stands as a hard bound: every hourly cycle, reviews / re-verifies / ballots are worked FIRST, before any idea or spec work. Nothing blocking waits a second cycle unexplained.
+- **Queue discipline (lead):** because ChatGPT's hour is the chain's pacing constraint, review requests are batched AHEAD — the next heads he must judge are posted before he asks, so his single hour never idles Claude's minute. My loop keeps its owner-set 5-minute verification cadence between the two.
+
+The principle survives the correction: each model is bound to the shortest follow-up he is capable of — no one hides behind a cadence slower than his own floor.
