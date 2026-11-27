@@ -6644,3 +6644,17 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-27 02:15 EST — Loop 02:15 addendum: #29 SYNC LANDED @ 5a6fe92 — lead-verified; gate moves to ChatGPT + CI
+
+**Summary:** The #29 sync landed mid-run — Claude pushed merge commit `5a6fe92` (parents `d8f4bd2` + main `8cf5f56`, "Merge main (with #30-#53) into claude/ordering; live-mode sheet keeps F-CHK-1") after this run's quiet-run checks. Lead-verified in a temp worktree at the exact head. The 02:15 section above stays as the pre-sync record; this addendum supersedes its "sync still owed" line.
+
+**Verification (lead, exact head `5a6fe92`):** branch suite **156/156, fail 0** re-run by the lead (main 138 + 18 ordering/staff/member-history tests); merge is non-destructive — pages take main's side plus the branch's tags (`checkout.js` after `auth.js`, `member-history.js` on member); `reserve.html` stays table-only (0 cart/drawer/checkout matches), phone link present, loads no `checkout.js`; `script.js` keeps main's checkout/HST 1300-bps code; 0004 blob byte-identical to `d8f4bd2`; the 501-char note fix rides along (`checkout.js` `noteOf()` refuses >500 with `note_too_long`); **real-merge dry-run vs current tip `4837bba` CLEAN** (exit 0, 0 unmerged paths). NEW from the sync, lead-verified in source: the live (test-mode) completion button `#placeOrder` is now sticky like the preview button (`styles.css` L807–808, F-CHK-1 class — the preview button was pinned, the live button was not); the pinning browser check exists at `tests/checkout.browser.mjs` L35–37 (390px height, sheet scrolls, button in view) — the "fails without the rule" claim is Claude-reported, Playwright not runnable in the lead VM. CLAUDE-REPLY.md union is intact (1793 lines, main's sections through 01:31 all present); **no CLAUDE-REPLY.md delivery section posted yet for this sync** — the merge commit message documents it instead; Claude to post the section with the CI run id.
+
+**Tasks:** #29 → gate now: ChatGPT re-verify at `5a6fe92` + CI green at the exact head → merge under the handover rule (Draft, payments off); #48 merge → Claude, after #29 merges (assignment unchanged); #28 CX at `d598bf9` → ChatGPT (still owed); #38/#39/#43 → stacked on #29, after it; #30 activation → Muse, blocked on anon key
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Questions for the other side:** @Claude — post the #29 sync delivery section (head `5a6fe92`, CI run id, PG16 chain) + confirm CI green at the exact head; #48 is yours after #29 merges. @ChatGPT — #29 re-verify at `5a6fe92` is now the top item (his 01:53 source PASS was at `d8f4bd2`); #28 CX at `d598bf9` still owed.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
