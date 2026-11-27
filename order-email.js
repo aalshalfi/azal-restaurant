@@ -32,13 +32,15 @@
     const base = siteBase(options.siteUrl);
     const staffUrl = new URL(String(order.staff_queue_path || "staff.html").replace(/^\/+/, ""), base).href;
     const logoUrl = new URL("assets/azal-logo.svg", base).href;
-    const orderNo = escapeHtml(order.order_number || String(order.order_id || "").slice(0, 8).toUpperCase());
-    const branch = escapeHtml(order.branch && order.branch.name || order.branch_name || "AZAL");
+    const orderNo = String(order.order_number || String(order.order_id || "").slice(0, 8).toUpperCase()).replace(/[\\r\\n]/g, "").slice(0, 32);
+    const htmlOrderNo = escapeHtml(orderNo);
+    const branch = String(order.branch && order.branch.name || order.branch_name || "AZAL");
+    const htmlBranch = escapeHtml(branch);
     const labels = locale === "fr"
       ? { title: "NOUVELLE COMMANDE", intro: "Une nouvelle commande payée attend la cuisine.", branch: "Succursale", placed: "Reçue", pickup: "Ramassage", item: "Article", qty: "Qté", unit: "Prix unitaire", line: "Total", subtotal: "Sous-total", discount: "Rabais", tax: "Taxes", total: "Total à payer", note: "Note pour la cuisine", open: "Ouvrir la file cuisine", footer: "Notification automatique AZAL. La file cuisine demeure la source officielle." }
       : { title: "NEW ORDER", intro: "A newly paid order is waiting for the kitchen.", branch: "Branch", placed: "Placed", pickup: "Pickup", item: "Item", qty: "Qty", unit: "Unit price", line: "Line total", subtotal: "Subtotal", discount: "Discount", tax: "Tax", total: "Total paid", note: "Kitchen note", open: "Open kitchen queue", footer: "Automated AZAL notification. The authenticated kitchen queue is the source of truth." };
     const items = order.items.map((item) => ({
-      name: escapeHtml(item.name || item.item_name || "Item"),
+      name: String(item.name || item.item_name || "Item"),
       qty: Math.max(0, Number(item.quantity) || 0),
       unit: money(item.unit_price_cents, locale),
       line: money(item.line_total_cents, locale)
@@ -54,7 +56,7 @@
     const note = String(order.customer_note || "").trim();
     const pickup = dateTime(order.pickup_at, locale);
     const placed = dateTime(order.placed_at, locale);
-    const html = "<!doctype html><html lang=\"" + locale + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>" + labels.title + " #" + orderNo + "</title></head>" +
+    const html = "<!doctype html><html lang=\"" + locale + "\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>" + labels.title + " #" + htmlOrderNo + "</title></head>" +
       "<body style=\"margin:0;background:#f8f1e7;color:#42220e;font-family:Arial,Helvetica,sans-serif\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"background:#f8f1e7;padding:24px 8px\"><tr><td align=\"center\">" +
       "<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:640px;background:#fffdf9;border:1px solid #eadfce;border-radius:14px;overflow:hidden\"><tr><td style=\"padding:24px 28px;background:#42220e;text-align:center\"><img src=\"" + escapeHtml(logoUrl) + "\" width=\"132\" alt=\"AZAL\" style=\"display:block;width:132px;max-width:45%;height:auto;margin:0 auto 16px\"><div style=\"font-size:13px;letter-spacing:2px;color:#e7bd72;font-weight:bold\">" + labels.title + "</div><div style=\"font-size:30px;line-height:1.2;color:#fff;font-weight:bold;margin-top:8px\">#" + orderNo + "</div></td></tr>" +
       "<tr><td style=\"padding:26px 28px\"><p style=\"margin:0 0 18px;font-size:16px;line-height:1.5\">" + labels.intro + "</p><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td style=\"padding:8px 0;color:#806b58\">" + labels.branch + "</td><td align=\"right\" style=\"padding:8px 0;font-weight:bold\">" + branch + "</td></tr><tr><td style=\"padding:8px 0;color:#806b58\">" + labels.placed + "</td><td align=\"right\" style=\"padding:8px 0\">" + escapeHtml(placed) + "</td></tr><tr><td style=\"padding:8px 0;color:#806b58\">" + labels.pickup + "</td><td align=\"right\" style=\"padding:8px 0;font-weight:bold\">" + escapeHtml(pickup) + "</td></tr></table>" +
