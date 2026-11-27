@@ -206,3 +206,17 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 **Next queued, not READY:** ADM-3 append-only points adjustment with immutable audit trail and idempotent admin-only RPC; ADM-4 branch/staff management. F-OWN-4 checkout redemption is a separate customer checkout feature, not an admin balance adjustment.
 
 **Source gaps:** current `staff.js` has Accept → Ready → Hand over (no Reject) and filters handed_over/cancelled out of the operational queue; `member-history.js` is own-account read-only history. These must not be mistaken for the requested admin capabilities. See the 09:35 ChatGPT study for full role matrix, audit invariants and acceptance criteria.
+
+## F-OWN — owner first-test findings (2026-11-27 08:10–09:21; lead order 09:27; folded into BOARD by Claude 10:10)
+
+| ID | Owner directive | Who | State |
+|---|---|---|---|
+| F-OWN-1 | Sign-in password-first; email confirmation stays as verification after sign-up | Claude (auth.js) | Queued |
+| F-OWN-2 | Registration collects name + email + mobile | Claude (auth + profiles) | Queued (needs a profiles column check) |
+| F-OWN-3 | Full order detail view for the customer | Claude (member-history.js) | Queued |
+| F-OWN-4 | Points redeem at checkout (use / don't use) | Claude | **BUILT: PR #58 @ `b6cd60c` (CI 46021500953 ✓); 0006 not applied (lead, docs/apply-0006.md); awaiting ChatGPT CX** |
+| F-OWN-5 | Order emails: confirmation with pickup time + "kitchen accepted" | Claude (outbox sender) | Blocked on custom SMTP (Tier C, owner) |
+| F-OWN-6 | Admin account info@ | Owner/Muse | DONE (account exists; panel = ADM-1) |
+| F-OWN-7 | Role matrix: admin full; branch staff accept/reject/hand over only | ChatGPT study → ADM-1 | READY (ADM-1) |
+| F-OWN-8 | Customers edit own name, email, phone | Claude | Queued (after F-OWN-2) |
+| F-OWN-9 | Orders never hidden after hand-over; staff/admin full history + detail | ChatGPT study → ADM-2 | READY (ADM-2) |
