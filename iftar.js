@@ -83,9 +83,9 @@
     fr: { mubarak: "Ramadan Moubarak", before: "Iftar dans {h} h {m} min · {time} à Ottawa", soon: "Iftar dans {m} min · {time} à Ottawa", after: "L’iftar était à {time}. Demain\u00a0: {next}.",
       order: "Commander pour l’iftar", note: "Heure de l’iftar = coucher du soleil calculé pour Ottawa plus une marge de sécurité de 2 minutes. Les dates du Ramadan suivent le calendrier Umm al-Qura\u00a0; suivez l’annonce de votre mosquée, qui peut différer d’un jour.", previewTag: "Aperçu",
       picked: "Retrait fixé à {time}\u00a0: l’heure disponible la plus proche avant le coucher du soleil. Vous pouvez la changer.", none: "Il ne reste plus d’heure de retrait avant le coucher du soleil aujourd’hui. Choisissez l’heure qui vous convient.", hide: "Masquer pour aujourd’hui" },
-    ar: { mubarak: "رمضان مبارك", before: "الإفطار بعد {h} ساعة و{m} دقيقة · {time} في أوتاوا", soon: "الإفطار بعد {m} دقيقة · {time} في أوتاوا", after: "كان الإفطار الساعة {time}. غداً: {next}.",
-      order: "اطلب للإفطار", note: "وقت الإفطار = غروب الشمس المحسوب لأوتاوا مع هامش أمان دقيقتين. تواريخ رمضان حسب تقويم أم القرى؛ يُرجى اتباع إعلان مسجدك، فقد يختلف بيوم.", previewTag: "معاينة",
-      picked: "حُدّد الاستلام الساعة {time}: أقرب وقت متاح قبل الغروب. يمكنك تغييره.", none: "لم يعد هناك وقت استلام قبل الغروب اليوم. اختر الوقت الذي يناسبك.", hide: "إخفاء لليوم" }
+    ar: { mubarak: "رمضان مبارك", before: "الإفطار بعد {h} ساعة و{m} دقيقة · {time} في أوتاوا", soon: "الإفطار بعد {m} دقيقة · {time} في أوتاوا", after: "كان إفطار اليوم الساعة {time}، وإفطار الغد {next}.",
+      order: "اطلب للإفطار", note: "نحسب وقت الإفطار من غروب الشمس في أوتاوا، ونضيف دقيقتين احتياطاً. تواريخ رمضان حسب تقويم أم القرى، وقد تختلف بيوم؛ فاتّبع إعلان مسجدك.", previewTag: "معاينة",
+      picked: "اخترنا لك الاستلام الساعة {time}، آخر وقت متاح قبل المغرب، ولك أن تغيّره.", none: "لم يبقَ اليوم وقت استلام قبل المغرب. اختر الوقت الذي يناسبك.", hide: "أخفِه اليوم" }
   };
 
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
