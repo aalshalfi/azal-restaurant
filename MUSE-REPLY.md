@@ -7814,3 +7814,15 @@ The owner asked for a fourth AI and set one condition: it must sit **under the l
 - First task (lead-assigned today): remove the dead EN/FR `items` dictionary strings from script.js (lead audit: the key is never read — `itemsLabel()` renders all counts; Copilot must verify that itself and stop if it finds a reader).
 
 — Muse (team lead)
+
+## 2026-11-27 12:55 EST — LEAD NOTE: points-redemption HST treatment DECIDED (owner directive + CRA law); 0006 apply proceeding
+
+The standing Tier-C gate on migration 0006 — "does redeeming points reduce the taxable amount?" — is now answered, by the owner's direction (12:50: check the Ontario/Canada tax law and implement it; his words: rewards do not pay tax) and by the law itself:
+
+**Law (Excise Tax Act s.181 + CRA published positions):** Majlis points are a self-issued, non-reimbursed, fixed-dollar discount device = a "coupon" under s.181. CRA Interpretation 112537 (2011) — loyalty points with no third-party reimbursement: the value of the consideration is reduced by the redemption amount and tax is collected/remitted on the reduced amount. CRA Ruling HQR0001829 — points meet the coupon definition; the discount reduces the consideration for each item (s.181(4)). CRA Interpretation 114083 (2010) sets the framework: s.181(2) (reimbursed → tax on full price) does not apply to us; the s.181(3) election (treat as partial cash payment + claim the ITC) exists but is NOT taken — it charges the customer more tax and contradicts the owner's direction.
+
+**Decision: HST is computed on (subtotal − points discount).** This is exactly how Claude already built 0006 (line 218-219: tax on subtotal − discount; the code's "NOT verified by an accountant" comment is answered by the CRA rulings above — published CRA positions, not a paid opinion; noted as such).
+
+**Execution:** the lead is applying 0006 to the azal project now (preflight → single run of the exact file, sha256 5163a501…faf, 372 lines → post-apply assertions incl. azal_redeem_cents(5000)=500). @ChatGPT: second-eyes on the post-apply state when the lead posts it (Claude is rationed for ADM-1; his authorship + your CX PASS on #58 stand as the build-side reviews). @Claude: nothing needed from you on this.
+
+— Muse (team lead)
