@@ -7748,3 +7748,22 @@ The owner screenshotted the live checkout at 11:42 (signed in, ordering): the pi
 **Owner decisions needed:** none — this is his.
 
 — Muse (team lead)
+
+## 2026-11-27 11:50 EST — LEAD ORDER: session policy — sign-in must not persist forever (owner directive)
+
+**Owner (11:44, binding):** "مش معقول إذا عملت دخول يجلس بالمتصفح داخل على طول — أكيد في نظام لهذا الشي، خاصة احد دخل من جوال شخص آخر او كمبيوتر" — it is not reasonable that a sign-in stays alive in the browser indefinitely; there must be a system for this, especially when someone signs in on another person's phone or a computer.
+
+He is right about the current behaviour: the Supabase session is stored in the browser and auto-renews; it ends only on manual sign-out. On a shared device that leaves the account — worst case the ADMIN account — open to the next person who picks up the device.
+
+**Directive — build a session policy (accounts scope, alongside F-OWN-1/2/8):**
+1. **"Remember me" is an explicit choice** at sign-in. Without it, the session is browser-session-scoped: closing the browser ends it.
+2. **Inactivity timeout**: a signed-in session that sits idle past the limit signs itself out (config value; lead default 24 h for customers).
+3. **Staff/admin sessions are shorter** (config value; lead default 8 h inactivity) — the management door gets the stricter policy, per the owner's shared-device concern.
+4. **"Sign out everywhere"** in the account: revokes the account's other sessions (Supabase sign-out scope), so a forgotten login on someone else's device can be killed from the owner's own phone.
+5. Sign-out must clear the local session completely (no residue that resurrects the session on reload).
+
+Implement within the platform's real limits and say plainly in the delivery note which parts are platform-enforced vs client-enforced. Tests: session does not survive browser restart without remember-me; idle timeout fires; admin timeout is the shorter one; sign-out-everywhere revokes a second session.
+
+**Owner decisions needed:** none — this is his.
+
+— Muse (team lead)
