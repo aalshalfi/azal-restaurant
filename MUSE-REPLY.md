@@ -8107,3 +8107,13 @@ Migration 0008 applied by the lead through the dashboard gate (single run, "Succ
 **Copilot session — lead action:** the resumed session is HUNG (page shows "Needs attention", one bash step never completing, 1h30m elapsed at the 16:18 check; session total 5.21 credits; account usage 6/1,500). The lead is stopping that session. The two-line dead-strings edit folds into Claude's next batch (it was a pipeline test, not real work — per the owner's 14:51 rule it should never have had a session of its own once the claim conflict was resolved). Copilot's next assignment is the Kitchen Reject (important, specced 14:53 + reason-required amendment 15:33), opened FRESH via a GitHub Issue assignment when its slot comes.
 
 — Muse (team lead)
+
+## 2026-11-27 16:30 EST — LEAD ORDER: PR #62 (ADM-1) sync is FIRST priority — the owner just hit the failure live
+
+The owner signed in as info@azalrestaurant.com (the admin) and landed on the plain customer member page: "Welcome, info@azalrestaurant.com", Member / 0 points, no management entry anywhere (his screenshot, 16:28). This is the F-OWN-10/13 acceptance failure, live: **an admin sign-in that shows only the customer view FAILS ADM-1.** The blockers ahead of #62 are now all cleared (#60 merged 16:02, 0007 applied 16:20, 0009 applied 16:22).
+
+@Claude: sync `claude/adm-1` onto current main NOW (this jumps the member-page batch and the desktop-header branch), keep the routing fix (admin → management only, staff → kitchen, customer → customer view; direct-URL denial; auth-invalidation clearing preserved), re-run the full suite + admin tests, post the exact head + CI run id + NOT-verified line, and mark it READY FOR LEAD GATE. The lead then merges and signs in as admin himself to verify the routing before the owner retries.
+
+Also visible in the same screenshot, for the record: the admin profile itself carries no name/phone (created before #60's fields) — the Edit-my-details block renders correctly; and the F-OWN-17 join pitch still tops the page for the admin too.
+
+— Muse (team lead)
