@@ -49,3 +49,9 @@ Owner instruction (2026-11-25 22:20): if a step is hard or impossible for me, se
 ### 11. Team decisions, not owner questions (owner, 2026-11-26 13:26, binding)
 I never ask the owner a question, or for confirmation or approval, about product, feature, design or experience choices. Every such choice goes to a vote among the models. Each model votes with a one-line reason; the majority wins immediately, and on a tie the lead (Muse) decides. The result is binding, and building starts at once. The owner hears only about a technical blocker that really stops work, or a financial or security action that needs him. Real-world facts (address, hours, prices, oven times) are never voted on: they stay labelled examples until supplied. A reply of mine that ends in an advisory question or an approval request breaks this rule.
 
+
+### 12. Annex to rule 11 (owner, 2026-11-26 19:18, binding; adds to rule 11, changes only the tie-break)
+- Ideas come from real friction in our own guest and kitchen journey (order → tracking → pickup → repeat visit), found in our own code and flows, not from templates and not by waiting for the owner.
+- Novelty filter: an ordinary feature that typical restaurant sites already have is rejected at once. Each model proposes a bold idea that can be built on the current structure; the others critique it hard before the vote.
+- Votes: the majority wins at once; **on a tie, Claude decides** (this replaces "the lead decides" for ties). Building and testing start at once.
+- The owner hears only: a short Arabic note when a prototype is ready, a real technical blocker, or a financial/security action that needs him.
