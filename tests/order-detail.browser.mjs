@@ -13,12 +13,19 @@ const DETAIL = { id: ID, user_id: "u1", subtotal_cents: 5597, discount_cents: 50
   scheduled_for: "2026-11-25T17:30:00Z", pickup_slot: "2026-11-25T17:30:00Z", customer_note: "No onions <b>please</b>", fulfilment_status: "handed_over", payment_status: "paid",
   order_items: [{ quantity: 2, unit_price_cents: 2499, line_total_cents: 4998, item_name_en_snapshot: "Lamb Mandi", item_name_fr_snapshot: "Mandi d’agneau" }, { quantity: 1, unit_price_cents: 599, line_total_cents: 599, item_name_en_snapshot: "Bread", item_name_fr_snapshot: "Pain" }],
   order_events: [{ event_type: "placed", to_status: "placed", created_at: "2026-11-25T17:00:00Z" }, { event_type: "paid", to_status: "paid", created_at: "2026-11-25T17:01:00Z" }, { event_type: "accept", to_status: "accepted", created_at: "2026-11-25T17:03:00Z" }, { event_type: "ready", to_status: "ready", created_at: "2026-11-25T17:25:00Z" }, { event_type: "hand_over", to_status: "handed_over", created_at: "2026-11-25T17:31:00Z" }] };
-async function open({ lang = "en", w = 390, failDetail = false, pre0006 = false } = {}) {
+async function open({ lang = "en", w = 390, failDetail = false, pre0006 = false, state = {} } = {}) {
   const p = await b.newPage({ viewport: { width: w, height: 900 } }); const urls = [];
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await p.route("https://fake.supabase.co/**", (r) => {
     const u = decodeURIComponent(r.request().url()); urls.push(u);
-    if (u.includes("/rest/v1/orders") && /[?&]id=eq\./.test(u)) { if (failDetail) return r.fulfill({ status: 500, json: {} }); const d = structuredClone(DETAIL); if (pre0006) { delete d.discount_cents; delete d.redeemed_points; d.subtotal_cents = 5597; d.tax_cents = 728; d.total_cents = 6325; } return r.fulfill({ json: [d] }); }
+    if (u.includes("/rest/v1/orders") && /[?&]id=eq\./.test(u)) {
+      if (failDetail) return r.fulfill({ status: 500, json: {} });
+      if (pre0006 && u.includes("discount_cents")) return r.fulfill({ status: 400, json: { message: "column orders.discount_cents does not exist" } });
+      const d = structuredClone(DETAIL); if (pre0006) { delete d.discount_cents; delete d.redeemed_points; d.subtotal_cents = 5597; d.tax_cents = 728; d.total_cents = 6325; }
+      Object.assign(d, state.override || {});
+      if (state.hold) return state.hold.then(() => r.fulfill({ json: [d] }));
+      return r.fulfill({ json: [d] });
+    }
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [{ id: ID, placed_at: "2026-11-25T17:00:00Z", pickup_slot: "2026-11-25T17:30:00Z", fulfilment_status: "handed_over", payment_status: "paid", total_cents: 5760, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi" }] }] });
     if (u.includes("/rest/v1/points_ledger")) return r.fulfill({ json: [] });
     if (u.includes("claim_guest_points")) return r.fulfill({ json: { points_added: 0 } });
@@ -28,7 +35,7 @@ async function open({ lang = "en", w = 390, failDetail = false, pre0006 = false 
   });
   await p.addInitScript((l) => { localStorage.setItem("azal-language", l); localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T", refresh_token: "R", expires_at: 4e12, user: { id: "u1", email: "m@example.com" } })); }, lang);
   await p.goto(base + "/member.html"); await p.waitForSelector("#memberHistory:not([hidden]) .mh-order");
-  return { p, urls };
+  return { p, urls, state };
 }
 const isDetail = (u) => u.includes("/rest/v1/orders") && /[?&]id=eq\./.test(u);
 const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, " ").trim() ?? null, s);
@@ -45,7 +52,7 @@ const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.r
   ok(/Received.*Paid.*Accepted.*Ready.*Collected/.test(d) && await p.locator(".mh-timeline li").count() === 5, "timeline: received, paid, accepted, ready, collected");
   ok(await btn.getAttribute("aria-expanded") === "true" && /Hide details/.test(await btn.textContent()) && await btn.getAttribute("aria-controls") === "mhd-" + ID, "button says Hide details, aria-expanded true, controls the panel");
   const du = urls.find(isDetail);
-  ok(du && /user_id=eq\.u1/.test(du) && /select=\*,order_items\(/.test(du), "detail request filtered to the member's own user_id; select=* so 0006 columns come when present");
+  ok(du && /user_id=eq\.u1/.test(du) && /select=id,subtotal_cents,/.test(du), "detail request filtered to the member's own user_id, explicit columns");
   await p.evaluate(() => { localStorage.setItem("azal-language", "fr"); document.querySelector("[data-lang='fr'], #langToggle, .language-toggle, .language-quick")?.click(); });
   await p.waitForTimeout(300);
   if (await p.evaluate(() => document.documentElement.lang) === "fr") {
@@ -53,9 +60,9 @@ const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.r
     ok(f !== null && /Détails|Masquer les détails/.test(await txt(p, ".mh-toggle")) && /2× Mandi d’agneau/.test(f) && /TVH/.test(f), "switching language keeps the panel open and translates it (state does not reset)");
   } else ok(true, "language toggle not reachable here (covered by the Arabic run)");
   await btn.click(); await p.waitForTimeout(100);
-  ok(await p.locator(".mh-detail").count() === 0 && urls.filter(isDetail).length === 1, "collapse hides it; reopening uses the cached detail (one request)");
-  await p.locator(".mh-toggle").click(); await p.waitForTimeout(100);
-  ok(urls.filter(isDetail).length === 1 && await p.locator(".mh-detail .mh-lines").count() === 1, "reopened from cache");
+  ok(await p.locator(".mh-detail").count() === 0, "collapse hides it");
+  await p.locator(".mh-toggle").click(); await p.waitForTimeout(50);
+  ok(await p.locator(".mh-detail .mh-lines").count() === 1, "reopening shows the last copy at once while it checks again");
   await p.close();
 }
 {
@@ -79,6 +86,40 @@ const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.r
   const { p } = await open({ failDetail: true });
   await p.locator(".mh-toggle").click(); await p.waitForTimeout(300);
   ok(/couldn’t load this order/.test(await txt(p, ".mh-detail")), "a failed detail says so plainly (no blank panel)");
+  await p.close();
+}
+{ // ChatGPT #59 review 2: explicit projection, nothing internal travels
+  const { p, urls } = await open();
+  await p.locator(".mh-toggle").click(); await p.waitForSelector(".mh-detail .mh-lines");
+  const u = urls.find(isDetail); const sel = new URL(u.replace(/ /g, "%20")).searchParams.get("select");
+  ok(sel === "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status,discount_cents,redeemed_points,order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)", "detail asks for exactly the rendered columns");
+  ok(!/\*|idempotency_key|request_hash|guest_email|guest_name|user_id,|actor_user_id|details/.test(sel), "no select=*, no hash, key, contact, actor or event details");
+  await p.close();
+}
+{ // review 1: a late answer after sign-out is thrown away (and after an account switch)
+  let release; const state = { hold: new Promise((r) => (release = r)) };
+  const { p } = await open({ state });
+  await p.locator(".mh-toggle").click(); await p.waitForTimeout(100);
+  await p.evaluate(() => { localStorage.removeItem("azal-auth-v1"); document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: "signed_out" } })); });
+  release(); await p.waitForTimeout(400);
+  ok(await p.locator(".mh-detail").count() === 0 && await p.locator("#memberHistory .mh-order").count() === 0 && !/Lamb Mandi/.test(await p.textContent("body")), "sign out while the detail is in flight: the late answer never appears");
+  await p.close();
+  let release2; const state2 = { hold: new Promise((r) => (release2 = r)) };
+  const q = await open({ state: state2 });
+  await q.p.locator(".mh-toggle").click(); await q.p.waitForTimeout(100);
+  await q.p.evaluate(() => { localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T2", refresh_token: "R2", expires_at: 4e12, user: { id: "u2", email: "b@example.com" } })); document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: "signed_in" } })); });
+  await q.p.waitForTimeout(150); release2(); await q.p.waitForTimeout(400);
+  ok(await q.p.locator(".mh-detail").count() === 0, "account A -> B while A's detail is in flight: nothing of A is shown to B");
+  await q.p.close();
+}
+{ // review 4: re-opening checks again; a change made by staff meanwhile is shown
+  const state = {};
+  const { p, urls } = await open({ state });
+  await p.locator(".mh-toggle").click(); await p.waitForSelector(".mh-detail .mh-lines");
+  ok(/Checked at/.test(await txt(p, ".mh-detail")), "the panel says when it was checked");
+  state.override = { fulfilment_status: "cancelled", payment_status: "refunded", order_events: [...DETAIL.order_events.slice(0, 2), { event_type: "cancel", created_at: "2026-11-25T17:05:00Z" }] };
+  await p.locator(".mh-toggle").click(); await p.locator(".mh-toggle").click(); await p.waitForTimeout(300);
+  ok(urls.filter(isDetail).length === 2 && /Cancelled/.test(await txt(p, ".mh-timeline")), "close and reopen fetches again and shows the cancellation");
   await p.close();
 }
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");

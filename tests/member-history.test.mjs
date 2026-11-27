@@ -85,3 +85,14 @@ test("member history: Arabic never calls a received order 'استُلم', and Ar
   assert.doesNotMatch(src, /"استُلم"/);
   assert.match(src, /lang\(\) === "ar" \? "\\u2066" \+ s\.replace\(\/\\u200f\/g, ""\) \+ "\\u2069" : s/);
 });
+
+test("ChatGPT #59 review 3: inherited names are never timeline steps", () => {
+  const v = H.detailView({ id: "z", subtotal_cents: 1, tax_rate_bps: 1300, tax_cents: 0, total_cents: 1,
+    order_events: ["constructor", "toString", "__proto__", "hasOwnProperty", "valueOf", "mystery", "placed"].map((t) => ({ event_type: t, created_at: "x" })) });
+  assert.deepEqual(v.timeline.map((t) => t.step), ["placed"]);
+});
+
+test("ChatGPT #59 review 2: the detail projection is an explicit allow-list", () => {
+  assert.equal(H.DETAIL_COLS, "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status");
+  assert.doesNotMatch(readFileSync(new URL("../member-history.js", import.meta.url), "utf8"), /select=\*/);
+});

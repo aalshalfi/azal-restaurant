@@ -15,7 +15,7 @@
       let res;
       try { res = await fetchFn(base + path, { headers: { apikey: config.anonKey, Authorization: "Bearer " + token } }); }
       catch { throw Object.assign(new Error("network"), { code: "network" }); }
-      if (!res.ok) throw Object.assign(new Error("http_" + res.status), { code: res.status === 401 ? "signed_out" : "error" });
+      if (!res.ok) throw Object.assign(new Error("http_" + res.status), { code: res.status === 401 ? "signed_out" : "error", status: res.status });
       return (await res.json()) || [];
     }
     return {
@@ -51,8 +51,14 @@
         const uid = s && s.user && s.user.id;
         if (!uid) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
         if (!/^[0-9a-f-]{36}$/i.test(String(orderId))) throw Object.assign(new Error("not_found"), { code: "not_found" });
-        const rows = await get("/rest/v1/orders?select=*,order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,to_status,created_at)" +
-          "&id=eq." + encodeURIComponent(orderId) + "&user_id=eq." + encodeURIComponent(uid) + "&order_events.order=created_at.asc,id.asc&limit=1", s.access_token);
+        // Explicit allow-list (ChatGPT #59 review): only the columns the panel renders. No hashes, keys, guest
+        // contact or internal fields ever travel. The 0006 columns are asked for, with one fallback for a server
+        // that has not applied 0006 (PostgREST answers 400 for an unknown column).
+        const q = (cols) => "/rest/v1/orders?select=" + cols + ",order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)" +
+          "&id=eq." + encodeURIComponent(orderId) + "&user_id=eq." + encodeURIComponent(uid) + "&order_events.order=created_at.asc,id.asc&limit=1";
+        let rows;
+        try { rows = await get(q(DETAIL_COLS + ",discount_cents,redeemed_points"), s.access_token); }
+        catch (e) { if (e.status !== 400) throw e; rows = await get(q(DETAIL_COLS), s.access_token); }
         if (!rows.length) throw Object.assign(new Error("not_found"), { code: "not_found" });
         return detailView(rows[0]);
       }
@@ -60,10 +66,12 @@
   }
 
   // F-OWN-3: everything the guest needs to check an order, from the server's own snapshot (never recomputed here).
-  const STEP = { placed: "placed", paid: "paid", accept: "accepted", prepare: "preparing", ready: "ready", hand_over: "handed_over", cancel: "cancelled" };
+  const DETAIL_COLS = "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status";
+  // A Map, not an object literal: "constructor", "toString", "__proto__" are never steps (ChatGPT #59 review).
+  const STEP = new Map([["placed", "placed"], ["paid", "paid"], ["accept", "accepted"], ["prepare", "preparing"], ["ready", "ready"], ["hand_over", "handed_over"], ["cancel", "cancelled"]]);
   function detailView(r) {
     const lines = (r.order_items || []).map((i) => ({ q: Number(i.quantity), en: i.item_name_en_snapshot, fr: i.item_name_fr_snapshot || i.item_name_en_snapshot, unit: Number(i.unit_price_cents), line: Number(i.line_total_cents) }));
-    const timeline = (r.order_events || []).filter((e) => STEP[e.event_type]).map((e) => ({ step: STEP[e.event_type], at: e.created_at }));
+    const timeline = (r.order_events || []).filter((e) => STEP.has(e.event_type)).map((e) => ({ step: STEP.get(e.event_type), at: e.created_at }));
     return { id: r.id, lines, subtotal: Number(r.subtotal_cents), discount: Number(r.discount_cents || 0), points: Number(r.redeemed_points || 0),
       tax: Number(r.tax_cents), rateBps: Number(r.tax_rate_bps), total: Number(r.total_cents), pickup: r.scheduled_for || r.pickup_slot || null,
       note: r.customer_note || null, status: r.fulfilment_status, payment: r.payment_status, timeline };
@@ -71,7 +79,7 @@
 
   // V3 "Majlis as hospitality": one qahwa cup per collected paid order (earn rows minus reversals). The exact
   // points number is always shown next to it; the cups never replace or hide it.
-  const api = { createHistory, code, cupsFrom, detailView };
+  const api = { createHistory, code, cupsFrom, detailView, DETAIL_COLS };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -90,7 +98,7 @@
       cups: "{n} cups of qahwa poured for you: one for each order you collected.", cupsOne: "1 cup of qahwa poured for you: one for each order you collected.", cupsMore: "+{n}",
       details: "Order details", hide: "Hide details", each: "{price} each", subtotal: "Subtotal", pointsLine: "Majlis points ({n})", hst: "HST ({rate}%)", grand: "Total",
       pickupAt: "Pickup: {time}", note: "Your note: {note}", timeline: "What happened", t_placed: "Received", t_paid: "Paid", t_accepted: "Accepted", t_preparing: "Preparing", t_ready: "Ready", t_handed_over: "Collected", t_cancelled: "Cancelled",
-      loading: "Loading…", detailError: "We couldn’t load this order. Try again." },
+      loading: "Loading…", checked: "Checked at {time}. Close and reopen to check again.", detailError: "We couldn’t load this order. Try again." },
     fr: { orders: "Vos commandes", none: "Aucune commande pour l’instant. Vos retraits apparaîtront ici.", points: "Vos points", noPoints: "Pas encore de points. Ils sont ajoutés quand une commande payée est récupérée.",
       total: "Solde : {n} points", code: "Code {code}", pickup: "Retrait {time}", more: "et {n} de plus",
       st_placed: "Reçue", st_accepted: "Acceptée", st_preparing: "En préparation", st_ready: "Prête à emporter", st_handed_over: "Récupérée", st_cancelled: "Annulée",
@@ -100,7 +108,7 @@
       cups: "{n} tasses de qahwa servies pour vous\u00a0: une pour chaque commande récupérée.", cupsOne: "1 tasse de qahwa servie pour vous\u00a0: une pour chaque commande récupérée.", cupsMore: "+{n}",
       details: "Détails de la commande", hide: "Masquer les détails", each: "{price} chacun", subtotal: "Sous-total", pointsLine: "Points Majlis ({n})", hst: "TVH ({rate}\u00a0%)", grand: "Total",
       pickupAt: "Retrait\u00a0: {time}", note: "Votre note\u00a0: {note}", timeline: "Déroulement", t_placed: "Reçue", t_paid: "Payée", t_accepted: "Acceptée", t_preparing: "En préparation", t_ready: "Prête", t_handed_over: "Récupérée", t_cancelled: "Annulée",
-      loading: "Chargement…", detailError: "Impossible de charger cette commande. Réessayez." },
+      loading: "Chargement…", checked: "Vérifié à {time}. Fermez et rouvrez pour vérifier de nouveau.", detailError: "Impossible de charger cette commande. Réessayez." },
     ar: { orders: "طلباتك", none: "لا طلبات بعد. ستظهر هنا طلباتك للاستلام.", points: "نقاطك", noPoints: "لا نقاط بعد. تُضاف النقاط عند استلام طلب مدفوع.",
       total: "الرصيد: {n} نقطة", code: "الرمز {code}", pickup: "الاستلام {time}", more: "و{n} أخرى",
       st_placed: "وصلنا طلبك", st_accepted: "قُبل", st_preparing: "قيد التحضير", st_ready: "جاهز للاستلام", st_handed_over: "تم الاستلام", st_cancelled: "أُلغي",
@@ -110,7 +118,7 @@
       cups: "صببنا لك {n} فناجين قهوة: فنجان عن كل طلب استلمته.", cupsOne: "صببنا لك فنجان قهوة: فنجان عن كل طلب استلمته.", cupsMore: "+{n}",
       details: "تفاصيل الطلب", hide: "إخفاء التفاصيل", each: "{price} للواحد", subtotal: "المجموع قبل الضريبة", pointsLine: "نقاط المجلس ({n})", hst: "ضريبة المبيعات ({rate}%)", grand: "المجموع",
       pickupAt: "الاستلام: {time}", note: "ملاحظتك: {note}", timeline: "مسار الطلب", t_placed: "وصلنا طلبك", t_paid: "تم الدفع", t_accepted: "قُبل", t_preparing: "قيد التحضير", t_ready: "جاهز", t_handed_over: "تم الاستلام", t_cancelled: "أُلغي",
-      loading: "لحظة…", detailError: "تعذّر تحميل هذا الطلب. حاول مرة أخرى." }
+      loading: "لحظة…", checked: "آخر تحقّق الساعة {time}. أغلق التفاصيل وافتحها لتتحقّق من جديد.", detailError: "تعذّر تحميل هذا الطلب. حاول مرة أخرى." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k] || k; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
@@ -134,6 +142,8 @@
   card.closest("section").after(box);
   let data = null, failed = false, seq = 0;
   const open = new Set(), cache = new Map(), loadingIds = new Set(), errIds = new Set();
+  // Auth epoch (ChatGPT #59 review): a detail that arrives after a sign-out or an account switch is thrown away.
+  let epoch = 0;
   const name = (l) => (lang() === "fr" ? l.fr : l.en);
   function detailPanel(id) {
     const panel = el("div", "mh-detail"); panel.id = "mhd-" + id;
@@ -149,6 +159,7 @@
     row(L("hst", { rate: String(d.rateBps / 100) }), money(d.tax));
     row(L("grand"), money(d.total), "mh-sum-grand");
     panel.append(ul, sums);
+    if (d.checkedAt) panel.append(el("p", "mh-detail-meta mh-checked", L("checked", { time: when(d.checkedAt, { hour: "numeric", minute: "2-digit" }) }) + (loadingIds.has(id) ? " · " + L("loading") : "")));
     if (d.pickup) panel.append(el("p", "mh-detail-meta", L("pickupAt", { time: when(d.pickup, { dateStyle: "medium", timeStyle: "short" }) })));
     if (d.note) panel.append(el("p", "mh-detail-meta mh-detail-note", L("note", { note: d.note })));
     if (d.timeline.length) {
@@ -161,9 +172,15 @@
   async function toggle(id) {
     if (open.has(id)) { open.delete(id); paint(); return; }
     open.add(id); errIds.delete(id); paint();
-    if (cache.has(id) || loadingIds.has(id)) return;
+    if (loadingIds.has(id)) return;
+    // Every opening fetches again (the order may have moved on since); the last copy shows meanwhile, with its time.
     loadingIds.add(id);
-    try { cache.set(id, await h.detail(id)); } catch { errIds.add(id); } finally { loadingIds.delete(id); }
+    const mine = epoch;
+    let d = null, bad = false;
+    try { d = await h.detail(id); } catch { bad = true; }
+    if (mine !== epoch) return; // signed out or switched account while waiting: drop it
+    loadingIds.delete(id);
+    if (bad) { if (!cache.has(id)) errIds.add(id); } else cache.set(id, Object.assign(d, { checkedAt: new Date().toISOString() }));
     paint();
     const b = document.getElementById("mhb-" + id); if (b && document.activeElement === document.body) b.focus();
   }
@@ -224,6 +241,14 @@
     catch (e) { if (my !== seq) return; data = null; failed = e.code !== "signed_out"; }
     paint();
   }
-  document.addEventListener("azal:auth", (e) => { if (e.detail && e.detail.status === "signed_in") refresh(); else { seq++; data = null; failed = false; open.clear(); cache.clear(); errIds.clear(); paint(); } });
+  let lastUid = null;
+  const forget = () => { epoch++; open.clear(); cache.clear(); errIds.clear(); loadingIds.clear(); };
+  document.addEventListener("azal:auth", async (e) => {
+    if (e.detail && e.detail.status === "signed_in") {
+      let uid = null; try { const s = auth && (await auth.session()); uid = s && s.user && s.user.id; } catch {}
+      if (uid !== lastUid) { forget(); lastUid = uid; } // another account: nothing of the previous one survives
+      refresh();
+    } else { seq++; forget(); lastUid = null; data = null; failed = false; paint(); }
+  });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 })(typeof window !== "undefined" ? window : globalThis);
