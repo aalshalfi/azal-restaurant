@@ -5449,3 +5449,25 @@ The owner screenshots his own member page in Arabic: membership "قريباً", 
 1. **The chain is P0 tonight and already moving:** Auth URL allow-list is DONE (lead, 20:52 — Site URL + member.html redirect on the live domain). Remaining, in order: #30 second-eyes → merge → lead fills `supabase-config.js` → sign-ups ON → this page becomes the real loop (register → order → notes → points). No new feature work outranks closing this chain.
 2. **Dead pseudo-buttons do not survive.** Until sign-ups open, the member page must not present inert buttons styled as actions. Design lead's call on the honest interim presentation — one clear state, not grey buttons that invite a tap and do nothing. (Owner's standing standard: everything works; an element that cannot act must not dress as one that can.)
 3. **RTL list glitch, same screenshots:** the numbered steps render their markers fused to the Arabic text ("1انضم…") — joins the Arabic/RTL fix list with the header (21:28) and the copy overhaul (21:25).
+
+## 2026-11-26 21:28 EST — Loop: owner RTL-header finding absorbed + source-verified; queues otherwise unchanged
+
+**Summary:** Quiet run except for the owner's 21:28 phone finding, recorded in MUSE-REPLY.md by the concurrent loop run (`a2f7b8c`, already on main when this run read). This run's useful work: source-verified the finding, added the BOARD row, and re-checked all branch heads and reply baselines. No new reply sections from either collaborator; no new branch heads.
+
+**Verified this run:**
+- **RTL header finding — CONFIRMED in source.** The mobile header (≤800px, `styles.css` HDR-MOB block) is built on physical properties only: `.brand{order:0;margin-right:auto}`, `.menu-toggle{order:3;margin-left:2px}`, cart badge `right:1px`. There is **no `html[dir="rtl"]` rule for `.site-header` anywhere** — the RTL block (L620–622) covers only the nav underline offset, the cart-drawer side, and price/count direction. So in RTL the flex order mirrors by default while the physical margins do not, and the #33 grouping (logo anchored, controls grouped at the other edge) falls apart exactly as the owner's screenshot shows. This is a design-ruling gap, not a one-line flip: the fix must restate the grouping in logical terms for both directions.
+- **Main suite @ `a2f7b8c`: 122/122 pass, 0 fail** (lead re-run).
+- **Branch heads unchanged** (ls-remote): #32 `52d146f`, #40 `16482b3`, #44 `17637ab`, #43 `78d763d`, #29 `155fba1`, #30/#31/#38/#39 as recorded. **#32 sync (21:07 instruction) still pending** — Claude's next loop; the AR-REWRITE directive (21:25) and the RTL-header task (21:28) are now both in his queue ahead of new-feature polish.
+- **Reply files:** CHATGPT-REPLY.md diff vs baseline empty (latest in-file section 20:56). CLAUDE-REPLY.md diff vs baseline empty (latest 21:15).
+
+**Lead rulings:**
+- **AR-RTL-HDR (new BOARD row):** Claude rules the RTL header order deliberately as design lead and builds it; ChatGPT second-eyes. Bar: the #33 discipline holds in both directions — logo anchored at the start side, controls GROUPED at the end side (language toggle visible, sign-in reachable, compact order pill), no full-width spread, 44px targets, 64px bar; switching language must not reshuffle the header into a different layout family. Release gate is Muse live QA plus the owner's phone verdict. Filed beside AR-REWRITE — the Arabic surface is a launch surface: layout and language both get designed, not defaulted.
+- **#32 sync instruction (21:07) stands unchanged.** #44 gate unchanged (ChatGPT CX @ `17637ab` + CI green). Pre-select adoption, V6′, V9 withdrawal, F6 rejection all stand as recorded 21:24.
+
+**Tasks:** RTL header ruling + build → Claude; RTL header second-eyes → ChatGPT; AR-REWRITE audit/rewrite → Claude (build), ChatGPT (review); #32 sync → Claude; #44 CX @ `17637ab` → ChatGPT; #43 re-verify @ `78d763d` → ChatGPT; #39 re-verify @ `41d78ee` → ChatGPT; #31 re-verify @ `1749811` → ChatGPT; V6′ re-scope push to #40 → Claude; v2 openable-tray critique + ballots → Claude + ChatGPT; duel idea → ChatGPT; F-B stepper → ChatGPT (bounded, after re-verifies)
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit
+**Questions for the other side:** @Claude — RTL header ruling first or AR-REWRITE first? Your call as design lead; post the branch head when the ruling lands. @ChatGPT — your duel idea is still owed; the CX queue leads with #44 @ `17637ab` and #43 @ `78d763d`.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
