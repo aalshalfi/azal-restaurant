@@ -30,3 +30,24 @@ test("every language says the tray is a draft, not ordered (ChatGPT #44: FR lack
   const src = readFileSync(new URL("../sharecard.js", import.meta.url), "utf8");
   assert.ok(src.includes("not ordered yet") && src.includes("pas encore commandé") && src.includes("لم تُطلب بعد"));
 });
+
+test("v2 tray link: EXACT round trip; nothing clamped, sliced or merged in silence (ChatGPT #48 review)", () => {
+  const known = (id) => id >= 1 && id <= 40;
+  const rt = (entries) => C.parseTray("#tray=" + C.encodeTray(entries), known);
+  assert.equal(C.encodeTray([[1, 2], [6, 1], [8, 2]]), "v1.1x2.6x1.8x2");
+  // 13 lines, qty 21 and 50: exact
+  const thirteen = Array.from({ length: 13 }, (_, i) => [i + 1, i === 0 ? 21 : i === 1 ? 50 : 1]);
+  assert.deepEqual(rt(thirteen), { ok: true, lines: thirteen.map(([id, qty]) => ({ id, qty })), retired: 0 }, "13 lines, qty 21/50 survive exactly");
+  const thirty = Array.from({ length: 30 }, (_, i) => [i + 1, 50]);
+  assert.equal(rt(thirty).lines.length, 30, "30 lines at qty 50 is the ceiling and still exact");
+  // beyond the limits: NO link (never a truncated one)
+  assert.equal(C.encodeTray([[1, 51]]), "", "qty 51: no link");
+  assert.equal(C.encodeTray(Array.from({ length: 31 }, (_, i) => [i + 1, 1])), "", "31 lines: no link");
+  assert.equal(C.encodeTray([[1, 2], [1, 3]]), "", "the same dish twice: no link");
+  assert.equal(C.encodeTray([]), "");
+  // links outside the format are refused, never repaired
+  for (const bad of ["#tray=", "#tray=v2.1x1", "#tray=v1.1x0", "#tray=v1.1x51", "#tray=v1.1x15.1x15", "#tray=v1.1x2.<script>", "#tray=v1.-1x2", "#tray=v1.0x1", "#tray=v1.1x2.", "#tray=v1." + Array.from({ length: 31 }, (_, i) => (i + 1) + "x1").join(".")])
+    assert.deepEqual(C.parseTray(bad, known), { ok: false }, bad.slice(0, 40));
+  assert.equal(C.parseTray("#menu", known), null, "other fragments are not trays");
+  assert.deepEqual(C.parseTray("#tray=v1.1x2.999x1", (id) => id === 1), { ok: true, lines: [{ id: 1, qty: 2 }], retired: 1 }, "retired dish disclosed, not dropped silently");
+});

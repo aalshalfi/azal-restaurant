@@ -659,6 +659,14 @@ html[lang="ar"] em,html[lang="ar"] i,html[lang="ar"] .product-story{font-style:n
 .share-tray[hidden]{display:none!important}
 .share-status{margin:6px 0 0;font-size:13px;color:var(--muted);min-height:1em}
 .share-status:empty{display:none}
+/* v2 openable tray: a shared tray is shown first, added only on the guest's tap. */
+.shared-tray{margin:18px 0 6px;padding:18px 20px;background:var(--cream);border:1px solid #dfcfbb;border-inline-start:4px solid var(--gold)}
+.shared-tray-title{font-size:24px;margin:0 0 8px}
+.shared-tray-list{margin:0 0 8px;padding-inline-start:20px;line-height:1.7}
+.shared-tray-msg{margin:6px 0;color:var(--clay);font-weight:600}
+.shared-tray-note{margin:6px 0 12px;font-size:13px;color:var(--muted)}
+.shared-tray-actions{display:flex;gap:10px;flex-wrap:wrap}
+.shared-tray-actions .button{min-height:44px;width:auto;margin:0}
 
 /* F-CHK-1 (owner, phone, 21:58, P0): the checkout sheet scrolls INSIDE itself at phone heights. Design ruling: the panel
    scrolls (not the backdrop), the × stays pinned at the top, and the completion button stays pinned at the bottom of the
