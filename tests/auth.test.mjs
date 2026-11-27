@@ -91,10 +91,12 @@ test("server errors map to stable codes", async () => {
   await assert.rejects(n.signIn("x@example.invalid", "y"), { code: "network" });
 });
 
-test("repo ships inert: config empty, no secret-looking keys, member page has no form in HTML", () => {
+test("shipped config is null or publishable-only; no secret-looking keys; member page has no form in HTML", () => {
   const cfg = fs.readFileSync(path.join(root, "supabase-config.js"), "utf8");
-  assert.match(cfg, /url: null,\s*anonKey: null/);
-  for (const f of ["supabase-config.js", "auth.js", "script.js"]) assert.ok(!/service_role|eyJ[A-Za-z0-9_-]{20,}/.test(fs.readFileSync(path.join(root, f), "utf8")), f);
+  const inert = /url: null,\s*anonKey: null/.test(cfg);
+  const live = /url: "https:\/\/[a-z0-9]{20}\.supabase\.co",\s*anonKey: "sb_publishable_[A-Za-z0-9_-]+"/.test(cfg);
+  assert.ok(inert || live, "config must be both-null or a supabase.co URL + sb_publishable_ key");
+  for (const f of ["supabase-config.js", "auth.js", "script.js"]) assert.ok(!/service_role|sb_secret_|eyJ[A-Za-z0-9_-]{20,}/.test(fs.readFileSync(path.join(root, f), "utf8")), f);
   const member = fs.readFileSync(path.join(root, "member.html"), "utf8");
   assert.ok(!/<form|<input/.test(member));
 });

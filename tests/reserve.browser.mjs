@@ -1,10 +1,11 @@
 // Browser check for table booking with a FAKE Supabase. Run: node tests/reserve.browser.mjs
 import { createRequire } from "node:module"; import http from "node:http"; import { readFileSync, existsSync } from "node:fs"; import { join, extname } from "node:path";
+import { nullConfig } from "./null-config.mjs";
 const require = createRequire(process.env.NODE_PATH ? join(process.env.NODE_PATH, "x") : import.meta.url); const { chromium } = require("playwright");
 const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml" };
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
-const b = await chromium.launch(); const port = srv.address().port;
+const b = nullConfig(await chromium.launch()); const port = srv.address().port;
 async function open(lang = "en") {
   const page = await b.newPage({ viewport: { width: 390, height: 844 } });
   await page.clock.setFixedTime(new Date("2026-11-26T15:00:00Z"));
@@ -83,7 +84,7 @@ async function open(lang = "en") {
   await page.close();
 }
 { const page = await b.newPage(); await page.goto(`http://localhost:${port}/reserve.html`); await page.waitForTimeout(300);
-  ok(await page.locator("#reserveForm").count() === 0 && await page.locator("[data-i18n='reserveNotice']").isVisible(), "inert with shipped null config: notice stays, no form"); await page.close(); }
+  ok(await page.locator("#reserveForm").count() === 0 && await page.locator("[data-i18n='reserveNotice']").isVisible(), "inert with null config (demo mode): notice stays, no form"); await page.close(); }
 for (const [flagOn, flagOff] of [["goLiveAuthorized", "bookingEnabled"], ["bookingEnabled", "goLiveAuthorized"]]) {
   // ChatGPT #32 review: each gate alone must keep the form closed, even with a valid Supabase config
   const page = await b.newPage(); const calls = [];

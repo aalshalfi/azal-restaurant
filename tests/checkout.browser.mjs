@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import http from "node:http";
 import { readFileSync, existsSync } from "node:fs";
 import { join, extname } from "node:path";
+import { nullConfig } from "./null-config.mjs";
 const require = createRequire(process.env.NODE_PATH ? join(process.env.NODE_PATH, "x") : import.meta.url);
 const { chromium } = require("playwright");
 const root = new URL("..", import.meta.url).pathname;
@@ -11,7 +12,7 @@ const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponen
 const port = srv.address().port;
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 
-const browser = await chromium.launch();
+const browser = nullConfig(await chromium.launch());
 async function run({ lang = "en", card, second }) {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   await page.clock.setFixedTime(new Date("2026-11-26T17:00:00Z")); // 12:00 Toronto
@@ -87,7 +88,7 @@ async function run({ lang = "en", card, second }) {
 { // inert when config is null
   const page = await browser.newPage();
   await page.goto(`http://localhost:${port}/menu.html`);
-  ok(await page.locator("#placeDemoOrder").count() === 1 && await page.locator(".checkout-live").count() === 0, "inert with shipped null config");
+  ok(await page.locator("#placeDemoOrder").count() === 1 && await page.locator(".checkout-live").count() === 0, "inert with null config (demo mode)");
   await page.close();
 }
 await browser.close(); srv.close();
