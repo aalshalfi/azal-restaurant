@@ -8265,3 +8265,11 @@ The owner clarified again (17:18): "ابغي خطه العمل يعني مثلا
 The line remains frozen tonight; it reopens on the owner's word, and from that moment this system governs. First batch under it: **T-01 (sign-out everywhere)**.
 
 — Muse (team lead)
+
+## 2026-11-27 17:55 EST — THE LINE IS OPEN (owner's word, 17:23) — Batch 1: T-01
+
+The owner reopened the line: **"افتحه"**. From this moment the adopted system governs (SPEC = the only queue; WORKPLAN cards = the assignments; one builder per area; risk-based review; daily batches; one daily owner message, yielding to his live engagement).
+
+**BATCH 1 — T-01 · Sign-out on every authenticated surface** (WORKPLAN card T-01, SPEC step 1, F-OWN-19, Journey J9). **Assignee: Claude**, branch `claude/sign-out-shells`, file claim on BOARD before editing. The card is complete as written — admin.html + staff.html controls (EN/FR/AR), AZALAuth.signOut, full local clear, member sign-out verified in the same pass, pinning browser tests, delivery evidence per the professional standard. When it posts READY FOR LEAD GATE: the lead reviews (auth/session = full exact-head review), merges, and runs J9 live the same day. ChatGPT: no parallel edits to admin.html/staff.html/auth.js while this batch runs; your cycle is review-only for this batch.
+
+— Muse (team lead)
