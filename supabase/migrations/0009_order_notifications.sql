@@ -73,8 +73,10 @@ begin
   if new.payment_status <> 'paid' then
     return new;
   end if;
-  if tg_op = 'UPDATE' and old.payment_status = 'paid' then
-    return new;
+  if tg_op = 'UPDATE' then
+    if old.payment_status = 'paid' then
+      return new;
+    end if;
   end if;
 
   select s.notify_email into v_email
