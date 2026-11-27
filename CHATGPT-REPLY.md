@@ -2001,3 +2001,73 @@ The following maps to the current main SPEC, not to assumptions about future cod
 - Chipotle Canada: https://www.chipotle.ca/order/rewards, https://www.chipotle.ca/order/sign-in, https://www.chipotle.ca/rewards-terms
 - Panera Canada: https://www.panerabread.com/content/panerabread_ca/en-ca/mypanera/mypanera-canada.html and https://www.panerabread.com/en-us/start-an-order.html
 - CAVA (US comparator): https://cava.com/rewards
+
+
+---
+
+## 2026-11-27 — exact-head queue audit + FEASIBILITY cost review (ChatGPT)
+
+**Audit snapshot:** main e735e3237e9e596434512d24511ad162ff0cc9fd. This is a read-only source/metadata review; I did not run local suites, apply SQL, change Supabase settings, enable bookings, send email, enable real payments, or touch production. CI evidence below is GitHub's result at the named PR head; live probes are explicitly attributed to Muse where I did not repeat them.
+
+### 1. Priority PRs and direct follow-ons
+
+| PR | Exact head → merge commit | CI / disposition | Source and UX review |
+|---|---|---|---|
+| #27 / #42 P2 dependency | #27 5a1495606a8940a43657524d86c975b53026b847; synced #42 dd07cbb0dc1bb86e3c7fe69ae19bedf25904ad84 → 2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce | #42 static-checks 45920912279 success. Claude reported the fresh PostgreSQL 16 0001 → 0002 chain and assertion run; I did not execute PostgreSQL locally. | 0001 explicitly says staging-only / not production; 0002 refuses a blank database and adds the three per-order partial unique ledger indexes plus the locked-down profile trigger. p2_fix_assertions.sql uses synthetic fixtures and ends ROLLBACK. docs/p2-staging-apply.md is marked historical / do not re-execute. P2 dependency is present on main through #42; no production apply. |
+| #32 reservations | cfe39415f8b964f0f207a13ce76e31b7c25053a1 → 344a7c698e15c3abdce5460e1a68fe4f330189b2 | 45945148747 static + browser success. | Table-only form; no menu/cart/food order/payment. 0005 server default is booking_enabled=false; RPC refuses while closed. Client config has bookingEnabled=false and goLiveAuthorized=false, and the page renders only when both are true. SPEC says 0005 is not applied; no booking was enabled. Muse recorded the 2026-11-26 20:45 gateway/IP-trust probe as PASS (forged CF-Connecting-IP rejected; forwarded-header fallback checked; temporary echo endpoint removed). That live probe is Muse's evidence, not a probe I repeated. |
+| #33 mobile header | f8511e5ad57dd1d3f50e7400bdc92675218a8fbc → 23490141978451717cca5a578cd43faa5ec6b42d | Exact-head static check 45852008344 success. Claude reported Node 100/100 and browser 13/13; those counts were not a GitHub browser check at that exact head. | 320/390 mobile grouping and compact order bag are covered by the added tests. The branch compares as 2 ahead / 667 behind because its post-merge branch tip is stale; the actual merge commit 2349014 is an ancestor of current main, so this is historical branch divergence, not an unmerged PR conflict. |
+| #31 Visit + phone | be6c59d4032b67c95238aacd96ff73cb8c043619 → a2158d75504a66ed4189edae18133c703e913258 | 45952177739 static + browser success. | Phone is a tel: action and the location copy says Orléans/Ottawa; no unverified street address or hours were invented. Reserve remains table-only and closed pending the owner gate. |
+| #30 email-link auth | 7afdad1e40af5085e1f60fd523d81572517053e1 → e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b | 45935703028 static + browser success. | Link return is validated through /auth/v1/user; the fragment tokens are adopted only after validation. EN/FR/AR link copy is tested. Real SMTP delivery, sender-domain authentication and production redirect allow-list were not tested here. |
+| #29 ordering / kitchen | af53f179b52244af88ccda27df0b63f825061c88 → 389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483 | 45977845768 static + browser success. | Client sends cart/note/idempotency key, not prices or totals; the server prices the order. 0004 seeds payments_mode='off'; pay_order_test is test-only. Staff query is branch-scoped and paid-only. The queue intentionally excludes handed-over/cancelled rows; complete admin history is a later WORKPLAN card, not a claim that #29 already provides it. |
+
+**Direct follow-ons already merged:** #62 ADM-1 (3adc0207 → 9431175, CI 46071222322 static/browser success; Muse live-verified admin routing/overview); #63 NEW_ORDER outbox (b761f8e → ef8838a, CI 46068343631 static/browser success; sender hard-off, outbox defaults blocked, no real email); #64 10,000-point increments (bbc6ee3 → e510dc8, CI 46068216737 static/browser success; 5,000 is rejected, 10,000 = $10); #65 desktop header (d88203c → d19bba5, CI 46072004549 static/browser success; owner's own device verdict remains separate).
+
+**Open / parked PRs:** #66 is the only open PR touching the ChatGPT reply log. Its branch is 1 ahead / 12 behind main and GitHub reports it not mergeable. Current main CHATGPT-REPLY.md has zero anchored conflict markers and contains the benchmark section; the #66 branch lacks that section and carries an obsolete coordination-channel pointer. Do not merge it. #13 is a draft against a design branch, #7 is a concept study outside SPEC, and #4 is superseded by the merged #42 P2 candidate; none is a current SPEC delivery.
+
+**Branch comparison at this snapshot:** #27/#29/#30/#31/#32/#42/#62/#63/#64/#65 have zero commits ahead of main. #33 has two stale branch-only commits, but its merge commit is already in main. #66 remains 1 ahead / 12 behind and unmergeable. #13/#7/#4 are old divergent drafts, not merge candidates.
+
+**Board reconciliation needed:** BOARD.md still has claim rows describing #63/#64 as open and 0007/0009 as not applied. GitHub shows both PRs merged; SPEC/MUSE record 0007 and 0009 applied and verified on the isolated AZAL staging project. Please append a dated correction rather than rewriting the history. Current SPEC records 0001–0004, 0006–0009 applied on staging and 0005 not applied. No production SQL was run in this review.
+
+**Current T-01 state:** Muse opened the line and assigned WORKPLAN T-01 (sign-out everywhere) to Claude. The BOARD claim is present on main, but at this audit time claude/sign-out-shells did not yet exist as a remote branch and there was no PR/head to review. Main e735e323 had build/report/static checks green while deploy and browser checks were still running. No T-01 code change was visible yet.
+
+### 2. FEASIBILITY.md — cost and return corrections
+
+I inspected uber-eats-account-audit-manager-report.pdf (13 Aug–12 Nov 2026, pages 1–7) and checked current public Canada pricing.
+
+**The 45.2% payout figure is not the platform commission rate.** The report's $71,614.71 gross less $32,352.46 net is a $39,262.25 difference, broken down as:
+- marketing/promotions: $17,964.96 (about 25.1% of gross);
+- commissions: $15,483.23 (about 21.6%);
+- adjustments: $5,814.06 (about 8.1%), including $5,357.14 loan repayment and $456.92 net refunds/disputes.
+
+Adding back the capital-loan repayment gives $37,709.60 (about 52.7% of gross) after marketing, commissions and net refunds. The report also flags a $2,635.74 commission-base discrepancy and a $125.61 advertising-spend discrepancy. Therefore the 54.8% gross-to-net gap must not be presented as avoidable marketplace commission.
+
+**The relevant like-for-like comparison is pickup.** DoorDash Canada's published page currently lists 29% delivery on Premier and 8% pickup on Plus/Premier, with zero payment-processing fees on those marketplace plans. The 8% pickup rate is the relevant DoorDash comparator for AZAL's pickup-only site; the 29% delivery rate is not like-for-like unless a delivery customer actively switches to pickup. The page's CA$50 marketing rebate requires CA$100 monthly marketing spend, so it is not free profit.
+
+Stripe Canada's standard domestic online-card rate is 2.9% + CA$0.30 per successful transaction. On the audit's average ticket (about $56.35 gross / $49.84 pre-tax), that is about $1.93 per order, or 3.43% of gross / 3.88% of pre-tax value — not just 2.9%.
+
+**The “10% conversion = thousands” statement needs a denominator and channel mix.** Using the audit's channel counts (1,032 delivery, 221 pickup, 18 online) and channel-specific fee bases:
+- If 10% of all historical orders, proportionally across channels, move to direct pickup, the rough annualized fee difference is about $4.9k–$5.3k before loyalty, promotions and acquisition costs. This assumes delivery customers accept pickup, so it is an aggressive behaviour-change scenario, not a like-for-like forecast.
+- If only 10% of the existing Uber Eats pickup orders move to the website, the rough annualized difference is only about $286 against the audited 15% Uber pickup fee; against DoorDash's 8% pickup rate it is about $99. This is the conservative like-for-like segment.
+- The audit's actual Uber rates are 30% delivery / 15% pickup / 2.9% online processing. The 29–30% delivery comparison may produce a larger apparent saving, but the website does not provide delivery.
+
+These are scenarios, not a forecast. The audit's channel-specific bases and the noted reconciliation differences should be used in a final model, not the overall average basket alone. AZAL's base loyalty rule (10 points per $1; 10,000 points = $10) creates a 1% reward cost on eligible spend before tier bonuses; subtract that, any direct-site promotions/marketing, chargebacks, support and labour. The Uber marketing/promotions line is not automatically eliminated when orders move direct. The audit is for the existing Orléans operation; confirm that its sales mix is still representative of the AZAL launch volume.
+
+**Fixed monthly cost is understated if both database reliability and branded email are required.**
+- Supabase Free: 500 MB database; projects pause after a week of low activity. Pro is $25 USD/month before extra usage and includes 8 GB disk, 250 GB egress and daily backups retained for 7 days; Pro projects do not pause.
+- Brevo Free supports transactional email but is limited to 300 sends/day and always carries Brevo branding. Starter starts at $9/month (branding removal is an add-on); Standard starts at $18/month.
+- Thus $0–25/month is possible only with free-tier compromises or free email. A production-oriented baseline is about $25–43 USD/month (Supabase Pro plus free-to-Standard email), with domain renewal separate. Stripe's per-transaction fees are variable and must not be hidden inside the fixed monthly range. At 10% of the audit's 1,271 orders, Stripe fees alone would be roughly CA$246 for that three-month volume; at the full historical volume, roughly CA$2,458.
+- “Build cost $0” means no new cash spend on already-paid subscriptions, not zero labour/opportunity cost. The claimed existing domain was not independently checked with the registrar.
+
+**Recommendation:** keep the GO verdict conditional, but revise FEASIBILITY sections 4–5 to separate (a) fixed USD service costs, (b) variable CAD card fees, (c) loyalty/marketing cost, and (d) the pickup-only conversion assumption. Do not use 45.2% as the platform take rate, and do not count delivery commissions as guaranteed savings from a pickup-only site. No purchase or spend is recommended by this review.
+
+Sources checked 2026-11-27:
+- Internal Uber Eats audit: uber-eats-account-audit-manager-report.pdf, pages 1–7.
+- DoorDash Canada pricing: https://merchants.doordash.com/en-ca/pricing
+- Stripe Canada pricing: https://stripe.com/en-ca/pricing
+- Supabase billing: https://supabase.com/kb/faqs/platform/database-only-cost
+- Brevo Free limits: https://help.brevo.com/hc/en-us/articles/208580669-FAQs-What-are-the-limits-of-the-Free-plan
+- Brevo plan prices: https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans
+
+### 3. Coordination request to Claude
+
+@Claude — please continue the already-open WORKPLAN T-01 only, under Muse's batch assignment. At this audit time the BOARD claim exists but the remote claude/sign-out-shells branch is not yet visible. Push the branch from the current main after this documentation commit, and when ready append a delivery record to CLAUDE-REPLY.md with: full exact head SHA; every changed file; CI run ID and result; Node/browser commands and exact counts; live result; explicit NOT-verified items; blockers; and next action. Do not begin T-02 until T-01 is lead-gated. Reconcile the stale #63/#64 BOARD rows with an append-only dated correction. The owner requested 30-minute check-ins through 2026-11-27; from 2026-11-28 the lead-adopted start/end-of-working-block cadence replaces them. No force-push, no amend of pushed commits, no parallel edits to T-01 files.
