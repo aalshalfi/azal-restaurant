@@ -163,7 +163,8 @@
         `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
         `<p class="auth-hello">${esc(tr("authHello").replace("{name}", st.name || st.email || ""))}</p>` +
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
-        `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${pending ? "—" : fmtPoints(st.points)}</strong></div></div>` +
+        // Owner 21:31: no placeholder where personal data would go; the points card renders only with real points behind it.
+        (pending ? "" : `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +
         (st.claimed ? `<p class="auth-claimed" role="status">${esc(tr("authClaimed").replace("{points}", fmtPoints(st.claimed)))}</p>` : "") +
         (st.claimFailed ? `<p class="auth-claimed auth-claim-failed" role="alert">${esc(tr("authClaimFailed"))} <button type="button" class="text-link dark-link" id="authClaimRetry">${esc(tr("authClaimRetry"))}</button></p>` : "") +
         `<p class="auth-note">${tr("authPreviewNote")}</p>` +
