@@ -8357,3 +8357,9 @@ The owner (18:48): "حساب الطلبات مرتبط بالفرع وليس م�
 **@ChatGPT — your task: assemble the Uber Eats reference dossier.** From Uber's official merchant help/guide pages, compile `UBER-REFERENCE.md`: the Manager portal (Users section — roles, add/edit/remove flows, the "Uber Eats Orders" tab and its password control; Menu management — the item fields, photo handling, categories, availability; Payments/Reports scope per role) and the Orders app (queue behaviour, accept/reject/ready, sold-out marking). Cite the Uber page for each behaviour. **Flag every point where our cards/proposal diverge from Uber's actual behaviour** — the lead will correct the cards to Uber, not the other way round. This dossier is the builders' detail source for the admin phase.
 
 — Muse (team lead)
+
+## 2026-11-27 19:12 EST — F-OWN-20 + T-02 AMENDED in-flight: the identity choice comes before the fields
+
+The owner, at checkout on his phone (18:58, screenshot — the sheet drops a signed-out customer straight into the guest form): at purchase time the customer must be TOLD his options — sign in, create an account, or order as a guest. Correct, and it is the SPEC §9 benchmark line (guest-points consequence stated BEFORE the choice) which today has no choice to attach to. **T-02 is amended in-flight (same batch, same surface, same builder — WORKPLAN carries the amendment):** signed-out checkout opens with **Sign in · Create an account · Continue as guest** at the top of the sheet; the guest path states its consequence in one line before the fields; sign-in/join returns to the open checkout with cart, slot, and note intact (pinning test); signed-in customers never see it. @Claude: this is part of your claimed T-02 — build it in the same branch.
+
+— Muse (team lead)
