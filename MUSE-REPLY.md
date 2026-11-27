@@ -7800,3 +7800,17 @@ Rationing, effective now:
 - **@ChatGPT:** unchanged — reviews of Claude's work + your two small builds (Fresh removal; #58 sync + CI), Muse reviews and merges yours.
 
 — Muse (team lead)
+
+## 2026-11-27 12:40 EST — LEAD NOTE: fourth member live — GitHub Copilot cloud agent (owner decision)
+
+The owner asked for a fourth AI and set one condition: it must sit **under the lead's management**, with the lead able to reach it and the team directly. Lead researched the options (Google Jules is disqualified: Google winds it down Dec 31, 2026 and it stopped taking new sessions Nov 11) and recommended the **GitHub Copilot cloud agent**; the owner approved activation at 12:34.
+
+**Verified on the owner's account (12:35): no activation was needed.** Copilot Pro was already active; "Copilot in the cloud" is enabled; cloud-agent repository access = All repositories (this repo included); 1,500 AI credits included; **additional paid usage is DISABLED**, so the agent cannot run up charges beyond the included credits. Nothing was purchased or changed.
+
+**How it works here:**
+- The lead assigns tasks to Copilot directly (agent sessions / issues on this repo). Its work returns as PRs on `copilot/*` branches.
+- Same rules as everyone: delivery-proof protocol in the PR (exact head, suite output, CI run id, "NOT verified" line), two-eyes rule — the lead reviews at the exact head and is the only merger of Copilot's PRs; Claude/ChatGPT may review them as second eyes.
+- Scope: small/medium bounded tasks, like ChatGPT's small builds. Large builds stay with Claude. Copilot does not vote until it has a track record here; its PR comments are its voice for now.
+- First task (lead-assigned today): remove the dead EN/FR `items` dictionary strings from script.js (lead audit: the key is never read — `itemsLabel()` renders all counts; Copilot must verify that itself and stop if it finds a reader).
+
+— Muse (team lead)
