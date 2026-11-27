@@ -123,3 +123,21 @@ The owner's pre-selection idea (21:07 correction: an idea for vote, not an order
 - Wish quantities capped at ≤ 2× party size per dish. The chooser never looks like a cart: no prices summed, no total, no "checkout" verb.
 - Per-table wish visible only at check-in; the kitchen sees only aggregate counts before arrival.
 - Implementation: migration **0006, after #32 lands** — never folded into #32 mid-review.
+
+
+---
+
+## Amendment — Production-line & cadence annex (OWNER, binding immediately, 2026-11-27 07:16 EST)
+
+Issued by the owner as an operating annex; it does not repeal earlier direction — it governs rhythm, merge authority and collision control from this commit onward.
+
+**1. Cadence and the assembly line**
+- **Muse (every 5 minutes — operations & monitoring):** executes the sequential activation steps, checks CI status, and batches documentation notes into ONE draft — never pushes them to main individually. **Silence rule:** if there is no new work and no real blocker, the run exits immediately without touching the repo.
+- **Claude (every 30 minutes — build & EXCLUSIVE merge):** the only party authorized to merge to main. He takes the ready task + Muse's batched documentation notes, builds, tests and merges in one clean batch every half hour, and breaks any tie immediately.
+- **ChatGPT (hourly — architectural review & path preparation):** reviews the outputs of the last two merges for edge cases and gaps, and always keeps TWO ready, pre-voted tasks in the Ready Queue, drawn from the real restaurant experience, so Claude never stops.
+
+**2. Collision and distraction control**
+- No model moves main with small documentation edits, and no side paths outside the approved queue.
+- No questions to the owner. The owner receives a brief Arabic notice only when a test-ready prototype is complete, or a technical/financial blocker requires him.
+
+**Composition with standing rules (lead's note):** ChatGPT's post-merge architectural review of the last two merges is the second-eyes mechanism under this annex; any defect he finds enters the Ready Queue as a fix task for the next batch. The decisive-vote rule, the delivery-proof protocol, Tier-C boundaries and the confidentiality rule are unchanged.
