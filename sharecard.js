@@ -27,7 +27,32 @@
     }
     return [a];
   }
-  const api = { cardLines, wrapName, W, H, MAX_LINES };
+  // v2 "openable tray" (owner field test 21:21: the recipient got a picture only). The tray travels in the URL FRAGMENT
+  // (#tray=v1.1x2.6x1), so it never reaches any server or log; nothing is stored. Strict allow-list parse.
+  const TRAY_MAX_LEN = 200, TRAY_MAX_LINES = 12, TRAY_MAX_QTY = 20;
+  function encodeTray(entries) {
+    const parts = [];
+    for (const [id, q] of entries) { const i = Number(id), n = Math.min(TRAY_MAX_QTY, Number(q)); if (Number.isInteger(i) && i > 0 && Number.isInteger(n) && n > 0) parts.push(i + "x" + n); }
+    return parts.length ? "v1." + parts.slice(0, TRAY_MAX_LINES).join(".") : "";
+  }
+  // -> { ok:false } for anything malformed, or { ok:true, lines:[{id,qty}] (on the menu), retired:n (ids not on the menu) }
+  function parseTray(hash, isKnown) {
+    const m = /^#tray=(.*)$/.exec(String(hash || ""));
+    if (!m) return null;
+    const raw = m[1];
+    if (raw.length > TRAY_MAX_LEN || !/^v1(\.\d{1,4}x\d{1,2})+$/.test(raw)) return { ok: false };
+    const segs = raw.split(".").slice(1);
+    if (segs.length > TRAY_MAX_LINES) return { ok: false };
+    const qty = new Map(); let retired = 0;
+    for (const seg of segs) {
+      const [id, q] = seg.split("x").map(Number);
+      if (q < 1 || q > TRAY_MAX_QTY) return { ok: false };
+      if (!isKnown(id)) { retired++; continue; }
+      qty.set(id, Math.min(TRAY_MAX_QTY, (qty.get(id) || 0) + q));
+    }
+    return { ok: true, lines: [...qty].map(([id, q]) => ({ id, qty: q })), retired };
+  }
+  const api = { cardLines, wrapName, encodeTray, parseTray, W, H, MAX_LINES };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   // Placement (lead ruling 21:03, Claude's bonus target): the live checkout is a preview that ends in "nothing was sent".
@@ -35,9 +60,9 @@
   const msgBox = document.getElementById("checkoutMessage");
   if (!msgBox || typeof cart === "undefined") return;
   const S = {
-    en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again." },
-    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "Plateau en brouillon, pas encore commandé · on ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez." },
-    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة لم تُطلب بعد · هل نضيف شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "الأطباق والأسعار للعرض فقط · معاينة", made: "صورتك جاهزة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى." }
+    en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again.", open: "Open our tray: {link}", shared: "A tray shared with you", addAll: "Add to my order", notNow: "Not now", addedAll: "Added to your order.", retired: "{n} dish(es) from this tray are no longer on the menu.", invalid: "This tray link isn’t valid.", trayNote: "Example menu and prices · adding it orders nothing" },
+    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "Plateau en brouillon, pas encore commandé · on ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez.", open: "Ouvrir notre plateau\u00a0: {link}", shared: "Un plateau partagé avec vous", addAll: "Ajouter à ma commande", notNow: "Pas maintenant", addedAll: "Ajouté à votre commande.", retired: "{n} plat(s) de ce plateau ne sont plus au menu.", invalid: "Ce lien de plateau n’est pas valide.", trayNote: "Menu et prix d’exemple · l’ajouter ne commande rien" },
+    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة لم تُطلب بعد · هل نضيف شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "الأطباق والأسعار للعرض فقط · معاينة", made: "صورتك جاهزة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى.", open: "افتح سفرتنا: {link}", shared: "سفرة أُرسلت إليك", addAll: "أضفها إلى طلبي", notNow: "ليس الآن", addedAll: "أُضيفت إلى طلبك.", retired: "{n} من أطباق هذه السفرة لم تعد في القائمة.", invalid: "رابط السفرة هذا غير صالح.", trayNote: "الأطباق والأسعار للعرض فقط · إضافتها لا تطلب شيئاً" }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
@@ -52,6 +77,7 @@
   document.addEventListener("click", (e) => { if (e.target && e.target.closest && e.target.closest("#placeDemoOrder")) tray = [...cart.entries()].filter(([, q]) => q > 0); }, true);
   function paint() { btn.textContent = L("btn"); btn.hidden = !(tray.length && msgBox.textContent.trim()); if (btn.hidden) status.textContent = ""; }
 
+  const trayLink = () => { const code = encodeTray(tray); if (!code) return ""; const u = new URL("menu.html", location.href); u.hash = "tray=" + code; return u.href; };
   function loadImage(src) { return new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
   async function draw() {
     const ar = lang() === "ar";
@@ -83,6 +109,8 @@
     if (more) { x.fillStyle = "#914820"; x.font = `500 40px ${sans}`; x.fillText(L("more", { n: more }), edge, y); y += 64; }
     x.fillStyle = "#42220E"; x.font = `700 40px ${sans}`; x.fillText(L("items", { n: count }), edge, Math.max(y + 20, 1180));
     x.fillStyle = "#6B5848"; x.font = `400 30px ${sans}`; x.textAlign = "center"; x.direction = "ltr"; x.fillText(L("note"), W / 2, H - 60);
+    const link = trayLink(); // v2: the link that reopens this exact tray, printed on the card for apps that drop text
+    if (link) { x.fillStyle = "#914820"; x.font = `500 24px "Source Sans 3", Arial, sans-serif`; x.fillText(link, W / 2, H - 104, W - 120); }
     return new Promise((res) => c.toBlob((b) => res(b), "image/png"));
   }
   btn.addEventListener("click", async () => {
@@ -92,13 +120,43 @@
     if (!blob) { status.textContent = L("fail"); return; }
     const file = new File([blob], "azal-sufra.png", { type: "image/png" });
     try {
-      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) { await navigator.share({ files: [file], title: L("title") }); return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) { await navigator.share({ files: [file], title: L("title"), text: L("open", { link: trayLink() }) }); return; }
     } catch (e) { if (e && e.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "azal-sufra.png"; document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     status.textContent = L("made");
   });
   new MutationObserver(paint).observe(msgBox, { childList: true, characterData: true, subtree: true });
+
+  // v2 receiving side: a shared tray is SHOWN first; the guest's cart changes only when they tap "Add to my order".
+  const menuTop = document.querySelector("#menu .menu-top");
+  function openSharedTray() {
+    if (!menuTop) return;
+    const got = parseTray(location.hash, (id) => Boolean(byId(id)));
+    if (!got) return;
+    const box = document.createElement("section"); box.className = "shared-tray"; box.setAttribute("aria-live", "polite");
+    const drop = () => { try { history.replaceState(null, "", location.pathname + location.search); } catch {} };
+    const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+    if (!got.ok || (!got.lines.length && !got.retired)) { box.append(el("p", "shared-tray-msg", L("invalid"))); menuTop.after(box); drop(); return; }
+    const list = el("ul", "shared-tray-list");
+    for (const l of got.lines) list.append(el("li", null, l.qty + "× " + byId(l.id).name));
+    const actions = el("div", "shared-tray-actions");
+    const add = el("button", "button button-gold", L("addAll")); add.type = "button";
+    const later = el("button", "button share-tray", L("notNow")); later.type = "button";
+    box.append(el("h2", "shared-tray-title", L("shared")), list);
+    if (got.retired) box.append(el("p", "shared-tray-msg", L("retired", { n: got.retired })));
+    box.append(el("p", "shared-tray-note", L("trayNote")));
+    if (got.lines.length) actions.append(add);
+    actions.append(later); box.append(actions);
+    add.addEventListener("click", () => {
+      for (const l of got.lines) cart.set(l.id, Math.min(50, (cart.get(l.id) || 0) + l.qty));
+      if (typeof renderCart === "function") renderCart();
+      box.replaceChildren(el("p", "shared-tray-msg", L("addedAll"))); drop();
+    });
+    later.addEventListener("click", () => { box.remove(); drop(); });
+    menuTop.after(box);
+  }
+  openSharedTray();
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   paint();
 })(typeof window !== "undefined" ? window : globalThis);
