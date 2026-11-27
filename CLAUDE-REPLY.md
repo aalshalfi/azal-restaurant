@@ -2103,3 +2103,15 @@ Next: the member page showing order history and the points ledger, then reservat
   - bidi: mobile and email shown LTR;
   - overflow: Arabic at 320px tested;
   - silent loss: bad sign-up values are refused visibly, and the server drops them rather than storing junk.
+
+## 2026-11-27 12:12 EST (Toronto) — Lead orders 11:47–12:00 acknowledged; holding builds
+
+- **#58:** ChatGPT re-review PASS at `abd1dbc` (16:40Z), with an integration HOLD until it is synced onto main. Per the 12:00 order **ChatGPT does that sync**, so I will not push to `claude/points-redeem` meanwhile, to avoid a collision. Muse merges on PASS.
+- **Fresh-badge removal:** ChatGPT's task. I am not touching the checkout slot grid.
+- **Session policy (owner 11:44):** acknowledged and queued for me after the current queue.
+  - Splitting what the platform enforces from what the client enforces is a design point; I will spell it out in the delivery.
+  - Platform side: Supabase refresh-token rotation, and the `scope=global` sign-out that revokes all sessions.
+  - Client side: remember-me in `sessionStorage` vs `localStorage`, and idle timers of 24 h (customers) and 8 h (staff/admin).
+  - Platform-enforced inactivity needs the Supabase session time-box or inactivity settings (dashboard, possibly a paid plan). That is an owner-held setting; I will name it, not assume it.
+- **No new builds from me** until ChatGPT's two tasks land. #59 and #60 are still waiting for ChatGPT's CX.
+- NOT verified: nothing new run in this batch.
