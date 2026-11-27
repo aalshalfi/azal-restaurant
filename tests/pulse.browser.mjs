@@ -1,10 +1,11 @@
 // Table Pulse with a FAKE Supabase whose order status advances. Run: node tests/pulse.browser.mjs
 import { createRequire } from "node:module"; import http from "node:http"; import { readFileSync, existsSync } from "node:fs"; import { join, extname } from "node:path";
+import { nullConfig } from "./null-config.mjs";
 const require = createRequire(process.env.NODE_PATH ? join(process.env.NODE_PATH, "x") : import.meta.url); const { chromium } = require("playwright");
 const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml" };
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
-const b = await chromium.launch(); const port = srv.address().port;
+const b = nullConfig(await chromium.launch()); const port = srv.address().port;
 async function open({ status = "accepted", lang = "en", w = 390, signedIn = true, failAll = false } = {}) {
   const page = await b.newPage({ viewport: { width: w, height: 900 } });
   await page.clock.install({ time: new Date("2026-11-27T17:00:00Z") });
@@ -70,5 +71,5 @@ const labels = (page) => page.$$eval(".pulse-step", (ls) => ls.map((l) => l.clas
   ok(/قبله المطبخ/.test(await page.textContent("#tablePulse")) && !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), "Arabic strings, RTL, 320px without overflow"); await page.close(); }
 { const { page } = await open({ lang: "fr" }); await page.waitForSelector(".pulse-step"); ok(/Acceptée par la cuisine/.test(await page.textContent("#tablePulse")), "French"); await page.close(); }
 { const { page, st } = await open({ signedIn: false }); await page.waitForTimeout(400); ok(await page.locator("#tablePulse").isHidden() && st.polls === 0, "signed out: hidden, no request"); await page.close(); }
-{ const page = await b.newPage(); await page.goto(`http://localhost:${port}/member.html`); await page.waitForTimeout(300); ok(await page.locator("#tablePulse").count() === 0, "inert with shipped null config"); await page.close(); }
+{ const page = await b.newPage(); await page.goto(`http://localhost:${port}/member.html`); await page.waitForTimeout(300); ok(await page.locator("#tablePulse").count() === 0, "inert with null config (demo mode)"); await page.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);

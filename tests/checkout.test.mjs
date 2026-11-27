@@ -63,9 +63,11 @@ test("server error codes pass through", async () => {
   await assert.rejects(co.place({ cart: new Map([[1, 1]]), choice: "asap", day: "today", nowMs: Date.now() }), { code: "slot_full" });
 });
 
-test("inert without config, and the shipped config is null", () => {
+test("inert without config; the shipped config is null or publishable-only", () => {
   assert.equal(C.createCheckout({ config: { url: null, anonKey: null }, fetch: async () => {} }).enabled, false);
-  assert.match(readFileSync(new URL("../supabase-config.js", import.meta.url), "utf8"), /url:\s*null,\s*anonKey:\s*null/);
+  const cfg = readFileSync(new URL("../supabase-config.js", import.meta.url), "utf8");
+  assert.match(cfg, /url:\s*null,\s*anonKey:\s*null|anonKey:\s*"sb_publishable_[A-Za-z0-9_-]+"/);
+  assert.doesNotMatch(cfg, /service_role|sb_secret_/);
 });
 
 test("every page with the order sheet loads checkout.js after auth.js; the table-only reserve page loads none (#32)", () => {

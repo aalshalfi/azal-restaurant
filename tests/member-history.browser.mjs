@@ -1,10 +1,11 @@
 // Member page history with a FAKE Supabase. Run: node tests/member-history.browser.mjs
 import { createRequire } from "node:module"; import http from "node:http"; import { readFileSync, existsSync } from "node:fs"; import { join, extname } from "node:path";
+import { nullConfig } from "./null-config.mjs";
 const require = createRequire(process.env.NODE_PATH ? join(process.env.NODE_PATH, "x") : import.meta.url); const { chromium } = require("playwright");
 const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml" };
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
-const b = await chromium.launch(); const port = srv.address().port;
+const b = nullConfig(await chromium.launch()); const port = srv.address().port;
 async function open({ lang = "en", signedIn = true, failOrders = false, extraEarns = 0 } = {}) {
   const page = await b.newPage({ viewport: { width: 390, height: 900 } }); const urls = [];
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
@@ -46,5 +47,5 @@ async function open({ lang = "en", signedIn = true, failOrders = false, extraEar
 { const { page } = await open({ failOrders: true }); await page.waitForSelector(".member-history-error");
   ok(true, "server error: clear message, no crash"); await page.close(); }
 { const page = await b.newPage(); await page.goto(`http://localhost:${port}/member.html`); await page.waitForTimeout(300);
-  ok(await page.locator("#memberHistory").count() === 0, "inert with shipped null config"); await page.close(); }
+  ok(await page.locator("#memberHistory").count() === 0, "inert with null config (demo mode)"); await page.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);

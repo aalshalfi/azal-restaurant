@@ -1,11 +1,12 @@
 // Sufra share card. Run: node tests/sharecard.browser.mjs  (writes the card PNGs next to SHOT for a look)
 import { createRequire } from "node:module"; import http from "node:http"; import { readFileSync, existsSync, writeFileSync } from "node:fs"; import { join, extname, dirname } from "node:path";
+import { nullConfig } from "./null-config.mjs";
 const require = createRequire(process.env.NODE_PATH ? join(process.env.NODE_PATH, "x") : import.meta.url); const { chromium } = require("playwright");
 const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".woff": "font/woff", ".woff2": "font/woff2" };
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 const toPreview = async (p) => { await p.evaluate(() => document.getElementById("cartOpen").click()); await p.click("#checkoutButton"); await p.click("#placeDemoOrder"); await p.waitForSelector("#shareTray:not([hidden])"); };
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
-const b = await chromium.launch(); const base = `http://localhost:${srv.address().port}`; const out = process.env.SHOT ? dirname(process.env.SHOT) : "/tmp";
+const b = nullConfig(await chromium.launch()); const base = `http://localhost:${srv.address().port}`; const out = process.env.SHOT ? dirname(process.env.SHOT) : "/tmp";
 for (const lang of ["en", "ar"]) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, acceptDownloads: true }); const net = [];
   // "Sends" = anything that carries data out: fetch/XHR/beacon/websocket/form, or any non-GET. The menu's own lazy dish
