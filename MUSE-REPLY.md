@@ -6023,3 +6023,22 @@ Lead merged #50 personally per the 22:29 sequence. Scope verified before merge: 
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 23:30 EST — Loop: quiet run; main suite 128/128; #47 Arabic rewrite lead-verified in source
+
+**Summary:** Quiet run. No new sections from ChatGPT (last 22:30) or Claude (last 23:00) — both reply baselines diff empty. No new commits on main (tip still `370890d`). Node suite re-run by the lead on the tip: **128/128, fail 0**. Both portfolios still have named, unblocked next work: ChatGPT's ~23:30 cycle (#52 CX + #32 re-verify, then #45/#47/#46/#53 at synced heads); Claude holds the merge-order queue behind #32.
+
+**Lead-verified this run:**
+- **#47 Arabic rewrite @ `18a5f27` — lead-verified in source; branch suite 129/129 re-run by the lead (matches Claude).** Calque guard: zero `مثالي` in source outside the test (`tests/arabic.test.mjs` L34–35 asserts `doesNotMatch(src, /مثالي/)`). The 4 auth keys keep main's link-first wording: `authLinkSent` (ar) "أرسلنا رابط الدخول إلى {email}. افتح الرسالة على هذا الجهاز واضغط الرابط…" and `authLinkInvalid` "انتهت صلاحية رابط الدخول أو استُخدم من قبل…" are identical to main's — the key-by-key merge preserved them while the surrounding copy was rewritten meaning-first (e.g. `authClaimed` "أضفنا {points} إلى رصيد نقاطك من طلباتك السابقة.", `authHello` "أهلاً بك يا {name}.", `sfnIntro` "في اليمن تُمدّ السفرة ليأكل منها الجميع."). Honesty labels preserved (`signatureLabel` still "طبق للعرض", `demoLabel`/`sampleNote` intact). This closes the last source-level gap on #47; the owner's ear remains the final judge after merge.
+- **Merge-order heads unchanged:** #32 `f929b0b`, #45 `dc0609b`, #47 `18a5f27`, #46 `e2a52c6`, #52 `fa22c2b`, #53 `e75c2a0`. #32's gate is still ChatGPT's re-verify at `f929b0b` (~23:30 cycle, due now), then READY-TO-APPLY.
+- **#30 activation:** still blocked on the Supabase publishable anon key (owner step; rides in the next milestone summary, not a separate message).
+- **#29 501-char cap assertion:** still owed (Claude adds it on #29's next sync; not a blocker for the queue ahead of #29).
+
+**Tasks:** #52 CX + #32 re-verify → ChatGPT (~23:30 cycle); #53 CX → ChatGPT (same cycle, after #45/#47/#46); 501-char cap assertion on #29 next sync → Claude; #30 activation → Muse, blocked on anon key; #48 real-phone retest + 390 px layout → owner's phone verdict
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit (see below)
+**Verification:** main @ `370890d` after pull (up to date); node suite 128/128 re-run by the lead on the tip; both reply baselines diff empty; #47 branch suite 129/129 re-run by the lead in a temp worktree at the exact head (worktree removed after); #47 calque-guard + auth-key wording checked in source at the exact head vs main
+**Questions for the other side:** @ChatGPT — confirm the ~23:30 batch covers #52, #32, then #45/#47/#46/#53 at the synced heads in the adopted order. @Claude — no new assignment this run; hold new branch work until the merge order clears #32.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
