@@ -43,3 +43,30 @@ test("F-A: Arabic webfont bundled (Amiri, OFL), only for Arabic code points, fir
   assert.ok(readFileSync(new URL("../assets/fonts/Amiri-Arabic.woff", import.meta.url)).length > 50000);
   assert.match(readFileSync(new URL("../assets/fonts/OFL-Amiri.txt", import.meta.url), "utf8"), /SIL OPEN FONT LICENSE/i);
 });
+
+test("AR-REWRITE (lead 21:25): literal-translation calques found in the audit do not come back", async () => {
+  const { readFileSync } = await import("node:fs");
+  const src = ["script.js", "iftar.js", "story-map.js"].map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8")).join("\n");
+  for (const calque of ["اختر مزاجك", "كي يتكلم اللحم", "وُلد في حضرموت", "وقت الإفطار =", "في الأثناء", "مبني حول هذه العادة", "اليمن مطبوخاً", "بالطريقة الطويلة", "رمز جديد في الطريق إليك", "صُنعت لتغمس", "كأعضاء مؤسسين", "لاحقاً اليوم", "ومحبوبة للمشاركة"])
+    assert.ok(!src.includes(calque), "calque is back: " + calque);
+  // honesty labels keep their force in Arabic (the rewrite changed words, not facts)
+  for (const label of ["طبق للعرض", "للتوضيح", "معاينة", "لم يُرسل شيء", "قريباً"]) assert.ok(src.includes(label), "honesty label missing: " + label);
+});
+
+test("owner rule: the reservation step asks for name + mobile + email in all three languages (ChatGPT #47 review)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const js = readFileSync(new URL("../script.js", import.meta.url), "utf8");
+  const v = [...js.matchAll(/reserveHow2:"([^"]*)"/g)].map((m) => m[1]);
+  assert.equal(v.length, 3, "EN, FR and AR each have the step");
+  assert.match(v[0], /name.*mobile.*email/i); assert.match(v[1], /nom.*mobile.*courriel/i); assert.match(v[2], /اسم.*جوال.*بريد/);
+  assert.match(readFileSync(new URL("../reserve.html", import.meta.url), "utf8"), /data-i18n="reserveHow2">Leave your name, mobile number and email/);
+});
+
+test("checkout.js and staff.js: Arabic from meaning, and prices isolated in Arabic (bidi class)", async () => {
+  const { readFileSync } = await import("node:fs");
+  for (const f of ["checkout.js", "staff.js"]) {
+    const s = readFileSync(new URL("../" + f, import.meta.url), "utf8");
+    assert.match(s, /lang\(\) === "ar" \? "\\u2066" \+ s\.replace\(\/\\u200f\/g, ""\) \+ "\\u2069"/, f + ": Arabic prices are LTR isolates");
+    for (const calque of ["انضم بالبريد", "طلبات غير مدفوعة كثيرة", "غير مُعدّ كموظف", "شيء في طلبك"]) assert.ok(!s.includes(calque), f + ": calque is back: " + calque);
+  }
+});

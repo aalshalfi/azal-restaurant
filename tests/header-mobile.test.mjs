@@ -8,7 +8,7 @@ test("HDR-MOB: every page has the quick language + Majlis controls and a compact
   for (const p of pages) {
     const h = read(`${p}.html`);
     assert.match(h, /<div class="header-quick"><button class="language-quick" type="button" data-lang-quick>FR<\/button><a class="majlis-quick" href="member\.html" aria-label="Majlis" data-i18n-aria-label="navMajlis">/, p);
-    assert.match(h, /<button class="cart-open" id="cartOpen"><svg class="hq-icon cart-icon"[^>]*aria-hidden="true"[^>]*>.*?<\/svg><span class="cart-label" data-i18n="cartButton">Your order<\/span> <span id="cartCount">0<\/span><\/button>/, p);
+    if (p === "reserve") { assert.ok(!h.includes('id="cartOpen"'), "reserve is table-only: no food cart"); } else assert.match(h, /<button class="cart-open" id="cartOpen"><svg class="hq-icon cart-icon"[^>]*aria-hidden="true"[^>]*>.*?<\/svg><span class="cart-label" data-i18n="cartButton">Your order<\/span> <span id="cartCount">0<\/span><\/button>/, p);
     assert.equal((h.match(/id="languageToggle"/g) || []).length, 1, p + ": desktop toggle kept");
   }
 });

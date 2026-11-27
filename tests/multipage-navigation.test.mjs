@@ -36,13 +36,14 @@ test("all page copy has EN and FR translations", () => {
   }
 });
 
-test("member preview remains inert until the schema is approved", () => {
+test("member page before sign-ups: one honest state, no personal-data shells, no dead buttons (owner 21:30/21:31)", () => {
   const member = pages.find((page) => page.name === "member.html").html;
   assert.ok(member.includes('data-i18n="navMajlis"'));
-  assert.ok(member.includes('data-i18n="memberStatusValue"') && member.includes('data-i18n="memberPointsValue"'));
-  assert.ok(member.includes('data-i18n="memberSignIn"') && member.includes('data-i18n="memberJoin"'));
-  assert.match(member, /<button(?=[^>]*data-i18n="memberSignIn")(?=[^>]*\bdisabled\b)[^>]*>/);
-  assert.match(member, /<button(?=[^>]*data-i18n="memberJoin")(?=[^>]*\bdisabled\b)[^>]*>/);
+  assert.ok(member.includes('data-i18n="memberSoonTitle"') && member.includes('data-i18n="memberNotice"'));
+  for (const k of ["memberCardKicker", "memberStatusValue", "memberPointsValue", "memberPointsLabel", "memberStatusLabel"]) assert.ok(!member.includes(`data-i18n="${k}"`), k + " shell must not render for a visitor");
+  const main = member.slice(member.indexOf("<main"), member.indexOf("</main>"));
+  assert.doesNotMatch(main, /<button[^>]*\bdisabled\b/, "no disabled pseudo-buttons on the page body");
+  assert.match(member, /<a class="button button-gold" href="menu\.html" data-i18n="reserveMeanwhile">/, "the only action is a real link");
   assert.ok(!member.includes("<form") && !member.includes("<input"), "no credentials or personal details are collected");
 });
 
