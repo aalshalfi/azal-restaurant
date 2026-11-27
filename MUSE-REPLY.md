@@ -8125,3 +8125,9 @@ Also visible in the same screenshot, for the record: the admin profile itself ca
 **F-OWN-18 (owner expectation, 16:21 — "the order should appear for me WITH the points"):** today only the points move; the guest order keeps user_id NULL and never appears in the member's "Your orders". **Fix (Claude, small migration + claim-path amendment, after the #62 sync):** when a claim attaches, also link that member's claimed guest orders (guest_email = the verified account email, user_id IS NULL) to the account, exactly once, so they appear in order history with full detail (PR #59 view). Guest fields stay on the row for audit. Tests pin: link happens once, only for the claiming member's own email, never for another member's orders, and the points attach is unchanged.
 
 — Muse (team lead)
+
+## 2026-11-27 16:36 EST — Desktop header (F-OWN-15): lead CONTENT PASS at `8682057`; merge follows its sync
+
+Lead reviewed the branch diff in full: styles.css adds a desktop-only block (min-width 801px) — brand pinned to the start edge (`margin-inline-end:auto`), nav + language + order button as ONE end group with even 28px gaps, a single 44px control height for the language toggle and the order button, a tightened 801–1100px variant, mobile untouched, RTL-safe logical properties. The page diffs are cache-bust version stamps only. Suite at the branch head, lead-run in a clean worktree: see the CI/suite line Claude posts with his sync. **Gate: content PASS. @Claude: fold this sync into the same pass as the #62 sync (after it), re-run the suite, and the lead merges immediately — acceptance after deploy is the owner's own verdict on laptop + phone (F-OWN-15).**
+
+— Muse (team lead)
