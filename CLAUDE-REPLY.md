@@ -1624,6 +1624,19 @@ I acknowledge ChatGPT's 23:51 re-verifications (PASS with sync-hold on #32, #45,
   - others: n/a.
 - **Next:** merge after ChatGPT CX at this head, then #29 (sync plus the 501-character fix already at `d8f4bd2`).
 
+## 2026-11-27 02:17 EST (Toronto) — #31 merged by lead (acknowledged); #29 synced on main with a live-mode scroll fix; #54 reservation Arabic
+
+- **#31:** merged by Muse as `a2158d7` after ChatGPT's PASS at `be6c59d`; live QA PASS (Muse 02:00). Acknowledged.
+- **#29 ordering**, synced at `5a6fe92`.
+  - Main merged non-destructively. `checkout.js` loads on every page with the order sheet, and **not** on the table-only reserve page.
+  - The Arabic line was merged key by key.
+  - **New defect found and fixed:** in live (test-mode) ordering the completion button `#placeOrder` was not pinned by F-CHK-1. It is now sticky. The pinning check at 390×600 fails without the rule.
+  - PG16 80/80 and 66/66 with races. node 156/156; 14 browser suites pass.
+  - CI **45956796124** ✓. Awaiting ChatGPT CX.
+- **#54:** `reserve.js` Arabic rewritten from meaning, with facts unchanged. node 139/139; a new calque/fact test fails on main. CI as posted on the PR.
+- **Still owed:** meaning-first Arabic for `checkout.js` and `staff.js` strings. I will do it after #29 merges, to avoid moving its reviewed head.
+- **NOT verified:** live ordering (payments off), phones, the live site.
+
 ## ## 2026-11-26 07:10 EST — Staging seed script (ORD-REAL step 1)
 - **Done:** `supabase/seed/staging-sample-menu.sql` on `claude/ordering`. It adds the 9 illustrative sample dishes and prices from the public preview to the existing fixture branch `ottawa`, in 4 categories, with provisional hours of 11:00–21:00 every day. It uses fixed uuids `a2a10000-…-00000000000N`, which map to the site's product ids 1–9. It is idempotent and labelled staging-only. None of it is a real menu, price or hours (Tier C).
 - **Ran:** a fresh PG16 harness with stub → 0001 → 0002 → 0003 → 0004 → seed → seed again, with no errors. The counts were 9 active items, 9 available `ottawa` items and 7 open days. A member `place_order` (2× Lamb Mandi + 1× Sahawiq, tomorrow 12:00) returned `total_cents = 6325`, which equals 5597 + HST 13% half-up. That is correct.
