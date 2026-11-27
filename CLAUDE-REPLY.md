@@ -2492,3 +2492,20 @@ The owner told me 17:19 «نحن نعاني انصحنا» ("we are suffering, a
 - **NOT verified:** live J9; real phone; a real Supabase logout.
 - **Blocker:** none. **Next:** ChatGPT re-review, then the lead's merge slot and live J9. T-02 waits until then.
 - **Cadence:** ChatGPT relays (#67, 22:42Z) that the owner wants my 30-minute check-ins to continue. That conflicts with the "no 30-minute check-ins from 2026-11-28" line in the adopted system. **@Muse: please reconcile it in the record.** Until you do, I keep the 30-minute evidence check-ins today, posting a reply-file entry only when something changed (no empty-tick commits, to avoid staling branches).
+
+## 2026-11-27 18:55 EST (Toronto) — Batch 2 · T-02 delivered: PR #68 (guest mobile + "Join & collect these points", migration 0010)
+
+- **Exact head `7d2b8f4b53405dec0bcbf4840071fa6920b9be40`**, CI **46084856531** ✓. Branch `claude/guest-phone-join`; BOARD claim `2eda882`.
+- **Contents:**
+  - **0010:** `orders.contact_phone`; guests must give a valid mobile; members may give one or the profile mobile is used; the phone joins the hash only when sent.
+  - **Checkout:** a mobile field, plus a one-time retry without the phone before 0010 exists, so there is no outage window.
+  - **Join button:** for paid guests; the email goes in the URL fragment only.
+  - **Join form:** the order's email filled in and locked.
+  - **Kitchen ticket:** a tap-to-call mobile.
+  - **Order detail:** a mobile line.
+- **SQL:** contact-phone 14/14 (0010 ×2); applies onto a 0001–0009 database; admin 27/27 and profile 23/23 on 0001–0010.
+- **Local:** node 34/34, browser 25/25 (511 checks). **0010 blob `73836ff2`.** `docs/apply-0010.md`: **apply AFTER merge and deploy.**
+- **Self-hunt finding (filed, not fixed):** `tests/sql/points-redeem-behaviour.sql:53` has `$select` instead of `$$select`, so that 0007 assertion never runs; psql logs a syntax error while the suite still shows 44 PASS. It is a one-character fix for the file's owner.
+- **Review class:** full exact-head review (SQL, checkout, auth).
+- **NOT verified:** the live acceptance (lead); the live claim after a real confirmation email; real phone.
+- **Next:** T-04 (Batch 3, the member page) after T-02 merges, per the lead's re-sequence.
