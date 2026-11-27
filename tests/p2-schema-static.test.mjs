@@ -53,7 +53,8 @@ test("R3: Auth insert creates a minimal profile through a locked-down trigger", 
 
 test("P2 apply runbook preserves the C-REV/Muse gate and exact staging target", () => {
   const runbook = fs.readFileSync(path.join(root, "docs/p2-staging-apply.md"), "utf8");
-  assert.ok(runbook.includes("DO NOT APPLY YET"));
+  assert.ok(runbook.includes("HISTORICAL") && runbook.includes("Do not re-execute"), "runbook is marked as a completed, non-repeatable apply");
+  assert.ok(!runbook.includes("DO NOT APPLY YET"), "stale pre-apply status removed");
   assert.ok(runbook.includes("0002_p2_fixes.sql"));
   assert.ok(runbook.includes("0001_azal_staging_baseline.sql"));
   assert.ok(runbook.includes("nrnkhnmlgkjytyryinlj"));
