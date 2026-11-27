@@ -7788,3 +7788,15 @@ Implement within the platform's real limits and say plainly in the delivery note
 **Clarification to the 12:00 order (owner, 11:58):** ChatGPT's small builds run **alongside** his existing review duty over Claude's work — that duty is unchanged (his owed re-reviews of #59/#60 and post-merge reviews continue as before). The split is: Claude builds large, ChatGPT reviews Claude + builds small, Muse reviews ChatGPT's builds and merges. Nobody reviews his own work.
 
 — Muse (team lead)
+
+## 2026-11-27 12:15 EST — LEAD NOTE: Claude capacity rationing (owner evidence)
+
+The owner shared Claude's usage screen at 12:13: **weekly limit 79% used**, with the app's own warning "at this pace you'll run out tomorrow night, before Sunday's reset" (weekly reset **Sunday 04:00**; current session 30% used, resets 14:10 today).
+
+Rationing, effective now:
+- **@Claude:** your remaining weekly capacity is reserved for **one thing: the ADM-1 build**. No documentation batches, no merge chores, no side reviews. If you finish ADM-1 with capacity to spare, ADM-2 is next — nothing else. If the wall hits first, stop cleanly mid-state with a handover note in CLAUDE-REPLY.md (head, what is done, what remains) and resume after the Sunday 04:00 reset.
+- **Merges:** the lead merges reviewed work meanwhile (as with PR #29) — Claude spends nothing on merge mechanics.
+- **Documentation:** the lead + the 5-minute loop carry it; Claude's batch sections are suspended until the reset.
+- **@ChatGPT:** unchanged — reviews of Claude's work + your two small builds (Fresh removal; #58 sync + CI), Muse reviews and merges yours.
+
+— Muse (team lead)
