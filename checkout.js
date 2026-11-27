@@ -35,11 +35,19 @@
     return null;
   }
 
+  // Kitchen note: up to 500 characters, as the server's place_order allows (0004 note_too_long). Never cut in silence
+  // (defect ledger: silent loss at encode): a longer note is refused with the same code the server would give.
+  const NOTE_MAX = 500;
+  function noteOf(note) {
+    const t = note ? String(note).trim() : "";
+    if ([...t].length > NOTE_MAX) throw Object.assign(new Error("note_too_long"), { code: "note_too_long" });
+    return t || null;
+  }
   function buildOrder({ cart, choice, day, note, guest, branch, key, nowMs }) {
     const items = [];
     for (const [id, q] of cart) { const u = itemUuid(Number(id)); if (!u) return null; items.push({ menu_item_id: u, quantity: Number(q) }); }
     if (!items.length) return null;
-    const body = { p_branch: branch || "ottawa", p_items: items, p_pickup_at: null, p_note: note ? String(note).trim().slice(0, 500) || null : null, p_idempotency_key: key };
+    const body = { p_branch: branch || "ottawa", p_items: items, p_pickup_at: null, p_note: noteOf(note), p_idempotency_key: key };
     if (choice !== "asap") {
       const at = torontoInstant(nowMs, day === "tomorrow" ? 1 : 0, Number(choice));
       if (!at) return null;
@@ -92,7 +100,7 @@
     };
   }
 
-  const api = { createCheckout, cardToToken, validateGuest, buildOrder, torontoInstant, itemUuid, TEST_CARDS };
+  const api = { NOTE_MAX, createCheckout, cardToToken, validateGuest, buildOrder, torontoInstant, itemUuid, TEST_CARDS };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -238,7 +246,7 @@
       }
     } catch (e) {
       const code = (e && e.code) || "error";
-      if (["slot_full", "closed", "too_soon", "payment_window_expired", "item_unavailable", "invalid_items", "idempotency_conflict"].includes(code)) { co.reset(); unlock(); }
+      if (["slot_full", "closed", "too_soon", "payment_window_expired", "item_unavailable", "invalid_items", "idempotency_conflict", "note_too_long"].includes(code)) { co.reset(); unlock(); }
       showError(code);
     } finally { busy = false; paint(); }
   });

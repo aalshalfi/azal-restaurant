@@ -75,3 +75,15 @@ test("every page loads checkout.js after auth.js with the release version", () =
     assert.ok(h.indexOf(`auth.js?v=${v}`) < h.indexOf(`checkout.js?v=${v}`) && h.includes(`checkout.js?v=${v}`), p);
   }
 });
+
+test("kitchen note: 500 characters pass unchanged; 501 are refused, never cut in silence (ChatGPT #29 review)", () => {
+  const base = { cart: new Map([[1, 1]]), choice: "asap", day: "today", key: "k".repeat(20), nowMs: Date.now() };
+  const five = "ب".repeat(500);
+  assert.equal(C.buildOrder({ ...base, note: five }).p_note, five, "500 Arabic characters arrive exactly");
+  assert.equal(C.buildOrder({ ...base, note: "  " + "x".repeat(500) + "  " }).p_note.length, 500, "surrounding spaces do not count");
+  assert.throws(() => C.buildOrder({ ...base, note: "x".repeat(501) }), { code: "note_too_long" });
+  assert.equal(C.buildOrder({ ...base, note: "   " }).p_note, null, "a blank note is no note");
+  const src = readFileSync(new URL("../checkout.js", import.meta.url), "utf8");
+  assert.match(src, /<textarea id="coNote" maxlength="500"/, "the field itself stops at 500");
+  assert.match(src, /"idempotency_conflict", "note_too_long"\]/, "a refused note unlocks the form");
+});
