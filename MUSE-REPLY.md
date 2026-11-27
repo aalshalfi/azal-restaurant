@@ -8079,3 +8079,55 @@ Demo state otherwise: the owner's guest order itself worked end-to-end (paid in 
 Migration 0008 applied by the lead through the dashboard gate (single run, "Success. No rows returned"). Preflight: profiles 2, orders 2, payments_mode 'test'. Post-apply verification row matches the expected values exactly: phone column present (1), azal_phone('4165551234') = '+14165551234', azal_phone('bad!') = NULL, update_my_profile present (1), profiles/orders counts unchanged (2/2). One process note for the record: the lead's first apply attempt stopped at its own preflight because the check query named a wrong table (app_config for app_settings); nothing was run or changed in that attempt; the corrected run is the one recorded here. **The #60 password-first flow (registration with name + mobile + password, self-edit) is now live end-to-end on staging.** NOT verified: a live registration performed after this apply (the owner's next test is the evidence); a real phone.
 
 — Muse (team lead)
+
+## 2026-11-27 16:20 EST — LEAD GATE: PR #64 (0007) and PR #63 (0009) reviewed and MERGED; applies follow
+
+**PR #64 — migration 0007 (points increments): PASS, merged `e510dc8`.** Exact head `bbc6ee3`: lead-run suite 187/187 in a clean worktree; merged-tree suite 187/187. The migration implements the adopted invariant exactly (points > 0 AND points % 10000 = 0 → points/10 cents, else NULL), replaces the legacy tier seed with the single step '10000:1000', and adds a guard trigger rejecting any other redeem_tiers value. Test pins verified in source: all six boundaries (9999/10000/19999/20000/29999/30000), invalid-config rejection, guest/insufficient/negative/exceeds-order refusals, the tax-basis case ($55.97 − $10 → HST on $45.97 = 598, total 5195), and earn on the discounted amount only. ChatGPT's disclosure stands: his SQL scripts were not run on a live PostgreSQL — the lead's apply gate below runs the boundary assertions on the real database, which is the decisive check.
+
+**PR #63 — migration 0009 (NEW_ORDER outbox): PASS, merged `ef8838a`.** Exact head `b761f8e`: lead-run suite 188/188; merged-tree suite 193/193. Scope discipline verified in source: outbox unique per (order, event), status defaults to 'blocked' with last_error 'sender_disabled', a hard CHECK keeps sender_enabled = false at the data layer, recipient seeded to info@azalrestaurant.com (Ottawa), RLS on with all client grants revoked, payload built from the persisted order (items, totals, note, staff path — no card data, no customer contact fields), trigger fires on the paid transition only. One non-blocking note for the follow-on slice: the payload's order_number uses 8 hex chars; align it with the site's 6-char pickup code + sigil convention when the customer-lifecycle events are built. Conflicts in BOARD.md/CHATGPT-REPLY.md were union-resolved (all sections present — ChatGPT's 15:56, 16:06 and 16:10 sections are in the record; his audit text is still owed as a standalone item).
+
+**Process incident, owned:** the #63 merge commit briefly carried the BOARD.md conflict MARKER LINES on main (the union content itself was correct — both claim rows present). Cause: the lead's scripted resolver failed on BOARD.md and the commit proceeded on the strength of the other file's check. Fixed in `bbb6cde` (markers stripped, verified: no anchored markers remain). Rule reinforced: after any union resolution, grep the committed tree for markers before pushing.
+
+**Next:** the lead applies 0007, then 0009, through the dashboard gate (preflight → single run → boundary assertions on the real DB). Then PR #62 (ADM-1) is the last car of the train.
+
+— Muse (team lead)
+
+## 2026-11-27 16:24 EST — 0007 APPLIED + VERIFIED; F-OWN-17: member-page findings (owner screenshot, signed in as "Aziz")
+
+**0007 is LIVE.** Applied by the lead through the dashboard gate, single run, success. Real-database assertions, all exact: tiers '5000:500,10000:1000' → **'10000:1000'**; azal_redeem_cents: 5000 → **NULL**, 9999 → NULL, 10000 → **1000**, 19999 → NULL, 20000 → **2000**, 30000 → **3000**; config guard trigger present; orders unchanged (2). The owner's 10,000-point minimum is now the enforced server rule, and ChatGPT's un-run SQL concern is closed by these live assertions. 0009's apply follows in the same gate pattern.
+
+**F-OWN-17 — the member page, from the owner's own signed-in screenshot (16:13). Findings verified against source by the lead:**
+1. **The join pitch still opens the page at full length for a signed-in member** — the whole "Be one of our regulars" story + 3 steps render above the member's own card. This is the exact item assigned to Copilot as a cleanup task; it is REASSIGNED to Claude's member-page batch (see Copilot note below).
+2. **Stale copy contradicting the live flow:** "Join with your email", step 1 "Join once with your email" — registration is password-first with name + mobile + password since #60/0008. The meta description still says "Opening soon" as well.
+3. **Identity still incomplete (F-OWN-13 residue):** the card shows the name ("Welcome, Aziz") but no email, no phone (the profile now stores it, 0008), and no member number (number stays ADM-2 scope — it needs the data model).
+4. **Points presented twice:** the POINTS card inside the Majlis box AND a separate "Your points / Balance: 0 points" section — one fact, two blocks.
+5. **No tier, no founding status, no plain-words economics:** the card says only "Member"; the page nowhere states the earn rate or the point value (10 pts per $1; 10,000 pts = $10) — the F-WALK-12 item, still open.
+**Assignment (Claude, member-page batch, after the #62 sync):** signed-in state collapses the pitch to a one-line Majlis header; copy updated to the password-first reality in EN/FR/AR; ONE points presentation; identity line on the card (name + email + phone from the profile); earn rate + point value stated in plain words. Acceptance includes the owner's phone verdict.
+
+**Copilot session — lead action:** the resumed session is HUNG (page shows "Needs attention", one bash step never completing, 1h30m elapsed at the 16:18 check; session total 5.21 credits; account usage 6/1,500). The lead is stopping that session. The two-line dead-strings edit folds into Claude's next batch (it was a pipeline test, not real work — per the owner's 14:51 rule it should never have had a session of its own once the claim conflict was resolved). Copilot's next assignment is the Kitchen Reject (important, specced 14:53 + reason-required amendment 15:33), opened FRESH via a GitHub Issue assignment when its slot comes.
+
+— Muse (team lead)
+
+## 2026-11-27 16:30 EST — LEAD ORDER: PR #62 (ADM-1) sync is FIRST priority — the owner just hit the failure live
+
+The owner signed in as info@azalrestaurant.com (the admin) and landed on the plain customer member page: "Welcome, info@azalrestaurant.com", Member / 0 points, no management entry anywhere (his screenshot, 16:28). This is the F-OWN-10/13 acceptance failure, live: **an admin sign-in that shows only the customer view FAILS ADM-1.** The blockers ahead of #62 are now all cleared (#60 merged 16:02, 0007 applied 16:20, 0009 applied 16:22).
+
+@Claude: sync `claude/adm-1` onto current main NOW (this jumps the member-page batch and the desktop-header branch), keep the routing fix (admin → management only, staff → kitchen, customer → customer view; direct-URL denial; auth-invalidation clearing preserved), re-run the full suite + admin tests, post the exact head + CI run id + NOT-verified line, and mark it READY FOR LEAD GATE. The lead then merges and signs in as admin himself to verify the routing before the owner retries.
+
+Also visible in the same screenshot, for the record: the admin profile itself carries no name/phone (created before #60's fields) — the Edit-my-details block renders correctly; and the F-OWN-17 join pitch still tops the page for the admin too.
+
+— Muse (team lead)
+
+## 2026-11-27 16:33 EST — Guest-claim loop PROVEN end-to-end; F-OWN-18: claimed guest orders must also enter the member's history
+
+**Verified on the live staging DB by the lead:** the owner's pre-registration guest order (abdulbaset.m@yahoo.com, $49.12) sat at 'placed' after his demo — no claim existed because claims are born at hand-over. The lead completed the kitchen flow (accept → prepare → ready → hand_over): the claim appeared (434 pts, pending, 90-day expiry), and on the claim call it attached to his later-registered account — claims row now 'claimed', ledger +434, **member balance = 434**. Proposal A's full loop (guest order → hand-over → claim → register → points in balance) is proven with real data. Process note: claim_guest_points requires the member's email inside the token claims (the first impersonation without an email claim raised not_signed_in) — the real browser session carries it, so the product path is sound.
+
+**F-OWN-18 (owner expectation, 16:21 — "the order should appear for me WITH the points"):** today only the points move; the guest order keeps user_id NULL and never appears in the member's "Your orders". **Fix (Claude, small migration + claim-path amendment, after the #62 sync):** when a claim attaches, also link that member's claimed guest orders (guest_email = the verified account email, user_id IS NULL) to the account, exactly once, so they appear in order history with full detail (PR #59 view). Guest fields stay on the row for audit. Tests pin: link happens once, only for the claiming member's own email, never for another member's orders, and the points attach is unchanged.
+
+— Muse (team lead)
+
+## 2026-11-27 16:36 EST — Desktop header (F-OWN-15): lead CONTENT PASS at `8682057`; merge follows its sync
+
+Lead reviewed the branch diff in full: styles.css adds a desktop-only block (min-width 801px) — brand pinned to the start edge (`margin-inline-end:auto`), nav + language + order button as ONE end group with even 28px gaps, a single 44px control height for the language toggle and the order button, a tightened 801–1100px variant, mobile untouched, RTL-safe logical properties. The page diffs are cache-bust version stamps only. Suite at the branch head, lead-run in a clean worktree: see the CI/suite line Claude posts with his sync. **Gate: content PASS. @Claude: fold this sync into the same pass as the #62 sync (after it), re-run the suite, and the lead merges immediately — acceptance after deploy is the owner's own verdict on laptop + phone (F-OWN-15).**
+
+— Muse (team lead)
