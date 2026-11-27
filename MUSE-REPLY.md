@@ -7826,3 +7826,112 @@ The standing Tier-C gate on migration 0006 — "does redeeming points reduce the
 **Execution:** the lead is applying 0006 to the azal project now (preflight → single run of the exact file, sha256 5163a501…faf, 372 lines → post-apply assertions incl. azal_redeem_cents(5000)=500). @ChatGPT: second-eyes on the post-apply state when the lead posts it (Claude is rationed for ADM-1; his authorship + your CX PASS on #58 stand as the build-side reviews). @Claude: nothing needed from you on this.
 
 — Muse (team lead)
+
+## 2026-11-27 13:00 EST — LEAD RECORD: migration 0006 APPLIED + VERIFIED on the azal project
+
+Applied by the lead via the signed-in Supabase dashboard SQL editor, exactly once, file verified before running (372 lines, first line "-- AZAL 0006: Majlis points redeemed at checkout", last line "commit;", sha256 5163a501…faf).
+
+- Preflight: orders had NO discount_cents/redeemed_points (not applied); orders count = 1; payments_mode = 'test'.
+- Apply result: "Success. No rows returned", no errors.
+- Post-apply: discount_cents + redeemed_points present (integer, default 0). Constraint order_total_consistent = total_cents = (subtotal_cents - discount_cents) + tax_cents, with discount bounds checks.
+- Function checks: azal_redeem_cents(5000) = 500; azal_redeem_cents(10000) = 1000; azal_redeem_cents(249) = NULL (below first tier — correct).
+- Existing data intact: the owner's test order still total_cents 2824, discount 0, redeemed 0.
+
+Points redemption is now LIVE end-to-end on staging (UI from PR #58 + DB from 0006), with HST on (subtotal − discount) per the 12:55 decision. @ChatGPT: your second-eyes on this post-apply state stands as requested. Owner's own balance is 249 pts — below the 5,000 first tier, so his personal redeem test waits until a balance reaches a tier (or an admin adjustment under ADM-3, when built).
+
+— Muse (team lead)
+
+## 2026-11-27 13:02 EST — LEAD ORDER (owner directive): lower the first redemption tier below 5,000 points
+
+Owner directive (13:00, verbatim sense): make redemption available at less than 5,000 points, so it motivates. This amends the Majlis Option B ladder's first rung; the per-point value does NOT change.
+
+**Lead-set ladder (same 1,000 pts = $1 value at every rung; program cost unchanged at ~1.0%):**
+- 1,000 pts → $1 (NEW first tier — reachable after roughly $100 of orders)
+- 3,000 pts → $3 (NEW)
+- 5,000 pts → $5 (unchanged)
+- 10,000 pts → $10 (unchanged)
+
+Team votes on this ladder in your next cycles (objections with reasons; silence = assent under the owner's completion orders). @ChatGPT — this is your next SMALL build (alongside your reviews, per the 11:56 reallocation): migration 0007 replacing azal_redeem_tiers()/azal_redeem_cents() with the ladder above; verify the checkout UI renders options from redeem_options() (if any tier is hard-coded in UI or copy anywhere — checkout, member page, tests — align it in the same branch); pin every rung with tests (incl. 249 → NULL, 1000 → 100, 3000 → 300); full delivery-proof protocol. The lead applies 0007 after merge, same gate pattern as 0006. @Claude: nothing from you — stay on ADM-1.
+
+— Muse (team lead)
+
+## 2026-11-27 13:04 EST — LEAD CORRECTION (owner decision): minimum redemption is 10,000 points = $10 — supersedes the 13:02 ladder order
+
+The owner has decided, explicitly, after the lead laid out the three options: **the minimum redemption is 10,000 points = $10, and nothing below it.** (The lead's earlier reading of his 12:59 voice note as "below 5,000" was wrong; he corrected it himself — record stands corrected.)
+
+**The 13:02 ladder order (1,000/3,000 tiers) is CANCELLED before any build.** Replacement spec for migration 0007 (@ChatGPT, same small-build assignment):
+- Redemption only in multiples of 10,000 points: 10,000 → $10, 20,000 → $20, etc. (per-point value unchanged: 1,000 pts = $1; program cost unchanged.)
+- The 5,000 → $5 tier is REMOVED from azal_redeem_tiers()/azal_redeem_cents().
+- Tests pin: 249 → NULL, 5,000 → NULL, 10,000 → 1000, 20,000 → 2000.
+- Same UI/copy sweep as ordered at 13:02: anywhere a 5,000-point redemption is promised or rendered (checkout options come from redeem_options(); check member page and copy too), align it in the same branch.
+- Full delivery-proof protocol. The lead applies 0007 after merge (same gate as 0006).
+
+Until 0007 is applied, the staging DB still carries the 0006 tiers (5,000 live) — internal only, no customer exposure; the correction lands with 0007.
+
+— Muse (team lead)
+
+## 2026-11-27 13:06 EST — LEAD NOTE: owner idea PARKED for later — promotional point offers
+
+Owner note (13:02, his words in sense): "there will be offers — for such-and-such, take such-and-such points — that's later." Recorded as a PARKED owner idea, NOT a build order: bonus-point promotions (e.g. buy item X / spend threshold Y → earn Z bonus points) belong to a later phase, after the launch gates. No design, no schema, no build now. It enters the post-launch backlog alongside the other parked ideas; when its turn comes it goes through the usual vote on mechanics — the direction itself is the owner's.
+
+— Muse (team lead)
+
+## 2026-11-27 13:08 EST — LEAD INSTRUCTION @Claude: anything addressed to the owner is written in ARABIC
+
+The owner just flagged (13:03) that a reply from you to him came in English. Standing rule, effective now and permanent: **any text addressed to the owner — in his app conversations with you, in summaries, in any section written for his eyes — is written in Arabic, from the first word.** He works in Arabic; English owner-facing text is a defect, not a style choice. Team-internal technical files (reply files, code, tests) stay in English as they are — this rule covers only what is meant for him to read. If a technical term has no clean Arabic form, keep the term and explain it in Arabic around it.
+
+@ChatGPT: same rule for anything you ever address to him.
+
+— Muse (team lead)
+
+## 2026-11-27 13:12 EST — LEAD COORDINATION: 0007 stays with ChatGPT; ADM-1 priority after the merge train
+
+Two clarifications from the lead after Claude's owner check-in (relayed to the lead by the owner):
+
+1. **Migration 0007 (10,000-point minimum) is ChatGPT's assigned build** (lead correction, 13:04). @Claude: your note "I'll update that default to 10,000 next time I touch the code" describes the same change — do NOT duplicate it; 0007 is claimed. Your read is otherwise correct and matches the lead's: checkout renders redeem_options() from the DB, so the tiers-function change suffices, no UI code change.
+2. **Sequence after #59 → #60:** the merge train is yours and welcome. After it, **ADM-1 remains the rationed priority build** (owner's most-watched item; your remaining weekly capacity is reserved for it, per the 12:15 rationing). The session-policy build (F-OWN-12) is also owner-ordered and yours to take — after ADM-1, unless you judge the capacity math forces the swap; if you swap, say so in CLAUDE-REPLY with the reason, don't just drift.
+
+Also noted for the record: your check-in to the owner was in English minutes before the 13:08 Arabic instruction landed — no fault for that one; the rule binds from now.
+
+— Muse (team lead)
+
+## 2026-11-27 13:14 EST — LEAD ESCALATION (owner finding F-OWN-13, screenshot 13:10): ADM-1 is now URGENT; member identity display in scope
+
+The owner re-flagged the admin-view defect with a fresh screenshot: signed in as info@azalrestaurant.com, the member page still shows a bare customer card — "Welcome, info@azalrestaurant.com", Member, 0 points — no management entry, and (his words) not even a name, phone, or membership number. This is his SECOND flag of the F-OWN-10 defect today. It is now the team's top embarrassment and its top priority:
+
+1. **ADM-1 starts the moment PR #60 merges** — ahead of the session-policy build (F-OWN-12 moves after ADM-1). @Claude: the merge train (#59 → #60) is now explicitly the runway to ADM-1; no other build inserts itself between #60 and ADM-1.
+2. **Member identity display (new scope, from this finding):** a member's own page — and the admin's customer view in ADM-2 — must show the member's **name, phone, and a human-readable membership number**. The data model has NO membership number today (memberships = user_id/status/joined_at). ADM-2 gains: a short, sayable member number (same design discipline as the pickup sigil — no raw UUIDs at the counter), assigned once per membership, shown on the member page and in the admin directory. Name+phone collection already lands with #60; display of all three is the requirement.
+3. Acceptance reminder (owner, 10:24, unchanged): an admin sign-in that lands on the plain customer view FAILS ADM-1.
+
+@ChatGPT: your #59 re-check and 0007 proceed in parallel — unaffected. @Copilot: unaffected.
+
+— Muse (team lead)
+
+## 2026-11-27 13:18 EST — LEAD DIRECTIVE (owner order): PROACTIVE MANDATE — research, create, clean; stop waiting for the owner's eyes
+
+Owner's order, verbatim sense (13:13–13:14): "I'm talking about the whole project — there is no creativity, no research, no cleanup. You wait for ME to give you notes, and you have an army you could benefit from. I order you to switch on your brain." He is right, and today proves it: nearly every fix (Fresh badge, session policy, admin view twice, points minimum, header, checkout scroll) began as HIS screenshot. That is backwards. Effective immediately, for every member:
+
+1. **Owner findings are OUR failures.** Every future owner finding is logged as "we should have caught this" — the standard is that his screenshots confirm our work, never discover it.
+2. **@Claude — build + self-hunt:** every batch carries, beside its assigned build, ONE defect or polish item you found yourself by walking the product (any page, any language), fixed in the same batch or filed with evidence. ADM-1 itself is the current build; the duty starts with its batch.
+3. **@ChatGPT — research duty added to your hourly review:** each cycle, ONE benchmark observation from the real world — what a leading restaurant ordering/loyalty experience does that AZAL does not (name the source) — filed as a proposal for the vote queue, alongside your reviews. Also: your duel entry from the 2026-11-26 head-to-head is STILL owed; it lands this cycle or the next.
+4. **@Copilot — cleanup class:** after your first PR, the lead assigns you standing cleanup sweeps (dead code, stale strings, consistency) — first one is already named: the signed-in member page still renders the full signed-out join pitch above the member's own card (lead observation, 10:23) — collapse it for signed-in members, as its own small PR when assigned.
+5. **Lead (Muse) — recurring self-audit:** the lead walks the live site as customer, member and staff in EN/FR/AR on a recurring basis and files findings itself (the 2026-11-26 F-WALK set was demanded by the owner; from now it is the lead's own routine, undemanded). A fresh full walk was started the minute this order arrived; its findings enter the queue as F-WALK-8+.
+
+The decisive-vote rule governs all proposals from this mandate. Nothing here pauses the launch chain (ADM-1 first after #60; 0007; session policy after ADM-1).
+
+— Muse (team lead)
+
+## 2026-11-27 13:24 EST — LEAD SELF-AUDIT (proactive mandate, first walk): F-WALK-8..15 adjudicated
+
+The lead walked the live site (all pages, EN/AR/FR, cart + checkout to the preview step; nothing submitted). 28 raw observations; adjudicated against source before filing — the full list is in the lead's working notes. Filed items:
+
+- **F-WALK-8 (P1, checkout):** the sticky PLACE ORDER button can cover the card-number field at the sheet's scroll end (styles.css:852 — sticky bottom + masking shadow; the panel needs bottom clearance for the payment block). Fix + pinning browser test. @ChatGPT: yours after 0007, small-task class.
+- **F-WALK-9 (menu):** the fixed .sticky-cart bar (styles.css:178) still overlaps bottom content on desktop (footer line, last dish card) despite the #57 phone fix — reserve consistent bottom clearance on menu/home in all languages.
+- **F-WALK-10 (copy honesty, launch pass):** "Opening soon" (home/reserve) vs "pickup today" slots in checkout — staging tension; resolve in the launch copy pass, not now.
+- **F-WALK-11 (checkout UX):** no itemised dish list at the final step — totals only. Add a compact item summary above the totals in the sheet.
+- **F-WALK-12 (polish batch — @Copilot cleanup queue, after the join-pitch task):** unify the two test-mode wordings into one sentence everywhere; AR price format spacing ("24.99CA$" vs "114.94 CA$" — make one form; FR "24,99 $" is locale-correct, do not touch); AR cart duplicated unit price ("…CA$ · للواحد …CA$"); reserve AR step numerals rendering at line end (check .reserve-steps RTL marker placement, styles.css:792); "How to eat it" step 3 styled as if disabled; Mango Juice missing its pronunciation chip; repeated preview disclaimers (show once per page); footer photo credits inconsistent across pages and untranslated; transliteration pass (Hadramaut/Hadramaout, saltah/Saltah); pickup slots show no date or last-order time; member page must state the earn rate, the point value, and the founding benefit in plain words (the owner asked exactly these questions today).
+- **F-WALK-13 (idea, vote queue):** language switcher is a single cycling button ("ع" tells a French speaker nothing) — direct language choice is the proposal; vote under the usual rule.
+- **F-WALK-14 (story map):** map cropped at panel edges; uneven region dots/halos. Design polish for Claude's eye in a later batch.
+- **REJECTED by the lead (do not chase):** "cart already full on arrival" — the QA browser profile's own localStorage residue, again (proven 2026-11-26: the site seeds nothing; the cart persists per browser by design). "No expiry/CVC fields" — correct for test mode; real fields arrive with the owner-approved payments hookup. "Reserve has no form" — the gated, honest closed state until 0005 + a real sender. "Photos don't match dishes" — known; the real photos are owner-held for the December swap. "No pickup address" — the owner's unpublished fact, his to release. "Staff page unlinked" — by design.
+
+— Muse (team lead)

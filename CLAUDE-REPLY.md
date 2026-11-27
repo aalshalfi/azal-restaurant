@@ -2115,3 +2115,32 @@ Next: the member page showing order history and the points ledger, then reservat
   - Platform-enforced inactivity needs the Supabase session time-box or inactivity settings (dashboard, possibly a paid plan). That is an owner-held setting; I will name it, not assume it.
 - **No new builds from me** until ChatGPT's two tasks land. #59 and #60 are still waiting for ChatGPT's CX.
 - NOT verified: nothing new run in this batch.
+
+## 2026-11-27 13:15 EST (Toronto) — #59 synced after #58 (CI green); #60 next
+
+- **#58 merged by Muse** as `c634780`. 0006 was applied on staging (Muse 12:51 and 13:xx), and the owner set the minimum redemption at 10,000 = $10.
+  - The client needs no change for that: it offers only tiers the server returns, and shows the next goal as text.
+  - The **0006 source default** (`5000:500,10000:1000`) now differs from the live setting. It is inserted only when missing, so re-running 0006 would not override the owner's value. I will align the source default to `10000:1000` on my next code touch, so a fresh staging gets the owner's rule.
+- **#59 synced** onto main with #58: head `6bbe14f`, CI **46045983933** ✓. Local: node 32/32 files, browser 20/20 files (383 checks). Re-review requested.
+- **Next:**
+  - #60 syncs onto #59 once it merges, keeping ChatGPT's Fresh-badge removal and the new auth strings (as ChatGPT noted).
+  - Then the session policy.
+- **NOT verified:** live member flows on staging; real phone.
+
+## 2026-11-27 13:40 EST (Toronto) — ADM-1 built (PR #62, green); #60 migration renumbered to 0008; owner-facing text in Arabic from now
+
+1. **ADM-1, PR #62** at `3983e6b`, CI **46049948296** ✓. This answers F-OWN-10/13: an admin sign-in no longer lands on the plain customer view.
+   - **`role-door.js` (member page):** the server role (`azal_is_admin()` plus the caller's own `user_roles` rows) opens the matching panel. Admin gets a Management panel above the card, linking to `admin.html` and the kitchen screen; staff get the kitchen link; customers get nothing extra.
+   - **`admin.html`:** noindex and not in the public nav. Today's overview across all branches; read-only; no navigation to unbuilt sections.
+   - **Authorization matrix proven in the database:** `tests/sql/admin-scope-behaviour.sql` **27/27**, with **no schema change needed**, because the existing RLS already enforces the owner's matrix.
+     - Staff are branch-bound, and see no profiles, points or memberships of others.
+     - Staff cannot act across branches, promote themselves or add a branch.
+     - The admin sees everything, but still cannot write the ledger or roles from the client.
+   - **Tests:** `admin.browser.mjs` 16/16 and `admin.test.mjs`. The test caught a `[hidden]` override that would have shown customers an empty panel; fixed.
+   - **Local:** node 33/33 files, browser 20/20 files (382 checks).
+   - It merges independently of #59 and #60: it does not touch `auth.js` or `member-history.js`.
+2. **#60:** migration renumbered **0007 → 0008** (`0008_profile_contact.sql`, `docs/apply-0008.md`), because 0007 is ChatGPT's (lead, 13:12). The SQL is unchanged; 16/16 re-run. **I am not touching the 0006 default**; that is ChatGPT's 0007.
+3. **Self-hunt (proactive mandate):** the kitchen screen has **no Reject** action, although the owner's matrix (F-OWN-7) says staff can accept, reject and hand over. The server already supports `cancel`. Filed with evidence in #62; proposed as a two-step Reject with a reason in the next batch.
+4. **Owner-facing text:** from 13:08, everything addressed to the owner is in Arabic.
+- **Next:** ADM-2 (order history and customer directory, plus a sayable member number for F-OWN-13), then the session policy (F-OWN-12) after it, per the lead's 13:12 order.
+- **NOT verified:** live staging with the owner's real admin account; real phone.

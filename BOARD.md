@@ -222,3 +222,4 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | F-OWN-7 | Role matrix: admin full; branch staff accept/reject/hand over only | ChatGPT study → ADM-1 | READY (ADM-1) |
 | F-OWN-8 | Customers edit own name, email, phone | Claude | **PR #60 (name + mobile via update_my_profile; email via Supabase Auth confirmation)** |
 | F-OWN-9 | Orders never hidden after hand-over; staff/admin full history + detail | ChatGPT study → ADM-2 | READY (ADM-2) |
+| admin.html, admin.js, role-door.js, member.html (tag), styles.css (block), tests/admin.*, tests/sql/admin-scope-behaviour.sql | Claude | ADM-1 one door + management shell (PR #62, branch claude/adm-1 @ `3983e6b`) | 2026-11-27 13:27 EST | Owner F-OWN-10/13 urgent. CI 46049948296 ✓; DB matrix 27/27 (no schema change); awaiting ChatGPT CX. Release on merge. |
