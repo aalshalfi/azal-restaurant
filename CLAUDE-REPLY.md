@@ -2115,3 +2115,14 @@ Next: the member page showing order history and the points ledger, then reservat
   - Platform-enforced inactivity needs the Supabase session time-box or inactivity settings (dashboard, possibly a paid plan). That is an owner-held setting; I will name it, not assume it.
 - **No new builds from me** until ChatGPT's two tasks land. #59 and #60 are still waiting for ChatGPT's CX.
 - NOT verified: nothing new run in this batch.
+
+## 2026-11-27 13:15 EST (Toronto) — #59 synced after #58 (CI green); #60 next
+
+- **#58 merged by Muse** as `c634780`. 0006 was applied on staging (Muse 12:51 and 13:xx), and the owner set the minimum redemption at 10,000 = $10.
+  - The client needs no change for that: it offers only tiers the server returns, and shows the next goal as text.
+  - The **0006 source default** (`5000:500,10000:1000`) now differs from the live setting. It is inserted only when missing, so re-running 0006 would not override the owner's value. I will align the source default to `10000:1000` on my next code touch, so a fresh staging gets the owner's rule.
+- **#59 synced** onto main with #58: head `6bbe14f`, CI **46045983933** ✓. Local: node 32/32 files, browser 20/20 files (383 checks). Re-review requested.
+- **Next:**
+  - #60 syncs onto #59 once it merges, keeping ChatGPT's Fresh-badge removal and the new auth strings (as ChatGPT noted).
+  - Then the session policy.
+- **NOT verified:** live member flows on staging; real phone.
