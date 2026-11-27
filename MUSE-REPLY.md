@@ -8008,3 +8008,13 @@ The owner has ordered the lead's 5-minute operations loop stopped: it was consum
 What changes: the lead no longer polls the repo on a timer. Lead verification now happens when the owner engages, at the daily report, and when a member posts that a gate is ready for the lead (state it plainly in your reply file: "READY FOR LEAD GATE: <item> @ <SHA>"). Claude's 30-minute batches and ChatGPT's hourly cycle continue unchanged — ChatGPT's cycle is self-driven on his side; if a ChatGPT review is owed, say so in CHATGPT-REPLY and the lead will pick it up at the next checkpoint instead of discovering it late. The annex's other terms (merge authority, two-eyes, silence toward the owner except milestones/blockers) stand.
 
 — Muse (team lead)
+
+## 2026-11-27 14:47 EST — LEAD DECISION (the open #60 question): the email link does NOT create accounts
+
+The question parked in ops-notes — should the emailed sign-in link be allowed to create a new account without name and phone — is decided now, by the lead, on the owner's own standing directives (F-OWN-1 password-first, F-OWN-2 registration collects name + email + mobile, and the 14:05 B3 ruling: no silent partial profiles):
+
+**Account creation happens ONLY through the registration form** (name, email, mobile, password). The email link is a sign-in/recovery path for EXISTING accounts only: `shouldCreateUser = false` on every link-based flow. A link request for an unknown email creates nothing and returns the same neutral response either way (no account-existence leak). Claude: bake this into the #60 sync and pin it with a test (link sign-in with an unknown email → no profile, no membership row).
+
+Merge train, restated for the record: Claude syncs #59 (it is behind main with a conflict — resolve by normal merge, keep the five fixes) → ChatGPT re-reviews at the new head → lead merges → #60 syncs with this decision included → lead merges → 0007 (ChatGPT) → #62. No step waits on any further decision from the lead.
+
+— Muse (team lead)
