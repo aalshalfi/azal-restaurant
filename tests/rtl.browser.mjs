@@ -15,7 +15,7 @@ for (const w of [320, 390]) for (const pg of ["index", "menu", "member", "reserv
     await p.addInitScript((l) => localStorage.setItem("azal-language", l), lang);
     await p.goto(`${base}/${pg}.html`); await p.waitForTimeout(150);
     res[lang] = await p.evaluate((sel) => { const r = (s) => document.querySelector(".site-header " + s)?.getBoundingClientRect(); const bar = document.querySelector(".site-header").getBoundingClientRect();
-      return { dir: document.documentElement.dir, vw: innerWidth, bar: bar.height, brand: r(".brand"), ctrls: sel.map((s) => r(s)) }; }, CTRL);
+      return { dir: document.documentElement.dir, vw: innerWidth, bar: bar.height, brand: r(".brand"), ctrls: sel.map((s) => r(s)) }; }, pg === "reserve" ? CTRL.filter((c) => c !== ".cart-open") : CTRL); // #32: reserve is table-only, no food cart
     await p.close();
   }
   const { en, ar } = res, tol = 2;
@@ -24,7 +24,7 @@ for (const w of [320, 390]) for (const pg of ["index", "menu", "member", "reserv
   const arCtrlLeft = Math.min(...ar.ctrls.map((c) => c.left)), arCtrlRight = Math.max(...ar.ctrls.map((c) => c.right));
   ok(arCtrlRight < ar.brand.left && Math.abs(arCtrlLeft - (en.vw - Math.max(...en.ctrls.map((c) => c.right)))) <= tol, `${pg} ${w}px: Arabic controls grouped at the left edge, mirror of English`);
   const order = ar.ctrls.map((c) => c.left); // logical order language, account, order, menu runs right-to-left in Arabic
-  ok(order.every((x, i) => i === 0 || x < order[i - 1]), `${pg} ${w}px: same logical order in Arabic (language → account → order → menu, right to left)`);
+  ok(order.every((x, i) => i === 0 || x < order[i - 1]), `${pg} ${w}px: same logical order in Arabic (language → account → [order] → menu, right to left)`);
   ok(ar.bar === en.bar && ar.bar === 64 && ar.ctrls.every((c) => c.width >= 44 && c.height >= 44), `${pg} ${w}px: 64px bar, 44px targets in both`);
 }
 { // checkout modal close button sits on the end side, clear of the kicker
