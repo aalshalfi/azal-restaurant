@@ -29,13 +29,20 @@
   }
   // v2 "openable tray" (owner field test 21:21: the recipient got a picture only). The tray travels in the URL FRAGMENT
   // (#tray=v1.1x2.6x1), so it never reaches any server or log; nothing is stored. Strict allow-list parse.
-  const TRAY_MAX_LEN = 200, TRAY_MAX_LINES = 12, TRAY_MAX_QTY = 20;
+  // EXACT round trip (ChatGPT #48 review): the limits match the cart (qty 1-50 per dish, loadCart's own cap) and are never
+  // clamped or sliced in silence. A tray outside them gets NO link (encodeTray -> ""), and the guest is told so; a link
+  // outside them, or naming a dish twice, is refused as "not valid". Nothing is merged, capped or dropped quietly.
+  const TRAY_MAX_LINES = 30, TRAY_MAX_QTY = 50, TRAY_MAX_LEN = 4 + TRAY_MAX_LINES * 8;
   function encodeTray(entries) {
-    const parts = [];
-    for (const [id, q] of entries) { const i = Number(id), n = Math.min(TRAY_MAX_QTY, Number(q)); if (Number.isInteger(i) && i > 0 && Number.isInteger(n) && n > 0) parts.push(i + "x" + n); }
-    return parts.length ? "v1." + parts.slice(0, TRAY_MAX_LINES).join(".") : "";
+    const parts = [], seen = new Set();
+    for (const [id, q] of entries) {
+      const i = Number(id), n = Number(q);
+      if (!Number.isInteger(i) || i < 1 || i > 9999 || !Number.isInteger(n) || n < 1 || n > TRAY_MAX_QTY || seen.has(i)) return "";
+      seen.add(i); parts.push(i + "x" + n);
+    }
+    return parts.length && parts.length <= TRAY_MAX_LINES ? "v1." + parts.join(".") : "";
   }
-  // -> { ok:false } for anything malformed, or { ok:true, lines:[{id,qty}] (on the menu), retired:n (ids not on the menu) }
+  // -> null (not a tray link) | { ok:false } (refused) | { ok:true, lines:[{id,qty}] on the menu, retired:n not on the menu }
   function parseTray(hash, isKnown) {
     const m = /^#tray=(.*)$/.exec(String(hash || ""));
     if (!m) return null;
@@ -43,14 +50,14 @@
     if (raw.length > TRAY_MAX_LEN || !/^v1(\.\d{1,4}x\d{1,2})+$/.test(raw)) return { ok: false };
     const segs = raw.split(".").slice(1);
     if (segs.length > TRAY_MAX_LINES) return { ok: false };
-    const qty = new Map(); let retired = 0;
+    const lines = [], seen = new Set(); let retired = 0;
     for (const seg of segs) {
       const [id, q] = seg.split("x").map(Number);
-      if (q < 1 || q > TRAY_MAX_QTY) return { ok: false };
-      if (!isKnown(id)) { retired++; continue; }
-      qty.set(id, Math.min(TRAY_MAX_QTY, (qty.get(id) || 0) + q));
+      if (id < 1 || q < 1 || q > TRAY_MAX_QTY || seen.has(id)) return { ok: false };
+      seen.add(id);
+      if (isKnown(id)) lines.push({ id, qty: q }); else retired++;
     }
-    return { ok: true, lines: [...qty].map(([id, q]) => ({ id, qty: q })), retired };
+    return { ok: true, lines, retired };
   }
   const api = { cardLines, wrapName, encodeTray, parseTray, W, H, MAX_LINES };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
@@ -60,9 +67,9 @@
   const msgBox = document.getElementById("checkoutMessage");
   if (!msgBox || typeof cart === "undefined") return;
   const S = {
-    en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again.", open: "Open our tray: {link}", shared: "A tray shared with you", addAll: "Add to my order", notNow: "Not now", addedAll: "Added to your order.", retired: "{n} dish(es) from this tray are no longer on the menu.", invalid: "This tray link isn’t valid.", trayNote: "Example menu and prices · adding it orders nothing" },
-    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "Plateau en brouillon, pas encore commandé · on ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez.", open: "Ouvrir notre plateau\u00a0: {link}", shared: "Un plateau partagé avec vous", addAll: "Ajouter à ma commande", notNow: "Pas maintenant", addedAll: "Ajouté à votre commande.", retired: "{n} plat(s) de ce plateau ne sont plus au menu.", invalid: "Ce lien de plateau n’est pas valide.", trayNote: "Menu et prix d’exemple · l’ajouter ne commande rien" },
-    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة لم تُطلب بعد · هل نضيف شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "الأطباق والأسعار للعرض فقط · معاينة", made: "صورتك جاهزة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى.", open: "افتح سفرتنا: {link}", shared: "سفرة أُرسلت إليك", addAll: "أضفها إلى طلبي", notNow: "ليس الآن", addedAll: "أُضيفت إلى طلبك.", retired: "{n} من أطباق هذه السفرة لم تعد في القائمة.", invalid: "رابط السفرة هذا غير صالح.", trayNote: "الأطباق والأسعار للعرض فقط · إضافتها لا تطلب شيئاً" }
+    en: { btn: "Share this tray", title: "Our sufra from AZAL", sub: "Draft tray, not ordered yet · add anything?", more: "+{n} more", items: "{n} items", note: "Example menu and prices · preview", made: "Picture made", fail: "Couldn’t make the picture. Try again.", open: "Open our tray: {link}", shared: "A tray shared with you", addAll: "Add to my order", notNow: "Not now", addedAll: "Added to your order.", retired: "{n} dish(es) from this tray are no longer on the menu.", invalid: "This tray link isn’t valid.", noLink: "This tray is too large to send as a link; the picture still goes.", capped: "Some dishes were capped at 50, the most one order can hold.", trayNote: "Example menu and prices · adding it orders nothing" },
+    fr: { btn: "Partager ce plateau", title: "Notre sufra chez AZAL", sub: "Plateau en brouillon, pas encore commandé · on ajoute quelque chose ?", more: "+{n} de plus", items: "{n} articles", note: "Menu et prix d’exemple · aperçu", made: "Image créée", fail: "Impossible de créer l’image. Réessayez.", open: "Ouvrir notre plateau\u00a0: {link}", shared: "Un plateau partagé avec vous", addAll: "Ajouter à ma commande", notNow: "Pas maintenant", addedAll: "Ajouté à votre commande.", retired: "{n} plat(s) de ce plateau ne sont plus au menu.", invalid: "Ce lien de plateau n’est pas valide.", noLink: "Ce plateau est trop grand pour un lien\u00a0; l’image part quand même.", capped: "Certains plats ont été limités à 50, le maximum d’une commande.", trayNote: "Menu et prix d’exemple · l’ajouter ne commande rien" },
+    ar: { btn: "شارك هذه السفرة", title: "سفرتنا من أزال", sub: "سفرة لم تُطلب بعد · هل نضيف شيئاً؟", more: "+{n} أخرى", items: "{n} أصناف", note: "الأطباق والأسعار للعرض فقط · معاينة", made: "صورتك جاهزة", fail: "تعذّر إنشاء الصورة. حاول مرة أخرى.", open: "افتح سفرتنا: {link}", shared: "سفرة أُرسلت إليك", addAll: "أضفها إلى طلبي", notNow: "ليس الآن", addedAll: "أُضيفت إلى طلبك.", retired: "{n} من أطباق هذه السفرة لم تعد في القائمة.", invalid: "رابط السفرة هذا غير صالح.", noLink: "هذه السفرة أكبر من أن تُرسل برابط، لكن الصورة تصل.", capped: "توقّفت بعض الأطباق عند 50، وهو أقصى ما يتسع له الطلب الواحد.", trayNote: "الأطباق والأسعار للعرض فقط · إضافتها لا تطلب شيئاً" }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
@@ -120,11 +127,11 @@
     if (!blob) { status.textContent = L("fail"); return; }
     const file = new File([blob], "azal-sufra.png", { type: "image/png" });
     try {
-      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) { await navigator.share({ files: [file], title: L("title"), text: L("open", { link: trayLink() }) }); return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) { const link = trayLink(); await navigator.share(link ? { files: [file], title: L("title"), text: L("open", { link }) } : { files: [file], title: L("title") }); if (!link) status.textContent = L("noLink"); return; }
     } catch (e) { if (e && e.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "azal-sufra.png"; document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    status.textContent = L("made");
+    status.textContent = L("made") + (trayLink() ? "" : " " + L("noLink"));
   });
   new MutationObserver(paint).observe(msgBox, { childList: true, characterData: true, subtree: true });
 
@@ -149,9 +156,10 @@
     if (got.lines.length) actions.append(add);
     actions.append(later); box.append(actions);
     add.addEventListener("click", () => {
-      for (const l of got.lines) cart.set(l.id, Math.min(50, (cart.get(l.id) || 0) + l.qty));
+      let capped = false;
+      for (const l of got.lines) { const want = (cart.get(l.id) || 0) + l.qty; if (want > TRAY_MAX_QTY) capped = true; cart.set(l.id, Math.min(TRAY_MAX_QTY, want)); }
       if (typeof renderCart === "function") renderCart();
-      box.replaceChildren(el("p", "shared-tray-msg", L("addedAll"))); drop();
+      box.replaceChildren(el("p", "shared-tray-msg", L("addedAll") + (capped ? " " + L("capped") : ""))); drop();
     });
     later.addEventListener("click", () => { box.remove(); drop(); });
     menuTop.after(box);

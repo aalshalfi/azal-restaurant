@@ -82,4 +82,12 @@ for (const lang of ["en", "ar"]) {
   ok(/سفرة أُرسلت إليك/.test(await p.textContent(".shared-tray")) && /سلتة/.test(await p.textContent(".shared-tray")), "v2: Arabic banner with the Arabic dish name");
   await p.click(".shared-tray .share-tray");
   ok(await p.locator(".shared-tray").count() === 0 && await p.evaluate(() => cart.size) === 0, "v2: 'Not now' closes it and adds nothing"); await p.close(); }
+{ // exactness: a shared 50 lands as 50; adding to a cart that already holds the dish is capped at 50 and SAID so
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  await p.addInitScript(() => localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 10]])));
+  await p.goto(base + "/menu.html#tray=v1.1x50.6x21"); await p.waitForSelector(".shared-tray");
+  ok(/50× Lamb Mandi/.test(await p.textContent(".shared-tray")) && /21× Sahawiq/.test(await p.textContent(".shared-tray")), "exact: 50 and 21 are shown as sent, not clamped");
+  await p.click(".shared-tray .button-gold");
+  ok(JSON.stringify(await p.evaluate(() => [...cart.entries()].sort((a, b) => a[0] - b[0]))) === "[[1,50],[6,21]]" && /capped at 50/.test(await p.textContent(".shared-tray")), "10 + 50 is capped at the cart's 50 and the guest is told");
+  await p.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
