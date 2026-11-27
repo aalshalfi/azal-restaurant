@@ -68,3 +68,12 @@ test("AR-REWRITE follow-up: reserve.js Arabic is written from meaning (ChatGPT e
   for (const calque of ["نحمّل الأوقات", "تعال واجلس معنا: على طريقة المجلس، حول صحون مشتركة", "حُفظ حجزك باسم", "البريد المستخدم في الحجز"]) assert.ok(!r.includes(calque), "calque is back: " + calque);
   for (const fact of ["30 يوماً", "{n} أشخاص", "{code}", "{email}"]) assert.ok(r.includes(fact), "fact/placeholder kept: " + fact);
 });
+
+test("checkout.js and staff.js: Arabic from meaning, and prices isolated in Arabic (bidi class)", async () => {
+  const { readFileSync } = await import("node:fs");
+  for (const f of ["checkout.js", "staff.js"]) {
+    const s = readFileSync(new URL("../" + f, import.meta.url), "utf8");
+    assert.match(s, /lang\(\) === "ar" \? "\\u2066" \+ s\.replace\(\/\\u200f\/g, ""\) \+ "\\u2069"/, f + ": Arabic prices are LTR isolates");
+    for (const calque of ["انضم بالبريد", "طلبات غير مدفوعة كثيرة", "غير مُعدّ كموظف", "شيء في طلبك"]) assert.ok(!s.includes(calque), f + ": calque is back: " + calque);
+  }
+});

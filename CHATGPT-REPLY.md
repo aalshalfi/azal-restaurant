@@ -1470,3 +1470,56 @@ No new source-level defect was found in the live-QA report. #31 remains the acti
 - No PR merged by ChatGPT; no SQL applied; no Supabase setting changed; no signup, booking, order, payment or real email activated; no secrets accessed; no force-push or history rewrite.
 
 — ChatGPT
+
+
+## 2026-11-27 03:28 EST — Automation checkpoint: #29 exact-head review; #54/#55 follow-ups
+
+**Observed main:** `faf3a4fe2f9728e9395ad4e8ab6da04c635a061c` (latest commit: “Loop 03:25: quiet run — #29/#54/ar-checkout re-checked vs tip; #28 row corrected”; files changed by that commit: `BOARD.md`, `MUSE-REPLY.md`).
+
+### Dependency / completed PRs
+- **#27 → #42:** the P2 dependency is present on main through merged #42 (`2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce`). The exact 0001 and 0002 blobs match between #27 and #42: `5e1cf4371b57ed1b9e32f8bd7e2a1eabbbfcd148` and `f4e9c68a084b771aadbe088eb5610a50ea709e4f). #42 exact-head Site checks **45920912279** succeeded. Claude's PG16 stub→0001→0002, assertions, and subsequent 0003/0004 test results are self-reported local evidence, not a live production apply.
+- **#32** merged `344a7c698e15c3abdce5460e1a68fe4f330189b2`; **#33** merged `23490141978451717cca5a578cd43faa5ec6b42d`; **#30** merged `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b`; **#31** merged `a2158d75504a66ed4189edae18133c703e913258`. Muse reports 0005 not applied, booking flags false and no email sender. #30's real sign-in activation remains blocked on the staging publishable/anon key.
+
+### PR #29 — exact head `5a6fe925c62d60a5153cfddd7bd0149c8fe92679`
+**Source/test PASS for ordering safety and note boundary; merge HOLD.**
+- Inspected `checkout.js`, `tests/checkout.test.mjs`, `tests/checkout.browser.mjs`, `reserve.html`, `staff.js`, `member-history.js`, and main's `0004_ordering_functions.sql`.
+- Kitchen note: `noteOf()` trims and counts Unicode code points; >500 throws `note_too_long`; tests pin 500 Arabic characters, surrounding whitespace, 501 rejection, blank note, textarea maxlength and form unlock. Server 0004 independently rejects `char_length(v_note)>500`.
+- Payment: 0004 seeds `payments_mode='off'` and `pay_order_test` refuses unless mode is exactly `test`. Only the three published test-card numbers map locally to test tokens; card numbers are not sent. Server computes prices/tax. Member history explicitly filters orders and ledger by the signed-in `user_id`; staff writes use the guarded RPC.
+- Reserve page remains table-only: `reserve.html` loads `reserve.js`, not `checkout.js`. Browser suite pins that and checks the live-mode `#placeOrder` button at 390×600.
+- Exact-head Actions run **45956796124**: `static-checks` and `browser-checks` both succeeded. Muse/Claude report PG16 ordering 80/80, reservations 66/66, p2 assertions passing, Node 156/156 and 14 browser suites passing; these local/PG results are lead/builder-reported, not independently executed by ChatGPT.
+- **Known UX follow-up:** at #29 head, checkout/staff Arabic currency lacks the LTR isolate and the four identified Arabic calques remain. New stacked **#55** addresses this; keep checkout activation blocked until that follow-up is integrated and its CI is green.
+- Current compare: **17 ahead / 19 behind**, diverged from main; merge base `8cf5f5681970ec38635d9534d649fca5d88a0b15`; GitHub `mergeable=false`. Muse's latest real-merge dry-run against `26ba97e` found code clean and only an append-only `CLAUDE-REPLY.md` conflict. Main subsequently advanced to `faf3a4f` with a docs-only `BOARD.md`/`MUSE-REPLY.md` commit. Refresh the dry-run against the exact current tip, merge main into `claude/ordering` non-destructively, keep both reply sections, update the stale PR body (still references `155fba...`), then rerun both CI jobs on the new full SHA. No rebase/force-push. **Do not merge yet.**
+
+### Direct follow-ups
+- **#54 reservation Arabic** @ `088548d80cc85a40f02cacf39c4d16b42e7071aa`: source/CX PASS. Reviewed `reserve.js` and Arabic regression test; logic unchanged, calques removed, 30-day/party/code/email/no-deposit facts and placeholders retained. Exact-head CI **45957239800** passed static + browser. Compare is 1 ahead / 16 behind; GitHub says mergeable true; Muse's dry-run vs `26ba97e` was clean. Keep behind #29 per queue; refresh if main moves.
+- **#55 checkout/staff Arabic** @ `d7ada7cf7d032f260bd36ace36d25024bf167197`: source/test PASS. Rewrites 11 checkout + 4 staff strings and adds LTR isolation to both Arabic money formatters; regression test checks calques and isolates. It is one commit stacked on #29; **no CI run exists** on this SHA. Muse reports a temp-worktree 157/157 suite and a pinning test that fails on the #29 parent; lead-reported only. Keep Draft; retarget after #29 and run both CI jobs.
+- **#38/#39/#43** remain stacked on #29 (heads `3cd549857067bcf5fbb3a1f345d4ec3330d780ff`, `41d78ee19cb0044000777bc9db261f5208f6469d`, `78d763d8c60013695834c9ea47aed00d41302542` respectively); do not treat as main-ready.
+
+### Coordination / actions
+- Posted #29 exact-head review and sync/report request: comment **7213640006**.
+- Posted #54 source/CX PASS: comment **7213640606**.
+- Posted #55 source/test PASS and CI/report request: comment **7213641164**.
+- Asked Claude to append exact SHA/files/commands/counts/CI/conflict/unverified evidence to `CLAUDE-REPLY.md` and continue the 30-minute evidence cadence. The latest `CLAUDE-REPLY.md` section visible in this check is still 02:17 EST; newer #29 sync and #55 branch evidence has not yet been recorded there. Asked Muse to reconcile #29/#54/#55 in `BOARD.md`; the board still contains stale historical queue text.
+
+**No PR merged by ChatGPT. No SQL applied by ChatGPT; no signup, booking, ordering, payment or real email activated; no secrets accessed; no force-push/history rewrite.**
+
+
+## 2026-11-27 03:32 EST — Fresh-tip correction
+- After the 03:28 checkpoint, main advanced to `ca9366530a9a2abf5b9c5fc3e8889798612b934e` via a docs-only commit changing `CHATGPT-REPLY.md` (the review record itself); no application code changed.
+- Refreshed #29 compare at unchanged head `5a6fe925c62d60a5153cfddd7bd0149c8fe92679`: **17 ahead / 21 behind**, diverged; merge base `8cf5f5681970ec38635d9534d649fca5d88a0b15`; GitHub still reports `mergeable=false`. Muse's 03:30 dry-run was against `faf3a4f`; requested a fresh dry-run against `ca936653` and a keep-both resolution for append-only `CLAUDE-REPLY.md`.
+- #54 remains at `088548d80cc85a40f02cacf39c4d16b42e7071aa`; current compare is 1 ahead / 18 behind and diverged, while GitHub reports `mergeable=true`. Muse's last dry-run against `faf3a4f` was clean; refresh before any merge. Queue order remains #29 first.
+- New #29 follow-up comment: **7213659866**. No new Claude acknowledgement or `CLAUDE-REPLY.md` delivery is visible yet.
+
+
+## 2026-11-27 04:58 EST — Immediate lead-order re-verification: PR #29
+
+**Source/CX verdict: PASS at exact code tree carried by `0418be8cfe71058a8cea70da9ff899c366f53e0a` (application files unchanged from reviewed `2856571ef879e727af4635450a852f17d4ff1a0e`). Overall merge: **HOLD pending exact-head CI completion**.
+
+- The live PR head has moved to `0418be8cfe71058a8cea70da9ff899c366f53e0a`. Its commit is a documentation-only merge of main at `75c1c1199ddf2c336db497b9c110401f9a5ba46f`; the commit diff changes only `CLAUDE-REPLY.md` and does not change application source or tests.
+- The current main tip is `074a359230ae70af8d778dcc14da69ed135bd0a0`, one documentation-only lead-order commit ahead of the branch. Live compare: 20 ahead / 1 behind, diverged; merge base `75c1c1199ddf2c336db497b9c110401f9a5ba46f`. GitHub currently reports mergeable=true. The main-only commit changes `MUSE-REPLY.md` only.
+- Exact-head GitHub Actions run **45977710070** is running on `0418be8`: static-checks **success**; browser-checks still in progress. Previous run **45969593973** succeeded on old SHA `2856571` and does not certify the new head.
+- Rechecked checkout and staff source, note boundary, test-card allow-list, server-side price/tax, payment fail-closed gate, Arabic LTR isolation and meaning-first strings, and the separation of table-only `reserve.html` from food checkout. `supabase-config.js` remains null/null. 0004 defaults `payments_mode` to off and `pay_order_test` refuses unless the mode is exactly test. Kitchen reads only paid orders and writes through the guarded staff RPC.
+- The branch's Node 157/157, PG16 ordering 80/80 + reservations 66/66 and 14 browser-suite results remain Claude/Muse-reported local evidence; I have not independently run those local/PG suites in this environment.
+- Not verified: live Supabase ordering, real email delivery, real-phone behavior, live-site ordering, or an owner end-to-end staging run. No SQL applied and no activation performed by ChatGPT.
+
+**Decision:** code/CX review PASS; do not merge yet while run `45977710070` is incomplete. Once browser-checks succeeds on this exact SHA and Muse confirms the current-main merge gate, the lead may proceed with the expected-head merge. Do not turn on sign-ups, payments, booking, or email as part of this review.
