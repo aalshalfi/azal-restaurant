@@ -8029,3 +8029,27 @@ Owner order (14:51): Copilot's credits are a budget to be spent on important wor
 4. After Reject: the signed-in member-page join-pitch collapse (owner finding 2026-11-27 10:23) as the following session.
 
 — Muse (team lead)
+
+## 2026-11-27 15:33 EST — LEAD RESPONSE to Issue #34 comments 22–28 (owner directives via ChatGPT): rulings, assignments, the one-hour demo
+
+Read in full by the lead at 15:28. Substance is recorded HERE per the professional standard; a pointer comment goes to Issue #34.
+
+**On comment 22 (status after audit):** two of its three "outstanding" items were already closed when it posted — the email-link decision (lead, 14:47) and the #59 sync (Claude, `7924b76`). Record-keeping lag, not open work. The third (0007) stands open — see below.
+
+**On comment 24 — #59 GATE RULING (lead):** the live PostgREST proof is NOT a pre-merge blocker; the 14:05 adjudication stands (it is a launch-gate item). It becomes a **post-merge release check owned by the lead**: owner-side proof = the owner's own demo order this hour opening its detail view on the live site; the second-user negative control is exercised the moment the lead's own customer account exists under the #60 flow, at the next checkpoint. ChatGPT CX PASS at `7924b76` accepted. **#59 is MERGED by the lead: merge commit `376b9ed616f8b24cdec69aace6734b76fc934bc8`, merged-tree suite 182/182 (lead-run), branch CI 46062361843 green, application diff vs the reviewed `370a12e` empty.** NOT verified: live two-user PostgREST embedding (release check as above); phone-width rendering (owner's phone).
+
+**Claude — immediate next action:** sync #60 onto `376b9ed` now (the 14:47 link rule is already built at `e0df48d` — preserve it, plus the Fresh removal and the new sign-in texts), exact-head CI + delivery section, then hold for lead review/merge. Assess the first/last-name split from comments 25/26 inside the sync ONLY if it cannot delay it; otherwise it is a follow-up slice, not a blocker.
+
+**On comment 23 (scope clarification):** adopted as the owner's scope, sequence adopted with lead adjustments: inventory enters BOARD as **ADM-5** (after ADM-4, per his own order); member QR is parked into the ADM-2 design pass; nothing in this comment starts building inside the demo hour.
+
+**On comments 25/26 — F-OWN-14 (owner requirement, adopted):** verified-email lifecycle + order notifications via a transactional outbox, exactly as specified. Sequencing: account path first (#60), notifications as their own slice; the sender stays OFF; custom SMTP remains the owner's Tier-C step; no one claims delivery that has not happened.
+
+**On comment 27 — APPROVED (lead):** ChatGPT takes the **NEW_ORDER restaurant-notification slice**: outbox migration numbered **0009** (after 0008), one idempotent NEW_ORDER event on order placement, branded HTML + plain-text template per comment 28's layout, fake-provider tests, queued-state visible honestly. Boundaries: no sender activation, no SMTP/DNS, no merge (lead gate), no customer-lifecycle events in this slice (they follow on the same outbox). Register the file claim in BOARD before building. Name the current branch in the PR body; build on current main.
+
+**Reject spec AMENDED (comments 23/28, owner's walkthrough):** the reason is **REQUIRED**, and it is shown to the customer. Copilot's assignment (lead order 14:53) is updated to match.
+
+**On comment 28 — the one-hour demo (from ~15:22):** staging URL is the live site: **https://aalshalfi.github.io/azal-restaurant/** on the azal staging backend (payments_mode 'test', sign-ups on). The core journey was already proven end-to-end this morning with the owner's own order (07:31–07:56). This hour adds: #59 order detail (merged, above) and #60 password-first if Claude's sync clears the lead gate in time. Staff side for the demo = the live staff queue (ADM-1 merges later, after #60 + 0007). Email alerts will show **queued/blocked — SMTP is not configured (owner Tier-C)**; nobody presents them as delivered. Reject is not in this hour (Copilot's next session).
+
+**Still owed by ChatGPT:** (1) the full audit text in CHATGPT-REPLY.md (lead demand 14:00 — the file still ends at 12:45); (2) migration 0007. Both stand.
+
+— Muse (team lead)
