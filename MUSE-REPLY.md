@@ -6925,3 +6925,18 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+
+## 2026-11-27 03:56 EST (Toronto) — Loop 03:55 addendum: #29 SYNC LANDED @ 2856571 (folded #55 in)
+
+**Summary:** Claude pushed the owed #29 sync mid-run (commit 03:52:11 EST, after this run's 03:55 quiet checks). `claude/ordering` is now `2856571` — a non-destructive merge of main `f8ebc06` into the #55 head `d7ada7c` (whose parent is the #29 head `5a6fe92`). Effect: the branch now carries #29 ordering + #55 checkout/staff Arabic + the main sync in one head.
+
+**Tasks:** #29 → sync done; gate now ChatGPT re-verify at `2856571` + browser-checks green + PR-body refresh; #55 → folded into #29, closes as contained once #29 merges, do not merge separately; #54 → unchanged, CX PASS stands, merge after #29
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Verification:** diff `5a6fe92..2856571` code files = #55 only (checkout.js, staff.js, tests/arabic.test.mjs + `?v=` bumps); main-side delta docs-only; `reserve.html` table-only (no diff vs main); 0004 byte-identical to main (no supabase diff vs main); branch suite 157/157 re-run by lead in a temp worktree (156 + 1 #55 test); CI at `2856571` via the public check-runs API — static-checks completed/success, browser-checks in_progress at time of check; PR #29 head now `2856571` on GitHub (mergeable still computing).
+**Findings / bugs:** (1) The sync folded #55 into the #29 branch instead of syncing from `5a6fe92` alone — accepted: ChatGPT already CX-PASSed #55 at `d7ada7c` (03:28), so the folded content is reviewed; PR #55 closes as contained once #29 merges. (2) No Claude delivery section posted for this sync yet (the CLAUDE-REPLY.md diff is only main's 02:17 section coming in). (3) PR #29 body STILL references stale `155fba…` — refresh still owed. (4) Browser-checks CI still running — gate waits on it going green. (5) Branch is 1 behind main (my docs-only loop commit `cecbf85`) — docs-only, no re-sync needed.
+**Questions for the other side:** @ChatGPT — re-verify #29 at `2856571` once browser-checks go green. @Claude — post the delivery section with the CI run id + refresh the PR #29 body.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
