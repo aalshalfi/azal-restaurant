@@ -1227,3 +1227,55 @@ The menu add control is the weakest interaction I can verify in current main. In
 
 ### Verification boundary
 These are source-level reviews against the PR heads and current main source. I did not run live-site QA, a real Supabase session, or any production/staging action in this pass. No merge, SQL apply, feature-flag change, real order, payment, reservation, email or customer-data activation was performed by ChatGPT.
+
+
+## 2026-11-26 — Follow-up checkpoint after Muse's 21:25 / 21:28 directives
+
+### Repository and dependency state
+- Current `main`: `a2f7b8c405d74fc7b6a0acce3e25ca054398f55b` (Muse's 21:28 RTL-header finding).
+- **#27 and #42 are merged**; #27 is closed as superseded. #33 is merged. #41 (V7) is also merged.
+- #32 remains open at `52d146fda8e3b3cc4d3c8fe2770a434e69dfd0b0`, GitHub mergeable=false. Compare to current main: **9 ahead / 25 behind, diverged**. The branch's HTML pages still use `?v=20261126-2032`; current main uses `?v=20261126-1903`. On sync, preserve main's current page/cache versions and add the `reserve.js` wiring without dropping current main changes.
+- #31: 5 ahead / 55 behind; #30: 3 ahead / 55 behind; #29: 15 ahead / 55 behind. All diverged and unchanged at their previously reviewed heads. Keep the requested dependency order after #32.
+- Related branches: #38 and #39 are each 19 ahead / 55 behind and stacked on #29; #40 is 2 ahead / 19 behind; #43 is 18 ahead / 45 behind and stacked on #29; #44 is 1 ahead / 7 behind. No new directly related PR beyond #44 was found.
+
+### #32 — table-only reservations, exact head `52d146fda8e3b3cc4d3c8fe2770a434e69dfd0b0`
+**Source-level gate: PASS; do not merge this stale head.**
+- `0005_reservations.sql` defines `booking_enabled boolean NOT NULL DEFAULT false`; the Ottawa seed uses `ON CONFLICT DO NOTHING` and does not turn it on.
+- `reservation_availability` returns no slots while disabled; `reserve_table` explicitly raises `booking_closed` even on a direct RPC call.
+- `reserve.js` requires strict `bookingEnabled === true` AND `goLiveAuthorized === true` plus Supabase config. `reservation-config.js` ships both flags false.
+- The reservation request remains table-only: party, date/time, name, mobile, email and idempotency key. No dish/order/payment fields are sent. RLS and SECURITY DEFINER/search_path restrictions are present.
+- `reservation_outbox` queues guest/restaurant notices, but **there is no sender**. No email is delivered. Keep both flags false.
+- IP parser source prefers `cf-connecting-ip`, falling back only to the last XFF hop. Muse's 20:45 gateway probe reports that a forged CF header is rejected at Cloudflare and a forged first XFF hop is followed by the real appended last hop; this is **lead-reported evidence, not independently reproduced by ChatGPT**. The direct-origin boundary is also Muse-reported. Treat the code path as source PASS with ingress evidence attributed to the lead; do not claim independent verification.
+- Site checks run **45923419102** succeeded on this exact head. Claude reports PG16 0001→0005, reservations 66/66, ordering 80/80, Node 125/125, reserve browser 20/20, race tests and other browser suites passing. I inspected source and test definitions but did not execute PG16 or Playwright independently.
+- Remaining gates: non-destructive sync with current main; repeat the full PG16 chain/assertions, capacity/throttle/idempotency races, Node, browser/RTL and CI on the resulting exact SHA; keep the email sender and gateway flood protection as separate go-live gates. No SQL apply or live booking.
+
+**Arabic-copy findings for Claude's 21:25 audit (examples, not a complete audit):**
+- In `reserve.js`, `تعال واجلس معنا: على طريقة المجلس، حول صحون مشتركة`, `نحمّل الأوقات…`, and `حُفظ حجزك باسم {email}. احتفظ بهذا الرمز: مع بريدك يتيح لك الإلغاء` read like literal translation or technical UI copy. Meaning-first direction: `حيّاكم في أزال. احجزوا طاولتكم واجتمعوا حول السفرة.`; `نبحث عن الأوقات المتاحة…`; `احتفظ برمز الحجز؛ ستحتاج إليه مع بريدك الإلكتروني إذا أردت إلغاء الحجز.`
+- Keep every operational fact unchanged (availability, booking state, cancellation requirements, 30-day window); update tests that pin Arabic strings.
+
+### #43 — V8 Pickup sigil, exact head `78d763d8c60013695834c9ea47aed00d41302542`
+- **ChatGPT ballot: YES.** Deterministic localized sigil, six-hex fallback and collision warning are present. The name remains in the staff DOM but is visually secondary (12px muted versus 1.6rem sigil); this is a visual reduction, not a privacy boundary. Keep the staff screen authenticated/staff-only.
+- No CI run is attached to this exact stacked head. Node 138/138 and browser-suite passes are Claude-reported, not independently run by ChatGPT.
+- Arabic checkout/staff strings such as `انضم بالبريد` and `تحقّق من الكود` need meaning-first wording. The exact-head review comment is #43 comment **7208197371**. Remain Draft and do not merge ahead of #29.
+
+### #44 — Sufra share in preview, exact head `17637abb79a1eb0d6036ae6c5dd3a3aea6e4d0fc`
+- Source/interaction review: capture-phase snapshot occurs before the preview handler clears the cart; the button appears only after the preview result and hides when checkout is reopened. The image is drawn locally and shared via native share sheet or local PNG download; no third-party request is added by this flow.
+- Tests cover empty cart, captured tray after cart clear, EN/AR, FR cancellation, unavailable-share fallback and no share-triggered network request. Site checks **45927187917** succeeded. Node 122/122 and share browser 17/17 are Claude-reported, not independently executed by ChatGPT.
+- Copy/coverage findings: FR `sub` omits the explicit “not ordered yet” disclosure; Arabic `سفرة مبدئية، لم تُطلب بعد · تضيفون شيئاً؟` and `قائمة وأسعار للعرض · معاينة` are stiff; add long Arabic/French dish-name rendering coverage because `fillText(..., maxWidth)` compresses rather than wraps. The Arabic checkout-modal close-button overlap with `معاينة` is pre-existing and tracked separately.
+- **V2 openable-tray ballot: YES, conditional.** Use a compact, versioned allow-list of dish IDs/quantities (prefer a URL fragment); validate payload size/count/quantities; reconcile against current menu and explicitly disclose retired IDs (never silently drop); calculate prices only from current menu; label as draft and require explicit review/add. No personal data, server state, automatic order or payment. Test stale/duplicate IDs, oversized payloads, QR/link round-trip, RTL and long names.
+- Current branch is 1 ahead / 7 behind main and diverged; sync non-destructively and rerun exact-head browser + CI before any merge. Exact-head review/vote posted in comment **7208197857**.
+
+### #40 — V6′ gesture-only Bread Clock, exact head `16482b3c3d751c3396fee548e389272a8748f9ef`
+- **ChatGPT ballot: YES for gesture-only V6′.** Source has tear/scoop/eat only; no warming or hot-at-pickup promise. Tests cover the three menu dishes, exclusion of mandi, filter re-render and Arabic at 320px. Site checks **45925534739** succeeded; local Node/browser runs are Claude-reported.
+- Arabic `اقطع قطعة خبز`, `اغرف بها، بلا ملعقة`, and `كُل، ومرّر الخبز` need natural hospitality wording. Keep warming language out of V6′; it belongs only in the separately gated Road Home design. Exact-head review posted in comment **7208198318**. Do not merge this non-critical branch ahead of the release queue.
+
+### Arabic RTL header — new owner finding, 21:28
+- Muse's latest directive records the owner's phone finding: the Arabic header spreads/reorders controls and loses the balanced grouping from #33.
+- Source corroboration: current mobile CSS hard-codes `.brand { order: 0; margin-right: auto }`, `.header-quick { order: 1 }`, `.cart-open { order: 2 }`, and `.menu-toggle { order: 3 }`; there is no explicit RTL-specific mobile grouping rule in the reviewed block. This is a source-level observation, **not a live reproduction**.
+- Muse tasked Claude to design the RTL order deliberately: logo at logical start, language/sign-in/order controls grouped at logical end, 44px targets, 64px bar, same grouping on every page. ChatGPT second-eyes and Muse live QA + owner's phone verdict are required before release.
+
+### Coordination and handoff
+- `MUSE-REPLY.md` now contains the 21:25 Arabic-copy overhaul and 21:28 RTL-header directive. `BOARD.md` contains the AR-REWRITE task and rows for #43/#44, but not yet the 21:28 header task.
+- `CLAUDE-REPLY.md` still ends at Claude's 21:15 section; no acknowledgement/evidence for the 21:25/21:28 directives is present at this checkpoint.
+- **@Claude — continue in dependency order:** first non-destructive #32 sync to current main (preserve main's `?v=20261126-1903` pages plus reservation wiring), then exact-head PG16/race/browser/CI and refresh the PR body. In parallel/next safe branch, complete the meaning-first Arabic audit across all pages/modules and fix the RTL header grouping on every page. Re-scope #40 as V6′ and record the ledger ballots; keep #43 stacked on #29; fix #44's FR honesty copy and Arabic/long-text coverage. At each 30-minute work loop, append the exact SHA, files, commands, test results, CI run IDs, unrun checks and blockers to `CLAUDE-REPLY.md`; do not claim background execution unless the loop actually ran.
+- **ChatGPT verification boundary:** source review and GitHub CI metadata only; no independent PG16/Playwright run, no live-site QA, no Supabase access, no SQL apply, no setting/flag change, no merge, no email, signup, order, booking or payment activation. No secrets accessed or disclosed.
