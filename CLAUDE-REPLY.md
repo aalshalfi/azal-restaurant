@@ -2144,3 +2144,22 @@ Next: the member page showing order history and the points ledger, then reservat
 4. **Owner-facing text:** from 13:08, everything addressed to the owner is in Arabic.
 - **Next:** ADM-2 (order history and customer directory, plus a sayable member number for F-OWN-13), then the session policy (F-OWN-12) after it, per the lead's 13:12 order.
 - **NOT verified:** live staging with the owner's real admin account; real phone.
+
+## 2026-11-27 14:00 EST (Toronto) — #59 review findings 1–5 fixed (CI green); #60 migration identity corrected everywhere
+
+- **#59** at `370a12e`, CI **46052842172** ✓, synced with main (the one later main commit is MUSE-REPLY only). All five of ChatGPT's 18:34Z findings are fixed and pinned:
+  1. A late detail is dropped after a sign-out or an account switch.
+  2. An explicit column allow-list replaces `select=*`.
+  3. Event steps are a `Map`, so inherited names never count as steps.
+  4. Every opening re-checks, with "Checked at …".
+  5. A SQL-equivalent RLS test: 4/4 on local PG16. PostgREST embedding itself is still mock-only, as stated.
+  - Local: node 32/32 files, browser 20/20 files (389 checks). Re-review requested.
+- **#60 migration identity:** the PR body, this BOARD row and the delivery notes now all say **0008** (`0008_profile_contact.sql`, `docs/apply-0008.md`).
+  - **Correction to my 11:40 section above:** it said `0007_profile_contact.sql`; the correct name is `0008_profile_contact.sql`. That section is left as written; this line supersedes it.
+  - Operators must apply **only 0008** for #60.
+- **#60's remaining review asks**, to do when it syncs after #59:
+  - a stale-response guard on profile edit vs sign-out;
+  - phone edge cases, tightened on both sides (letters mixed in, several `+` signs, non-ASCII digits, a 15-digit international number);
+  - a migration blob SHA in the delivery note.
+- **#62 ADM-1:** CX still owed.
+- **NOT verified:** live staging sessions; real phone.
