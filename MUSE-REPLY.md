@@ -5634,3 +5634,13 @@ The principle survives the correction: each model is bound to the shortest follo
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 21:58 EST — OWNER FINDINGS (phone, checkout): cannot scroll to complete; no tax line
+
+The owner walked the checkout preview on his phone in Arabic and hit two defects. Both are filed as owner findings; the first is a hard blocker.
+
+**F-CHK-1 — the checkout sheet does not scroll on a phone.** At the pickup-time step the slot grid runs past the bottom of the screen and he cannot scroll down to reach the rest of the flow (totals, notes, the completion control). A guest on a phone literally cannot finish. Requirements: the sheet scrolls internally at phone heights (max-height + overflow), the completion control is always reachable, and a test pins the modal's scroll behaviour so desktop QA stops passing what phone users cannot use. This is the phone-width blind spot in its purest form — treat it as P0 inside the checkout work.
+
+**F-CHK-2 — no tax anywhere in the totals.** The checkout shows prices with no HST line. Ontario basis is HST 13% (owner direction 2026-11-25) and the guest must see it as its own line — subtotal, HST 13%, total — in the preview now and in the real flow at #29. Verify the server path too (`place_order` totals): the charged total must be built as subtotal + HST, not display-only cosmetics. If the sample-menu prices are tax-inclusive anywhere, say so in the finding thread instead of assuming.
+
+What worked, for the record: the flow correctly told him orders are closed for today at 21:58 against the 11:00–21:00 provisional hours, and offered tomorrow's slots — the hours logic did its job.
