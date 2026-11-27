@@ -1,6 +1,6 @@
 /* AZAL one sign-in door (Claude, ADM-1; owner F-OWN-7/10/13). After a sign-in on the member page, the SERVER-held
-   role decides what opens: an administrator gets a "Management" panel at the top of the page (admin.html), branch staff
-   get the kitchen orders screen (staff.html). Customers see nothing extra. The role comes from azal_is_admin() and the
+   role decides where they go: an administrator is sent to the management area (admin.html), branch staff to the
+   kitchen orders screen (staff.html), and the customer account is hidden meanwhile. Customers stay and see nothing extra. The role comes from azal_is_admin() and the
    caller's own user_roles rows (RLS); the links only lead to pages that check the role again server-side.
    Inert while window.AZAL_SUPABASE is null. Every value is rendered with textContent. */
 (function (root) {
@@ -48,7 +48,15 @@
     const my = ++seq; let s = null;
     try { s = root.AZALAuth && (await root.AZALAuth.session()); } catch {}
     let r = "none"; try { r = await roleOf({ config: cfg, fetch: root.fetch.bind(root), session: s }); } catch { r = "customer"; }
-    if (my === seq) { role = r; paint(); }
+    if (my !== seq) return;
+    role = r; paint();
+    // Owner (relayed by ChatGPT, #62 review): staff and admins never get the customer account on the post-sign-in
+    // screen. The member content is hidden at once and the browser goes to their own area; each destination checks
+    // the role again on the server. Customers stay here. No loop: admin.html and staff.html never send anyone back.
+    if (r === "admin" || r === "staff") {
+      document.documentElement.classList.add("role-leaving");
+      try { root.location.replace(r === "admin" ? "admin.html" : "staff.html"); } catch {}
+    }
   }
   document.addEventListener("azal:auth", (e) => { if (e.detail && e.detail.status === "signed_in") refresh(); else { seq++; role = "none"; paint(); } });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });

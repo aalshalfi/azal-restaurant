@@ -873,3 +873,5 @@ html[lang="ar"] .text-link{border-bottom:0;padding-bottom:0;text-decoration:unde
 .admin-kpi dt{font-size:13px;color:var(--muted)}.admin-kpi dd{margin:2px 0 0;font-size:26px;font-weight:700}
 html[dir="rtl"] .admin-kpi{border-left:0;border-right:4px solid var(--gold)}
 .admin-line{margin:0}.admin-note{margin:0;color:var(--muted)}
+/* #62: while a staff/admin sign-in is being sent to its own area, nothing of the customer account shows */
+html.role-leaving .member-card,html.role-leaving #memberHistory,html.role-leaving .member-banner,html.role-leaving .member-preview>*:not(#roleDoor){visibility:hidden}

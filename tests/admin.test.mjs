@@ -40,3 +40,9 @@ test("admin page: noindex, not linked from the public nav, renders with textCont
   assert.doesNotMatch(read("role-door.js"), /innerHTML/);
   assert.match(read("member.html"), /auth\.js\?v=([\w-]+)" defer><\/script><script src="role-door\.js\?v=\1" defer>/);
 });
+
+test("#62 review: staff/admin are sent to their own area; the customer view is hidden first; no way back to it", () => {
+  const rd = read("role-door.js");
+  assert.match(rd, /classList\.add\("role-leaving"\);\s*try \{ root\.location\.replace\(r === "admin" \? "admin\.html" : "staff\.html"\)/);
+  assert.doesNotMatch(read("admin.js") + read("staff.js"), /location\.(replace|assign|href\s*=)[^;]*member\.html/, "no redirect loop back to the member page");
+});

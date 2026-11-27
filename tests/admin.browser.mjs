@@ -36,15 +36,20 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
 }
 
 { const { p } = await open("member");
-  ok(await p.locator("#roleDoor").isVisible() && /administrator/.test(await p.textContent("#roleDoor")), "member page, admin: a Management panel appears (not the plain customer view)");
-  ok(await p.getAttribute("#roleDoor a.button", "href") === "admin.html" && await p.locator("#roleDoor a[href='staff.html']").count() === 1, "it links to the management area and the kitchen screen");
-  ok(await p.evaluate(() => { const d = document.getElementById("roleDoor"), c = document.querySelector(".member-card"); return !!(d.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); }), "the panel sits above the member card");
+  await p.waitForURL(/admin\.html$/, { timeout: 5000 }).catch(() => {});
+  ok(/admin\.html$/.test(p.url()), "member page, admin: sent straight to the management area (owner: never the customer account)");
+  await p.waitForTimeout(400);
+  ok(/Collected sales today/.test(await p.textContent("#adminRoot")) && await p.locator(".member-card, #memberHistory").count() === 0, "admin lands on management only: no customer card, history or points");
   await p.close(); }
 { const { p } = await open("member", { role: "staff" });
-  ok(/branch staff/.test(await p.textContent("#roleDoor")) && await p.getAttribute("#roleDoor a.button", "href") === "staff.html" && await p.locator("#roleDoor a[href='admin.html']").count() === 0, "member page, staff: kitchen link only, no management link");
+  await p.waitForURL(/staff\.html$/, { timeout: 5000 }).catch(() => {});
+  ok(/staff\.html$/.test(p.url()), "member page, staff: sent straight to the kitchen screen");
   await p.close(); }
 { const { p } = await open("member", { role: "customer" });
-  ok(await p.locator("#roleDoor").isHidden(), "member page, customer: nothing extra");
+  await p.waitForTimeout(300);
+  ok(/member\.html$/.test(p.url()) && await p.locator("#roleDoor").isHidden() && await p.locator("#roleDoor a").count() === 0, "member page, customer: stays, no admin controls");
+  await p.evaluate(() => document.documentElement.classList.add("role-leaving"));
+  ok(await p.evaluate(() => getComputedStyle(document.querySelector(".member-card")).visibility) === "hidden", "while a staff/admin sign-in is leaving (role-leaving), the customer card is not visible");
   await p.close(); }
 { const { p, sent } = await open("admin");
   const t = (await p.textContent("#adminRoot")).replace(/\s+/g, " ");
