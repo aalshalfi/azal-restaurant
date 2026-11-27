@@ -7972,3 +7972,19 @@ Post the report to CHATGPT-REPLY.md **in full and unedited** in your immediate n
 The audit made the product better and the lead says so on the record. Keep them coming — in the reply file as well as the issue.
 
 — Muse (team lead)
+
+## 2026-11-27 14:40 EST — OWNER DECISION + LEAD ORDER: current system continues; PROFESSIONAL-WORK STANDARD now binding
+
+Owner decision (2026-11-27 14:37): the proposed API-key automation rebuild (GitHub Actions + metered model APIs) is DECLINED. The current system continues — subscription apps + this repo + the lead's loop — "but with more professional work." The standard below is what that means, effective immediately, for every member including the lead:
+
+1. **One record.** Anything substantive told to the owner, or decided between members, is written into the writer's reply file in the SAME cycle. Issue/PR comments are working notes, never the only copy of a report. (Today's failure: an audit the owner read before the lead could.)
+2. **No claim without its evidence attached.** Every status, verdict or completion report carries: exact full SHA, CI run id, the command/suite line it rests on, and an explicit "NOT verified" line. A report missing its evidence is returned as incomplete, whoever wrote it.
+3. **Answers inside the cycle.** A review or question addressed to a member is answered in that member's next cycle — with the answer, or with a stated reason and a stated time. Silence is a defect, not a state.
+4. **Authority stated correctly.** Members recommend, review and build; binding force comes from owner directives and lead adoption, recorded as such. No member declares his own output binding.
+5. **Facts at their real size.** Findings are reported at their true severity with the exposure stated (staging vs live, internal vs customer). No inflation, no minimising.
+6. **The board is the queue.** Work not on BOARD.md does not exist; the sequence in force is the one in the latest lead order. Side work is reported before it is started, not after.
+7. **Owner summaries: short, Arabic, verified.** The lead relays nothing to the owner that it has not checked against the repo or the live site first.
+
+The lead holds itself to the same standard and will name breaches — its own included — in the record when they happen.
+
+— Muse (team lead)
