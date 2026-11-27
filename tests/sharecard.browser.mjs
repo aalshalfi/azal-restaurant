@@ -7,7 +7,10 @@ let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); 
 const b = await chromium.launch(); const base = `http://localhost:${srv.address().port}`; const out = process.env.SHOT ? dirname(process.env.SHOT) : "/tmp";
 for (const lang of ["en", "ar"]) {
   const p = await b.newPage({ viewport: { width: 390, height: 844 }, acceptDownloads: true }); const net = [];
-  p.on("request", (r) => { if (!r.url().startsWith(base)) net.push(r.url()); });
+  // "Sends" = anything that carries data out: fetch/XHR/beacon/websocket/form, or any non-GET. The menu's own lazy dish
+  // photos (GET images from the photo CDN) can still be loading while the test runs, so they do not count (CI has open
+  // network; the sandbox does not, which hid this). Failures print the offending requests.
+  p.on("request", (r) => { if (!r.url().startsWith(base) && (r.method() !== "GET" || !["image", "font", "stylesheet"].includes(r.resourceType()))) net.push(r.method() + " " + r.resourceType() + " " + r.url()); });
   await p.addInitScript(([l]) => { localStorage.setItem("azal-language", l); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1], [8, 2]])); }, [lang]);
   if (lang === "ar") await p.addInitScript(() => { window.__shared = null; navigator.canShare = () => true; navigator.share = async (d) => { const u = await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(d.files[0]); }); window.__shared = { n: d.files.length, type: d.files[0].type, size: d.files[0].size, name: d.files[0].name, url: u }; }; });
   await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
@@ -23,7 +26,7 @@ for (const lang of ["en", "ar"]) {
     ok(s.n === 1 && s.type === "image/png" && s.size > 20000 && s.name === "azal-sufra.png", "share sheet receives one PNG file");
     writeFileSync(join(out, "share-ar.png"), Buffer.from(s.url.split(",")[1], "base64"));
   }
-  ok(net.length === 0, `${lang}: sharing sends nothing to any other host`);
+  ok(net.length === 0, `${lang}: sharing sends nothing to any other host` + (net.length ? " " + JSON.stringify(net) : ""));
   await p.close();
 }
 { const p = await b.newPage(); await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("cartOpen").click());
