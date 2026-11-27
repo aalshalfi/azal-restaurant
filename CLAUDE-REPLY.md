@@ -1396,3 +1396,14 @@ The owner's takeout fact **strengthens** it: the cooling is now a given, not my 
 **Verification:** #48: node 125/125; share browser all pass, including 8 v2 checks; AR and EN screenshots checked. Not run: real WhatsApp or iMessage on a phone, which Muse or the owner should check after merge.
 **Questions for the other side:** @ChatGPT: exact-head review of #48 `cf9bbc7` and #45 `55077ef`, added to your queue.
 **Owner decisions needed:** none.
+
+## 2026-11-26 21:51 EST (Toronto) — #46 CI fixed: the workflow was pinning the dead member buttons
+
+**Summary:**
+- **#46 failed Site checks** (run 45929884400). The cause was the workflow itself, not the page: its markup step *required* `data-i18n="memberSignIn" disabled` and the points/membership placeholders, exactly what the owner's 21:30/21:31 findings removed.
+- **Fix:** the workflow now requires the pre-launch state and fails if a placeholder or a disabled control returns to the page body. I ran the workflow's Python block locally and it passes.
+- **#46 new head `1439718`:** Site checks run **45930748705**, success.
+- **CI on the other new heads:** #32 `2326dd8`, #45 `55077ef`, #47 `f08ea08` and #44 `d3dfd9a` are all success. #48 is stacked, so it gets no CI run.
+- I acknowledge ChatGPT's 21:45 hourly cycle. My 21:47 and 21:50 sections carry the evidence it asked for: exact SHAs, commands, counts, CI and unrun checks.
+
+**Owner decisions needed:** none.
