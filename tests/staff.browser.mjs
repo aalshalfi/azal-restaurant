@@ -5,12 +5,14 @@ const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = await chromium.launch(); const port = srv.address().port;
-async function open({ staff = true, session = true }) {
+async function open({ staff = true, session = true, clash = false }) {
   const page = await b.newPage({ viewport: { width: 390, height: 844 } });
   const orders = [
     { id: "aaaaaa11-0000-4000-8000-000000000001", pickup_slot: "2026-11-26T17:15:00Z", guest_name: "Sara", customer_note: "Less spice", fulfilment_status: "placed", total_cents: 6325, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi", item_name_fr_snapshot: "Mandi d’agneau" }] },
     { id: "bbbbbb22-0000-4000-8000-000000000002", pickup_slot: "2026-11-26T17:15:00Z", guest_name: null, customer_note: null, fulfilment_status: "ready", total_cents: 451, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] }
   ];
+  // V8: same first 8 hex as Sara's order -> same pickup sigil
+  if (clash) orders.push({ id: "aaaaaa11-9999-4000-8000-000000000003", pickup_slot: "2026-11-26T17:30:00Z", guest_name: "Omar", customer_note: null, fulfilment_status: "placed", total_cents: 999, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] });
   const acts = [];
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await page.route("https://fake.supabase.co/**", async (r) => {
@@ -30,6 +32,11 @@ async function open({ staff = true, session = true }) {
   await page.waitForSelector(".staff-order");
   ok(await page.locator(".staff-slot").count() === 1 && await page.locator(".staff-order").count() === 2, "two paid orders grouped under one pickup slot");
   ok(/AAAAAA/.test(await page.textContent(".staff-order.is-placed .staff-code")) && /Less spice/.test(await page.textContent(".staff-order.is-placed")), "code, guest name and kitchen note shown");
+  const Sig = require(join(root, "sigil.js")), sg = Sig.sigil("aaaaaa11-0000-4000-8000-000000000001");
+  ok((await page.textContent(".staff-order.is-placed .staff-sigil")) === sg.icon + " " + sg.num && (await page.textContent(".staff-order.is-placed .staff-sigil-words")) === ["en", "fr", "ar"].map(sg.word).join(" · "), "V8: ticket leads with the sigil, words in EN/FR/AR");
+  ok(await page.locator(".staff-order.is-clash").count() === 0, "V8: no clash flag when sigils differ");
+  const fs2 = await page.evaluate(() => [parseFloat(getComputedStyle(document.querySelector(".staff-order.is-placed .staff-sigil")).fontSize), parseFloat(getComputedStyle(document.querySelector(".staff-order.is-placed .staff-who")).fontSize)]);
+  ok(fs2[0] >= 2 * fs2[1], "V8: the guest name is secondary (sigil at least twice its size)");
   ok(/Member/.test(await page.textContent(".staff-order.is-ready .staff-who")), "member order without guest name says Member");
   await page.click(".staff-order.is-placed .staff-act"); await page.waitForFunction(() => /Ready/.test(document.querySelector(".staff-order.is-accepted .staff-act")?.textContent || ""));
   await page.click(".staff-order.is-accepted .staff-act"); await page.waitForFunction(() => document.querySelectorAll(".staff-order.is-ready").length === 2);
@@ -43,4 +50,7 @@ async function open({ staff = true, session = true }) {
 { const { page } = await open({}); await page.waitForSelector(".staff-order"); await page.evaluate(() => { document.documentElement.lang = "ar"; }); await page.waitForTimeout(100);
   ok(/طلبات المطبخ/.test(await page.textContent("#staffRoot")) && /قبول/.test(await page.textContent("#staffRoot")), "Arabic kitchen screen"); await page.close(); }
 { const page = await b.newPage(); await page.goto(`http://localhost:${port}/staff.html`); await page.waitForTimeout(300); ok(/turns on when the site is connected/.test(await page.textContent("#staffRoot")), "inert with shipped null config"); await page.close(); }
+{ const { page } = await open({ clash: true }); await page.waitForSelector(".staff-order");
+  ok(await page.locator(".staff-order.is-clash").count() === 2 && /check the code/.test(await page.textContent(".staff-order.is-clash .staff-clash")), "V8: two active orders sharing a sigil are both flagged");
+  await page.close(); }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);

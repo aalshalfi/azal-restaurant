@@ -43,7 +43,7 @@ test("signed out and server errors surface as codes", async () => {
 test("staff page is not indexed, not in the nav, inert with shipped config", () => {
   const h = readFileSync(new URL("../staff.html", import.meta.url), "utf8");
   assert.match(h, /<meta name="robots" content="noindex, nofollow">/);
-  assert.match(h, /auth\.js\?v=([\w-]+)" defer><\/script><script src="checkout\.js\?v=\1" defer><\/script><script src="staff\.js\?v=\1" defer><\/script>/);
+  assert.match(h, /auth\.js\?v=([\w-]+)" defer><\/script><script src="sigil\.js\?v=\1" defer><\/script><script src="checkout\.js\?v=\1" defer><\/script><script src="staff\.js\?v=\1" defer><\/script>/);
   for (const p of ["index", "menu", "member", "reserve", "story", "404"]) assert.doesNotMatch(readFileSync(new URL(`../${p}.html`, import.meta.url), "utf8"), /href="staff\.html"/);
   assert.equal(T.createStaff({ config: { url: null, anonKey: null }, fetch: async () => {} }).enabled, false);
 });
