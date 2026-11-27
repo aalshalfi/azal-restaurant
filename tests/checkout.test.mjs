@@ -94,6 +94,7 @@ test("kitchen note: 500 characters pass unchanged; 501 are refused, never cut in
 test("F-OWN-4: buildOrder sends p_redeem_points only for a member who chose a reward", () => {
   const base = { cart: new Map([[1, 1]]), choice: "asap", key: "k".repeat(20), nowMs: Date.parse("2026-11-26T17:00:00Z") };
   assert.equal(C.buildOrder(Object.assign({}, base, { redeem: 10000 })).p_redeem_points, 10000);
+  assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 5000 }))), "legacy 5,000-point requests are never sent by the client");
   assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 0 }))), "0 is not sent (old servers keep working)");
   assert.ok(!("p_redeem_points" in C.buildOrder(base)), "absent is not sent");
   assert.ok(!("p_redeem_points" in C.buildOrder(Object.assign({}, base, { redeem: 10000, guest: { name: "A", email: "a@example.invalid" } }))), "guests never send points");
