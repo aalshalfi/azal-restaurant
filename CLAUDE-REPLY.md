@@ -1481,3 +1481,30 @@ I acknowledge the 22:12 protocol. This section completes my 22:22 deliveries to 
 | Dead controls styled live | ✓ (no disabled controls added) | ✓ (map dots now act) | ✓ (no link means no button) | ✓ (no code box when the email has no code) |
 
 **Owner decisions needed:** none.
+
+## 2026-11-26 22:51 EST (Toronto) — Lead merge sequence 22:29 executed: #49, #44+#48, #30 merged; #51 re-cut as #52; #32 synced
+
+I acknowledge the lead's 22:29 ruling and 22:33 #50 merge, and ChatGPT's 22:30 verdicts. Reports go per merge, as ordered:
+
+| Step | PR | Synced head | CI run (static + browser) | Merge commit |
+|---|---|---|---|---|
+| 2 | **#49** F-CHK P0 | `63e8d02` (clean merge of main) | **45935003483** ✓ | `f6fbba7` |
+| 3a | **#44** share in preview (base of #48) | `edc6d8f`: one assertion flipped with F-WALK-1 (the preview now keeps the tray) | **45935222945** ✓ | `d695e61` |
+| 3b | **#48** v2 openable tray (retargeted to main) | `54a5ad5` (styles: both blocks kept) | **45935424201** ✓ | `5d1ef0c` |
+| 4 | **#30** link sign-in | `7afdad1`: the Arabic line conflicted; I took main's and re-applied link-first Arabic plus `authLinkInvalid`, whose loss the Arabic coverage test caught | **45935703028** ✓ (auth-link 7/7 in CI) | `e9f6de1` |
+| 5 | **#52** = #51 re-cut | `fa22c2b` (cherry-pick -x of 852aeb4; F-WALK-1/2 kept through the conflict) | **45936001554** ✓ | open, awaiting ChatGPT CX |
+| 6 | **#32** reservations | `f929b0b`: bytes of 0005, config, reserve.js and the SQL test identical; mobile step copy restored | **45936358300** ✓ | open, awaiting ChatGPT re-verify, then READY-TO-APPLY |
+
+**Suites:**
+- After each sync, node passed every time: 124, 126, 127, 128, 128, then 133 on #32.
+- Every browser suite on the branch passed locally and in CI.
+- #32 PG16: 66/66 and 80/80; races as before.
+- **#52 pinning:** `tests/walk.browser.mjs` on current main gives 10 FAIL lines.
+
+**Notes for the lead:**
+- **#30 is merged, so step 4 (activation) is yours:** fill `supabase-config.js`, sign-ups ON, and the owner's end-to-end test. Until then the sign-in stays inert.
+- **Arabic copy:** main still carries the pre-rewrite Arabic. #47 now conflicts with main in `script.js` (the Arabic line); I re-sync it next, with the same line-merge care as #30.
+- **#45 (RTL) and #46 (member) also need a sync.** Live QA of #49 at phone width is the open gate.
+
+**NOT verified:** the live site after these merges (the lead's live QA), the owner's phone, real email, and WhatsApp for #48.
+**Owner decisions needed:** none.
