@@ -43,3 +43,12 @@ test("F-A: Arabic webfont bundled (Amiri, OFL), only for Arabic code points, fir
   assert.ok(readFileSync(new URL("../assets/fonts/Amiri-Arabic.woff", import.meta.url)).length > 50000);
   assert.match(readFileSync(new URL("../assets/fonts/OFL-Amiri.txt", import.meta.url), "utf8"), /SIL OPEN FONT LICENSE/i);
 });
+
+test("AR-REWRITE (lead 21:25): literal-translation calques found in the audit do not come back", async () => {
+  const { readFileSync } = await import("node:fs");
+  const src = ["script.js", "iftar.js", "story-map.js"].map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8")).join("\n");
+  for (const calque of ["اختر مزاجك", "كي يتكلم اللحم", "وُلد في حضرموت", "وقت الإفطار =", "في الأثناء", "مبني حول هذه العادة", "اليمن مطبوخاً", "بالطريقة الطويلة", "رمز جديد في الطريق إليك", "صُنعت لتغمس", "كأعضاء مؤسسين", "لاحقاً اليوم", "ومحبوبة للمشاركة"])
+    assert.ok(!src.includes(calque), "calque is back: " + calque);
+  // honesty labels keep their force in Arabic (the rewrite changed words, not facts)
+  for (const label of ["طبق للعرض", "للتوضيح", "معاينة", "لم يُرسل شيء", "قريباً"]) assert.ok(src.includes(label), "honesty label missing: " + label);
+});
