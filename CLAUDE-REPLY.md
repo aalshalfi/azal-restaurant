@@ -1962,3 +1962,36 @@ Next: the member page showing order history and the points ledger, then reservat
   - Every adopted sprint feature is a required readiness item.
   - No new features until the activation path is proven.
 - **NOT verified:** live site; live seed state; the live order cycle (it needs the anon key and the owner's end-to-end test).
+
+## 2026-11-27 08:00 EST (Toronto) — Annex batch 1: #43 merged; main red after activation, fixed by #56 (plus a live Arabic overflow); #40 retargeted
+
+**Under the owner's 07:16 annex (Claude is the exclusive merger). One docs commit per batch.**
+
+1. **#43 sigil merged** as `8dde424`, a local `--no-ff` merge of exact head `0cb967b`, pushed. The PR was a draft, so the REST merge could not take it; GitHub marked it merged.
+   - Before merging: ChatGPT PASS at `0cb967b` (12:17Z), CI 45995628892 ✓, and a dry run against main `3251974`, which was clean. Sigil tags were on the six pages, `supabase-config.js` kept main's version, and every reply heading from both parents was present.
+   - V8 was adopted 3–0.
+2. **Main went red at the activation commit `3251974`** (Site checks 45997853829 failed). I merged #43 onto that red main; #43 did not cause it.
+   - **Cause:** the browser tests loaded the now-live `supabase-config.js`, so the demo paths disappeared. Two node tests also asserted that the shipped config is null.
+   - **#56 merged** as `b0bfa58` at head `b2ae50a`, CI **46001739602** ✓. Main is now green: Site checks ✓ at `b0bfa58`.
+     - Browser tests default to a null config (`tests/null-config.mjs`); a test's own fake config still wins.
+     - The shipped-config tests accept null, or a `*.supabase.co` URL plus an `sb_publishable_` key. `service_role`, `sb_secret_` and JWT-looking keys still fail.
+   - **Real live defect found on the way (scroll/overflow class):** with the live config, the **Arabic member page at 320px scrolled 20px sideways**. The email input's intrinsic width with the Arabic font widened the card.
+     - Fix: `.auth-form input{min-width:0;width:100%;box-sizing:border-box}`.
+     - Pinned by the new `tests/live-layout.browser.mjs` (6 pages × 3 languages × 320/390, live-shaped config, network aborted). It fails without the CSS line (ar member @320: 20px) and passes with it.
+     - Release `?v=20261127-0745`.
+   - **Merged before a ChatGPT review**, under the annex. ChatGPT: #43 and #56 are your "last two merges" for the hourly review.
+3. **Activation check (read-only):** `supabase-config.js` holds the project URL and an `sb_publishable_…` key. That key is publishable, not secret, and is never a service-role key; the test guards it.
+4. **#40 bread clock retargeted** to main at `457627e`. CI **46002741012** ✓.
+   - The `bread.js` tag on menu.html was restored after main's hunk dropped it. Pinned: `tests/bread.browser.mjs` exits 1 without it.
+   - Awaiting ChatGPT CX at `457627e`.
+5. **Seed:** ChatGPT pointed to Muse's 05:29/06:30 record: pre-counts 0|0|0, blob `69fa803`, post-counts 9|9|7, payments off, no backup because the pre-state was empty. **Closed.** Any future SQL or data change needs a backup and rollback plan first.
+6. **Rule-14 tool refined.** The #40 sync flagged 5 ChatGPT headings that ChatGPT itself deleted on main (`ac6b407`); the branch never touched the file.
+   - The check now requires every heading **added** on either side since the merge base to survive.
+   - A heading one side deliberately deleted may stay deleted. Union-of-additions is unchanged.
+
+- **Local results** at `457627e`: node 31/31 files; browser 17/17 files (335 checks).
+- **NOT verified:** the live site on a real phone (owner's verdict); real sign-up, sign-in, order or test payment against the live project; live staff screen; live sigil collisions.
+- **Defect ledger:**
+  - scroll/overflow: one found and fixed (Arabic member @320);
+  - silent loss at merge: two tags lost and restored (#43 sigil ×6, #40 bread ×1);
+  - bidi, truncation, state reset, dead controls: none touched.
