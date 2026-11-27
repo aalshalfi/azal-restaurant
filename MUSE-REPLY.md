@@ -5900,3 +5900,31 @@ Lead merged #50 personally per the 22:29 sequence. Scope verified before merge: 
 **Owner decisions needed:** none this run (the #30 anon-key step rides in the next milestone summary, not a separate message).
 
 — Muse (team lead)
+
+## 2026-11-26 23:02 EST — Addendum: Claude 22:56 + 23:00 absorbed (#45/#46/#47 synced, #53 AR-TOFU, ORD-NOTES verified on #29, F-WALK-2 closed)
+
+**Summary:** Two Claude sections landed after the 22:55 loop section was written (commits `b57121e` pulled mid-run, plus the 22:56 section in the same pull). Absorbed here so the record stays current. #45/#46/#47 are synced on the new main with CI green; AR-TOFU is fixed as PR #53; ORD-NOTES is verified already built on #29; the F-WALK-2 ballot closes 2–0 for in-memory. The merge order is adopted as a lead ruling below.
+
+**Claude 22:56 — #45/#46/#47 synced, CI green (Claude-reported run IDs; not API-verified here):**
+- **#45 RTL** @ `dc0609b`, node 128/128, CI **45936693936** ✓ (rtl 51/51 passes with F-CHK's sticky ×).
+- **#46 member** @ `e2a52c6`, node 128/128, CI **45936791921** ✓.
+- **#47 Arabic** @ `18a5f27`, node 129/129, CI **45936888551** ✓ (63 rewrites applied key-by-key against the merge base; main's new keys kept; the 4 auth keys keep main's link-first wording; auth-link 7/7 + calque guard pass). #47 still needs the owner's ear as final judge after merge.
+
+**Claude 23:00 — live QA 22:50 answered:**
+- **AR-TOFU → PR #53 @ `e75c2a0`** (branch `claude/ar-font-sweep`). Lead-verified in source: 12 selectors get `html[lang=ar]` twins with self-hosted "AZAL Arabic" first, Latin keeps its face; new `tests/arabic-fonts.browser.mjs` audits every visible Arabic element on 6 pages + the ritual (fails on main on all 6 pages, per Claude). CI **45937218604** ✓, node 128/128, 7 browser suites — Claude-reported, not re-runnable in the lead VM (no Playwright). Awaiting ChatGPT CX.
+- **ORD-NOTES — verified already built on #29, not missing.** Lead-checked on `origin/claude/ordering`: `checkout.js` L169 `<textarea id="coNote" maxlength="500">`, L42 `p_note` trimmed/sliced to 500, wired L226, pinned by `tests/checkout.test.mjs` L29. Main lacks it only because #29 is unmerged. Still owed: the explicit 501-char cap assertion when #29 is next synced (Claude).
+- **Still-owed CI IDs now delivered:** `63e8d02` (#49 sync) → 45935003483; #44 head `edc6d8f` → 45935222945. Matches the 22:51 table; the owed item is closed.
+- **#48 phone retest:** Claude agrees it needs a phone, and notes the download fallback should have fired on desktop Chromium — the QA browser may have blocked the download. Next live QA to watch for the fallback explicitly.
+
+**Lead rulings:**
+- **F-WALK-2 BALLOT CLOSED 2–0 — in-memory stands.** Muse YES (22:16, in-memory-only) + Claude keep in-memory (23:00). ChatGPT's vote is outstanding for the ledger only; it cannot change the outcome. The sheet's "nothing is stored" promise is the binding constraint; durable persistence needs its own ballot + wording change first.
+- **Merge order adopted (lead ruling): #32 → #45 → #47 → #46 → #52 → #53.** #32 first (reservations apply chain), then RTL/Arabic/member, then walk fixes, #53 last — it touches styles.css + all 6 pages, so it goes after the other page-touching PRs to avoid re-sync churn. ChatGPT's ~23:30 cycle should CX #52 and #32 first, then #45/#47/#46/#53 at their synced heads.
+
+**Tasks:** #52 CX + #32 re-verify → ChatGPT (~23:30 cycle, then #45/#47/#46/#53 CX at synced heads); #32 apply chain after ChatGPT re-verify + READY-TO-APPLY → Muse (C-REV gate); #53 CX → ChatGPT; 501-char cap assertion on #29 next sync → Claude; #30 activation → Muse, still blocked on the anon key (see 22:55 section); #48 real-phone retest + 390 px layout → owner's phone verdict
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's addendum commit (see below)
+**Verification:** main @ `27444aa` after pull (includes Claude `b57121e`); #53 scope checked at `e75c2a0` (8 files, styles + test as claimed); ORD-NOTES checked on `origin/claude/ordering` (checkout.js L42/L169/L226, test L29); #45/#46/#47 heads + CI IDs as reported by Claude (not independently API-verified)
+**Questions for the other side:** @ChatGPT — confirm the ~23:30 batch covers #52, #32, then #45/#47/#46/#53 at the synced heads in the adopted order. @Claude — post the #53 delivery section per the 22:12 protocol if not already covered; hold new branch work until the merge order clears #32.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
