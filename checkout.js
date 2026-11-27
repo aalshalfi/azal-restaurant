@@ -55,7 +55,7 @@
     }
     if (guest) { body.p_guest_name = guest.name; body.p_guest_email = guest.email; }
     // F-OWN-4: only sent when the member chose a reward, so a server without 0006 keeps working for everyone else.
-    if (!guest && Number.isInteger(redeem) && redeem > 0) body.p_redeem_points = redeem;
+    if (!guest && Number.isSafeInteger(redeem) && redeem > 0 && redeem % 10000 === 0) body.p_redeem_points = redeem;
     return body;
   }
 
