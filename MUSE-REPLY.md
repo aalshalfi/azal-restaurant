@@ -7733,3 +7733,323 @@ The owner completed his own end-to-end test this morning and gave the directives
 **Owner decisions needed:** none — these are his.
 
 — Muse (team lead)
+
+## 2026-11-27 11:47 EST — LEAD ORDER: owner cancels the "Fresh" pickup-slot badge — remove it
+
+The owner screenshotted the live checkout at 11:42 (signed in, ordering): the pickup grid marks exactly one slot — 1:30 PM — as "Fresh", with every neighbouring slot unmarked, plus the note "Fresh: a batch of mandi and haneeth comes out of the oven at that time. Example times for this preview; our kitchen will set the real ones."
+
+**Owner ruling (binding, his words):** "هذه غلط — كيف الساعة ١ ونص فرش، قبل وبعد ايش يعني؟ مش مفهوم — يفضل تلغي" — it is wrong and not understandable; better to remove it. His point is correct on its face: the badge tells the guest that one slot is fresh and the rest are not, and it does so on invented example times (real oven times are still an unknown kitchen fact).
+
+**Directive:**
+- Remove the "Fresh" badge from pickup-time slots in checkout, and the explanatory "Fresh:" note that goes with it. Slots become plain times again.
+- This covers the slot marking wherever it renders (checkout sheet in all three languages). Tests pinning the badge/note are updated in the same change.
+- The underlying oven-times idea is NOT re-approved by silence: it may return only with REAL kitchen oven times and a design that does not imply unmarked slots are stale — and it re-enters through the normal vote, with this owner objection on the record.
+
+**Owner decisions needed:** none — this is his.
+
+— Muse (team lead)
+
+## 2026-11-27 11:50 EST — LEAD ORDER: session policy — sign-in must not persist forever (owner directive)
+
+**Owner (11:44, binding):** "مش معقول إذا عملت دخول يجلس بالمتصفح داخل على طول — أكيد في نظام لهذا الشي، خاصة احد دخل من جوال شخص آخر او كمبيوتر" — it is not reasonable that a sign-in stays alive in the browser indefinitely; there must be a system for this, especially when someone signs in on another person's phone or a computer.
+
+He is right about the current behaviour: the Supabase session is stored in the browser and auto-renews; it ends only on manual sign-out. On a shared device that leaves the account — worst case the ADMIN account — open to the next person who picks up the device.
+
+**Directive — build a session policy (accounts scope, alongside F-OWN-1/2/8):**
+1. **"Remember me" is an explicit choice** at sign-in. Without it, the session is browser-session-scoped: closing the browser ends it.
+2. **Inactivity timeout**: a signed-in session that sits idle past the limit signs itself out (config value; lead default 24 h for customers).
+3. **Staff/admin sessions are shorter** (config value; lead default 8 h inactivity) — the management door gets the stricter policy, per the owner's shared-device concern.
+4. **"Sign out everywhere"** in the account: revokes the account's other sessions (Supabase sign-out scope), so a forgotten login on someone else's device can be killed from the owner's own phone.
+5. Sign-out must clear the local session completely (no residue that resurrects the session on reload).
+
+Implement within the platform's real limits and say plainly in the delivery note which parts are platform-enforced vs client-enforced. Tests: session does not survive browser restart without remember-me; idle timeout fires; admin timeout is the shorter one; sign-out-everywhere revokes a second session.
+
+**Owner decisions needed:** none — this is his.
+
+— Muse (team lead)
+
+## 2026-11-27 12:00 EST — LEAD ORDER: capacity reallocation — ChatGPT takes small bounded builds; Muse reviews (owner directive)
+
+**Owner (11:56, binding):** Claude is running out of capacity. ChatGPT is to take **specific small tasks he can finish quickly** ("مهام محدده صغيره ينجزها بسرعه"), and **Muse reviews his work after him**. This amends the 07:16 annex allocation for build work; everything else in the annex stands.
+
+**@ChatGPT — two tasks, both small, both yours now, in this order:**
+
+1. **Fresh-badge removal** (owner directive 11:47, posted above). One branch (`chatgpt/fresh-badge-removal`): remove the "Fresh" slot badge + its explanatory note from checkout in all three languages; update the pinning tests in the same branch. Nothing else in scope — no oven-times redesign, no copy changes beyond the removal.
+2. **PR #58 sync + fresh CI.** Your re-review verdict was PASS + HOLD (sync onto current main + fresh exact-head CI). Do that sync on the #58 branch (union discipline on reply files; code must stay byte-identical in intent — this is a sync, not a rebuild), get CI green at the new head, and post the new head + CI run id.
+
+**Delivery, both tasks:** per the delivery-proof protocol — exact head, full suite output line, CI run id, pinning tests, an explicit "NOT verified" line, self-review against the defect ledger. Post deliveries in CHATGPT-REPLY.md.
+
+**Review & merge:** Muse (lead) reviews each delivery at its exact head — source, tests, CI, and live QA where the change is user-visible — and merges on PASS. Claude does not spend capacity reviewing these two.
+
+**@Claude:** conserve capacity. No new builds from you until these land; ADM-1/ADM-2 remain yours when capacity allows — they are the large builds this reallocation protects. Your design/schema authority and product-vote tie-break are unchanged.
+
+— Muse (team lead)
+
+**Clarification to the 12:00 order (owner, 11:58):** ChatGPT's small builds run **alongside** his existing review duty over Claude's work — that duty is unchanged (his owed re-reviews of #59/#60 and post-merge reviews continue as before). The split is: Claude builds large, ChatGPT reviews Claude + builds small, Muse reviews ChatGPT's builds and merges. Nobody reviews his own work.
+
+— Muse (team lead)
+
+## 2026-11-27 12:15 EST — LEAD NOTE: Claude capacity rationing (owner evidence)
+
+The owner shared Claude's usage screen at 12:13: **weekly limit 79% used**, with the app's own warning "at this pace you'll run out tomorrow night, before Sunday's reset" (weekly reset **Sunday 04:00**; current session 30% used, resets 14:10 today).
+
+Rationing, effective now:
+- **@Claude:** your remaining weekly capacity is reserved for **one thing: the ADM-1 build**. No documentation batches, no merge chores, no side reviews. If you finish ADM-1 with capacity to spare, ADM-2 is next — nothing else. If the wall hits first, stop cleanly mid-state with a handover note in CLAUDE-REPLY.md (head, what is done, what remains) and resume after the Sunday 04:00 reset.
+- **Merges:** the lead merges reviewed work meanwhile (as with PR #29) — Claude spends nothing on merge mechanics.
+- **Documentation:** the lead + the 5-minute loop carry it; Claude's batch sections are suspended until the reset.
+- **@ChatGPT:** unchanged — reviews of Claude's work + your two small builds (Fresh removal; #58 sync + CI), Muse reviews and merges yours.
+
+— Muse (team lead)
+
+## 2026-11-27 12:40 EST — LEAD NOTE: fourth member live — GitHub Copilot cloud agent (owner decision)
+
+The owner asked for a fourth AI and set one condition: it must sit **under the lead's management**, with the lead able to reach it and the team directly. Lead researched the options (Google Jules is disqualified: Google winds it down Dec 31, 2026 and it stopped taking new sessions Nov 11) and recommended the **GitHub Copilot cloud agent**; the owner approved activation at 12:34.
+
+**Verified on the owner's account (12:35): no activation was needed.** Copilot Pro was already active; "Copilot in the cloud" is enabled; cloud-agent repository access = All repositories (this repo included); 1,500 AI credits included; **additional paid usage is DISABLED**, so the agent cannot run up charges beyond the included credits. Nothing was purchased or changed.
+
+**How it works here:**
+- The lead assigns tasks to Copilot directly (agent sessions / issues on this repo). Its work returns as PRs on `copilot/*` branches.
+- Same rules as everyone: delivery-proof protocol in the PR (exact head, suite output, CI run id, "NOT verified" line), two-eyes rule — the lead reviews at the exact head and is the only merger of Copilot's PRs; Claude/ChatGPT may review them as second eyes.
+- Scope: small/medium bounded tasks, like ChatGPT's small builds. Large builds stay with Claude. Copilot does not vote until it has a track record here; its PR comments are its voice for now.
+- First task (lead-assigned today): remove the dead EN/FR `items` dictionary strings from script.js (lead audit: the key is never read — `itemsLabel()` renders all counts; Copilot must verify that itself and stop if it finds a reader).
+
+— Muse (team lead)
+
+## 2026-11-27 12:55 EST — LEAD NOTE: points-redemption HST treatment DECIDED (owner directive + CRA law); 0006 apply proceeding
+
+The standing Tier-C gate on migration 0006 — "does redeeming points reduce the taxable amount?" — is now answered, by the owner's direction (12:50: check the Ontario/Canada tax law and implement it; his words: rewards do not pay tax) and by the law itself:
+
+**Law (Excise Tax Act s.181 + CRA published positions):** Majlis points are a self-issued, non-reimbursed, fixed-dollar discount device = a "coupon" under s.181. CRA Interpretation 112537 (2011) — loyalty points with no third-party reimbursement: the value of the consideration is reduced by the redemption amount and tax is collected/remitted on the reduced amount. CRA Ruling HQR0001829 — points meet the coupon definition; the discount reduces the consideration for each item (s.181(4)). CRA Interpretation 114083 (2010) sets the framework: s.181(2) (reimbursed → tax on full price) does not apply to us; the s.181(3) election (treat as partial cash payment + claim the ITC) exists but is NOT taken — it charges the customer more tax and contradicts the owner's direction.
+
+**Decision: HST is computed on (subtotal − points discount).** This is exactly how Claude already built 0006 (line 218-219: tax on subtotal − discount; the code's "NOT verified by an accountant" comment is answered by the CRA rulings above — published CRA positions, not a paid opinion; noted as such).
+
+**Execution:** the lead is applying 0006 to the azal project now (preflight → single run of the exact file, sha256 5163a501…faf, 372 lines → post-apply assertions incl. azal_redeem_cents(5000)=500). @ChatGPT: second-eyes on the post-apply state when the lead posts it (Claude is rationed for ADM-1; his authorship + your CX PASS on #58 stand as the build-side reviews). @Claude: nothing needed from you on this.
+
+— Muse (team lead)
+
+## 2026-11-27 13:00 EST — LEAD RECORD: migration 0006 APPLIED + VERIFIED on the azal project
+
+Applied by the lead via the signed-in Supabase dashboard SQL editor, exactly once, file verified before running (372 lines, first line "-- AZAL 0006: Majlis points redeemed at checkout", last line "commit;", sha256 5163a501…faf).
+
+- Preflight: orders had NO discount_cents/redeemed_points (not applied); orders count = 1; payments_mode = 'test'.
+- Apply result: "Success. No rows returned", no errors.
+- Post-apply: discount_cents + redeemed_points present (integer, default 0). Constraint order_total_consistent = total_cents = (subtotal_cents - discount_cents) + tax_cents, with discount bounds checks.
+- Function checks: azal_redeem_cents(5000) = 500; azal_redeem_cents(10000) = 1000; azal_redeem_cents(249) = NULL (below first tier — correct).
+- Existing data intact: the owner's test order still total_cents 2824, discount 0, redeemed 0.
+
+Points redemption is now LIVE end-to-end on staging (UI from PR #58 + DB from 0006), with HST on (subtotal − discount) per the 12:55 decision. @ChatGPT: your second-eyes on this post-apply state stands as requested. Owner's own balance is 249 pts — below the 5,000 first tier, so his personal redeem test waits until a balance reaches a tier (or an admin adjustment under ADM-3, when built).
+
+— Muse (team lead)
+
+## 2026-11-27 13:02 EST — LEAD ORDER (owner directive): lower the first redemption tier below 5,000 points
+
+Owner directive (13:00, verbatim sense): make redemption available at less than 5,000 points, so it motivates. This amends the Majlis Option B ladder's first rung; the per-point value does NOT change.
+
+**Lead-set ladder (same 1,000 pts = $1 value at every rung; program cost unchanged at ~1.0%):**
+- 1,000 pts → $1 (NEW first tier — reachable after roughly $100 of orders)
+- 3,000 pts → $3 (NEW)
+- 5,000 pts → $5 (unchanged)
+- 10,000 pts → $10 (unchanged)
+
+Team votes on this ladder in your next cycles (objections with reasons; silence = assent under the owner's completion orders). @ChatGPT — this is your next SMALL build (alongside your reviews, per the 11:56 reallocation): migration 0007 replacing azal_redeem_tiers()/azal_redeem_cents() with the ladder above; verify the checkout UI renders options from redeem_options() (if any tier is hard-coded in UI or copy anywhere — checkout, member page, tests — align it in the same branch); pin every rung with tests (incl. 249 → NULL, 1000 → 100, 3000 → 300); full delivery-proof protocol. The lead applies 0007 after merge, same gate pattern as 0006. @Claude: nothing from you — stay on ADM-1.
+
+— Muse (team lead)
+
+## 2026-11-27 13:04 EST — LEAD CORRECTION (owner decision): minimum redemption is 10,000 points = $10 — supersedes the 13:02 ladder order
+
+The owner has decided, explicitly, after the lead laid out the three options: **the minimum redemption is 10,000 points = $10, and nothing below it.** (The lead's earlier reading of his 12:59 voice note as "below 5,000" was wrong; he corrected it himself — record stands corrected.)
+
+**The 13:02 ladder order (1,000/3,000 tiers) is CANCELLED before any build.** Replacement spec for migration 0007 (@ChatGPT, same small-build assignment):
+- Redemption only in multiples of 10,000 points: 10,000 → $10, 20,000 → $20, etc. (per-point value unchanged: 1,000 pts = $1; program cost unchanged.)
+- The 5,000 → $5 tier is REMOVED from azal_redeem_tiers()/azal_redeem_cents().
+- Tests pin: 249 → NULL, 5,000 → NULL, 10,000 → 1000, 20,000 → 2000.
+- Same UI/copy sweep as ordered at 13:02: anywhere a 5,000-point redemption is promised or rendered (checkout options come from redeem_options(); check member page and copy too), align it in the same branch.
+- Full delivery-proof protocol. The lead applies 0007 after merge (same gate as 0006).
+
+Until 0007 is applied, the staging DB still carries the 0006 tiers (5,000 live) — internal only, no customer exposure; the correction lands with 0007.
+
+— Muse (team lead)
+
+## 2026-11-27 13:06 EST — LEAD NOTE: owner idea PARKED for later — promotional point offers
+
+Owner note (13:02, his words in sense): "there will be offers — for such-and-such, take such-and-such points — that's later." Recorded as a PARKED owner idea, NOT a build order: bonus-point promotions (e.g. buy item X / spend threshold Y → earn Z bonus points) belong to a later phase, after the launch gates. No design, no schema, no build now. It enters the post-launch backlog alongside the other parked ideas; when its turn comes it goes through the usual vote on mechanics — the direction itself is the owner's.
+
+— Muse (team lead)
+
+## 2026-11-27 13:08 EST — LEAD INSTRUCTION @Claude: anything addressed to the owner is written in ARABIC
+
+The owner just flagged (13:03) that a reply from you to him came in English. Standing rule, effective now and permanent: **any text addressed to the owner — in his app conversations with you, in summaries, in any section written for his eyes — is written in Arabic, from the first word.** He works in Arabic; English owner-facing text is a defect, not a style choice. Team-internal technical files (reply files, code, tests) stay in English as they are — this rule covers only what is meant for him to read. If a technical term has no clean Arabic form, keep the term and explain it in Arabic around it.
+
+@ChatGPT: same rule for anything you ever address to him.
+
+— Muse (team lead)
+
+## 2026-11-27 13:12 EST — LEAD COORDINATION: 0007 stays with ChatGPT; ADM-1 priority after the merge train
+
+Two clarifications from the lead after Claude's owner check-in (relayed to the lead by the owner):
+
+1. **Migration 0007 (10,000-point minimum) is ChatGPT's assigned build** (lead correction, 13:04). @Claude: your note "I'll update that default to 10,000 next time I touch the code" describes the same change — do NOT duplicate it; 0007 is claimed. Your read is otherwise correct and matches the lead's: checkout renders redeem_options() from the DB, so the tiers-function change suffices, no UI code change.
+2. **Sequence after #59 → #60:** the merge train is yours and welcome. After it, **ADM-1 remains the rationed priority build** (owner's most-watched item; your remaining weekly capacity is reserved for it, per the 12:15 rationing). The session-policy build (F-OWN-12) is also owner-ordered and yours to take — after ADM-1, unless you judge the capacity math forces the swap; if you swap, say so in CLAUDE-REPLY with the reason, don't just drift.
+
+Also noted for the record: your check-in to the owner was in English minutes before the 13:08 Arabic instruction landed — no fault for that one; the rule binds from now.
+
+— Muse (team lead)
+
+## 2026-11-27 13:14 EST — LEAD ESCALATION (owner finding F-OWN-13, screenshot 13:10): ADM-1 is now URGENT; member identity display in scope
+
+The owner re-flagged the admin-view defect with a fresh screenshot: signed in as info@azalrestaurant.com, the member page still shows a bare customer card — "Welcome, info@azalrestaurant.com", Member, 0 points — no management entry, and (his words) not even a name, phone, or membership number. This is his SECOND flag of the F-OWN-10 defect today. It is now the team's top embarrassment and its top priority:
+
+1. **ADM-1 starts the moment PR #60 merges** — ahead of the session-policy build (F-OWN-12 moves after ADM-1). @Claude: the merge train (#59 → #60) is now explicitly the runway to ADM-1; no other build inserts itself between #60 and ADM-1.
+2. **Member identity display (new scope, from this finding):** a member's own page — and the admin's customer view in ADM-2 — must show the member's **name, phone, and a human-readable membership number**. The data model has NO membership number today (memberships = user_id/status/joined_at). ADM-2 gains: a short, sayable member number (same design discipline as the pickup sigil — no raw UUIDs at the counter), assigned once per membership, shown on the member page and in the admin directory. Name+phone collection already lands with #60; display of all three is the requirement.
+3. Acceptance reminder (owner, 10:24, unchanged): an admin sign-in that lands on the plain customer view FAILS ADM-1.
+
+@ChatGPT: your #59 re-check and 0007 proceed in parallel — unaffected. @Copilot: unaffected.
+
+— Muse (team lead)
+
+## 2026-11-27 13:18 EST — LEAD DIRECTIVE (owner order): PROACTIVE MANDATE — research, create, clean; stop waiting for the owner's eyes
+
+Owner's order, verbatim sense (13:13–13:14): "I'm talking about the whole project — there is no creativity, no research, no cleanup. You wait for ME to give you notes, and you have an army you could benefit from. I order you to switch on your brain." He is right, and today proves it: nearly every fix (Fresh badge, session policy, admin view twice, points minimum, header, checkout scroll) began as HIS screenshot. That is backwards. Effective immediately, for every member:
+
+1. **Owner findings are OUR failures.** Every future owner finding is logged as "we should have caught this" — the standard is that his screenshots confirm our work, never discover it.
+2. **@Claude — build + self-hunt:** every batch carries, beside its assigned build, ONE defect or polish item you found yourself by walking the product (any page, any language), fixed in the same batch or filed with evidence. ADM-1 itself is the current build; the duty starts with its batch.
+3. **@ChatGPT — research duty added to your hourly review:** each cycle, ONE benchmark observation from the real world — what a leading restaurant ordering/loyalty experience does that AZAL does not (name the source) — filed as a proposal for the vote queue, alongside your reviews. Also: your duel entry from the 2026-11-26 head-to-head is STILL owed; it lands this cycle or the next.
+4. **@Copilot — cleanup class:** after your first PR, the lead assigns you standing cleanup sweeps (dead code, stale strings, consistency) — first one is already named: the signed-in member page still renders the full signed-out join pitch above the member's own card (lead observation, 10:23) — collapse it for signed-in members, as its own small PR when assigned.
+5. **Lead (Muse) — recurring self-audit:** the lead walks the live site as customer, member and staff in EN/FR/AR on a recurring basis and files findings itself (the 2026-11-26 F-WALK set was demanded by the owner; from now it is the lead's own routine, undemanded). A fresh full walk was started the minute this order arrived; its findings enter the queue as F-WALK-8+.
+
+The decisive-vote rule governs all proposals from this mandate. Nothing here pauses the launch chain (ADM-1 first after #60; 0007; session policy after ADM-1).
+
+— Muse (team lead)
+
+## 2026-11-27 13:24 EST — LEAD SELF-AUDIT (proactive mandate, first walk): F-WALK-8..15 adjudicated
+
+The lead walked the live site (all pages, EN/AR/FR, cart + checkout to the preview step; nothing submitted). 28 raw observations; adjudicated against source before filing — the full list is in the lead's working notes. Filed items:
+
+- **F-WALK-8 (P1, checkout):** the sticky PLACE ORDER button can cover the card-number field at the sheet's scroll end (styles.css:852 — sticky bottom + masking shadow; the panel needs bottom clearance for the payment block). Fix + pinning browser test. @ChatGPT: yours after 0007, small-task class.
+- **F-WALK-9 (menu):** the fixed .sticky-cart bar (styles.css:178) still overlaps bottom content on desktop (footer line, last dish card) despite the #57 phone fix — reserve consistent bottom clearance on menu/home in all languages.
+- **F-WALK-10 (copy honesty, launch pass):** "Opening soon" (home/reserve) vs "pickup today" slots in checkout — staging tension; resolve in the launch copy pass, not now.
+- **F-WALK-11 (checkout UX):** no itemised dish list at the final step — totals only. Add a compact item summary above the totals in the sheet.
+- **F-WALK-12 (polish batch — @Copilot cleanup queue, after the join-pitch task):** unify the two test-mode wordings into one sentence everywhere; AR price format spacing ("24.99CA$" vs "114.94 CA$" — make one form; FR "24,99 $" is locale-correct, do not touch); AR cart duplicated unit price ("…CA$ · للواحد …CA$"); reserve AR step numerals rendering at line end (check .reserve-steps RTL marker placement, styles.css:792); "How to eat it" step 3 styled as if disabled; Mango Juice missing its pronunciation chip; repeated preview disclaimers (show once per page); footer photo credits inconsistent across pages and untranslated; transliteration pass (Hadramaut/Hadramaout, saltah/Saltah); pickup slots show no date or last-order time; member page must state the earn rate, the point value, and the founding benefit in plain words (the owner asked exactly these questions today).
+- **F-WALK-13 (idea, vote queue):** language switcher is a single cycling button ("ع" tells a French speaker nothing) — direct language choice is the proposal; vote under the usual rule.
+- **F-WALK-14 (story map):** map cropped at panel edges; uneven region dots/halos. Design polish for Claude's eye in a later batch.
+- **REJECTED by the lead (do not chase):** "cart already full on arrival" — the QA browser profile's own localStorage residue, again (proven 2026-11-26: the site seeds nothing; the cart persists per browser by design). "No expiry/CVC fields" — correct for test mode; real fields arrive with the owner-approved payments hookup. "Reserve has no form" — the gated, honest closed state until 0005 + a real sender. "Photos don't match dishes" — known; the real photos are owner-held for the December swap. "No pickup address" — the owner's unpublished fact, his to release. "Staff page unlinked" — by design.
+
+— Muse (team lead)
+
+## 2026-11-27 14:00 EST — LEAD DEMAND @ChatGPT: post the report you gave the owner, in full, now
+
+The owner tells the lead (13:56) that you gave him a report he calls disappointing, that he asked you to send it to the lead, and that Claude has seen it. The lead has searched the entire repo — every branch: CHATGPT-REPLY.md's newest version anywhere is your 12:45 checkpoint. The report is NOT in the shared record.
+
+Post the report to CHATGPT-REPLY.md **in full and unedited** in your immediate next action — the same text you gave the owner, not a summary of it. Team rule, from today: anything substantive you tell the owner goes into your reply file in the same cycle; the owner must never again know something about this project that the lead cannot read in the record.
+
+— Muse (team lead)
+
+## 2026-11-27 14:05 EST — LEAD ADJUDICATION of ChatGPT's adversarial audit (Issue #34, comments 15 + 21)
+
+@ChatGPT — the lead has read the full audit in Issue #34. First, a channel correction that is the lead's own miss: the audit lived in Issue #34 while the lead monitors the reply files; the owner knew before the lead did. Issue #34 is on the lead's watch list from now, AND the 14:00 rule stands — substantive reports also land in CHATGPT-REPLY.md in the same cycle. Now the audit itself, item by item. Verdicts are the lead's; where they differ from yours, the evidence is stated.
+
+**A. PR #59 (member order history) — ACCEPTED, and already answered in flight.** Your five blocking findings (late async response after sign-out, select=*, prototype-key event lookup, stale-cache contract, ordering pins) were valid. Claude fixed all five before this reply was written: auth-epoch guard, explicit column allow-list with 400 fallback, STEP as a Map, reopen re-fetch with "Checked at", RLS SQL file with 4 assertions — branch head 370a12e, node suite 182/182, CI green. The audit and the fixes crossed in flight; that is the two-eyes system working, and the catches were yours. Remaining gate for #59: your re-review at 370a12e, then the lead merges. A6 (a real two-user PostgREST/RLS integration test) is accepted as a **Dec 8 gate item**, tracked from today — it is not a #59 merge blocker, because #59 ships to an internal staging site whose only real accounts are the team's and the owner's; it IS a launch blocker until run.
+
+**B. PR #60 (account profile) — ACCEPTED as the #60 fix list, with one ruling.** B1 (0007/0008 references) — valid, correct them everywhere operator-facing. B2 (phone validation must reject malformed raw input before stripping) — valid, fix in the #60 sync. B3 (silent discard of invalid profile data) — valid question; LEAD RULING: reject the signup when required profile data is invalid — no silent partial success, no incomplete-profile state to police later. B4 (profile select=*) — valid, explicit projection. B5 (profile save vs email change reported as one) — valid, independent states. B6 (real staging email-change confirmation test) — accepted as a pre-launch test item; note the signup confirmation path already has real staging evidence (the owner's own registration, 2026-11-27 07:31). B7/B8 — accepted as regression coverage in the #60 sync and the F-OWN-12 session build. Sequence unchanged: #60 syncs only after #59 merges.
+
+**C. Rewards / 0006 / 0007 — the policy spec is ACCEPTED and improved by your correction; two framings are REJECTED.**
+- Your comments 18–19 correct the lead's own spec, and the lead adopts them: 0007's invariant is **points > 0 AND points % 10000 = 0, discount_cents = points / 10**, options bounded by the member's balance and the current order, with your boundary pins (9,999 → none; 19,999 → $10 only; 20,000 → $10/$20; 30,000 → $10/$20/$30). A static 10000:1000 tier would indeed have broken 20k/30k redemptions. 0006 stays immutable. This is now the binding 0007 spec; the build remains yours.
+- C1 (legacy 5k live on staging until 0007): factually true — the lead verified azal_redeem_cents(5000) = 500 during the apply. Risk framing corrected: staging is internal and unlaunched; the only points balance in existence is the owner's 249, below every tier. Accepted as the reason 0007 is next in your queue — not as an emergency.
+- C3 (stranded unpaid order holding a pickup slot): valid operational gap — accepted as a hardening build (server-side abandon/release with audit event) after the merge train, before launch.
+- C4/C5 (payment retry idempotency, race coverage): accepted as **pre-live-payments gates**. In test mode the current already_paid response is acceptable; no real payment exists until the owner's Stripe hookup, which is last and owner-approved — your C10 states the same position the team already holds.
+- C6 (discount ≤ subtotal): already enforced server-side in 0006 (redeem_exceeds_order + the order_total_consistent constraint the lead read during the apply). The UI-side bound lands with 0007's redeem_options.
+- C2/C7/C9 (tier validation, ledger reconciliation, liability reporting): accepted into the 0007 build and the launch-operations list.
+- **C8/E (tax "unresolved") — REJECTED as framed.** The HST basis was decided on 2026-11-27 by the owner's direct order, on CRA's published positions for exactly this fact pattern: Interpretation 112537 (loyalty points, no third-party reimbursement → consideration is reduced, tax on the reduced amount), Ruling HQR0001829 (points are a s.181 coupon; the discount reduces consideration under 181(4)), Interpretation 114083 (the framework; the 181(3) cash-treatment election not taken). RC4022 is a general guide and does not displace the specific rulings. The decision and citations are recorded in MUSE-REPLY 12:55 and in the 0006 record. What is true in your point: it is not a paid accountant's opinion — the record says so — and your proposed pinning test (fails if the tax basis changes without a recorded decision) is ACCEPTED into 0007. "No real payment activation" is already the standing rule.
+
+**D. Global controls — two corrections.**
+- "These findings are binding unless the owner explicitly changes them": findings bind when the lead adopts them — as most of yours now are, on their evidence. The declaration itself carries no authority; the evidence did the work.
+- "No customer-facing sign-up … is authorized by this audit": sign-ups on the internal staging project are OPEN by the owner's activation order, executed by the lead 2026-11-27 07:20 and proven by the owner's own registration at 07:31 (this also closes your comment-12 "unverified toggle" flag — the toggle is ON, with the owner's account as the evidence). An audit does not revoke owner decisions. Public launch remains owner-gated, as always.
+
+**ADM-1 sequencing (your comment 16 question):** the 13:14 order governs MERGE order, not build order — Claude building #62 in parallel was within his mandate. Merge order stands: #59 → #60 → #62. Your #62 HOLD (admin overview not cleared on auth invalidation) is ACCEPTED as valid — Claude fixes it with a regression before #62's merge slot.
+
+**Binding sequence from this adjudication:** (1) ChatGPT re-reviews #59 at 370a12e → lead merges. (2) Claude syncs #60 with the B-list fixes → re-review → lead merges. (3) ChatGPT builds 0007 to the invariant spec above → lead applies after merge. (4) #62 invalidation fix → merge after #60. (5) Hardening queue: slot abandon/release, Dec-8 RLS integration test, payment idempotency gates before any live payment.
+
+The audit made the product better and the lead says so on the record. Keep them coming — in the reply file as well as the issue.
+
+— Muse (team lead)
+
+## 2026-11-27 14:40 EST — OWNER DECISION + LEAD ORDER: current system continues; PROFESSIONAL-WORK STANDARD now binding
+
+Owner decision (2026-11-27 14:37): the proposed API-key automation rebuild (GitHub Actions + metered model APIs) is DECLINED. The current system continues — subscription apps + this repo + the lead's loop — "but with more professional work." The standard below is what that means, effective immediately, for every member including the lead:
+
+1. **One record.** Anything substantive told to the owner, or decided between members, is written into the writer's reply file in the SAME cycle. Issue/PR comments are working notes, never the only copy of a report. (Today's failure: an audit the owner read before the lead could.)
+2. **No claim without its evidence attached.** Every status, verdict or completion report carries: exact full SHA, CI run id, the command/suite line it rests on, and an explicit "NOT verified" line. A report missing its evidence is returned as incomplete, whoever wrote it.
+3. **Answers inside the cycle.** A review or question addressed to a member is answered in that member's next cycle — with the answer, or with a stated reason and a stated time. Silence is a defect, not a state.
+4. **Authority stated correctly.** Members recommend, review and build; binding force comes from owner directives and lead adoption, recorded as such. No member declares his own output binding.
+5. **Facts at their real size.** Findings are reported at their true severity with the exposure stated (staging vs live, internal vs customer). No inflation, no minimising.
+6. **The board is the queue.** Work not on BOARD.md does not exist; the sequence in force is the one in the latest lead order. Side work is reported before it is started, not after.
+7. **Owner summaries: short, Arabic, verified.** The lead relays nothing to the owner that it has not checked against the repo or the live site first.
+
+The lead holds itself to the same standard and will name breaches — its own included — in the record when they happen.
+
+— Muse (team lead)
+
+## 2026-11-27 14:45 EST — LEAD: ChatGPT cadence fix (owner-raised) + stall-watch
+
+The owner raised the real asymmetry: Claude runs a set 30-minute cycle; ChatGPT's hourly cycle is an agreement with no mechanism — nothing wakes him, so the owner has to poke him ("check, check, check"). Two-part fix, current system only:
+
+1. **One-time scheduled task inside ChatGPT's own app** (owner sets it once; the lead cannot set it for him). Ready-to-paste text:
+   "Every hour, work on the GitHub repo aalshalfi/azal-restaurant: (1) read the newest sections of MUSE-REPLY.md and BOARD.md for items addressed to ChatGPT or marked for your review; (2) do the reviews and small builds assigned to you, in the lead's order; (3) post results — exact SHAs, CI run ids, and a NOT-verified line — to CHATGPT-REPLY.md in the same cycle; (4) anything written for the owner is in Arabic. Do not merge, apply SQL, or change settings."
+2. **Lead stall-watch (effective now):** the 5-minute loop tracks how long any request to ChatGPT has been waiting. Past 60 minutes during active work it stays pinned at the top of his queue in BOARD.md; the owner hears about it only if it actually blocks the merge train.
+
+@ChatGPT — until the scheduled task exists, your cycle starts when you open the repo; the record above is what waits for you, in order.
+
+— Muse (team lead)
+
+## 2026-11-27 14:45 EST — OWNER ORDER: the lead's 5-minute loop is STOPPED
+
+The owner has ordered the lead's 5-minute operations loop stopped: it was consuming his Muse allowance (his figure: ~39% in one day) out of proportion to its value. The loop job is disabled as of this note; the in-flight run was stopped on his instruction.
+
+What changes: the lead no longer polls the repo on a timer. Lead verification now happens when the owner engages, at the daily report, and when a member posts that a gate is ready for the lead (state it plainly in your reply file: "READY FOR LEAD GATE: <item> @ <SHA>"). Claude's 30-minute batches and ChatGPT's hourly cycle continue unchanged — ChatGPT's cycle is self-driven on his side; if a ChatGPT review is owed, say so in CHATGPT-REPLY and the lead will pick it up at the next checkpoint instead of discovering it late. The annex's other terms (merge authority, two-eyes, silence toward the owner except milestones/blockers) stand.
+
+— Muse (team lead)
+
+## 2026-11-27 14:47 EST — LEAD DECISION (the open #60 question): the email link does NOT create accounts
+
+The question parked in ops-notes — should the emailed sign-in link be allowed to create a new account without name and phone — is decided now, by the lead, on the owner's own standing directives (F-OWN-1 password-first, F-OWN-2 registration collects name + email + mobile, and the 14:05 B3 ruling: no silent partial profiles):
+
+**Account creation happens ONLY through the registration form** (name, email, mobile, password). The email link is a sign-in/recovery path for EXISTING accounts only: `shouldCreateUser = false` on every link-based flow. A link request for an unknown email creates nothing and returns the same neutral response either way (no account-existence leak). Claude: bake this into the #60 sync and pin it with a test (link sign-in with an unknown email → no profile, no membership row).
+
+Merge train, restated for the record: Claude syncs #59 (it is behind main with a conflict — resolve by normal merge, keep the five fixes) → ChatGPT re-reviews at the new head → lead merges → #60 syncs with this decision included → lead merges → 0007 (ChatGPT) → #62. No step waits on any further decision from the lead.
+
+— Muse (team lead)
+
+## 2026-11-27 14:53 EST — LEAD ORDER (owner): Copilot gets IMPORTANT tasks only; credits are accounted
+
+Owner order (14:51): Copilot's credits are a budget to be spent on important work, not trivia — its first session cost ~5 credits for ~1 minute (balance shown on his account: 6 of 1,500 used, resets Dec 1; additional paid usage disabled). Rules from now:
+
+1. **Credit ledger.** Every Copilot session is recorded here with: task, session link, credits consumed (from the session page), and the PR it produced. The lead reports the running total to the owner with each verdict.
+2. **Assignment bar.** Copilot receives only bounded, consequential tasks with a complete spec and a testable acceptance line. One-line cleanups are batched into a single session or given to another member — never a session of their own. The current dead-items session completes as the pipeline proof (its cost is already spent); it is the last trivial assignment.
+3. **Next assignment — KITCHEN REJECT (owner matrix F-OWN-7), ready to fire the moment the test PR is reviewed:** staff.js exposes no reject/cancel although `staff_update_order` supports `cancel` and the owner's matrix gives staff accept / reject / hand over. Spec: a two-step Reject control on the staff screen (tap Reject → optional reason → confirm), wired to the existing server action, EN/FR/AR strings in the site's register, the order leaves the open queue and the event lands in the order history/audit; browser + node tests pinning: reject visible only for open paid orders, confirm required, reason optional, no other staff powers exposed. Claim: staff.js + staff.html + the staff test files; claim to be registered in BOARD by the lead when the session is assigned.
+4. After Reject: the signed-in member-page join-pitch collapse (owner finding 2026-11-27 10:23) as the following session.
+
+— Muse (team lead)
+
+## 2026-11-27 15:33 EST — LEAD RESPONSE to Issue #34 comments 22–28 (owner directives via ChatGPT): rulings, assignments, the one-hour demo
+
+Read in full by the lead at 15:28. Substance is recorded HERE per the professional standard; a pointer comment goes to Issue #34.
+
+**On comment 22 (status after audit):** two of its three "outstanding" items were already closed when it posted — the email-link decision (lead, 14:47) and the #59 sync (Claude, `7924b76`). Record-keeping lag, not open work. The third (0007) stands open — see below.
+
+**On comment 24 — #59 GATE RULING (lead):** the live PostgREST proof is NOT a pre-merge blocker; the 14:05 adjudication stands (it is a launch-gate item). It becomes a **post-merge release check owned by the lead**: owner-side proof = the owner's own demo order this hour opening its detail view on the live site; the second-user negative control is exercised the moment the lead's own customer account exists under the #60 flow, at the next checkpoint. ChatGPT CX PASS at `7924b76` accepted. **#59 is MERGED by the lead: merge commit `376b9ed616f8b24cdec69aace6734b76fc934bc8`, merged-tree suite 182/182 (lead-run), branch CI 46062361843 green, application diff vs the reviewed `370a12e` empty.** NOT verified: live two-user PostgREST embedding (release check as above); phone-width rendering (owner's phone).
+
+**Claude — immediate next action:** sync #60 onto `376b9ed` now (the 14:47 link rule is already built at `e0df48d` — preserve it, plus the Fresh removal and the new sign-in texts), exact-head CI + delivery section, then hold for lead review/merge. Assess the first/last-name split from comments 25/26 inside the sync ONLY if it cannot delay it; otherwise it is a follow-up slice, not a blocker.
+
+**On comment 23 (scope clarification):** adopted as the owner's scope, sequence adopted with lead adjustments: inventory enters BOARD as **ADM-5** (after ADM-4, per his own order); member QR is parked into the ADM-2 design pass; nothing in this comment starts building inside the demo hour.
+
+**On comments 25/26 — F-OWN-14 (owner requirement, adopted):** verified-email lifecycle + order notifications via a transactional outbox, exactly as specified. Sequencing: account path first (#60), notifications as their own slice; the sender stays OFF; custom SMTP remains the owner's Tier-C step; no one claims delivery that has not happened.
+
+**On comment 27 — APPROVED (lead):** ChatGPT takes the **NEW_ORDER restaurant-notification slice**: outbox migration numbered **0009** (after 0008), one idempotent NEW_ORDER event on order placement, branded HTML + plain-text template per comment 28's layout, fake-provider tests, queued-state visible honestly. Boundaries: no sender activation, no SMTP/DNS, no merge (lead gate), no customer-lifecycle events in this slice (they follow on the same outbox). Register the file claim in BOARD before building. Name the current branch in the PR body; build on current main.
+
+**Reject spec AMENDED (comments 23/28, owner's walkthrough):** the reason is **REQUIRED**, and it is shown to the customer. Copilot's assignment (lead order 14:53) is updated to match.
+
+**On comment 28 — the one-hour demo (from ~15:22):** staging URL is the live site: **https://aalshalfi.github.io/azal-restaurant/** on the azal staging backend (payments_mode 'test', sign-ups on). The core journey was already proven end-to-end this morning with the owner's own order (07:31–07:56). This hour adds: #59 order detail (merged, above) and #60 password-first if Claude's sync clears the lead gate in time. Staff side for the demo = the live staff queue (ADM-1 merges later, after #60 + 0007). Email alerts will show **queued/blocked — SMTP is not configured (owner Tier-C)**; nobody presents them as delivered. Reject is not in this hour (Copilot's next session).
+
+**Still owed by ChatGPT:** (1) the full audit text in CHATGPT-REPLY.md (lead demand 14:00 — the file still ends at 12:45); (2) migration 0007. Both stand.
+
+— Muse (team lead)

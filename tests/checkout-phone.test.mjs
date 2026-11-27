@@ -10,7 +10,7 @@ test("F-CHK-1: the checkout panel scrolls inside itself at phone heights; × and
 });
 test("F-CHK-2: HST 13% with the server's half-up cents arithmetic (0004 place_order)", () => {
   assert.match(js, /const HST_BPS=1300;/);
-  assert.match(js, /Math\.floor\(\(sub\*HST_BPS\+5000\)\/10000\)/);
+  assert.match(js, /Math\.floor\(\(\(sub-disc\)\*HST_BPS\+5000\)\/10000\)/); // 0006: HST on the amount after a points reward
   const tr = js.slice(js.indexOf("const translations"), js.indexOf("const productTranslations"));
   for (const k of ['hst:"HST (13%)"', 'hst:"TVH (13 %)"', 'hst:"ضريبة المبيعات (13%)"', 'total:"Total"', 'total:"المجموع"']) assert.ok(tr.includes(k), k);
   for (const p of ["index", "menu", "story", "member", "404"]) { // reserve.html is table-only, no checkout
