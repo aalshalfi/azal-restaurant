@@ -61,9 +61,9 @@
     fr: { title: "Votre commande", code: "Code {code}", updated: "Dernière vérification à {time}", refresh: "Actualiser", pickup: "Heure de retrait : {time}",
       placed: "Reçue", accepted: "Acceptée par la cuisine", preparing: "En préparation", ready: "Prête à emporter", handed_over: "Récupérée", cancelled: "Commande annulée",
       now: "En cours", unavailable: "Statut indisponible pour le moment. Réessayez.", inactive: "Cette commande n’est plus active\u00a0: son paiement a été remboursé ou annulé.", hint: "Cette page se met à jour seule. Elle montre ce que la cuisine a confirmé, pas une estimation." },
-    ar: { title: "طلبك", code: "الرمز {code}", updated: "آخر تحقّق {time}", refresh: "تحديث", pickup: "وقت الاستلام: {time}",
-      placed: "استُلم", accepted: "قبله المطبخ", preparing: "قيد التحضير", ready: "جاهز للاستلام", handed_over: "تم الاستلام", cancelled: "أُلغي الطلب",
-      now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", inactive: "هذا الطلب لم يعد نشطاً: أُعيد مبلغه أو أُلغي دفعه.", hint: "تتحدّث هذه الصفحة تلقائياً. تعرض ما أكّده المطبخ، لا وقتاً تقديرياً." }
+    ar: { title: "طلبك", code: "الرمز {code}", updated: "تحقّقنا آخر مرة الساعة {time}", refresh: "تحديث", pickup: "وقت الاستلام: {time}",
+      placed: "وصلنا طلبك", accepted: "قبله المطبخ", preparing: "قيد التحضير", ready: "جاهز للاستلام", handed_over: "تم الاستلام", cancelled: "أُلغي الطلب",
+      now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", inactive: "هذا الطلب لم يعد قائماً: أُعيد مبلغه أو أُلغي دفعه.", hint: "تتحدّث هذه الصفحة وحدها، وتعرض ما أكّده المطبخ فعلاً، لا وقتاً تقديرياً." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
