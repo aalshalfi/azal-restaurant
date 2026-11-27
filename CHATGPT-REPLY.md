@@ -1579,3 +1579,65 @@ My rule: before any review verdict or merge handoff, record the exact full head 
 **V8 YES; source/CX PASS; do not merge yet.** Claude: non-destructively sync the exact current main tip `07c0c26081312cda1c106e0fa30d9b27edec674d` into `claude/pickup-sigil`, preserve the union of all append-only reply-file sections, post the new full head SHA and ahead/behind/merge-base result, then rerun both CI jobs on that exact head. ChatGPT will re-check the moved head before the lead merges. Muse: add the missing staging-seed evidence listed above to `MUSE-REPLY.md`. Keep #40 behind #43 until this gate is closed.
 
 **Not verified:** live site after #38/#39 deployment, real paid-order status in Supabase, actual staff production data, live collision behavior, and the actual current database contents. No SQL or settings changed; no feature activated by ChatGPT.
+
+
+## 2026-11-27 09:35 EST (Toronto) — Muse lead order: F-OWN admin-panel study + PR #57 exact-head re-review
+
+**Reporting / scope:** Muse is the accountable team lead and release gate; I report through the repository reply files. We are building the complete AZAL restaurant system (customer accounts, ordering, kitchen operations, Majlis loyalty and administration), not only a brochure. My current assignments are (1) re-review #57 at the exact head requested by Claude and (2) the admin-panel study / Ready Queue for Muse's F-OWN-1..9 order. No owner decision is needed for this source/design work.
+
+### 1. PR #57 — exact-head decision
+
+- Exact head reviewed: `ad90d9cd5484c4f0dda431f5b1144824a4e559c6`.
+- Source/CX: **PASS**. Full 9-file patch checked: global scroll-padding/scroll-margin now applies at every width; the browser test covers EN/AR at 1280px and 390px and all nine Add controls; `menu.html` retains `bread.js`; `.bread-how` remains; the seven HTML changes are cache-version-only and preserve their existing script sets.
+- Exact-head Actions run **46014796248**: static-checks success and browser-checks success. Claude reports local Node 32/32 files and browser 18/18 files (341 checks); I did not independently execute those local suites.
+- Not verified: live desktop default-scroll appearance and a real phone.
+- Current main is `93232d1913e75222863d47735e1bb3b590b8710c`. Compare main...head is 2 ahead / 2 behind and GitHub reports `mergeable=false`. The two main-only commits were inspected: `12bc4be` changes only `BOARD.md` + `CLAUDE-REPLY.md`; `93232d1` changes only `BOARD.md` (Muse's new binding F-OWN-1..9 order). No application-source overlap was found, but GitHub's merge gate is still false.
+- I posted a GitHub review comment (review id **6089646425**) recording **Source/CX PASS; Integration HOLD** and asking the lead/merger to resolve the docs-only divergence non-destructively, then recheck mergeability and CI before merge. I did not merge.
+
+### 2. F-OWN admin-panel study — recommended product and security design
+
+**Role model (server-authoritative):**
+- **Admin** (`info@azalrestaurant.com`): global control across branches; can view/manage customers, all orders and order details, adjust points/balances, and manage branch/staff access. Branch selection is a view filter, never a security boundary.
+- **Branch staff**: exactly one or more explicitly assigned branches; may accept, reject, and hand over orders for their assigned branch only. They must not read or mutate points, balances, customer-wide data, staff accounts, or another branch's records.
+- One sign-in door. After authentication, the server-resolved role determines the destination and available actions. Never trust a client-supplied role, email, or branch slug for authorization. Enforce every read/write through RLS and narrowly scoped RPCs; hide controls in the UI only as a secondary convenience.
+
+**Existing-source gaps confirmed:**
+- `staff.js` currently calls `azal_staff_can_access(branch)` and `staff_update_order`, and its queue is branch-filtered and paid-only. It currently exposes Accept → Ready → Hand over, but no Reject action.
+- `staff.js` excludes `handed_over` and `cancelled` from its queue. This is correct for a live kitchen queue, but cannot satisfy F-OWN-9's permanent all-status history requirement.
+- `member-history.js` already reads the signed-in member's own orders and points ledger with an explicit `user_id` filter, paging the ledger to exhaustion; it is read-only and renders data using `textContent`. Reuse its data vocabulary and status/ledger labels, not its customer-side authorization path, for admin views.
+- The member ledger already recognizes `earn`, `redeem`, `earn_reversal`, and `redeem_refund`. Manual admin adjustments need a distinct ledger entry type and server-side audit evidence; never overwrite a balance field or edit/delete historical ledger rows.
+
+**Admin navigation (separate protected area, not an expanded kitchen screen):**
+1. Overview: branch-aware operational counts (new/accepted/ready orders, today's completed/cancelled, loyalty liability summary); no fabricated live metrics.
+2. Orders: search/filter by date, branch, status and order reference; full immutable detail including item snapshots, quantities, pickup time, customer note, payment/fulfilment status, totals and event timeline. Include every status, especially `handed_over` and `cancelled`. No delete/hide action.
+3. Customers: search by verified email / phone / name; profile detail, linked order history and points ledger. Customer self-service edits (F-OWN-8) remain available to the customer. Admin correction of profile fields, if enabled, must be audited; never silently change the authentication email or impersonate a customer.
+4. Loyalty: balance derived from ledger sum; adjustment form requires signed delta, reason, order/reference (optional), and idempotency key. Show actor, timestamp, reason and resulting ledger entry.
+5. Branches & staff: assign/revoke branch roles, view role scopes and access history. Only admin can grant admin; branch staff cannot promote themselves or others.
+
+**Points adjustment / audit invariants:**
+- Keep `points_ledger` append-only. Add a dedicated `admin_adjustment` (or equivalent explicit credit/debit type) with a non-zero signed delta; record the acting admin, target member, reason, timestamp, and unique request/idempotency key. If schema separation is preferred, add an append-only `admin_audit_log` with actor, action, target type/id, branch context, reason, before/after derived values, request id and timestamp.
+- Perform adjustment only through a `SECURITY DEFINER` RPC with empty/locked search_path and schema-qualified names. The RPC independently checks the caller's admin role, validates delta/reason, prevents duplicate idempotency keys, inserts the ledger entry and audit event atomically. No client table INSERT/UPDATE/DELETE grants.
+- Balance is always `SUM(delta_points)`, not a mutable stored number. Negative adjustments cannot create an invalid negative balance unless a separately documented owner-approved exception exists. Reversals are compensating entries, never row edits.
+- Branch staff receive no points-ledger SELECT access and no adjustment RPC execution. UI hiding is not authorization.
+
+**Order-history invariants:**
+- Preserve all order rows and `order_events`; cancellation/refund/handover are state transitions, not deletion. Admin sees all statuses and full detail across branches; branch staff sees only the operational data needed for assigned-branch fulfilment.
+- Staff actions must be server-validated against allowed transitions. Add Reject only with an explicit terminal/reason event and no points earn; handover remains the event that completes earning. Never let staff change payment status or points.
+- Customer history stays limited to the authenticated user's own rows; admin history uses admin-only server policy/RPC. Do not reuse the kitchen queue's open-paid filter for historical views.
+
+**Delivery order / acceptance gates:**
+- ADM-1: protected admin shell + role/branch authorization matrix + server/RLS tests. Pass only when an admin can access all branches, branch staff is restricted to assigned branch, and branch staff cannot read points/customer-wide data or call admin RPCs.
+- ADM-2: customer directory + full all-status order history/detail. Pass only when handed-over and cancelled orders remain visible, filters work, no records can be deleted, and customer/staff/admin scopes are tested.
+- ADM-3: audited points adjustment. Pass only when unauthorized calls fail at the database layer, duplicate requests are idempotent, every adjustment creates immutable ledger + audit records, and balances reconcile to the ledger.
+- ADM-4: branch/staff management and customer profile administration, after ADM-1 authorization is proven.
+- Separate owner-flagged checkout redemption (F-OWN-4) from admin balance adjustment; redemption must be a customer-authorized checkout operation, not an admin credit/debit shortcut.
+- Before any live release: tests for RLS/RPC privilege boundaries, audit immutability, branch isolation, status coverage, pagination, keyboard/mobile usability, EN/FR/AR, and a staging owner/admin + branch-staff E2E. No production activation or account changes in this study.
+
+### 3. Ready Queue — keep two build-ready tasks
+
+1. **ADM-1 — Admin authorization shell (READY):** protected admin route, role-derived navigation, global admin vs assigned-branch staff scopes, and database/RPC permission tests. Depends on existing auth/profile/role model being verified against the live migration source before implementation.
+2. **ADM-2 — Customer + all-status order history (READY):** admin-only customer directory and full order search/detail across every status and branch; permanent history; separate branch-staff operational view; no deletion. Build after ADM-1's server-side boundary tests pass.
+
+Next queued (not marked ready): **ADM-3 audited points adjustment**; **ADM-4 branch/staff administration**. F-OWN-4 checkout redemption remains a distinct P4 launch-priority item and must not be conflated with admin adjustments.
+
+**Files changed by this assignment:** `CHATGPT-REPLY.md` and `BOARD.md` only (documentation/queue). No application source, database, Supabase settings, user accounts, payments, sign-ups, or live features changed.
