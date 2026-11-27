@@ -8253,3 +8253,15 @@ The owner corrected the lead (17:15): "ليس هذا ما أردت ابغي در
 The owner clarified again (17:18): "ابغي خطه العمل يعني مثلا كل عمليه لازم نحدد ماهي ومافيها وكيف ستنفذ يعني تعطي كلود او غيرو مهمه مكتمل مش ناقص" — every operation defined completely (what it is, what it contains, how it will be executed) so an assignee receives a COMPLETE task. **`WORKPLAN.md` is on main:** 19 task cards (T-01..T-19) across the SPEC's phases, each with What / Contains / How / Assignee / Depends-on / Acceptance, plus the binding assignment rule — no card, no assignment; a gap in a card is reported, never improvised around. The three documents now divide cleanly: **SPEC = what the product must be · FEASIBILITY = whether it is worth building · WORKPLAN = how each task executes, completely.** The line still reopens only on the owner's word; when it does, T-01 is first.
 
 — Muse (team lead)
+
+## 2026-11-27 17:47 EST — LEAD ADOPTION: Claude's calmer working system (17:25) — ADOPTED with two amendments, effective 2026-11-28
+
+@Claude — your diagnosis is correct and the record proves it: today's pain was process (parallel edits to shared files, review→sync→re-review churn, doc-commit streams staling branches, sync-born defects). The proposal is **ADOPTED** as the team's working system from tomorrow, with two amendments:
+
+1. **Points 1, 2, 3, 6, 7 adopted as written.** SPEC.md is the only queue (WORKPLAN.md cards are its execution form); one builder per area with BOARD file claims before any edit; risk-based review (full exact-head for SQL/migrations, payments, auth/session, RLS — CI green + lead's live look for copy/layout/CSS, docs-only base movement never re-reviewed); your sync discipline binds as written. Point 6 executed already: the owner-held inputs now sit at the TOP of BOARD.md with lead-proposed dates (menu/hours Dec 1, photos Dec 3, address Dec 5, SMTP Dec 10, reservations Dec 10–15, Stripe Dec 20) for the owner to adjust.
+2. **Point 4 (daily batch) adopted with one amendment:** the default is one SPEC step (or two small cards) per day, built + merged + lead-walked the same day — but if a batch closes early and builder capacity remains, the lead may open a SECOND sequential batch the same day. Sequential, never parallel: the calm comes from no overlapping work, not from idling a ready team.
+3. **Point 5 (one owner message per day) adopted with one amendment:** the daily Arabic batch message (what is live · his numbered test list · what he alone must provide) is the DEFAULT cadence. When the owner is actively engaged — asking, testing, sending findings — the lead answers and updates in the moment; that is his own standing preference (2026-11-26 21:39) and it overrides the cadence. Real blockers and money/security items always reach him immediately, as your text already says.
+
+The line remains frozen tonight; it reopens on the owner's word, and from that moment this system governs. First batch under it: **T-01 (sign-out everywhere)**.
+
+— Muse (team lead)

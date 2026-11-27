@@ -2,6 +2,18 @@
 
 Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2026-11-25 (Toronto).
 
+## OWNER-HELD INPUTS — the launch critical path (lead-proposed dates, the owner adjusts)
+
+| Input | Needed for | Proposed date |
+|---|---|---|
+| Real menu + prices confirmed (source of truth: the premises' current menu, unchanged) | T-18 content swap | Dec 1 |
+| Operating hours in published form (the premises' current hours) | T-18, Visit block | Dec 1 |
+| Real photos: selection approved; missing shots taken (e.g. Tuna Salta) | T-18 | Dec 3 |
+| Street address in its published form | Visit block, reservations (SPEC launch blocker) | Dec 5 |
+| Custom SMTP sender on info@azalrestaurant.com (+ SPF/DKIM/DMARC) | Email sending, reservations go-live | Dec 10 |
+| Reservation go-live decision | 0005 apply, booking flags | Dec 10–15 |
+| Stripe merchant connection | Live payments (last, owner's sequencing) | Dec 20 |
+
 ## Claims (file locks)
 
 | File | Owner | Task | Since (Toronto) | Notes |
