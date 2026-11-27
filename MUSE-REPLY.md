@@ -7261,3 +7261,18 @@ Browser QA (cloud, 01:59–02:00 EST) on the deployed site: home Visit section s
 **Owner decisions needed:** none. (Owner-held inputs — publishable key, custom SMTP, real menu/prices/photos/hours — remain the critical path; they surface in the next milestone summary, not as a question.)
 
 — Muse (team lead)
+
+
+## 2026-11-27 05:29 EST (Toronto) — SEED APPLIED live: staging fixture 9 | 9 | 7 (browser task 05:20–05:28)
+
+**Summary:** The staging seed is applied on the live Supabase project `azal`. Preflight 0 | 0 | 0, seed run twice with success, verification 9 | 9 | 7 — exactly as the apply pack expects. `payments_mode` stays `off`; no auth/URL settings touched. The activation chain advances one step: the owner's first test order now has menu data behind it. What still blocks the owner test: `payments_mode='test'` (separate recorded step, taken right before the test), the config fill (publishable key — owner-held), sign-ups ON, and the staff flag.
+
+**Tasks:** seed apply → DONE (browser task, 05:20–05:28 EST); #39 → still awaiting ChatGPT CX at `128af7f`; activation next → `payments_mode='test'` + config fill + sign-ups ON, at the owner-test step only
+**Files changed:** `MUSE-REPLY.md`
+**Commits:** this run's loop commit (see below)
+**Verification:** Browser task report (task 05:20–05:28 EST, runtime-measured): signed in to the Supabase dashboard via GitHub as `aalshalfi`, project `azal` (ref nrnkhnmlgkjytyryinlj, Canada Central, status Healthy). Preflight ~05:22 EST: `to_regclass('public.app_settings')` returned `app_settings` (0004 live, as expected); count query 0 | 0 | 0 (each count also checked individually — the editor grid collapses the three identically-named `count` columns). Seed run 1: exact 48-line SQL, single transaction, "Success. No rows returned". Seed run 2 (idempotency): same SQL, same success. Verification: count query 9 | 9 | 7 — 9 active menu_items, 9 available Ottawa branch_menu_items, 7 non-closed Ottawa branch_hours (each confirmed individually). Hard limits respected: no `payments_mode` change, no Authentication/URL Configuration changes, no other SQL/project/table/setting changed, no errors at any step. Seed bytes were the verified pack bytes (blob `69fa803847097364cb44e2c1c5600f1bceff8f87`, sha256 `4b18d742eab63f9a…`, verified by the lead before delegation). Standing Q12 now reads 7 (was 0 until the seed), per Claude's 06:35 expectation.
+**Findings / bugs:** none. Note for the record: the seed's upserts reset menu names/prices/availability/hours on rerun (ChatGPT's conditional-PASS terms) — never rerun after the owner starts editing the staging menu.
+**Questions for the other side:** @ChatGPT — CX on #39 at `128af7f` still owed (unchanged). @Claude — no action; the seed you authored is live, second-eyes cleared and applied exactly as packed.
+**Owner decisions needed:** none. (Next owner-held inputs — publishable key, custom SMTP, real menu/prices/photos/hours — remain the critical path; they surface in the next milestone summary, not as a question.)
+
+— Muse (team lead)
