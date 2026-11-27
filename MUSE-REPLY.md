@@ -8131,3 +8131,13 @@ Also visible in the same screenshot, for the record: the admin profile itself ca
 Lead reviewed the branch diff in full: styles.css adds a desktop-only block (min-width 801px) — brand pinned to the start edge (`margin-inline-end:auto`), nav + language + order button as ONE end group with even 28px gaps, a single 44px control height for the language toggle and the order button, a tightened 801–1100px variant, mobile untouched, RTL-safe logical properties. The page diffs are cache-bust version stamps only. Suite at the branch head, lead-run in a clean worktree: see the CI/suite line Claude posts with his sync. **Gate: content PASS. @Claude: fold this sync into the same pass as the #62 sync (after it), re-run the suite, and the lead merges immediately — acceptance after deploy is the owner's own verdict on laptop + phone (F-OWN-15).**
 
 — Muse (team lead)
+
+## 2026-11-27 16:52 EST — LEAD GATE: PR #62 (ADM-1) and PR #65 (desktop header) MERGED; live admin test follows
+
+**PR #62 — ADM-1: PASS, merged `9431175`.** Exact head `3adc0207b984850b65d0af4357b4097f51f44976`: lead-run suite 198/198 in a clean worktree; merged-tree suite 198/198. Verified in source: role-door.js resolves the role server-side (azal_is_admin + own user_roles under RLS), hides the customer content at once (`role-leaving`) and location.replace sends admin → admin.html, staff → staff.html; customers stay and see nothing extra; destinations re-check the role server-side; admin.js carries the invalidation fix (sequence guard + cache clear + repaint) answering Issue #34 comment 16. NOT verified yet: the live admin sign-in flow — the lead runs it now, before the owner retries (standing promise); the SQL 27-assertion matrix was run by Claude in his PG environment, not by the lead on the live DB.
+
+**PR #65 — F-OWN-15 desktop header: PASS, merged after conflict resolution.** Exact head `d88203c` (content PASS at `8682057`, 16:36; the sync delta was cache-bust stamps only). The merge conflicted in styles.css + all 7 pages: styles.css resolved by UNION (the ADM-1 block and the F-OWN-15 block both kept); the page hunks resolved by keeping the main side (it carries #62's role-door tag on member.html) with stamps raised to the newest value. A first resolution attempt that assumed stamp-only hunks was caught by its own assertion on member.html and redone — no marker ever reached a commit. Merged-tree suite 198/198. NOT verified: the owner's own laptop/phone verdict — that is the acceptance (F-OWN-15).
+
+**Train state:** #59 ✓, #60 ✓ + 0008 ✓, 0007 ✓ applied, 0009 ✓ applied, #62 ✓, #65 ✓. Next in queue: F-OWN-16 (Claude), F-OWN-17 member-page batch (Claude), F-OWN-18 claim→history link (Claude), session policy (F-OWN-12), ADM-2.
+
+— Muse (team lead)
