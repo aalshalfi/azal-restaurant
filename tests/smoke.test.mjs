@@ -268,7 +268,7 @@ test("P1 v3 separates Home, Menu and Story; commerce stays on Menu", () => {
   assert.ok(storyHtml.includes('class="story-values') && storyHtml.includes('class="majlis-preview'), "Story page should carry the heritage and Majlis concept");
   assert.ok(html.includes('class="sticky-cart"'), "sticky cart belongs on the Menu page");
   assert.ok(!homeHtml.includes('class="sticky-cart"') && !storyHtml.includes('class="sticky-cart"') && !memberHtml.includes('class="sticky-cart"'), "sticky cart must only appear on Menu");
-  assert.ok(memberHtml.includes('class="member-card"') && memberHtml.includes('memberPointsValue'), "Member page should show an inert membership and points preview");
+  assert.ok(memberHtml.includes('class="member-card member-card-soon"') && !memberHtml.includes('memberPointsValue'), "Member page shows one honest pre-launch state, no points shell");
   assert.ok(!memberHtml.includes("<form") && !memberHtml.includes("<input"), "Member preview must not collect credentials or personal data");
   for (const page of [homeHtml, html, storyHtml, memberHtml]) {
     assert.ok(page.includes('id="languageToggle"') && page.includes('id="cartOpen"') && page.includes('id="cartDrawer"'), "shared language and cart controls must exist on every page");
