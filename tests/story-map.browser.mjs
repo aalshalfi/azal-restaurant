@@ -10,7 +10,8 @@ for (const w of [390, 1280]) {
   await p.goto(base + "/story.html"); await p.waitForSelector("#yemenMap .ymap-tab");
   ok(await p.locator(".ymap-tab").count() === 4 && /Lamb Mandi/.test(await p.textContent("#ymapPanel")), `${w}: 4 regions; Hadramaut shows mandi first`);
   await p.click("#ymap-aden"); ok(/Adeni Chai/.test(await p.textContent("#ymapPanel")) && await p.locator(".ymap-dot.is-on[data-region=aden]").count() === 1, `${w}: tap Aden -> chai, dot highlighted`);
-  await p.click("#ymap-tihama"); ok(/Mango/.test(await p.textContent("#ymapPanel")) && await p.evaluate(() => getComputedStyle(document.querySelector(".ymap-dot")).pointerEvents) === "none", `${w}: map is decorative; tabs are the only control`);
+  await p.click("#ymap-tihama"); ok(/Mango/.test(await p.textContent("#ymapPanel")), `${w}: tab selects the region`);
+  await p.click('.ymap-dot[data-region="aden"]'); ok(await p.getAttribute("#ymap-aden", "aria-selected") === "true" && /Chai/.test(await p.textContent("#ymapPanel")) && await p.getAttribute(".ymap-svg", "aria-hidden") === "true", `${w}: F-WALK-7 a tap on a dot selects its tab; the map stays aria-hidden`); await p.click("#ymap-tihama");
   await p.focus("#ymap-tihama"); await p.keyboard.press("ArrowRight"); ok(await p.evaluate(() => document.activeElement.id) === "ymap-hadramaut", `${w}: arrow keys move between regions (wraps)`);
   ok(!(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth)), `${w}: no horizontal overflow`);
   if (w === 390) { await p.click("#ymap-sanaa"); await p.waitForTimeout(400); await p.locator("#yemenMap").screenshot({ path: process.env.SHOT || "/tmp/ymap.png" }); }

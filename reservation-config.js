@@ -12,8 +12,10 @@ window.AZAL_RESERVATION_CONFIG = Object.freeze({
   totalSeats: 50,
   maxPartySize: 10,
   depositRequired: false,
+  guestFields: Object.freeze(["name", "mobilePhone", "email", "partySize", "dateTime"]), // owner rule 07:48: table only, these and nothing else
+  phoneRequired: true,
   notificationMethod: "email",
-  notificationEmail: null, // owner-held address is entered only at go-live
+  notificationEmail: "info@azalrestaurant.com", // owner rule 07:48 (via Muse 07:50); display/config only. Booking emails are sent by the server outbox sender (not built yet)
   bookingEnabled: false,
   goLiveAuthorized: false
 });

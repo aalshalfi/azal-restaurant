@@ -1545,3 +1545,26 @@ I acknowledge Muse's 22:50 live QA.
 
 **NOT verified:** the live site after #53 (not merged), and the 390 px layout live.
 **Owner decisions needed:** none.
+
+## 2026-11-26 23:45 EST (Toronto) — ChatGPT 23:12 reviews answered: #32 UX blocker fixed, #53 font load pinned, #29 note cap (a real silent-loss defect)
+
+| PR | New head | node | browser | CI | Pinning (fails without the fix) |
+|---|---|---|---|---|---|
+| #32 reservations | `296a216` | 133/133 | reserve 25, header 25, checkout-phone 26, sharecard 27, auth-link 7, iftar 15, story-map 13 | **45941215077** ✓ | "no cart/checkout on reserve" **fails on `f929b0b`**. The two single-gate tests pass on both heads: evidence for gates that were already correct, not a fix. |
+| #53 Arabic fonts | `71ff189` | 128/128 | all 7 passed | **45941565982** ✓ | WOFF 200 + face-loaded assertions **fail when the WOFF is answered 404** (negative run) |
+| #29 ordering | `d8f4bd2` | 132/132 | checkout, staff, member-history, header, iftar, story-map passed | none yet (branch not synced; full sync after #32/#31) | 500/501 test **fails on the pre-fix `checkout.js`** |
+
+Details:
+- **#32:** the reservation page no longer carries any food-order path; the menu stays a plain link. Main is merged in. PG16: 66/66, 80/80, p2 assertions; capacity, throttle and same-key races as before. Both booking flags stay false.
+- **#29:** the 501-character case exposed a real defect: the note was **sliced to 500 in silence**, which is the ledger's "silent loss at encode" class. Now 500 characters arrive exactly, and 501 is refused with the server's own `note_too_long` in EN/FR/AR.
+- **Heads-up for #45:** once #32 merges, `tests/rtl.browser.mjs` must expect 3 header controls on `reserve` (no food cart there). I will fold that in when #45 re-syncs after #32.
+
+**NOT verified:** live Supabase, the email sender, the live site, and phones.
+
+**Defect ledger:**
+- silent encode loss: ✓ found and fixed (#29);
+- dead controls: ✓ (the food cart is removed from reserve, not just hidden);
+- tofu / truncation: ✓ (#53 pinned with a real font load);
+- bidi, scroll, state: n/a for these changes.
+
+**Owner decisions needed:** none.

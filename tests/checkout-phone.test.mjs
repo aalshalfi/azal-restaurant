@@ -13,7 +13,7 @@ test("F-CHK-2: HST 13% with the server's half-up cents arithmetic (0004 place_or
   assert.match(js, /Math\.floor\(\(sub\*HST_BPS\+5000\)\/10000\)/);
   const tr = js.slice(js.indexOf("const translations"), js.indexOf("const productTranslations"));
   for (const k of ['hst:"HST (13%)"', 'hst:"TVH (13 %)"', 'hst:"ضريبة المبيعات (13%)"', 'total:"Total"', 'total:"المجموع"']) assert.ok(tr.includes(k), k);
-  for (const p of ["index", "menu", "story", "member", "reserve", "404"]) {
+  for (const p of ["index", "menu", "story", "member", "404"]) { // reserve.html is table-only, no checkout
     const h = readFileSync(new URL(`../${p}.html`, import.meta.url), "utf8");
     assert.ok(h.includes('id="cartTax"') && h.includes('id="cartGrand"') && h.includes('id="checkoutTotals"'), p + " has the HST and total lines");
   }
