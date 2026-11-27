@@ -75,10 +75,12 @@
         return { session: null, confirm: true };
       },
       // Email one-time code (primary sign-in, lead ruling): one flow for new and returning members.
-      async requestCode(email) {
+      async requestCode(email, redirectTo) {
         if (!enabled) throw Object.assign(new Error("disabled"), { code: "disabled" });
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(email || "").trim())) throw Object.assign(new Error("invalid_email"), { code: "invalid_email" }); // nothing sent
-        await call("/auth/v1/otp", { method: "POST", body: { email, create_user: true } });
+        // redirect_to: the default Supabase email carries a sign-in LINK (no code) until custom SMTP lets us edit it;
+        // the link returns here and adoptLink() finishes sign-in. With {{ .Token }} in the template, the code works too.
+        await call("/auth/v1/otp" + (redirectTo ? "?redirect_to=" + encodeURIComponent(redirectTo) : ""), { method: "POST", body: { email, create_user: true } });
         return true;
       },
       async verifyCode(email, token) {
@@ -87,6 +89,19 @@
         if (!s) throw Object.assign(new Error("no session"), { code: "code_invalid" });
         write(s);
         return s;
+      },
+      // Return from the emailed link: "#access_token=…&refresh_token=…&expires_in=…" (or "#error=…").
+      async adoptLink(hash) {
+        if (!enabled) return null;
+        const p = new URLSearchParams(String(hash || "").replace(/^#/, ""));
+        if (p.get("error") || p.get("error_code")) return { error: "link_invalid" };
+        const at = p.get("access_token"), rt = p.get("refresh_token");
+        if (!at || !rt) return null;
+        let user = null;
+        try { user = await call("/auth/v1/user", { token: at }); } catch { return { error: "link_invalid" }; }
+        const s = toSession({ access_token: at, refresh_token: rt, expires_in: p.get("expires_in"), user });
+        write(s);
+        return { session: s };
       },
       // Guest points (0004): move pending claims for this verified email into the ledger.
       // { added: N, failed: false } on success (N may be 0); { added: 0, failed: true } when the call fails, so the UI can say so.
@@ -164,7 +179,8 @@
         `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
         `<p class="auth-hello">${esc(tr("authHello").replace("{name}", st.name || st.email || ""))}</p>` +
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
-        `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${pending ? "—" : fmtPoints(st.points)}</strong></div></div>` +
+        // Owner 21:31: no placeholder where personal data would go; the points card renders only with real points behind it.
+        (pending ? "" : `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +
         (st.claimed ? `<p class="auth-claimed" role="status">${esc(tr("authClaimed").replace("{points}", fmtPoints(st.claimed)))}</p>` : "") +
         (st.claimFailed ? `<p class="auth-claimed auth-claim-failed" role="alert">${esc(tr("authClaimFailed"))} <button type="button" class="text-link dark-link" id="authClaimRetry">${esc(tr("authClaimRetry"))}</button></p>` : "") +
         `<p class="auth-note">${tr("authPreviewNote")}</p>` +
@@ -173,10 +189,19 @@
     }
     if (mode === "code") {
       const step2 = Boolean(codeSentTo);
+      // ChatGPT #30 review (lead-confirmed): the default Supabase email carries a sign-in LINK only. The code box is shown
+      // only once the email template carries {{ .Token }} and the config says so (AZAL_SUPABASE.emailCode === true);
+      // until then the copy is link-first and promises no code.
+      const codeEntry = Boolean(root.AZAL_SUPABASE && root.AZAL_SUPABASE.emailCode === true);
       card.innerHTML =
         `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
         `<h2 class="auth-title">${tr("authCodeTitle")}</h2>` +
-        (step2
+        (step2 && !codeEntry
+          ? `<p class="auth-sent" role="status">${esc(tr("authLinkSent").replace("{email}", codeSentTo))}</p>` +
+            `<p class="auth-message" id="authMessage" role="status" aria-live="polite">${esc(message)}</p>` +
+            `<div class="auth-links"><button class="text-link dark-link auth-switch" type="button" id="authResend">${tr("authCodeResend")}</button>` +
+            `<button class="text-link dark-link auth-switch" type="button" id="authChangeEmail">${tr("authCodeChange")}</button></div>`
+          : step2
           ? `<form class="auth-form" id="authCodeVerify" novalidate>` +
             `<p class="auth-sent">${esc(tr("authCodeSent").replace("{email}", codeSentTo))}</p>` +
             `<label for="authCode">${tr("authCodeLabel")}</label><input id="authCode" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="8" required>` +
@@ -209,6 +234,7 @@
       `<p class="auth-note">${tr("authPrivacy")}</p>`;
   }
 
+  const here = () => { try { return root.location.origin + root.location.pathname; } catch { return undefined; } };
   async function refresh(afterSignIn) {
     let claim = { added: 0, failed: false };
     if (afterSignIn) claim = await auth.claimGuestPoints();
@@ -228,7 +254,7 @@
     if (e.target && e.target.id === "authChangeEmail") { codeSentTo = ""; message = ""; renderCard(last); }
     if (e.target && e.target.id === "authResend") {
       if (Date.now() - lastSentAt < 60000) { message = tr("authCodeWait"); const m = document.getElementById("authMessage"); if (m) m.textContent = message; return; }
-      try { await auth.requestCode(codeSentTo); lastSentAt = Date.now(); message = tr("authCodeResent"); } catch (err) { message = tr(errorKey(err)); }
+      try { await auth.requestCode(codeSentTo, here()); lastSentAt = Date.now(); message = tr("authCodeResent"); } catch (err) { message = tr(errorKey(err)); }
       const m = document.getElementById("authMessage"); if (m) m.textContent = message;
     }
   });
@@ -240,7 +266,7 @@
       if (!email) { message = tr("authErrMissingEmail"); document.getElementById("authMessage").textContent = message; return; }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { message = tr("authErrInvalidEmail"); document.getElementById("authMessage").textContent = message; e.target.email.focus(); return; }
       btn.disabled = true;
-      try { await auth.requestCode(email); codeSentTo = email; lastSentAt = Date.now(); message = ""; renderCard(last); document.getElementById("authCode")?.focus(); }
+      try { await auth.requestCode(email, here()); codeSentTo = email; lastSentAt = Date.now(); message = ""; renderCard(last); document.getElementById("authCode")?.focus(); }
       catch (err) { message = tr(errorKey(err)); const m = document.getElementById("authMessage"); if (m) m.textContent = message; btn.disabled = false; }
       return;
     }
@@ -277,5 +303,14 @@
     }
   });
   document.getElementById("languageToggle")?.addEventListener("click", () => setTimeout(() => { headerState(last); renderCard(last || { status: "signed_out" }); }, 0));
-  refresh();
+  (async () => {
+    const h = root.location && root.location.hash;
+    if (h && /access_token=|error=/.test(h)) {
+      const r = await auth.adoptLink(h);
+      try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch {} // tokens never stay in the address bar
+      if (r && r.session) { mode = "code"; codeSentTo = ""; message = ""; return refresh(true); }
+      if (r && r.error) message = tr("authLinkInvalid");
+    }
+    refresh();
+  })();
 })(typeof window !== "undefined" ? window : globalThis);
