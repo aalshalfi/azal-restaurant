@@ -1,3 +1,5 @@
+/* V6′ (re-scoped under the owner fact 21:03: website orders are takeout): the gesture only. No heat, oven or pickup
+   promise anywhere here; warming bread at home belongs to "The road home" alone. */
 /* AZAL "Bread Clock" (Claude, creative sprint V6). Teaches the one gesture that makes a Yemeni meal: on dishes that
    our own menu says are eaten with bread, a small "How to eat it" control opens a three-step strip
    (tear · scoop · eat). Facts come only from the existing dish stories (fahsa: scooped with warm bread; saltah: eaten
@@ -13,7 +15,7 @@
   const S = {
     en: { how: "How to eat it", hide: "Hide", tear: "Tear a piece of bread", scoop: "Scoop, no spoon needed", eat: "Eat, and pass the bread", label: "Eaten with bread, in three steps" },
     fr: { how: "Comment le manger", hide: "Masquer", tear: "Déchirez un morceau de pain", scoop: "Saucez, sans cuillère", eat: "Mangez, et passez le pain", label: "Se mange avec du pain, en trois gestes" },
-    ar: { how: "كيف تأكله", hide: "إخفاء", tear: "اقطع قطعة خبز", scoop: "اغرف بها، بلا ملعقة", eat: "كُل، ومرّر الخبز", label: "يؤكل بالخبز، في ثلاث خطوات" }
+    ar: { how: "طريقة أكله", hide: "أخفِ", tear: "اقطع لقمة من الخبز", scoop: "واغرف بها، فلا حاجة إلى ملعقة", eat: "كُل هنيئاً، وناول الخبز لمن بجانبك", label: "يُؤكل بالخبز في ثلاث حركات" }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k) => S[lang()][k];

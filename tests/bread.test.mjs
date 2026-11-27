@@ -21,3 +21,10 @@ test("menu loads bread.js after script.js; no innerHTML; reduced motion respecte
   assert.doesNotMatch(readFileSync(new URL("../bread.js", import.meta.url), "utf8"), /innerHTML/);
   assert.match(readFileSync(new URL("../styles.css", import.meta.url), "utf8"), /@media\(prefers-reduced-motion:reduce\)\{\.bread-step\{animation:none\}\}/);
 });
+
+test("V6′ (owner fact 21:03): gesture only, no heat, oven or pickup promise in any language", async () => {
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync(new URL("../bread.js", import.meta.url), "utf8");
+  const copy = src.slice(src.indexOf("en: {"), src.indexOf("}", src.indexOf("ar: {")) + 1);
+  for (const w of [/hot/i, /warm/i, /oven/i, /pickup/i, /chaud/i, /four\b/i, /retrait/i, /ساخن/, /فرن/, /تنور/, /الاستلام/]) assert.doesNotMatch(copy, w);
+});
