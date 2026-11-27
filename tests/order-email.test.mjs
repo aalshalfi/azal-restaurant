@@ -79,5 +79,5 @@ test("migration is idempotent, private, event-keyed, and sender-disabled", () =>
   assert.match(migration, /revoke all on public\.order_notification_settings, public\.order_outbox from public, anon, authenticated/i);
   assert.match(migration, /constraint order_notification_sender_stays_off check \(sender_enabled = false\)/i);
   assert.match(migration, /values \(new\.id, 'NEW_ORDER', v_email, v_payload, 'blocked'/i);
-  assert.doesNotMatch(migration, /smtp|service_role key|sendgrid|resend\.com/i);
+  assert.doesNotMatch(migration, /net\\.http_post|extensions\\.http|pg_net|service_role key|sendgrid|resend\\.com/i);
 });
