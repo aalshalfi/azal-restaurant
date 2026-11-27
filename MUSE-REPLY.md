@@ -6313,3 +6313,24 @@ The owner scrolled the checkout sheet on his phone and screenshotted the scrolle
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-27 00:31 EST — Loop: #45 MERGED @ d45bc68 (verified post-merge); #47 synced @ 19fe1c5; CI green at b01da86 confirmed
+
+**Summary:** PR #45 (Arabic RTL header) was merged to main @ `d45bc68` (author aalshalfi, 00:27:10; parents `11c88e2`+`b01da86`) — the 00:28 loop section missed it because the merge landed while that section was being written. The merge is verified sound on main. Claude has already synced #47 onto the new main @ `19fe1c5`. No new sections in CHATGPT-REPLY.md (last 23:49, baseline diff empty) or CLAUDE-REPLY.md (last 23:45); both collaborators still hold named, unblocked next tasks.
+
+**Lead-verified this run:**
+- **#45 merge is sound:** `b01da86` is an ancestor of HEAD; the merge delta (11c88e2..d45bc68) is the RTL branch content only (styles.css logical properties, rtl.browser.mjs +52, page `?v=` bumps); node suite **133/133** re-run by the lead on main tip `ddc1cd7`; RTL live on main (`margin-inline-end` on `.brand`, `inset-inline-end` ×2, `tests/rtl.browser.mjs` L18 filters `.cart-open` on reserve — "#32: reserve is table-only, no food cart"); reserve.html still cart-free on main (0 cart/drawer/checkout matches).
+- **Exact-head CI at the synced head CONFIRMED via the public check-runs API** (found by the lead after the merge): static-checks success (run 140329733669) + browser-checks success (run 140329733401) at `b01da86`.
+- **Process note (no code consequence):** the merge executed without a recorded ChatGPT re-verify at `b01da86` — his last section is 23:49, predating the sync; his CX PASS was at `55077ef`. The sync itself was lead-verified byte-identical at 00:28, CI is green at the exact head, and the suite is green on the merged tree, so nothing is rolled back; the re-verify step is recorded as skipped, not as done.
+- **#47 synced:** Claude merged main (with #32 + #45) into claude/ar-rewrite @ `19fe1c5` (parents `18a5f27`+`d45bc68`); the sync also pins the reservation step in 3 languages; branch suite **135/135** re-run by the lead in a temp worktree (removed after). Gate now: ChatGPT CX at `19fe1c5` + CI green at head → merge under the handover rule → Muse live QA (the owner's ear is the final judge on the Arabic).
+- **Other syncs landed (heads recorded, source verification owed):** #30 otp-link @ `7afdad1` (merge of main with #44/#48/#49/#50); #48 open-tray @ `54a5ad5` (merge of main with #44/#49/#50 onto the exactness-fixed `b27bc2a`).
+- **Queue heads** (fetch-confirmed): #47 `19fe1c5` (moved), #46 `e2a52c6`, #52 `fa22c2b`, #53 `71ff189`, #29 `d8f4bd2`, #31 `1749811`, #48 `54a5ad5`, #30 `7afdad1`. #31 sync hazard stands — its reserve.html still carries cart markup; the post-#47 sync must preserve the table-only no-cart page.
+
+**Tasks:** #47 CX at `19fe1c5` + CI green at head → ChatGPT/Claude; #46 → #52 → #53 in merge order; #31 sync after #47 chain, preserving table-only reserve → Claude; #29 Draft sync after #32/#31 → Claude; #48 CI at `54a5ad5` + ChatGPT re-verify + real-phone share retest (22:50 live QA inconclusive on desktop) → Claude/ChatGPT; #30 activation → Muse, blocked on anon key
+**Files changed:** `MUSE-REPLY.md`, `BOARD.md`
+**Commits:** this run's loop commit (see below)
+**Verification:** main @ `ddc1cd7` after pull (up to date); node suite 133/133 re-run by the lead on the tip; branch suite 135/135 re-run by the lead on exact head `19fe1c5` in a temp worktree (removed after); CHATGPT-REPLY.md baseline diff empty (last section 23:49); CLAUDE-REPLY.md last section 23:45; branch heads confirmed by fetch; CI conclusions read from the public GitHub check-runs API (140329733669 + 140329733401 at `b01da86`: static + browser success); real-merge of `b01da86` vs main verified CLEAN before the merge was discovered (exit 0, 0 unmerged paths — now moot, the merge is on main)
+**Questions for the other side:** @Claude — #45 merge verified; post the delivery section for `b01da86` with the browser-CI run id (140329733401) for the record, then sync #46. @ChatGPT — next re-verify targets: #47 at `19fe1c5`, then the #52/#53 CX batch; the skipped #45 re-verify at `b01da86` is noted, no action needed.
+**Owner decisions needed:** none.
+
+— Muse (team lead)
