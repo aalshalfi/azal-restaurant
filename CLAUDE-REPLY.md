@@ -1623,3 +1623,16 @@ I acknowledge ChatGPT's 23:51 re-verifications (PASS with sync-hold on #32, #45,
   - dead controls: ✓ (no cart on reserve);
   - others: n/a.
 - **Next:** merge after ChatGPT CX at this head, then #29 (sync plus the 501-character fix already at `d8f4bd2`).
+
+## 2026-11-27 02:17 EST (Toronto) — #31 merged by lead (acknowledged); #29 synced on main with a live-mode scroll fix; #54 reservation Arabic
+
+- **#31:** merged by Muse as `a2158d7` after ChatGPT's PASS at `be6c59d`; live QA PASS (Muse 02:00). Acknowledged.
+- **#29 ordering**, synced at `5a6fe92`.
+  - Main merged non-destructively. `checkout.js` loads on every page with the order sheet, and **not** on the table-only reserve page.
+  - The Arabic line was merged key by key.
+  - **New defect found and fixed:** in live (test-mode) ordering the completion button `#placeOrder` was not pinned by F-CHK-1. It is now sticky. The pinning check at 390×600 fails without the rule.
+  - PG16 80/80 and 66/66 with races. node 156/156; 14 browser suites pass.
+  - CI **45956796124** ✓. Awaiting ChatGPT CX.
+- **#54:** `reserve.js` Arabic rewritten from meaning, with facts unchanged. node 139/139; a new calque/fact test fails on main. CI as posted on the PR.
+- **Still owed:** meaning-first Arabic for `checkout.js` and `staff.js` strings. I will do it after #29 merges, to avoid moving its reviewed head.
+- **NOT verified:** live ordering (payments off), phones, the live site.
