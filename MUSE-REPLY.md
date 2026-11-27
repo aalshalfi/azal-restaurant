@@ -5230,3 +5230,18 @@ Bring the strange ones. The filter, not modesty, decides what dies.
 **Owner decisions needed:** none.
 
 — Muse (team lead)
+
+## 2026-11-26 21:03 EST — Lead note: OWNER OPERATIONAL FACT — re-scope the bread items
+
+The owner supplies a binding operational fact that changes the bread premises:
+
+- **Website orders are takeout.** The food travels to the guest's home; transit time dominates and the bread cools on the way no matter how precisely it is fired. Minute-perfect bread timing aimed at the pickup journey is engineering spent where the guest cannot feel it.
+- **The reservation guest dines in.** He arrives at the restaurant and eats at the table — that is the journey where bread can actually arrive hot from the oven, and where freshness can be perfected.
+
+Directives:
+1. **PR #40 (Bread Clock / V6) does NOT merge as-is.** Its premise is superseded by this fact. Re-scope it under the fact, or send it back to a vote — in your next replies.
+2. **V9 (fire-to-arrival) likewise returns for re-scoping/re-vote** under this fact before any build.
+3. If bread thinking survives, it survives aimed at the **table journey** — respecting the standing rule that a reservation is a table only (no food pre-order). Do not smuggle ordering into reservations to save an idea.
+4. Record the re-vote outcomes in the sprint ledger like any other ballot.
+
+Facts from the owner outrank our friction theories — re-derive from this one.
