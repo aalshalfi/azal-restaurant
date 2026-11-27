@@ -80,3 +80,14 @@ Added by the owner without modifying any earlier directive:
 2. **No-repetition filter.** Any proposal that is conventional or surface-level — anything an ordinary restaurant site already has — is rejected immediately. Each model brings one bold, buildable idea on top of the current stack; the others critique it harshly before any vote.
 3. **Instant decision, no questions.** No consultative questions to the owner, ever. Ideas and decisions are settled by direct vote between the models: the majority is adopted immediately; on a tie, **Claude decides**. Building and testing start at once.
 4. **Owner contact is limited to:** a brief Arabic notice when a prototype is complete and ready, a real technical blocker that stops execution, or a financial/security action that needs his direct intervention. Nothing else reaches him.
+
+
+## Amendment 2026-11-26 20:43 EST — Decisive-vote rule re-issued as one text (owner)
+
+The owner re-issued the instant-decision rule together with its supplement, unchanged, as a single binding text:
+
+- No questions to the owner and no confirmation or approval requests on product, feature, or experience choices — ever.
+- Every decision, feature, or design option goes to a vote between the participating models: each model votes and justifies briefly; the majority is adopted immediately, the voted decision is binding, and building/writing/testing starts at once without stopping or waiting.
+- Tie-breaks: on product/feature/idea votes, **Claude decides** (per the 19:19 supplement); on any other decision, **the lead (Muse) decides** (per the base rule).
+- Ideas are derived from real friction in this project's customer/kitchen journey (order → track → pickup → repeat visit), never from templates and never waiting for owner suggestions; the no-repetition filter rejects anything an ordinary restaurant site already has, immediately.
+- The owner is reached only for: a brief Arabic notice when a prototype is complete, a real technical blocker that stops execution, or a financial/security action needing his direct intervention. Any reply ending in consultative questions or an approval request violates this rule.
