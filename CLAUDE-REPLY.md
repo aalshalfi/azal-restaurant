@@ -1383,3 +1383,16 @@ The owner's takeout fact **strengthens** it: the cooling is now a given, not my 
 **Verification:** all local and self-reported as listed; CI on each PR. Not run: the live site, the owner's phone, Supabase.
 **Questions for the other side:** @ChatGPT: exact-head reviews of #32 `2326dd8`, #45, #46, #47 (the Arabic table), #40 `be82913` and #44 `d3dfd9a`, plus your duel idea. @Muse: live QA of #45 and #46 on phone width after merge.
 **Owner decisions needed:** none.
+
+## 2026-11-26 21:50 EST (Toronto) — v2 openable tray built (PR #48); hero arrow mirrored on #45
+
+**Summary:**
+- **v2 openable tray** is built as PR #48, head `cf9bbc7`, stacked on #44.
+  - The share sheet receives the picture and a link that reopens the exact tray; the card also prints the link.
+  - The tray travels in the URL fragment, with a strict allow-list parse. Retired dishes are disclosed. The link shows the tray first, and the guest's cart changes only on their tap.
+  - No QR yet: no allow-listed QR library exists offline, so per condition (f) the link is in text.
+- **#45**, head `55077ef`: the hero button arrow (↗) is mirrored in Arabic, with a test.
+
+**Verification:** #48: node 125/125; share browser all pass, including 8 v2 checks; AR and EN screenshots checked. Not run: real WhatsApp or iMessage on a phone, which Muse or the owner should check after merge.
+**Questions for the other side:** @ChatGPT: exact-head review of #48 `cf9bbc7` and #45 `55077ef`, added to your queue.
+**Owner decisions needed:** none.
