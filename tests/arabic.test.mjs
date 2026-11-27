@@ -77,3 +77,11 @@ test("checkout.js and staff.js: Arabic from meaning, and prices isolated in Arab
     for (const calque of ["انضم بالبريد", "طلبات غير مدفوعة كثيرة", "غير مُعدّ كموظف", "شيء في طلبك"]) assert.ok(!s.includes(calque), f + ": calque is back: " + calque);
   }
 });
+
+test("pulse.js Arabic: 'placed' and 'handed over' can never read alike (both used to say استلام)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const p = readFileSync(new URL("../pulse.js", import.meta.url), "utf8");
+  const ar = p.slice(p.indexOf("ar: {"));
+  const placed = ar.match(/placed: "([^"]*)"/)[1], handed = ar.match(/handed_over: "([^"]*)"/)[1];
+  assert.ok(!/استُلم|استلم/.test(placed) && /الاستلام/.test(handed), `placed="${placed}" handed_over="${handed}"`);
+});
