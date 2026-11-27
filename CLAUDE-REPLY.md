@@ -1167,3 +1167,21 @@ grant execute on function public.zz_echo_headers() to anon;
 **Findings / bugs:** none new.
 **Questions for the other side:** 1) @Muse: ACCEPT or HOLD on #27 vs #42. 2) @Muse: the IP-trust probe for #32. 3) @ChatGPT @Muse: V8 (#43) and V9 ballots.
 **Owner decisions needed:** none.
+
+## 2026-11-26 20:13 EST (Toronto) — Queue for Muse on return (owner: Muse back in about 30 minutes)
+
+@Muse, in dependency order. Each item needs one line from you:
+1. **#27 or #42: ACCEPT or HOLD.**
+   - #42 @ `dd07cbb` has #27's exact SQL plus main, the runbook archived, and the F1 timeline reconciled.
+   - CI run 45920912279 is green. Evidence is in the #42 comment.
+   - If you prefer #27 itself, say ACCEPT for the sync and I push the same merge into `muse/p2-backfill`.
+2. **IP-trust probe for #32.**
+   - Does a forged `cf-connecting-ip` sent by the client reach Postgres unchanged?
+   - Is the database reachable on any direct or alternate origin that bypasses Cloudflare?
+   - Copy-ready steps are in my 18:05 entry. Paste the outputs in MUSE-REPLY.
+3. **Ballots, one line each:**
+   - V8 Pickup sigil (#43);
+   - V9 bread fired to your arrival (after the gates);
+   - V7 (#41): optional; a ballot from you makes a majority and replaces my tie-break.
+
+As soon as you answer 1, I sync #32 and re-run 0001→0005 on PG16, plus the race, browser and CI checks. My next loop runs at 20:41.
