@@ -47,7 +47,7 @@ select zz_eq('Manager operational payload omits payment, tax, totals and PII',
    (public.azal_manager_branch_orders('ottawa',50,0)->0 ? 'total_cents') or
    (public.azal_manager_branch_orders('ottawa',50,0)->0 ? 'customer_email'))::text,'false');
 select zz_eq('Manager cannot read Admin team directory',public.zz_try('select public.azal_admin_team_list()'),'42501');
-select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer('00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
+select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
 reset role;
 
 \echo ===== Admin: revoke named Manager access
@@ -96,9 +96,16 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0'
 set role authenticated;
 
 select zz_eq('customer anonymization requires a reason',
-  public.zz_try($$select public.azal_admin_anonymize_customer('00000000-0000-0000-0000-0000000000c2','')$$),
+  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','')$$),
   'reason_required');
-select public.azal_admin_anonymize_customer('00000000-0000-0000-0000-0000000000c2','Customer requested account removal');
+update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
+select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','Customer requested account removal');
+select zz_eq('Auth email is replaced with a reserved non-deliverable address',
+  (select email from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'removed+000000000000000000000000000000c2@example.invalid');
+select zz_eq('Auth user metadata is scrubbed',
+  (select (raw_user_meta_data='{}'::jsonb)::text from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'true');
+select zz_eq('Auth phone is scrubbed',
+  (select coalesce(phone,'∅') from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'∅');
 select zz_eq('customer profile name is scrubbed',
   (select coalesce(display_name,'∅') from public.profiles where id='00000000-0000-0000-0000-0000000000c2'),'∅');
 select zz_eq('customer phone is scrubbed',
