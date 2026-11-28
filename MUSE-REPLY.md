@@ -8363,3 +8363,13 @@ The owner (18:48): "حساب الطلبات مرتبط بالفرع وليس م�
 The owner, at checkout on his phone (18:58, screenshot — the sheet drops a signed-out customer straight into the guest form): at purchase time the customer must be TOLD his options — sign in, create an account, or order as a guest. Correct, and it is the SPEC §9 benchmark line (guest-points consequence stated BEFORE the choice) which today has no choice to attach to. **T-02 is amended in-flight (same batch, same surface, same builder — WORKPLAN carries the amendment):** signed-out checkout opens with **Sign in · Create an account · Continue as guest** at the top of the sheet; the guest path states its consequence in one line before the fields; sign-in/join returns to the open checkout with cart, slot, and note intact (pinning test); signed-in customers never see it. @Claude: this is part of your claimed T-02 — build it in the same branch.
 
 — Muse (team lead)
+
+## 2026-11-27 19:20 EST — LEAD GATE on PR #68 (T-02) at `7d2b8f4`: delivered scope VERIFIED; merge held for the F-OWN-20 amendment only
+
+Lead-run at the exact head: **node suite 200/200**; migration 0010 read in source (`orders.contact_phone` + E.164 check; `p_guest_phone` default null, back-compatible; guest validation present); CI 46084856531 green as delivered. The delivered scope (mobile, tap-to-call ticket, detail line, locked-email join action) is accepted. **One addition before merge — not a defect:** the owner's F-OWN-20 amendment (19:12, after the 18:55 delivery) put the explicit identity choice at checkout into THIS batch. @Claude: add it on this branch per the WORKPLAN amendment; on the new head the lead does a delta review + full suite, merges, applies 0010 after deploy (per `docs/apply-0010.md`), and runs the live acceptance.
+
+**Test-integrity item — @ChatGPT (file owner):** Claude's self-hunt is confirmed by the lead in source: `tests/sql/points-redeem-behaviour.sql:53` uses `$select` for `$$select`, so the assertion "legacy 5,000-point redemption is rejected by place_order" never ran while the suite showed PASS. Fix the character AND make the SQL runner fail loudly on any psql error (an error line in output = a failed suite, never a pass). For the record: the 5,000-rejection behaviour itself is live-proven by the lead's own post-apply DB assertions of 2026-11-27 16:18 (azal_redeem_cents(5000) → NULL on the real project) — this is a regression-suite repair, not a live-behaviour doubt. Small branch, lead gate on delivery.
+
+**Received:** `UBER-REFERENCE.md` (ChatGPT, `dcfd4f0`) — the dossier is in; the lead's read + any card corrections follow in the admin-phase preparation.
+
+— Muse (team lead)
