@@ -76,12 +76,16 @@ begin
   end if;
 
   if old.payment_status is distinct from 'paid' and new.payment_status='paid' then
-    new.paid_at := coalesce(
-      old.paid_at,
-      (select min(pe.received_at) from public.payment_events pe
-       where pe.order_id=new.id and pe.event_type='payment_succeeded'),
-      pg_catalog.clock_timestamp()
-    );
+    if old.paid_at is not null then
+      new.paid_at := old.paid_at;
+    else
+      select min(pe.received_at) into new.paid_at
+      from public.payment_events pe
+      where pe.order_id=new.id and pe.event_type='payment_succeeded';
+      if new.paid_at is null then
+        raise exception 'paid_at_payment_event_required';
+      end if;
+    end if;
   elsif new.payment_status in ('paid','refunded') and coalesce(new.paid_at,old.paid_at) is null then
     raise exception 'paid_at_required_for_paid_order';
   else
@@ -104,6 +108,8 @@ alter table public.orders add constraint orders_paid_at_consistent check (
 create index if not exists orders_paid_at_branch_idx
   on public.orders (paid_at, branch_slug)
   where paid_at is not null;
+create index if not exists payment_events_order_type_received_idx
+  on public.payment_events (order_id, event_type, received_at);
 
 -- T-25: one server-side report for Admin and Manager. Manager branch is mandatory
 -- and checked against the caller's assigned branches; Admin may pass NULL for all.
@@ -130,10 +136,14 @@ begin
   if auth.uid() is null or (not v_admin and not v_manager) then
     raise exception 'not_authorized' using errcode='42501';
   end if;
-  if p_period is null or p_period not in ('day','month','year') or p_start_date is null or p_end_date is null or p_end_date < p_start_date then
+  if p_period is null or p_period not in ('day','month','year')
+     or p_start_date is null or p_end_date is null or p_end_date < p_start_date
+     or p_end_date > (p_start_date + interval '10 years')::date then
     raise exception 'invalid_report_period';
   end if;
-  if v_manager and (p_branch_slug is null or not public.azal_manager_can_access(p_branch_slug)) then
+  -- Managers may see all of their assigned branches, or filter to one assigned branch.
+  -- A caller-supplied slug is never an authorization boundary.
+  if v_manager and p_branch_slug is not null and not public.azal_manager_can_access(p_branch_slug) then
     raise exception 'branch_forbidden' using errcode='42501';
   end if;
   if v_admin and p_branch_slug is not null and not exists (
@@ -150,7 +160,14 @@ begin
       and o.payment_status in ('paid','refunded')
       and (p_branch_slug is null or o.branch_slug=p_branch_slug)
       and (v_admin or public.azal_manager_can_access(o.branch_slug))
-  ), grouped as (
+  ),
+  refunds as (
+    select pe.order_id, sum(pe.amount_cents)::bigint as refund_cents
+    from public.payment_events pe
+    where pe.event_type='refund_succeeded'
+    group by pe.order_id
+  ),
+  grouped as (
     select date_trunc(p_period, s.paid_at at time zone 'America/Toronto')::date as period_start,
       s.branch_slug,
       count(*)::bigint as order_count,
@@ -158,13 +175,17 @@ begin
       count(*) filter (where s.fulfilment_status='accepted')::bigint as accepted_count,
       count(*) filter (where s.fulfilment_status='preparing')::bigint as preparing_count,
       count(*) filter (where s.fulfilment_status='ready')::bigint as ready_count,
-      count(*) filter (where s.fulfilment_status='handed_over' and s.payment_status='paid')::bigint as collected_count,
+      count(*) filter (where s.fulfilment_status='handed_over')::bigint as collected_count,
       count(*) filter (where s.fulfilment_status='cancelled')::bigint as cancelled_count,
-      coalesce(sum(s.total_cents) filter (where s.fulfilment_status='handed_over' and s.payment_status='paid'),0)::bigint as collected_cents,
-      coalesce(sum(s.subtotal_cents) filter (where s.fulfilment_status='handed_over' and s.payment_status='paid'),0)::bigint as subtotal_cents,
-      coalesce(sum(s.discount_cents) filter (where s.fulfilment_status='handed_over' and s.payment_status='paid'),0)::bigint as discount_cents,
-      coalesce(sum(s.tax_cents) filter (where s.fulfilment_status='handed_over' and s.payment_status='paid'),0)::bigint as tax_cents
+      coalesce(sum(s.total_cents) filter (where s.fulfilment_status='handed_over'),0)::bigint as collected_cents,
+      coalesce(sum(coalesce(r.refund_cents,0)) filter (where s.fulfilment_status='handed_over'),0)::bigint as refunds_cents,
+      (coalesce(sum(s.total_cents) filter (where s.fulfilment_status='handed_over'),0)
+       - coalesce(sum(coalesce(r.refund_cents,0)) filter (where s.fulfilment_status='handed_over'),0))::bigint as net_collected_cents,
+      coalesce(sum(s.subtotal_cents) filter (where s.fulfilment_status='handed_over'),0)::bigint as subtotal_cents,
+      coalesce(sum(s.discount_cents) filter (where s.fulfilment_status='handed_over'),0)::bigint as discount_cents,
+      coalesce(sum(s.tax_cents) filter (where s.fulfilment_status='handed_over'),0)::bigint as tax_cents
     from scoped s
+    left join refunds r on r.order_id=s.id
     group by 1,2
   )
   select coalesce(jsonb_agg(
@@ -172,35 +193,50 @@ begin
       'period_start',g.period_start,'branch_slug',g.branch_slug,'order_count',g.order_count,
       'placed_count',g.placed_count,'accepted_count',g.accepted_count,'preparing_count',g.preparing_count,
       'ready_count',g.ready_count,'collected_count',g.collected_count,'cancelled_count',g.cancelled_count,
-      'collected_cents',g.collected_cents,'subtotal_cents',g.subtotal_cents,
-      'discount_cents',g.discount_cents,'tax_cents',g.tax_cents
+      'collected_cents',g.collected_cents,'refunds_cents',g.refunds_cents,'net_collected_cents',g.net_collected_cents,
+      'subtotal_cents',g.subtotal_cents,'discount_cents',g.discount_cents,'tax_cents',g.tax_cents
     ) else jsonb_build_object(
       'period_start',g.period_start,'branch_slug',g.branch_slug,'order_count',g.order_count,
       'placed_count',g.placed_count,'accepted_count',g.accepted_count,'preparing_count',g.preparing_count,
       'ready_count',g.ready_count,'collected_count',g.collected_count,'cancelled_count',g.cancelled_count,
-      'collected_cents',g.collected_cents
+      'net_collected_cents',g.net_collected_cents
     ) end order by g.period_start,g.branch_slug
   ),'[]'::jsonb) into v_rows from grouped g;
 
   with scoped as (
-    select o.* from public.orders o
+    select o.*
+    from public.orders o
     where o.paid_at >= v_from and o.paid_at < v_until
       and o.payment_status in ('paid','refunded')
       and (p_branch_slug is null or o.branch_slug=p_branch_slug)
       and (v_admin or public.azal_manager_can_access(o.branch_slug))
+  ),
+  refunds as (
+    select pe.order_id, sum(pe.amount_cents)::bigint as refund_cents
+    from public.payment_events pe
+    where pe.event_type='refund_succeeded'
+    group by pe.order_id
   )
   select case when v_admin then jsonb_build_object(
     'order_count',count(*),
-    'collected_count',count(*) filter(where fulfilment_status='handed_over' and payment_status='paid'),
-    'collected_cents',coalesce(sum(total_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0),
-    'subtotal_cents',coalesce(sum(subtotal_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0),
-    'discount_cents',coalesce(sum(discount_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0),
-    'tax_cents',coalesce(sum(tax_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0)
+    'collected_count',count(*) filter(where s.fulfilment_status='handed_over'),
+    'collected_cents',coalesce(sum(s.total_cents) filter(where s.fulfilment_status='handed_over'),0),
+    'refunds_cents',coalesce(sum(coalesce(r.refund_cents,0)) filter(where s.fulfilment_status='handed_over'),0),
+    'net_collected_cents',
+      coalesce(sum(s.total_cents) filter(where s.fulfilment_status='handed_over'),0)
+      - coalesce(sum(coalesce(r.refund_cents,0)) filter(where s.fulfilment_status='handed_over'),0),
+    'subtotal_cents',coalesce(sum(s.subtotal_cents) filter(where s.fulfilment_status='handed_over'),0),
+    'discount_cents',coalesce(sum(s.discount_cents) filter(where s.fulfilment_status='handed_over'),0),
+    'tax_cents',coalesce(sum(s.tax_cents) filter(where s.fulfilment_status='handed_over'),0)
   ) else jsonb_build_object(
     'order_count',count(*),
-    'collected_count',count(*) filter(where fulfilment_status='handed_over' and payment_status='paid'),
-    'collected_cents',coalesce(sum(total_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0)
-  ) end into v_totals from scoped;
+    'collected_count',count(*) filter(where s.fulfilment_status='handed_over'),
+    'net_collected_cents',
+      coalesce(sum(s.total_cents) filter(where s.fulfilment_status='handed_over'),0)
+      - coalesce(sum(coalesce(r.refund_cents,0)) filter(where s.fulfilment_status='handed_over'),0)
+  ) end into v_totals
+  from scoped s
+  left join refunds r on r.order_id=s.id;
 
   return jsonb_build_object('role',case when v_admin then 'admin' else 'manager' end,
     'period',p_period,'start_date',p_start_date,'end_date',p_end_date,'rows',v_rows,'totals',v_totals);
@@ -209,8 +245,8 @@ $fn$;
 revoke all on function public.azal_sales_report(text,date,date,text) from public, anon, authenticated;
 grant execute on function public.azal_sales_report(text,date,date,text) to authenticated;
 
--- T-26: Today's summary for a Staff / branch Orders identity only. The branch is
--- checked against the authenticated staff assignment; Admin/Manager do not borrow this endpoint.
+-- T-26: Today's summary for a Staff / branch Orders identity only.
+-- Staff sees the net collected total, not gross collections or a refund/tax breakdown.
 create or replace function public.azal_staff_today_summary(p_branch_slug text)
 returns jsonb
 language plpgsql
@@ -233,20 +269,29 @@ begin
   v_from := v_today::timestamp at time zone 'America/Toronto';
   v_until := (v_today + 1)::timestamp at time zone 'America/Toronto';
 
+  with refunds as (
+    select pe.order_id, sum(pe.amount_cents)::bigint as refund_cents
+    from public.payment_events pe
+    where pe.event_type='refund_succeeded'
+    group by pe.order_id
+  )
   select jsonb_build_object(
     'branch_slug',p_branch_slug,'local_date',v_today,
     'order_count',count(*),
-    'placed_count',count(*) filter(where fulfilment_status='placed'),
-    'accepted_count',count(*) filter(where fulfilment_status='accepted'),
-    'preparing_count',count(*) filter(where fulfilment_status='preparing'),
-    'ready_count',count(*) filter(where fulfilment_status='ready'),
-    'collected_count',count(*) filter(where fulfilment_status='handed_over' and payment_status='paid'),
-    'cancelled_count',count(*) filter(where fulfilment_status='cancelled'),
-    'collected_cents',coalesce(sum(total_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0)
+    'placed_count',count(*) filter(where o.fulfilment_status='placed'),
+    'accepted_count',count(*) filter(where o.fulfilment_status='accepted'),
+    'preparing_count',count(*) filter(where o.fulfilment_status='preparing'),
+    'ready_count',count(*) filter(where o.fulfilment_status='ready'),
+    'collected_count',count(*) filter(where o.fulfilment_status='handed_over'),
+    'cancelled_count',count(*) filter(where o.fulfilment_status='cancelled'),
+    'net_collected_cents',
+      coalesce(sum(o.total_cents) filter(where o.fulfilment_status='handed_over'),0)
+      - coalesce(sum(coalesce(r.refund_cents,0)) filter(where o.fulfilment_status='handed_over'),0)
   ) into v_result
-  from public.orders
-  where branch_slug=p_branch_slug and paid_at >= v_from and paid_at < v_until
-    and payment_status in ('paid','refunded');
+  from public.orders o
+  left join refunds r on r.order_id=o.id
+  where o.branch_slug=p_branch_slug and o.paid_at >= v_from and o.paid_at < v_until
+    and o.payment_status in ('paid','refunded');
 
   return v_result;
 end;

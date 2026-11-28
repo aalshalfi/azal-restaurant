@@ -2615,3 +2615,44 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 
 
 **Latest-head CI — run #1231 (`42f873a`, PR #85 merge ref includes current main):** static-checks **PASS** and Edge Function type-check **PASS**; SQL regression, dedicated reporting PostgreSQL 16 gate, and browser suites are still running. Earlier corrected implementation run #1226 already recorded reporting-checks **PASS**, sql-checks **PASS**, static-checks **PASS**, and edge-function-checks **PASS**; its browser suite was still in progress at the last poll. No merge or SQL apply is authorized before the lead gate.
+
+
+## 2026-11-28 12:xx EST — T-25/T-26 source review remediation after Muse 12:26 adjudication
+
+**Lead source:** main \`8e71acf495cb2f485972780a0d5248fbadbab859\`, MUSE-REPLY 11:50 consolidation and 12:26 T-27 adjudication. The four newer main commits (only CLAUDE-REPLY.md and MUSE-REPLY.md changed) were merged non-destructively into this delivery branch with two-parent merge commit \`33f9037eef952e752f73dd35535b343a3b2f31e9\`. Current delivery head at this note: \`ed69489f5e8dea057486bff1e3a1b3c8761bb98b\`; compare to main: 30 ahead / 0 behind.
+
+**Supersession:** PR #84 was closed unmerged per Muse. Its competing payment_events-derived 0017 is retired. PR #85 is kept Draft/HOLD as the single delivery branch.
+
+**Source findings fixed on #85:**
+1. Removed the paid-transition \`clock_timestamp()\` fallback. New paid transitions require a pre-existing \`payment_succeeded\` event or raise \`paid_at_payment_event_required\`. Legacy backfill uses payment_events first and order_events.event_type='paid' only as the documented legacy fallback; preflight fails closed if neither exists.
+2. Added a payment_events(order_id,event_type,received_at) lookup index.
+3. Added refund_succeeded aggregation for handed-over orders. Admin receives gross collected, separate refunds, net and stored financial snapshots. Manager receives assigned-branch counts and net only; Manager can query all assigned branches or one authorized branch. Refunds before handover do not count as collected refunds; refunds after handover reduce net once.
+4. T-26 Staff summary returns net_collected_cents only, without gross, refund, tax, subtotal or discount fields.
+5. Added a pre-migration fixture file to exercise payment_events and legacy order_events paid_at backfills; expanded SQL tests for missing-event fail-closed behavior, paid_at immutability, refunds before/after handover, and deterministic Toronto day/month/year boundaries. The workflow now clones a disposable PG16 database, proves a paid row without either provenance source aborts 0017 atomically without leaving paid_at, then applies 0017 to a clean disposable DB.
+6. Updated the Staff API mock to assert net-only output. Replaced the stale shell proposal with Muse's adopted five-destination Admin / four-screen Kitchen spec; updated the reporting contract, WORKPLAN and BOARD.
+
+**Exact source blobs at review:**
+- Migration 0017: \`b2d6b3a3533f2cc5fa11109a008d493ba8515ce6\`
+- Reporting behavior SQL: \`d8ecfe17281f0800c6ea69440d22f0a374a1ce4a\`
+- CI workflow: \`8ff58e8264708a268e25dc8819f5799a33ef8f51\`
+- Pre-migration fixtures: commit \`c3f6d68909e69e0604f6bf86a30f5d61df3c21c1\`
+- Staff API test: commit \`26a455a4a5f9ca00ccb91d6a2dd9a7941a93b3b0\`
+- Reporting contract: commit \`a3281373dce6518bec3ba8d359b5deff20de4f7b\`
+- Adjudicated shell spec: commit \`65b7df35d777ef52d99a1de1d1422ddcf4a8b17f\`
+
+**Verification status:** no local Node/PostgreSQL result is claimed. Exact-head GitHub Actions run \`46171321172\` was queued for source head \`ed69489\`; READY is withheld until all five jobs succeed on the final head and the reporting SQL log is inspected. Previous green CI at \`296adf2\` does not cover these source changes.
+
+**Operational boundary:** 0017 remains source-only. No Supabase SQL, deployment, live order/payment/refund/email, customer mutation or spend was performed. After exact-head CI and Muse's review, the lead must verify isolated staging + backup/restore evidence, apply 0017 once, and perform the Admin/Manager/Staff aggregate walk.
+
+**Next assigned work:** after posting T-25/T-26 READY, T-27 Admin shell is assigned to ChatGPT, then T-28 Kitchen shell, then T-29 Availability. The adjudicated spec is in ADMIN-KITCHEN-SHELL-PROPOSAL.md. Claude's independent Sunday queue remains T-24 → T-03; his separate CLAUDE-REPLY.md cadence is every 30 minutes with exact SHA/files/tests/results/blockers.
+
+— ChatGPT
+
+
+## 2026-11-28 12:xx EST — T-25/T-26 READY / T-27 review handoff
+
+T-25/T-26 READY FOR LEAD GATE: exact source SHA 977da6d12d2c029eb0eb136cf693b62fbc63060d; GitHub Actions 46171415848 5/5 SUCCESS (Node 235/235, Browser, existing SQL, reporting PG16, Deno). The reporting job log has 72 PASS assertions, including both paid_at backfill sources, fail-closed negative migration rollback, no-event paid transition rejection, immutability, refund-before/after-handover, Toronto DST/month/year boundaries and role payload redaction. No SQL was applied.
+
+T-27 already exists as Draft PR #86 / branch chatgpt/t27-admin-shell, so no duplicate branch was created. Review blockers: Reports UI must consume role-shaped net/refund fields; Monthly/Yearly must set full Toronto date ranges; Manager should default to all assigned branches or an explicit assigned-only filter; customer/order/More deep links and browser Back/Forward need restoration; static Node test 38 currently fails because auth.js/admin.js query versions differ. T-28 PR #87 is Draft and waits for T-27; it currently reads the old gross field, omits completed/cancelled history, and fetches today's summary during every Queue poll.
+
+This branch sync imports the latest #85 source and lead rulings before T-27 corrections. No production/staging SQL, deployment, live mutation, outbound send, or activation was performed.

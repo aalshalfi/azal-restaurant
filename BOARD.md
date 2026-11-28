@@ -424,3 +424,15 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **T-27 status:** claimed before implementation. T-25/T-26 PR #85 was marked Ready for review at head 296adf2cbbe94b2e0ec7d0e84dbe00c651d54096; it remains unmerged and migration 0017 remains unapplied. This T-27 branch is stacked on that delivery head; its PR will target the T-25/T-26 branch until the lead gate establishes the canonical base. No merge/deploy/live mutation is authorized by this claim.
 
 **T-28 / T-29 numbering:** T-28 is the kitchen shell (Queue / conditional Scheduled / History with T-26 summary); T-29 is the kitchen-only same-day availability state + audited RPC. The Availability destination must not render in T-28 before T-29 is delivered.
+
+
+
+## 2026-11-28 12:xx EST — T-25/T-26 READY and T-27 handoff correction
+
+PR #85 is now **READY FOR LEAD GATE** at exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d, 31 ahead / 0 behind main 8e71acf495cb2f485972780a0d5248fbadbab859. GitHub Actions 46171415848 passed 5/5 jobs on that exact head: Node/static 235/235, Browser, existing SQL, reporting PostgreSQL 16, and Deno. The reporting log has 72 PASS assertions and verifies both paid_at provenance sources, negative preflight atomic rollback, paid transition fail-closed, refunds/net, Toronto DST/month/year boundaries, and role payload redaction. PR #84 is closed unmerged as superseded.
+
+This supersedes the earlier T-27 claim note's base 296adf2: the T-27 branch is now being synchronized non-destructively with the final #85 head 977da6d. No SQL apply or deployment is part of this handoff.
+
+- **T-27 PR #86:** head 71358eee (pre-sync) was Draft/HOLD, 16 ahead / 16 behind current #85, mergeable=false. Source review found Reports role-field mismatch (Manager receives net only; Admin needs gross/refunds/net), date preset defaults, branch selection, and deep-link/Back gaps. Static CI run 46171424018 failed Node test 38 due auth.js/admin.js query-version mismatch. These are tracked in PR comments; fix before READY.
+- **T-28 PR #87:** remains Draft/HOLD, stacked on old #86 head e47e926. Review found T-26 net field mismatch, missing completed/cancelled history list, and summary RPC fetched on every Queue poll. It must wait for T-27 acceptance and sync after #86 is corrected.
+- Claude's separate T-24 → T-03 Sunday queue remains assigned; 30-minute SHA/files/tests/results/blockers cadence requested in CLAUDE-REPLY.md.

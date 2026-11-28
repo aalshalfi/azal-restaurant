@@ -209,3 +209,20 @@ Because A5 moves T14 before T21 and T13, the old T13=0015 placeholder is superse
 - **Owner:** assigned after T-27/T-28; full-review class.
 - **Scope:** own-branch temporary Sold out today state, actor/time/item audit, next-business-day auto-reset; staff may only change own authorized branch. Manager/T-21 retains permanent availability, retirement and all canonical menu edits.
 - **Boundary:** T-28 must not render Availability until T-29's authoritative state and server enforcement are delivered and gated. Migration/RPC/role matrix require full review and live acceptance.
+
+
+
+## 2026-11-28 12:xx EST — T-25/T-26 exact reporting contract (supersedes older collected-only wording)
+
+### T-25
+- One canonical 0017, Toronto day/month/year using immutable paid_at.
+- Backfill payment_events.payment_succeeded first; legacy order_events.event_type='paid' fallback only. Fail closed if neither provenance source exists.
+- New paid transition requires a prior payment_succeeded event; never invent clock_timestamp.
+- ADM-1: handed_over only. Admin gets gross collected, separate refunds, net, and stored subtotal/discount/HST snapshots. Manager gets assigned-branch counts and net only.
+- Refund after handover reduces net once; refund before handover is not collected revenue/refunds.
+- Manager may query all assigned branches or one authorized branch.
+
+### T-26
+- Staff-only own-branch Toronto-day status counts and net_collected_cents only.
+- Manual copy/share only; no email/outbox/SMTP/scheduled send.
+- Mount in Kitchen History after T-28; no summary RPC on Queue polling.

@@ -1,77 +1,62 @@
-# ADMIN + KITCHEN SHELL PROPOSAL — F-OWN-32
+# ADMIN + KITCHEN SHELL — LEAD-ADJUDICATED T-27 / T-28 SPEC
 
-**Author:** ChatGPT  
-**Basis:** Muse's 2026-11-28 10:53 ruling and 10:59 kitchen addendum  
-**Status:** Proposal for lead adjudication; no UI shell implementation before T-27.
+**Decision source:** MUSE-REPLY.md 2026-11-28 12:26 EST — T-27 adjudication. This file records the adopted design; it does not authorize shell code before the assigned card's claim and gates.
 
-## Design principle
+## 0. Shell constitution (binding)
 
-Borrow the *information architecture* of Uber's Manager and Orders tablet, not its visual skin. AZAL keeps its own calm typography, brand palette and spacing. Each screen has one primary job; navigation is persistent; secondary administration is one tap deep. Existing authorization, RLS, branch scoping, audit and immutable financial snapshots remain unchanged.
+1. One primary job per screen.
+2. At most five persistent destinations.
+3. A role sees only destinations it can use; unauthorized destinations are absent, never greyed.
+4. No empty containers.
+5. Every screen has a stable address (for example #orders, #orders/<code>, #customers, #more/team) so Back and deep links work.
+6. A screen loads its own data on entry. Poll only live screens: Admin Home and Kitchen Queue.
+7. A branch selector is a view filter only; server authorization remains authoritative.
+8. Keep AZAL's official palette, typography, logo and calm spacing. Use Uber only as an information-architecture reference, never as copied skin.
 
-## 1. Manager / Admin portal — `admin.html`
+## 1. T-27 — Admin shell (admin.html)
 
-### Persistent navigation
+**Five destinations (Claude's adopted structure):**
 
-- **Phone:** fixed bottom navigation with four destinations: **Home · Orders · Menu · More**. Use icon + short label, safe-area padding, and a visible active state. The shell remains usable at 320px.
-- **Desktop/tablet:** compact persistent left rail with the same four destinations and text labels; content occupies the remaining workspace. Do not create a second information architecture for desktop.
-- **Menu** is a real destination reserved for T-21; until T-21 is delivered, show a clear not-yet-available state only if the lead wants the tab exposed. Do not invent menu-editing controls in this batch.
-- Do not add a Marketing destination yet: no approved AZAL marketing workflow exists. It can be added later without changing the shell pattern.
+1. **Home** — headline tiles and a concise “Needs attention” list built only from existing facts. No full lists or secondary admin forms.
+2. **Orders** — **Active · Scheduled · History** tabs. Order details open as their own addressable view.
+3. **Customers** — bounded server-side directory. A customer opens as a separate view; Admin-only anonymization is inside that view, never on the list.
+4. **Reports** — T-25 **Daily · Monthly · Yearly** periods. Admin sees gross collected, separate refunds, net, and stored financial snapshots; Manager sees assigned-branch counts and net only.
+5. **More** — named destinations: Team & access (Active/Pending sub-tabs), Orders accounts, Access history. No accordion of unrelated sections.
 
-### Screen map
+**Not in this shell:** Menu is absent until T-21 lands; no dead Menu link. Identity and Sign out remain behind the header profile icon (F-OWN-25). The previous Today panel is reduced to Home headline facts; detailed period figures live only in Reports.
 
-| Destination | Screen content | Explicitly excluded |
-|---|---|---|
-| **Home** | Today headline: collected sales, active orders by key state, active Majlis members; concise operational alerts/recommendations only when actionable. | Full order list, directory, team, audit, report tables. |
-| **Orders** | Dedicated order workspace with **Active · Scheduled · History** tabs. Search/filter belongs inside this screen. History owns completed/cancelled records and order detail. | Customer directory and staff management. |
-| **Menu** | T-21 Menu Manager when built: menu items and modifier groups, with its own sub-navigation (e.g. Items · Categories/Modifiers · Availability). | Team, reports, order history. |
-| **More** | Plain list of named destinations: **Reports**, **Customers**, **Team & access**, **Invitations**, **Orders accounts**, **Audit log**. Each opens a focused page, not an accordion appended to Home. | Dashboard metrics or mixed operational cards. |
+**Role behavior:** Admin sees all approved destinations. Manager uses the same shell, but any destination/action absent from the permission matrix is not rendered. The shell does not create or widen permissions.
 
-### T-25 placement and Today-panel fate
+## 2. T-28 — Kitchen shell (staff.html)
 
-- **T-25 Reports** lives at **More → Reports**, a dedicated screen with Daily / Monthly / Yearly period tabs (and date/branch filters appropriate to role). Admin can compare all branches or one branch and sees collected sales, subtotal, discount and HST breakdown. Manager sees only their server-authorized assigned branch, order/status counts and collected total; no subtotal, discount or HST.
-- The current Today panel is **split, not duplicated**: Home keeps only a compact headline snapshot and actionable alerts; detailed period totals and financial breakdown move to Reports. Home must not become a second report screen.
-- The branch selector is a view filter, never an authorization boundary. The server independently enforces Admin-all-branches vs Manager-assigned-branch scope.
+Four screens, with **Queue** as the start:
 
-## 2. Kitchen / Orders tablet — `staff.html`
+1. **Queue** — stage chips **All · New · Preparing · Ready** with live counts and one order ticket per card.
+2. **Scheduled** — appears only when at least one scheduled order exists, with its count.
+3. **History** — completed/cancelled history; T-26 Today's summary at the top, with manual copy/share only and net collected + status counts.
+4. **Availability** — not rendered until T-29's authoritative state and audited RPC land.
 
-### Persistent navigation
+No Settings destination. Identity and Sign out remain behind the header profile icon. Staff never sees customers, reports, team or menu editing.
 
-- **Tablet/desktop:** persistent left icon rail with **Queue · History · Scheduled · Availability · Settings**; icon + text tooltip/label, clear selected state.
-- **Phone:** compact bottom navigation with the same destinations, preserving the same screen model.
-- The initial landing screen is always **Queue**. A branch selector appears only for branches returned by the existing server-authorized staff-branch RPC.
+## 3. T-29 — Availability (separate full-review card)
 
-### Screen map
+Per the owner's 11:07 ruling and Muse's 11:50/12:26 adjudication:
+- Temporary **Sold out today / In stock** is on Kitchen → Availability, own authorized branch only.
+- Every change records actor, time, item and branch.
+- Temporary sold-out state resets automatically at the next business day.
+- Manager/T-21 retains permanent unavailability, item retirement and all canonical menu edits.
+- The kitchen Availability screen and toggle do not render until the authoritative branch × item state, RLS/RPC and audit path exist. No dead or client-only control.
 
-| Destination | Screen content | Explicitly excluded |
-|---|---|---|
-| **Queue** | Live paid-order queue; stage chips **All · Needs attention · Preparing · Ready**, each with live count; one ticket per card with pickup time, order code, items, notes and permitted contact action. | History totals, availability catalogue, reports. |
-| **History** | Completed/cancelled order history. At top, T-26 **Today's summary**: collected-sales total and status counts, with a copy/share-text action for the employee to send manually. No tax line and no automatic send, email, outbox or notification. | Customer directory, HST, subtotal/discount breakdown. |
-| **Scheduled** | Future pickup orders in a dedicated chronological view; clear empty state when none exist. | Live queue stages. |
-| **Availability** | Searchable branch item list, **Sold out today** filter with count, per-item **Sold out / In stock** control. | Editing item names, prices, photos, modifiers or permanent menu data. |
-| **Settings** | Only operational settings already approved for the Orders identity (e.g. authorized branch context and sign-out); no credentials/password display. | Team roles, menu editing, customer data, financial settings. |
+## 4. Acceptance for the shell cards
 
-### Sold-out control placement — owner ruling at 11:07 EST
+- Role × destination matrix: forbidden destinations absent from the DOM.
+- Every address and deep link opens the correct single screen; Back returns correctly.
+- No empty containers; focus moves to the screen heading and aria-current="page" is correct.
+- Data loads on entry; polling exists only on Admin Home and Kitchen Queue.
+- EN/FR/AR including RTL; widths 320 / 390 / 768 / 1280 with no overflow.
+- Existing Admin/Staff behavior and permission tests remain green.
+- T-27 ships Admin shell + T-25 Reports mount; T-28 then ships Kitchen shell + T-26 History mount. T-29 remains separate and follows the shell sequence.
 
-**Kitchen only** for the temporary `Sold out today` control. The owner answered the lead's open question on current `main` at 11:07: «نفذ اليوم بالمطبخ».
+## 5. Release boundaries
 
-1. **Kitchen → Availability:** when the authoritative availability state and server RPC exist, staff may set/clear a temporary `Sold out today / In stock` flag for an item at their own authorized branch. The state is audited (actor, time, item, branch) and automatically resets at the next business day. Staff cannot edit item names, prices, photos, modifiers, or permanent availability.
-2. **Manager → Menu (T-21):** Manager retains permanent/until-changed unavailability, item retirement, and every canonical menu edit. The Manager does not own the same-day kitchen toggle.
-3. This is a real authorization change: the Orders account's role matrix becomes **Sold out today: Yes, own branch only**. The server must enforce the branch through `azal_staff_can_access(branch)`; a hidden/disabled UI control is not a substitute for the RPC/RLS boundary.
-4. No authoritative branch × item availability state or audited toggle RPC exists yet. The Availability screen may be included in the future kitchen shell only when it ships with the real state and working toggle. Do not render a dead toggle or a fake client-only state. The backend card belongs with T-21, or a separately sequenced card ahead of it by the lead.
-
-
-## 3. T-25 / T-26 data contract
-
-- **Collected convention:** retain ADM-1 semantics: an order contributes to collected sales only when payment is paid **and** fulfilment is `handed_over`. Do not equate placed/paid with collected.
-- **Time bucketing:** use `paid_at` as the period timestamp, interpreted in `America/Toronto`, for daily/monthly/yearly buckets as Muse ruled. The qualifying collected order's amount and its immutable order snapshots are summed into the corresponding paid-time bucket.
-- **Admin:** all branches; subtotal, discount, HST and collected total, plus order/status counts. Preserve integer cents through aggregation; format only at display.
-- **Manager:** server derives assigned branch scope from identity; return only counts and collected total. Never return subtotal, discount, tax, raw customer/order PII, or allow a client-supplied branch list to widen scope.
-- **T-26:** current Toronto day; collected total plus operational status counts; staff response excludes all tax/subtotal/discount fields. Employee manually copies/shares the summary; no automated dispatch.
-- Prefer one server-side aggregate path with role-shaped outputs over loading all orders into browser memory. Tests must prove Admin/Manager/Staff separation, Toronto midnight/month/year boundaries (including DST), paid + handed-over inclusion, unpaid/cancelled/not-handed-over exclusion, and no financial breakdown in staff/Manager payloads.
-
-## 4. Release boundaries
-
-- This proposal changes no page markup, CSS, permissions, database or live state. The owner's kitchen-only Sold out today decision is a future full-review permission/backend card, not a presentation-only exception.
-- T-25/T-26 aggregation may be implemented independently of the shell; no UI is placed into the old stacked page.
-- T-27 owns the eventual presentation-only shell implementation after lead adjudication.
-- No SQL application, merge, deployment, outbound send, or live mutation is authorized by this proposal.
+T-27 is presentation-only and must preserve shipped RPCs, RLS, branch scopes and audit rules. T-28 is likewise presentation-only until T-29 is separately approved. No SQL application, deployment, email/send path, live mutation, or activation of orders/payments/reservations is authorized by this spec.
