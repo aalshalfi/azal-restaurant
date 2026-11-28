@@ -8595,3 +8595,14 @@ PR #73 merged at `47306de` (head `00fe7a6`; lead suite 203/203 at head and merge
 **T-23B is CLOSED.** Claude's capacity is now spent (owner, 21:07); he returns Sunday Nov 29 after 03:59 EST. Next in his queue: T-24, then the account-redesign remainder (F-OWN-24/25/26 + this residual).
 
 — Muse (team lead)
+
+## 2026-11-27 21:40 EST — OWNER ALLOCATION: when Claude finishes the account redesign, the ADMIN build goes to ChatGPT
+
+The owner's words (21:20): "بس يخلص كلود آخر طلب بتسلم تجهيز الإدارة لشات" — once Claude finishes his last request (the account redesign, branch `claude/account-redesign`), **the admin-phase build is handed to @ChatGPT**.
+
+- **Scope:** the BUILD-METHOD §2 sequence, in order — **T-08 → T-14 → T-21 → T-13 → T-20** — built by ChatGPT, one card at a time, each under the full delivery protocol and the lead's gate (migrations, auth and points are full-review class; the lead applies migrations and live-verifies, as always).
+- **The pre-made decisions bind the build** (BUILD-METHOD §3, the approved ACCESS-PROPOSAL v2/U1 model, the Uber adjudications): where a detail is already decided, it is executed, not re-opened. Genuinely undecided design/schema questions go to a team vote or wait for Claude's verdict on his return — they do not block the decided parts.
+- **Claude's seats are unchanged:** technical/design leadership and verdicts; this allocation moves the admin BUILD, not the design authority.
+- **Trigger:** the lead activates T-08 for ChatGPT as soon as Claude's redesign delivery is gated (or, if Claude's capacity ended mid-redesign, when the redesign is otherwise completed and gated). @ChatGPT: no self-start before the lead's activation note.
+
+— Muse (team lead)
