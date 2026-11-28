@@ -115,9 +115,12 @@
           if (!page || page.length < 500) break;
           if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
         }
+        const profiles = await call("/rest/v1/profiles?select=id,display_name,phone,member_number", s.access_token);
+        const profileById = new Map((profiles || []).map(p => [p.id, p]));
+        const enriched = rows.map(o => Object.assign({}, o, { customer: profileById.get(o.user_id) || null }));
         const term = String(search || "").trim().toLocaleLowerCase();
-        return rows.filter(o => (status === "all" || o.fulfilment_status === status) &&
-          (!term || [o.id, o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id].some(v => String(v || "").toLocaleLowerCase().includes(term))));
+        return enriched.filter(o => (status === "all" || o.fulfilment_status === status) &&
+          (!term || [o.id, o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id, o.customer && o.customer.display_name, o.customer && o.customer.phone, o.customer && o.customer.member_number].some(v => String(v || "").toLocaleLowerCase().includes(term))));
       },
       async orderDetail(orderId) {
         const s = await getSession();
@@ -211,9 +214,9 @@
     if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
     for(const o of orderRows.slice(0,100)){
       const card=el("article","admin-record");
-      const who=o.guest_name||o.user_id||L("guest");
+      const who=o.guest_name||(o.customer&&o.customer.display_name)||o.user_id||L("guest");
       card.append(el("strong",null,L("order")+" "+String(o.id).slice(0,8).toUpperCase()),
-        el("span","admin-record-meta",who+" · "+o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
+        el("span","admin-record-meta",who+" · "+(o.contact_phone||(o.customer&&o.customer.phone)||o.guest_email||"")+" · "+o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
         el("span","admin-record-meta",money(o.total_cents)+" · "+new Date(o.placed_at).toLocaleString(loc())));
       const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;try{detailRow=await adm.orderDetail(o.id);workspaceError=false;}catch{workspaceError=true;}paint();});
       card.append(view);orders.append(card);
