@@ -59,11 +59,13 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
   ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
   ok(!/Menu|Availability/.test(destinations.join(" ")), "no dead Menu or Availability destination before T-21/T-29");
+  const attentionDebug = await p.locator('#adminScreen-orders [data-order-card="1"]').evaluateAll(cards=>cards.map(c=>({status:c.dataset.status,payment:c.dataset.paymentStatus,code:c.dataset.orderCode})));
+  console.log("T27 attention diagnostic", attentionDebug, "links", await p.locator("#adminScreen-home .admin-needs-attention .admin-more-link").count());
   ok(await p.locator("#adminScreen-home .admin-needs-attention .admin-more-link").count() === 1, "Needs attention includes paid actionable orders only, not unpaid orders");
   const homeHidden = await p.locator("#adminScreen-home").getAttribute("hidden");
   const ordersHidden = await p.locator("#adminScreen-orders").getAttribute("hidden");
   const homeCurrent = await p.locator('.admin-shell-link[href="#home"]').getAttribute("aria-current");
-  console.log("T27 route diagnostic", { homeHidden, ordersHidden, homeCurrent });
+  console.log("T27 route diagnostic", { url:p.url(), hash:await p.evaluate(()=>location.hash), homeHidden, ordersHidden, homeCurrent });
   ok(homeHidden === null && ordersHidden !== null && homeCurrent === "page", "Admin shell opens Home first and keeps other screens out of the active view");
   await p.locator('.admin-shell-nav a[href="#reports"]').click();
   ok(await p.locator("#adminScreen-reports").isVisible(), "Reports destination opens as its own screen");
