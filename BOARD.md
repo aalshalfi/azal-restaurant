@@ -286,3 +286,10 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - **F-OWN-28 completed in T-08:** admin order search now matches the six-character public code derived from the first six characters of the UUID, case-insensitively; list and detail display that same six-character code. Added Node and browser pinning tests for known code `111111` and format `4D9D36`.
 - **F-OWN-29 acknowledged, not started:** website-only daily/monthly/yearly sales & HST reports are carded as T-25 and remain closed until the T-08 gate is accepted. No report or aggregation work has been mixed into this batch.
 - Main advanced after the current branch base only through two lead-note commits in `MUSE-REPLY.md` (F-OWN-28 and F-OWN-29); these instructions have been read and incorporated. No code-file conflict identified.
+
+
+## 2026-11-27 22:34 EST — single T-08 delivery branch consolidated
+- **Only delivery branch:** `chatgpt/t08-admin-directory-final`; **only active delivery PR:** #77. All T-08/T-23C/F-OWN-28 code, migration 0014, email wiring, staff/admin exclusion, founder badge placement, public-code matching, SQL runner and tests are in this branch. The RPC itself excludes staff/admin and anonymized profiles; Node/SQL tests pin those rules.
+- PR #75 and PR #76 are closed unmerged as superseded; PR #77 is the successor. No other branch is being presented for lead certification.
+- F-OWN-28 exact acceptance example `4D9D36` is now the pinned test/browser fixture, not only a generic UUID prefix test.
+- Main's intervening commits are lead decision notes only (0014 approval, F-OWN-28, T-25, consolidation, T-26); their instructions are incorporated. T-25 and T-26 remain closed until T-08 is accepted.
