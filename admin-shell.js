@@ -12,9 +12,9 @@
   };
   const locale = () => document.documentElement.lang === "fr" ? "fr" : document.documentElement.lang === "ar" ? "ar" : "en";
   const words = {
-    en: { home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",all:"All",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",back:"Back to customers",collected:"Gross collected",refunds:"Refunds",netCollected:"Net collected",count:"Orders",collectedCount:"Collected orders",subtotal:"Subtotal",discount:"Discount",tax:"HST",noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",team:"Team & access",accounts:"Orders accounts",audit:"Access history" },
-    fr: { home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher",from:"Du",to:"Au",all:"Toutes",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",back:"Retour aux clients",collected:"Total brut encaissé",refunds:"Remboursements",netCollected:"Total net encaissé",count:"Commandes",collectedCount:"Commandes encaissées",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",team:"Équipe et accès",accounts:"Comptes de commandes",audit:"Historique d’accès" },
-    ar: { home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",all:"الكل",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",back:"العودة إلى العملاء",collected:"إجمالي المحصّل",refunds:"المبالغ المستردة",netCollected:"صافي المحصّل",count:"الطلبات",collectedCount:"الطلبات المستلمة",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",team:"الفريق والصلاحيات",accounts:"حسابات الطلبات",audit:"سجل الوصول" }
+    en: { home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",all:"All",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",back:"Back to customers",collected:"Gross collected",refunds:"Refunds",netCollected:"Net collected",count:"Orders",collectedCount:"Collected orders",subtotal:"Subtotal",discount:"Discount",tax:"HST",noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",team:"Team & access",accounts:"Orders accounts",audit:"Access history",needsAttention:"Needs attention" },
+    fr: { home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher",from:"Du",to:"Au",all:"Toutes",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",back:"Retour aux clients",collected:"Total brut encaissé",refunds:"Remboursements",netCollected:"Total net encaissé",count:"Commandes",collectedCount:"Commandes encaissées",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",team:"Équipe et accès",accounts:"Comptes de commandes",audit:"Historique d’accès",needsAttention:"À traiter" },
+    ar: { home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",all:"الكل",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",back:"العودة إلى العملاء",collected:"إجمالي المحصّل",refunds:"المبالغ المستردة",netCollected:"صافي المحصّل",count:"الطلبات",collectedCount:"الطلبات المستلمة",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",team:"الفريق والصلاحيات",accounts:"حسابات الطلبات",audit:"سجل الوصول",needsAttention:"تحتاج إلى متابعة" }
   };
   const L = (key) => words[locale()][key] || words.en[key] || key;
   const cad = (cents) => new Intl.NumberFormat(locale()==="fr"?"fr-CA":locale()==="ar"?"ar-CA-u-nu-latn":"en-CA",{style:"currency",currency:"CAD"}).format(Number(cents||0)/100);
@@ -132,11 +132,37 @@
       if(h){if(!h.hasAttribute("tabindex"))h.setAttribute("tabindex","-1");h.focus({preventScroll:true});}
     }
     nav.addEventListener("click",e=>{const a=e.target.closest("a[data-destination]");if(!a)return;e.preventDefault();activate(a.dataset.destination,true);});
-    root.addEventListener("hashchange",()=>activate(location.hash.slice(1),false));
-    root.addEventListener("popstate",()=>activate(location.hash.slice(1),false));
+    function routeFromHash(){
+      const parts=location.hash.slice(1).split("/"),id=parts[0]||destinations[0],sub=parts[1]||"";
+      activate(destinations.includes(id)?id:destinations[0],false);
+      if(id==="orders"&&["active","scheduled","history"].includes(sub)){
+        const tab=rootEl.querySelector('[data-order-view="'+sub+'"]');if(tab)tab.click();
+      } else if(id==="orders"&&sub){
+        const detail=rootEl.querySelector(".admin-order-detail");
+        const card=[...rootEl.querySelectorAll('#adminScreen-orders [data-order-card="1"]')].find(x=>x.dataset.orderCode===sub.toUpperCase());
+        if(card&&!detail){const button=card.querySelector("button");if(button)button.click();}
+      } else if(id==="orders"&&!sub){
+        const detail=rootEl.querySelector(".admin-order-detail");const close=detail&&detail.querySelector(":scope > button");
+        if(close)close.click();
+        const tab=rootEl.querySelector('[data-order-view="active"]');if(tab&&tab.getAttribute("aria-pressed")!=="true")tab.click();
+      } else if(id==="customers"&&sub){
+        const card=[...rootEl.querySelectorAll('#adminScreen-customers .admin-record[data-user-id]')].find(x=>x.dataset.userId===decodeURIComponent(sub));
+        const detail=rootEl.querySelector(".admin-customer-detail");
+        if(card&&detail&&!detail.contains(card)){const button=card.querySelector(".admin-customer-open");if(button)button.click();}
+      } else if(id==="customers"&&!sub){
+        const detail=rootEl.querySelector(".admin-customer-detail");const back=detail&&detail.querySelector(":scope > button");
+        if(back&&!detail.hidden)back.click();
+      } else if(id==="more"&&sub){
+        const target=rootEl.querySelector("#"+sub);if(target){target.scrollIntoView({block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});}
+      }
+    }
+    if(root.__AZALAdminShellRouteHandler)root.removeEventListener("popstate",root.__AZALAdminShellRouteHandler);
+    root.__AZALAdminShellRouteHandler=routeFromHash;
+    root.addEventListener("popstate",routeFromHash);
     const initial=location.hash.slice(1).split("/")[0];
     activate(destinations.includes(initial)?initial:destinations[0],false);
     rootEl.dataset.adminShell="1";
+    routeFromHash();
   }
   function enhance() {
     const shell=rootEl.querySelector(".admin-shell-layout");
@@ -153,7 +179,8 @@
       back.addEventListener("click",()=>{
         if(detailCard&&restoreParent)restoreParent.insertBefore(detailCard,restoreNext);
         detailCard=null;restoreParent=null;restoreNext=null;
-        detail.replaceChildren(back);detail.hidden=true;directory.hidden=false;history.pushState(null,"","#customers");
+        detail.replaceChildren(back);detail.hidden=true;directory.hidden=false;
+        if(location.hash!=="#customers")history.pushState(null,"","#customers");
       });
       detail.append(back);customers.append(detail);
       const openCustomer=(card)=>{
@@ -175,6 +202,27 @@
     }
     const orders=rootEl.querySelector("#adminScreen-orders");
     const orderPanel=orders&&orders.querySelector('[data-admin-screen-part="orders"]');
+    const home=rootEl.querySelector("#adminScreen-home");
+    if(orderPanel){
+      for(const card of orderPanel.querySelectorAll(".admin-record[data-order-card='1']")){
+        const button=card.querySelector("button");
+        if(button&&!button.dataset.hashBound){
+          button.dataset.hashBound="1";
+          button.addEventListener("click",()=>{const code=card.dataset.orderCode;if(code&&location.hash!=="#orders/"+code)history.pushState(null,"","#orders/"+code);});
+        }
+      }
+      const attention=[...orderPanel.querySelectorAll(".admin-record[data-order-card='1']")].filter(card=>["placed","accepted","preparing","ready"].includes(card.dataset.status));
+      if(home&&attention.length&&!home.querySelector(".admin-needs-attention")){
+        const panel=make("section","admin-panel admin-needs-attention");panel.append(make("h2",null,L("needsAttention")));
+        for(const card of attention.slice(0,8)){
+          const link=make("a","admin-more-link",(card.querySelector("strong")?.textContent||"Order")+" · "+card.dataset.status);
+          link.href="#orders/"+card.dataset.orderCode;
+          link.addEventListener("click",e=>{e.preventDefault();history.pushState(null,"",link.href);const button=card.querySelector("button");if(button)button.click();});
+          panel.append(link);
+        }
+        home.append(panel);
+      }
+    }
     if(orderPanel&&!orderPanel.querySelector(".admin-order-tabs")){
       const form=orderPanel.querySelector("form.admin-filter");
       const tabs=make("div","admin-report-tabs admin-order-tabs");
@@ -182,6 +230,7 @@
         const b=make("button","button admin-detail-button",label);b.type="button";b.dataset.orderView=id;
         b.addEventListener("click",()=>{
           for(const x of tabs.querySelectorAll("button"))x.setAttribute("aria-pressed",String(x===b));
+          if(location.hash!=="#orders/"+id)history.pushState(null,"","#orders/"+id);
           const cards=[...orderPanel.querySelectorAll(".admin-record")].filter(x=>x.dataset.orderCard==="1");
           for(const card of cards){
             const status=card.dataset.status,scheduled=card.dataset.scheduled==="true";
@@ -199,7 +248,7 @@
       const links=make("nav","admin-more-links");links.setAttribute("aria-label",L("more"));
       for(const [id,label] of [["adminTeamMembersTitle",L("team")],["adminOrdersAccounts",L("accounts")],["adminTeamAudit",L("audit")]]){
         const target=morePanel.querySelector("#"+id);if(!target)continue;
-        const a=make("a","admin-more-link",label);a.href="#more/"+id;a.addEventListener("click",e=>{e.preventDefault();target.scrollIntoView({behavior:"smooth",block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});});links.append(a);
+        const a=make("a","admin-more-link",label);a.href="#more/"+id;a.addEventListener("click",e=>{e.preventDefault();history.pushState(null,"",a.href);target.scrollIntoView({behavior:"smooth",block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});});links.append(a);
       }
       morePanel.prepend(links);
     }
