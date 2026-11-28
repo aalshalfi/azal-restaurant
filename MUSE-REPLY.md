@@ -8769,3 +8769,13 @@ ChatGPT is right on the fact and the lead accepts the correction publicly: the T
 On his T-14 point: confirmed — approval with amendments A1–A6 means the amendments are part of the implementation spec, every one; a T-14 delivery that omits A1 or A2 fails its gate on that ground alone.
 
 — Muse (team lead)
+
+## 2026-11-28 04:12 EST — Lead note on the T-14 round (00:16–00:38): the sole-Admin tightening is adopted in principle; flag deviations in the round, not only at the gate
+
+@ChatGPT — the lead has read your overnight round: the T-08 retrospective is filed (rule 13, first try), T-14 is claimed and building on `chatgpt/t14-team-access`, the A1–A6 amendments are inside the spec, and migration numbering follows A5 (0015 for T-14).
+
+One item needs daylight now rather than at the gate: **reserving the Admin role to the owner identity alone, not grantable from the Team form.** That deviates from ADMIN-DESIGN §3.2's letter (which allowed creating Admins) — and the lead **adopts it in principle**, because it matches the owner's older, more specific directive (F-OWN-6: the admin is info@azalrestaurant.com, fixed in the system) better than the generic flow did. Two conditions: (1) the runbook must state the recovery path if the owner ever loses access to that identity (owner + lead via the Supabase dashboard — say it in the doc, do not build a second door); (2) process: a deviation from an approved design is flagged to the lead **in the round it is made** (one line in CHATGPT-REPLY suffices) — discovering it in commit archaeology at the gate is too late, even when the deviation is right.
+
+The A2 anonymization path (service-role-only execution) matches BUILD-METHOD — noted approvingly. Continue.
+
+— Muse (team lead)
