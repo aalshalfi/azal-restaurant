@@ -3,16 +3,18 @@ import test from "node:test"; import assert from "node:assert/strict"; import { 
 const require = createRequire(import.meta.url); const A = require("../admin.js"); const R = require("../role-door.js");
 const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 
-test("overview counts: unpaid and cancelled never count as kitchen work; sales = collected totals", () => {
+test("overview counts: refunded before handover is excluded; refunded after handover remains gross", () => {
   const s = A.summarise([
     { branch_slug: "ottawa", fulfilment_status: "placed", payment_status: "paid", total_cents: 1000 },
     { branch_slug: "ottawa", fulfilment_status: "placed", payment_status: "unpaid", total_cents: 900 },
     { branch_slug: "ottawa", fulfilment_status: "preparing", payment_status: "paid", total_cents: 800 },
     { branch_slug: "second", fulfilment_status: "ready", payment_status: "paid", total_cents: 700 },
     { branch_slug: "second", fulfilment_status: "handed_over", payment_status: "paid", total_cents: 2259 },
-    { branch_slug: "second", fulfilment_status: "cancelled", payment_status: "refunded", total_cents: 500 }]);
-  assert.deepEqual([s.newPaid, s.inKitchen, s.ready, s.collected, s.cancelled, s.unpaid, s.salesCents], [1, 1, 1, 1, 1, 1, 2259]);
-  assert.deepEqual(s.byBranch, { ottawa: { orders: 3, collected: 0 }, second: { orders: 3, collected: 1 } });
+    { branch_slug: "second", fulfilment_status: "cancelled", payment_status: "refunded", total_cents: 500 },
+    { branch_slug: "second", fulfilment_status: "handed_over", payment_status: "refunded", total_cents: 500 },
+    { branch_slug: "ottawa", fulfilment_status: "accepted", payment_status: "refunded", total_cents: 600 }]);
+  assert.deepEqual([s.newPaid, s.inKitchen, s.ready, s.collected, s.cancelled, s.unpaid, s.salesCents], [1, 1, 1, 2, 1, 1, 2759]);
+  assert.deepEqual(s.byBranch, { ottawa: { orders: 4, collected: 0 }, second: { orders: 4, collected: 2 } });
 });
 
 test("today starts at Toronto midnight in winter and summer", () => {
