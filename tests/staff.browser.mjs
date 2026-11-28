@@ -19,6 +19,7 @@ async function open({ staff = true, session = true, clash = false, branches = ["
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await page.route("https://fake.supabase.co/**", async (r) => {
     const u = r.request().url();
+    if (u.includes("azal_staff_my_branches")) return r.fulfill({ json: branches });
     if (u.includes("azal_staff_can_access")) return r.fulfill({ json: staff });
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: orders.filter((o) => !["handed_over", "cancelled"].includes(o.fulfilment_status)) });
     if (u.includes("staff_update_order")) { const bd = r.request().postDataJSON(); acts.push(bd); const o = orders.find((x) => x.id === bd.p_order); o.fulfilment_status = { accept: "accepted", ready: "ready", hand_over: "handed_over" }[bd.p_action]; return r.fulfill({ json: { order_id: o.id, fulfilment_status: o.fulfilment_status } }); }
