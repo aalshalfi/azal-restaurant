@@ -9,7 +9,8 @@ select case when got = want or split_part(got,'|',1) = want or split_part(got,'|
 grant execute on function public.zz_try(text), public.zz_eq(text,text,text) to anon, authenticated;
 
 insert into public.branches(slug,name_en,name_fr,city,timezone,tax_rate_bps) values ('ottawa','Ottawa','Ottawa','Ottawa','America/Toronto',1300),('second','Second','Second','Ottawa','America/Toronto',1300) on conflict (slug) do update set active = true;
-insert into public.branch_hours(branch_slug,weekday,opens_local,closes_local,closed) select b, d, '00:00','23:59', false from generate_series(0,6) d, unnest(array['ottawa','second']) b
+-- Near-24h overnight windows keep ASAP fixtures valid regardless of CI clock time.
+insert into public.branch_hours(branch_slug,weekday,opens_local,closes_local,closed) select b, d, '00:01','00:00', false from generate_series(0,6) d, unnest(array['ottawa','second']) b
   on conflict (branch_slug, weekday) do update set opens_local = '00:00', closes_local = '23:59', closed = false;
 insert into public.menu_items(id,slug,name_en,name_fr,active) values ('00000000-0000-0000-0000-00000000a001','mandi','Lamb Mandi','Mandi',true);
 insert into public.branch_menu_items(branch_slug,menu_item_id,price_cents,available) values ('ottawa','00000000-0000-0000-0000-00000000a001',2499,true),('second','00000000-0000-0000-0000-00000000a001',2499,true) on conflict do nothing;
