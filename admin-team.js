@@ -7,7 +7,7 @@
   const base = cfg.url ? String(cfg.url).replace(/\/+$/, "") : "";
   const S = {
     en: {
-      team:"Team & access", add:"Add team member", name:"Full name", email:"Email", role:"Role", admin:"Admin", manager:"Manager", staff:"Staff",
+      team:"Team & access", add:"Add team member", edit:"Edit access", name:"Full name", email:"Email", role:"Role", admin:"Admin", manager:"Manager", staff:"Staff",
       branches:"Branch access", save:"Save access", cancel:"Cancel", pending:"Pending account", pendingNote:"No email was sent. Access will attach after this person creates and verifies an account through the existing sign-up flow.",
       members:"Team members", noMembers:"No named team members yet.", remove:"Remove access", reason:"Reason (required)", confirm:"Confirm removal",
       orders:"Branch Orders accounts", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
@@ -17,7 +17,7 @@
       noBranch:"No branch assigned. Ask the Admin to assign one.", passwordHint:"The password is never displayed again after saving.", emailGate:"Email sending is disabled. No invitation or notification email is sent."
     },
     fr: {
-      team:"Équipe et accès", add:"Ajouter un membre", name:"Nom complet", email:"Courriel", role:"Rôle", admin:"Admin", manager:"Gestionnaire", staff:"Personnel",
+      team:"Équipe et accès", add:"Ajouter un membre", edit:"Modifier l’accès", name:"Nom complet", email:"Courriel", role:"Rôle", admin:"Admin", manager:"Gestionnaire", staff:"Personnel",
       branches:"Accès aux succursales", save:"Enregistrer l’accès", cancel:"Annuler", pending:"Compte en attente", pendingNote:"Aucun courriel n’a été envoyé. L’accès sera attribué lorsque la personne aura créé et vérifié un compte avec le processus d’inscription existant.",
       members:"Membres de l’équipe", noMembers:"Aucun membre nommé pour le moment.", remove:"Révoquer l’accès", reason:"Motif (obligatoire)", confirm:"Confirmer la révocation",
       orders:"Comptes Commandes par succursale", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
@@ -27,7 +27,7 @@
       noBranch:"Aucune succursale attribuée. Demandez à l’Admin de vous en attribuer une.", passwordHint:"Le mot de passe ne sera plus affiché après l’enregistrement.", emailGate:"L’envoi de courriels est désactivé. Aucun courriel d’invitation ou de notification n’est envoyé."
     },
     ar: {
-      team:"الفريق والصلاحيات", add:"إضافة عضو للفريق", name:"الاسم الكامل", email:"البريد الإلكتروني", role:"الدور", admin:"مدير النظام", manager:"مدير فرع", staff:"موظف",
+      team:"الفريق والصلاحيات", add:"إضافة عضو للفريق", edit:"تعديل الصلاحية", name:"الاسم الكامل", email:"البريد الإلكتروني", role:"الدور", admin:"مدير النظام", manager:"مدير فرع", staff:"موظف",
       branches:"الفروع المصرّح بها", save:"حفظ الصلاحية", cancel:"إلغاء", pending:"حساب بانتظار التفعيل", pendingNote:"لم يُرسل أي بريد. ستُربط الصلاحية بعد أن ينشئ الشخص حساباً ويتحقق من بريده عبر مسار التسجيل الحالي.",
       members:"أعضاء الفريق", noMembers:"لا يوجد أعضاء فريق مسجلون بعد.", remove:"إلغاء الصلاحية", reason:"السبب (مطلوب)", confirm:"تأكيد الإلغاء",
       orders:"حسابات الطلبات للفروع", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
@@ -41,7 +41,7 @@
   const L = (k) => S[lang()][k] || S.en[k];
   const el = (tag, cls, value) => { const n=document.createElement(tag); if(cls)n.className=cls; if(value!=null)n.textContent=String(value); return n; };
   const label = (text, control) => { const l=el("label","admin-team-label",text); l.append(control); return l; };
-  let token = "", role = "none", branches = [], lastRoot = null, busy = false;
+  let token = "", role = "none", branches = [], lastRoot = null, busy = false, mountBusy = false, mountAgain = false;
 
   async function session() {
     const s = auth && await auth.session();
@@ -88,14 +88,14 @@
     const panel=el("section","admin-panel admin-team-panel"); panel.id="adminTeamPanel";
     panel.append(el("h2",null,L("team")),el("p","admin-note",L("emailGate")));
     const form=el("form","admin-team-form"); form.append(el("h3",null,L("add")));
-    const name=document.createElement("input"); name.type="text"; name.required=true; name.maxLength=80; name.autocomplete="name";
-    const email=document.createElement("input"); email.type="email"; email.required=true; email.maxLength=254; email.autocomplete="email";
-    const roleSelect=document.createElement("select");
+    form.id="adminTeamAddForm";\n    const name=document.createElement("input"); name.name="display_name"; name.type="text"; name.required=true; name.maxLength=80; name.autocomplete="name";
+    const email=document.createElement("input"); email.name="email"; email.type="email"; email.required=true; email.maxLength=254; email.autocomplete="email";
+    const roleSelect=document.createElement("select"); roleSelect.name="role";
     for(const [v,k] of [["manager","manager"],["staff","staff"],["admin","admin"]]){const o=el("option",null,L(k));o.value=v;roleSelect.append(o);}
     form.append(label(L("name"),name),label(L("email"),email),label(L("role"),roleSelect));
     let checks=branchChecks([]);
     form.append(checks);
-    roleSelect.addEventListener("change",()=>{checks.hidden=roleSelect.value==="admin";});
+    roleSelect.addEventListener("change",()=>{const current=form.querySelector(".admin-team-branches");if(current)current.hidden=roleSelect.value==="admin";});
     const reason=document.createElement("input"); reason.type="text"; reason.maxLength=500; reason.placeholder=L("reason");
     form.append(label(L("reason"),reason));
     const save=el("button","button button-gold",L("save")); save.type="submit"; form.append(save);
@@ -103,7 +103,7 @@
     form.addEventListener("submit",async e=>{
       e.preventDefault(); if(busy)return; busy=true; save.disabled=true;
       try{
-        const selected=[...checks.querySelectorAll("input[data-branch]:checked")].map(x=>x.value);
+        const selected=[...form.querySelectorAll(".admin-team-branches input[data-branch]:checked")].map(x=>x.value);
         const result=await edge("team_assign",{email:email.value,display_name:name.value,role:roleSelect.value,branch_slugs:selected,reason:reason.value});
         status(formStatus,result.status==="pending_account"?L("pendingNote"):L("assigned"));
         await refreshTeam(panel);
@@ -172,7 +172,7 @@
     for(const b of data.branches||[])orders.append(orderAccountCard(b,byBranch.get(b.slug)||null));
     const form=panel.querySelector(".admin-team-form");
     const old=panel.querySelector(".admin-team-branches");
-    if(old){const next=branchChecks(data.branches||[]);old.replaceWith(next);}
+    if(old){const next=branchChecks(data.branches||[]);next.hidden=panel.querySelector("[name=role]").value==="admin";old.replaceWith(next);}
   }
   async function mountManager(host) {
     if(host.dataset.loaded==="1")return;host.dataset.loaded="1";
