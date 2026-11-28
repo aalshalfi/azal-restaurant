@@ -95,6 +95,8 @@ test("Admin UI uses safe DOM APIs, mandatory reasons and server mutation paths",
   assert.match(ui,/adminTeamRole/);
   assert.match(ui,/adminTeamBranch/);
   assert.match(ui,/adminTeamStatus/);
+  const addRoleSelect=ui.slice(ui.indexOf("const roleSelect"),ui.indexOf("form.append",ui.indexOf("const roleSelect")));
+  assert.doesNotMatch(addRoleSelect,/\["admin","admin"\]/);
   assert.match(ui,/reason\.required=true/);
   assert.match(ui,/why\.required=true/);
   assert.match(admin,/azal_admin_customer_directory_page/);
