@@ -213,7 +213,7 @@
           button.addEventListener("click",()=>{const code=card.dataset.orderCode;if(code&&location.hash!=="#orders/"+code)history.pushState(null,"","#orders/"+code);});
         }
       }
-      const attention=[...orderPanel.querySelectorAll(".admin-record[data-order-card='1']")].filter(card=>["placed","accepted","preparing","ready"].includes(card.dataset.status));
+      const attention=[...orderPanel.querySelectorAll(".admin-record[data-order-card='1']")].filter(card=>["paid","refunded"].includes(card.dataset.paymentStatus)&&["placed","accepted","preparing","ready"].includes(card.dataset.status));
       if(home&&attention.length&&!home.querySelector(".admin-needs-attention")){
         const panel=make("section","admin-panel admin-needs-attention");panel.append(make("h2",null,L("needsAttention")));
         for(const card of attention.slice(0,8)){
