@@ -36,7 +36,7 @@ async function open({role="admin",lang="en",width=390}={}){
   return r.fulfill({status:404,json:{}});
  });
  await page.addInitScript(l=>{localStorage.setItem("azal-language",l);localStorage.setItem("azal-auth-v1",JSON.stringify({access_token:"T",refresh_token:"R",expires_at:4e12,user:{id:"admin",email:"admin@example.invalid"}}));},lang);
- await page.goto(base+"/admin.html");await page.waitForSelector(".admin-workspace");await page.waitForTimeout(100);
+ await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);
  return {page,requests};
 }
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
