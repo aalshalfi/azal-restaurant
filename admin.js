@@ -92,21 +92,18 @@
             if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
           }
         }
-        const [profiles, memberships, ledger, roles] = await Promise.all([
-          pages("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&order=created_at.desc,id.desc"),
+        const [directory, memberships, ledger] = await Promise.all([
+          call("/rest/v1/rpc/azal_admin_customer_directory", s.access_token, { method: "POST", body: {} }),
           pages("/rest/v1/memberships?select=user_id,status,joined_at&order=user_id.asc"),
-          pages("/rest/v1/points_ledger?select=user_id,delta_points&order=created_at.asc,id.asc"),
-          pages("/rest/v1/user_roles?select=user_id,role&order=user_id.asc,role.asc")
+          pages("/rest/v1/points_ledger?select=user_id,delta_points&order=created_at.asc,id.asc")
         ]);
-        const rolesById = new Map();
-        for (const row of roles || []) { const set = rolesById.get(row.user_id) || new Set(); set.add(row.role); rolesById.set(row.user_id, set); }
         const memberById = new Map((memberships || []).map(x => [x.user_id, x]));
         const balances = new Map();
         for (const row of ledger || []) balances.set(row.user_id, (balances.get(row.user_id) || 0) + Number(row.delta_points || 0));
         const term = String(search || "").trim().toLocaleLowerCase();
-        return (profiles || []).filter(p => { const r = rolesById.get(p.id); return !r || (!r.has("admin") && !r.has("staff")); }).map(p => Object.assign({}, p, {
-          membership: memberById.get(p.id) || null, balance: balances.get(p.id) || 0
-        })).filter(p => !term || [p.display_name, p.phone, p.member_number == null ? "" : String(p.member_number)].some(v => String(v || "").toLocaleLowerCase().includes(term)));
+        return (directory || []).map(p => Object.assign({}, p, {
+          membership: memberById.get(p.user_id) || null, balance: balances.get(p.user_id) || 0
+        })).filter(p => !term || [p.display_name, p.phone, p.email, p.member_number == null ? "" : String(p.member_number)].some(v => String(v || "").toLocaleLowerCase().includes(term)));
       },
       async orders({ search = "", status = "all" } = {}) {
         const s = await getSession();
