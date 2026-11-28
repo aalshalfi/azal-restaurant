@@ -136,3 +136,22 @@ test("T-08 SQL suite pins retained terminal history, snapshots and events", () =
   assert.match(sql, /order_events/);
   assert.match(sql, /not deleted/);
 });
+
+test("0014 exposes only explicit customer fields behind a fixed-path admin-only definer", () => {
+  const sql = read("supabase/migrations/0014_admin_customer_directory.sql");
+  assert.match(sql, /security definer[\s\S]*set search_path = ''/i);
+  assert.match(sql, /auth\.uid\(\) is null or not public\.azal_is_admin\(\)/);
+  assert.match(sql, /join auth\.users u on u\.id = p\.id/);
+  assert.match(sql, /u\.email::text/);
+  assert.doesNotMatch(sql, /raw_user_meta_data|encrypted_password|user_metadata|app_metadata/i);
+  assert.match(sql, /revoke all on function public\.azal_admin_customer_directory\(\) from public, anon, authenticated/i);
+  assert.match(sql, /grant execute on function public\.azal_admin_customer_directory\(\) to authenticated/i);
+});
+
+test("T-23C founder badge is rendered after the member name and before member metadata", () => {
+  const auth = read("auth.js");
+  const name = auth.indexOf('<div class="mcard-name">');
+  const badge = auth.indexOf('id="authFounderMark"');
+  const meta = auth.indexOf('<div class="mcard-meta">', name);
+  assert.ok(name >= 0 && badge > name && meta > badge);
+});
