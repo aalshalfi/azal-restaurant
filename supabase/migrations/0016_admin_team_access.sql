@@ -308,7 +308,7 @@ begin
     insert into public.staff_branch_access(user_id,branch_slug)
     select v_uid,branch_slug from pg_catalog.unnest(v_branches) as branches(branch_slug) on conflict do nothing;
   end if;
-  update public.profiles set display_name=v_name where id=v_uid and (display_name is null or display_name='');
+  update public.profiles set display_name=v_name where id=v_uid;
   insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
   values(auth.uid(),'team_access_granted','user',v_uid::text,coalesce(nullif(pg_catalog.btrim(p_reason),''),'Team access granted by Admin'),
          pg_catalog.jsonb_build_object('role',p_role,'branches',v_branches));
@@ -453,7 +453,7 @@ begin
    order by i.created_at desc limit 1 for update;
   if not found then return new; end if;
   if exists(select 1 from public.profiles p where p.id=new.id and p.anonymized_at is not null) then return new; end if;
-  update public.profiles set display_name=v_invite.display_name where id=new.id and (display_name is null or display_name='');
+  update public.profiles set display_name=v_invite.display_name where id=new.id;
   delete from public.user_roles where user_id=new.id and role in ('staff','manager');
   delete from public.staff_branch_access where user_id=new.id;
   insert into public.user_roles(user_id,role) values(new.id,v_invite.role) on conflict do nothing;
