@@ -60,11 +60,13 @@ The migration itself preflights T-08's directory RPC and the required tables. It
          -c "select count(*) from public.orders;" \
          -c "select count(*) from public.profiles;" \
          -c "select count(*) from public.points_claims;" \
-         -c "select count(*) from public.order_outbox;"
+         -c "select count(*) from public.order_outbox;" \
+         -c "select count(*) from auth.users;" \
+         -c "select count(*) from auth.identities;"
 
    Compare the restored database identity and row counts with the recorded staging baseline. The restore rehearsal must finish without errors; retain its command output and the dump checksum.
 
-4. Complete the evidence record below and have the lead verify it before the migration window. If the backup, checksum, restore rehearsal or evidence is missing, stop; do not apply 0015.
+If permissions cannot capture and restore `auth.users` and `auth.identities`, stop and use a verified provider-level snapshot that includes the Auth schema; a partial public-schema backup is not sufficient for A2.\n\n4. Complete the evidence record below and have the lead verify it before the migration window. If the backup, checksum, restore rehearsal or evidence is missing, stop; do not apply 0015.
 5. Immediately before apply, pause staging writes for the change window and take a second backup if any staging data changed since the rehearsed snapshot. Record the exact migration SHA and the pre-apply snapshot identifier.
 
 ### Rollback / recovery decision tree
@@ -85,7 +87,7 @@ The migration itself preflights T-08's directory RPC and the required tables. It
 | SHA-256 checksum | |
 | `pg_restore --list` output location | |
 | Isolated restore target + restore result | |
-| Baseline vs restored counts (orders / profiles / claims / outbox) | |
+| Baseline vs restored counts (orders / profiles / claims / outbox / auth.users / auth.identities) | |
 | Lead backup + restore approval and timestamp | |
 | Pre-apply snapshot ID + migration SHA | |
 | Recovery decision owner | |
