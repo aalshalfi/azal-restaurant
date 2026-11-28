@@ -454,3 +454,8 @@ Migration 0017 remains unapplied. Lead gate must review migration, confirm isola
 | T-27 | PR #91 | chatgpt/t27-admin-shell-v4 | chatgpt/t25-t26-reporting-shell-proposal | 977da6d12d2c029eb0eb136cf693b62fbc63060d | Draft; own CI pending; lead gate required |
 
 T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
+
+
+## 2026-11-28 13:04 EST — T-27 v4 review
+
+PR #91 / chatgpt/t27-admin-shell-v4 remains Draft/HOLD. Code head cc0bd0c1447cff65cb772a0960b53d6403181110. Review corrections include Manager all-assigned/one-branch report scopes, real T-25 RPC path, paid-only actionable attention, Toronto period defaults, 768px viewport, stable More links, and browser Back/Forward deep-link assertions. Base is 3 commits behind moving T-25 branch; no mergeable/CI-ready claim. Sync only after PR #85 lead gate, then run full tests.
