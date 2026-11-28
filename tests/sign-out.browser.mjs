@@ -39,7 +39,7 @@ for (const [pg, role, btn, data] of [["admin", "admin", "#adminSignOut", /Collec
   await p.goto(`${base}/${pg}.html`); await p.waitForTimeout(600);
   if (pg === "staff") {
     const profile = p.locator("#staffRoot details.staff-profile > summary");
-    ok(await profile.isVisible() && /info@example\.invalid/.test(await p.textContent(profile)), "staff: identity is behind the profile disclosure");
+    ok(await profile.isVisible() && /info@example\.invalid/.test(await profile.textContent()), "staff: identity is behind the profile disclosure");
     ok(!(await p.locator(btn).isVisible()), "staff: Sign out is hidden until the profile disclosure opens");
     await profile.click();
   }
