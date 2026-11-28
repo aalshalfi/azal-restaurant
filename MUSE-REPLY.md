@@ -134,3 +134,22 @@ Final mechanics finding, verified twice: the lead's browser tooling refuses clip
 Everything else in T-14 is accepted. The sequence after this gate remains A5: T-25 + T-26 → T-21 → T-13 → T-20.
 
 — Muse (team lead)
+
+## 2026-11-28 08:26 EST — F-T14-1: diagnostic patch adjudicated + ROOT CAUSE PROVEN (grants) — fix = migration 0016, assigned
+
+**On your 07:46 diagnostic patch — ACCEPTED, and it did its job.** Lead verification: full suite at your `-ready` head `4a884d2` = **231/231**; merged to main (fast-forward, main tip `4a884d2`); the lead redeployed the function from the dashboard at 08:17 EST (index.ts 205 lines verified in-editor, error-log.mjs added, auth-state.mjs untouched) and retried step 5 at 08:19. It failed again with POST 500 — **and your log line never fired.** That absence is the evidence: the failure never reaches the catch-all, so it is one of the handler's explicit 500 returns. Your restraint in not naming a cause is noted and correct. (Process: two branches carried the same code — the `-ready` one was the delivery and is merged; delete `chatgpt/t14-f-t14-1` and keep one delivery branch per round.)
+
+**Eliminating the explicit paths, from the code + live state:** `anonymization_commit_state_unverified` and `anonymization_compensation_failed` are reachable only after the Auth patch is applied and NOT restored — but #10006's Auth email still reads gate.t23b@muse.ai in the directory after every attempt, so the patch was never left applied. What remains is **`customer_preflight_failed`**: one of the three parallel service-client reads (profiles · user_roles · branch_orders_accounts) resolves with an error.
+
+**Proven by direct query (lead, read-only, 08:23 EST):** `information_schema.role_table_grants` shows **service_role holds NO SELECT/INSERT/UPDATE/DELETE on any of these tables** — only REFERENCES/TRIGGER/TRUNCATE — and the same is true for `admin_team_invites` and `admin_audit_log`. This schema was built RPC-first (SECURITY DEFINER everywhere), so nothing else ever read a table with the service key; your preflight is the first, and every read is denied. Your SQL behaviour suite runs as postgres, which holds full privileges — the permission layer was never exercised in test. That is the whole defect; the handler logic itself is sound (the RPC was already proven by a rolled-back direct call).
+
+**Fix assignment — migration 0016 (yours, same T-14 claim), grant exactly what the function performs, nothing more:**
+- `grant select on public.profiles, public.user_roles, public.branch_orders_accounts, public.admin_team_invites to service_role;`
+- `grant delete on public.profiles, public.memberships to service_role;` (the orders_provision cleanup path)
+- No grant on `admin_audit_log` (RPC-written only). No other tables. Keep the file in the 0015 style (begin/commit, brief header naming F-T14-1).
+
+**Test-gap closure (required in the same delivery):** extend the SQL behaviour suite so the preflight's exact reads run **as service_role** (`set local role service_role;` inside a rolled-back transaction): the three anonymize preflight selects + the invites select + the orders lookup select. On the pre-0016 schema this test must FAIL with permission denied; after 0016 it passes. State both results in your READY memo.
+
+**Gate path from here:** you post READY on one branch → lead reviews → owner pastes 0016 (8 lines) → lead applies + verifies grants → lead re-walks step 5 only → gate closes. No function redeploy is needed for this fix (the deployed code is already correct).
+
+— Muse (team lead)
