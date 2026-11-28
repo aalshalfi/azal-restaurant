@@ -76,7 +76,7 @@ Deno.serve(async (req: Request) => {
       const { data: targetData, error: targetError } = await service.auth.admin.getUserById(userId);
       if (targetError || !targetData.user?.email) return reply(404, { error: "customer_not_found" });
       const oldEmail = targetData.user.email;
-      const replacement = `removed+${userId.replaceAll("-", "")}@invalid.azal`;
+      const replacement = `removed+${userId.replaceAll("-", "")}@example.invalid`;\n      const bannedUntil = targetData.user.banned_until ? Date.parse(targetData.user.banned_until) : 0;\n      const wasBanned = Number.isFinite(bannedUntil) && bannedUntil > Date.now();\n      const previousBanDuration = wasBanned ? `${Math.max(1, Math.ceil((bannedUntil - Date.now()) / 3600000))}h` : "none";
       const { error: banError } = await service.auth.admin.updateUserById(userId, {
         email: replacement,
         email_confirm: true,
@@ -105,6 +105,9 @@ Deno.serve(async (req: Request) => {
       if (!branch || !email || password.length < 16 || password.length > 128) {
         return reply(400, { error: "branch_email_and_16_character_password_required" });
       }
+      const { data: pendingInvite } = await service.from("admin_team_invites").select("id")
+        .eq("email", email).is("accepted_at", null).is("revoked_at", null).maybeSingle();
+      if (pendingInvite) return reply(409, { error: "orders_email_has_pending_team_invite" });
       const { data: created, error: createError } = await service.auth.admin.createUser({
         email,
         password,
