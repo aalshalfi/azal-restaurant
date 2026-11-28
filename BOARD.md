@@ -445,3 +445,8 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 | T-27 | PR #88 | chatgpt/t27-admin-shell-v3 | chatgpt/t25-t26-reporting-shell-proposal | 977da6d12d2c029eb0eb136cf693b62fbc63060d | Draft; own CI pending; lead gate required |
 
 T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
+
+
+## 2026-11-28 13:02 EST — T-27 progress
+
+PR #88 remains Draft/HOLD. Current code review fixes are committed: actual T-25 RPC mock, paid-only Needs attention, Manager all-assigned/single-branch report selector, daily/monthly/yearly date tests, 768px viewport, stable More routes, and customer/order Back/Forward tests. Current implementation head before this status-only update: 513af6eb2caac2f67d113b54252424b088d174eb. The PR base is behind the moving T-25 branch; do not mark READY. Sync only after the T-25 lead/staging gate, then run the complete Node/browser suite.
