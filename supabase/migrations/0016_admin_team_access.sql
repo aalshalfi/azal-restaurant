@@ -114,6 +114,29 @@ revoke all on function public.azal_manager_can_access(text) from public, anon;
 grant execute on function public.azal_is_manager() to authenticated;
 grant execute on function public.azal_manager_can_access(text) to authenticated;
 
+-- Staff kitchen branch picker: only Admin's active branches or the caller's assigned Staff branches.
+-- Manager roles are deliberately excluded; they use the separate, redacted Manager RPC.
+create or replace function public.azal_staff_my_branches()
+returns text[]
+language sql
+stable
+security definer
+set search_path = ''
+as $fn$
+  select coalesce(pg_catalog.array_agg(b.slug order by b.name_en,b.slug),array[]::text[])
+  from public.branches b
+  where b.active and (
+    public.azal_is_admin()
+    or exists (
+      select 1 from public.user_roles r
+      join public.staff_branch_access a on a.user_id=r.user_id
+      where r.user_id=auth.uid() and r.role='staff' and a.branch_slug=b.slug
+    )
+  );
+$fn$;
+revoke all on function public.azal_staff_my_branches() from public, anon;
+grant execute on function public.azal_staff_my_branches() to authenticated;
+
 -- A1: true server-side search + pagination. Balance and membership data are aggregated
 -- only for the selected page; the response never materializes the full directory in the browser.
 create or replace function public.azal_admin_customer_directory_page(
