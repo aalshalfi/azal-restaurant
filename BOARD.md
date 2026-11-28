@@ -459,3 +459,31 @@ T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc6
 ## 2026-11-28 13:04 EST — T-27 v4 review
 
 PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff65cb772a0960b53d6403181110. Review corrections include Manager all-assigned/one-branch report scopes, real T-25 RPC path, paid-only actionable attention, Toronto period defaults, 768px viewport, stable More links, and browser Back/Forward deep-link assertions. Base is 3 commits behind moving T-25 branch; no mergeable/CI-ready claim. Sync only after PR #85 lead gate, then run full tests.
+
+
+## 2026-11-28 12:26 EST — T-28 claim
+- PR #94, branch `chatgpt/t28-kitchen-shell-v6`, stacked directly on PR #93 / T-27 v5.
+- Queue / Scheduled / History, conditional Scheduled, net-only Staff summary with manual copy, and Queue-only polling are implemented.
+- CI pending; no merge, SQL apply, automatic send, or deployment.
+
+
+## 2026-11-28 12:26 EST — Legacy branch cleanup blocker
+- Superseded PRs #84, #86, #87, #88, #89, #90, #91 and #92 are closed; active stack is PR #85 (Ready for review), PR #93 (T-27 draft) and PR #94 (T-28 draft).
+- Branch refs still present: `chatgpt/t25-t26-sales-reports`; `chatgpt/t14-f-t14-1`, `chatgpt/t14-f-t14-1-ready`, `chatgpt/t14-f-t14-1-service-role-grants-0016`; `chatgpt/t27-admin-shell`, `chatgpt/t27-admin-shell-v2`, `chatgpt/t27-admin-shell-v3`, `chatgpt/t27-admin-shell-v4`; `chatgpt/t28-kitchen-shell`, `chatgpt/t28-kitchen-shell-v2`, `chatgpt/t28-kitchen-shell-v3`, `chatgpt/t28-kitchen-shell-v4`, `chatgpt/t28-kitchen-shell-v5`.
+- Deletion is not completed: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No claim of branch deletion.
+
+ 
+### T-28 implementation refinement — 2026-11-28
+
+History is a branch-scoped Toronto-day view, not only a summary card:
+- Completed/cancelled orders for the selected server-authorized branch only; DST-aware Toronto day bounds; maximum 100 rows.
+- History displays short order code, terminal status, time and item snapshots only. It does not select or display guest name, phone or order total.
+- The T-26 `azal_staff_today_summary` RPC loads only on History entry/refresh. Queue refresh is the sole 20-second poll and no longer refreshes the summary RPC.
+- EN/FR/AR loading, empty and error states are included.
+
+**Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
+
+
+## 2026-11-28 13:07 EST — T-28 dependency
+
+T-28 v6 remains Draft/HOLD. The shell constitution requires six-character code-only queue identity; current v6 still inherits pre-T-24 sigil/guest-name ticket rendering. T-24 is Claude's assigned card; do not duplicate it here. Preserve only tap-to-call and guarded order actions, then sync T-24 into T-28 and add code-only browser assertions before READY. Other T-28 pieces: net-only History summary + completed/cancelled list, manual copy, Queue-only polling, conditional Scheduled. No Availability until T-29.

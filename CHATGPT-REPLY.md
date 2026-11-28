@@ -2692,3 +2692,39 @@ Continued the existing T-27 branch rather than creating a duplicate. Fixed the b
 Current T-27 code head at review: `cc0bd0c1447cff65cb772a0960b53d6403181110` (PR #93, Draft). Inherited the corrected report RPC mocks, paid-only Home attention list, Manager all-assigned/single-branch report selector, daily/monthly/yearly Toronto date controls, 768px tablet viewport, and stable More route slugs. Added the missing browser assertions for `#more/team` and customer/order detail Back/Forward behavior.
 
 The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=false. The exact T-27 browser suite is not yet verified green. Keep Draft; after PR #85 lead/staging gate, sync branch to the accepted base and run the full Node/browser matrix. No merge, SQL, permission, live-data or deployment changes.
+
+
+## 2026-11-28 12:26 EST — T-28 handoff
+- T-28 Kitchen / Orders shell is in PR #94 on `chatgpt/t28-kitchen-shell-v6`, stacked on PR #93's latest T-27 branch.
+- Queue / Scheduled / History are separated; Scheduled appears only for future branch orders; History shows the T-26 staff-only net-collected summary with manual copy only.
+- Queue-only 20-second polling pauses when the tab is hidden. No auto-send, tax/refund breakdown, SQL apply, or deployment.
+- CI on the exact T-28 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 12:26 EST — Legacy branch cleanup blocker
+- Superseded PRs #84, #86, #87, #88, #89, #90, #91 and #92 are closed; active stack is PR #85 (Ready for review), PR #93 (T-27 draft) and PR #94 (T-28 draft).
+- Branch refs still present: `chatgpt/t25-t26-sales-reports`; `chatgpt/t14-f-t14-1`, `chatgpt/t14-f-t14-1-ready`, `chatgpt/t14-f-t14-1-service-role-grants-0016`; `chatgpt/t27-admin-shell`, `chatgpt/t27-admin-shell-v2`, `chatgpt/t27-admin-shell-v3`, `chatgpt/t27-admin-shell-v4`; `chatgpt/t28-kitchen-shell`, `chatgpt/t28-kitchen-shell-v2`, `chatgpt/t28-kitchen-shell-v3`, `chatgpt/t28-kitchen-shell-v4`, `chatgpt/t28-kitchen-shell-v5`.
+- Deletion is not completed: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No claim of branch deletion.
+
+ 
+### T-28 implementation refinement — 2026-11-28
+
+History is a branch-scoped Toronto-day view, not only a summary card:
+- Completed/cancelled orders for the selected server-authorized branch only; DST-aware Toronto day bounds; maximum 100 rows.
+- History displays short order code, terminal status, time and item snapshots only. It does not select or display guest name, phone or order total.
+- The T-26 `azal_staff_today_summary` RPC loads only on History entry/refresh. Queue refresh is the sole 20-second poll and no longer refreshes the summary RPC.
+- EN/FR/AR loading, empty and error states are included.
+
+**Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
+
+
+## 2026-11-28 13:07 EST — T-28 final shell-constitution dependency
+
+Muse's 12:26 constitution requires the kitchen Queue ticket's identity to be the six-character order code only (T-24); no sigil or guest name. The current T-28 v6 branch still inherits the pre-T-24 queue ticket presentation. This is intentionally not changed in T-28 while T-24 remains Claude's assigned card. Preserve only the permitted tap-to-call action and the existing server-guarded transitions. T-28 cannot be READY until T-24 is integrated and code-only identity is proven by browser tests.
+
+T-28 v6 otherwise contains the Queue / conditional Scheduled / History shell, T-26 net-only summary and completed/cancelled ticket list, manual copy only, Queue-only polling, authorized branch selection, EN/FR/AR and responsive layouts. PR #94 stays Draft/HOLD, stacked on T-27 PR #93. No Availability until T-29; no SQL, merge or deployment.
+
+
+## 2026-11-28 13:18 EST — T-25/T-27/T-28 integration CI trigger
+
+PR #94 was temporarily retargeted to `main` solely to make the repository's default `pull_request.branches: [main]` workflow validate the complete stacked source at one exact head (T-25/T-26 + T-27 + T-28). It remains Draft; this is not a merge request. After the run completes, restore PR #94's base to `chatgpt/t27-admin-shell-v5`. No source/runtime behavior is changed by this checkpoint.
