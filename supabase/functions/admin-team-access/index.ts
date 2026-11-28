@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { anonymizeAuthPatch, captureAuthState, restoreAuthPatch } from "./auth-state.mjs";
+import { logActionFailure } from "./error-log.mjs";
 
 const url = Deno.env.get("SUPABASE_URL") || "";
 const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
@@ -195,7 +196,10 @@ Deno.serve(async (req: Request) => {
     }
 
     return reply(400, { error: "unknown_action" });
-  } catch {
+  } catch (error) {
+    // Keep the public response generic; preserve the real exception in Edge logs
+    // so Auth Admin / RPC failures can be diagnosed without exposing details.
+    logActionFailure(action || "unknown", error);
     return reply(500, { error: "internal_error" });
   }
 });
