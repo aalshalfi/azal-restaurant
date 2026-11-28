@@ -345,3 +345,16 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Out of scope / fixed by A3–A6:** T-25/T-26 are next after T-14, not implemented in this batch; T-26 is today's collected-sales summary on staff.html, manual employee send only, no send/outbox machinery, no tax line; T-25 paid_at Toronto buckets and Manager sees only assigned-branch counts + collected total (Admin alone sees subtotal/HST/discount); no email notification system is added; T-06 staff Reject remains untouched. No T-21/T-13/T-20 work in this batch.
 
 **Current state:** claim registered before implementation. No staging/production SQL apply, invites, branch Orders account creation, password reset, email sending, live account mutation, or deployment is authorized by this claim. One branch only.
+
+
+## 2026-11-28 00:5x EST — T-14 implementation progress (single branch)
+
+**Implemented on this branch (not yet SQL-applied or deployed):**
+- A1: server-side 50-row directory RPC with search over name/email/phone/member number; page-only ledger aggregation; previous/next controls; order history no longer bulk-fetches the full customer directory for email enrichment.
+- A2: Admin-only customer anonymize/deactivate through the service-role Edge Function + service_role-only SQL function; required reason; Auth email/user metadata/identity scrub, sign-in ban, profile and order contact scrub, membership suspension, member-number retirement, directory exclusion; order IDs, item snapshots, tax/financial values and append-only points ledger retained.
+- T-14: Admin Team panel (grant/edit/revoke, pending in-portal invites, access audit history); branch-owned Orders account provision/reset through server-only Edge Function; Manager role routed to admin.html with a redacted assigned-branch operations RPC; Staff kitchen branch picker uses server-assigned branches only.
+- A6 respected: no invite/notification email or SMTP/outbox path. New team users are pending in-portal until a verified Auth account exists; no email is sent.
+
+**Exact changed files:** ADMIN-DESIGN.md, WORKPLAN.md, admin.html, admin.js, admin-team.js, member.html, role-door.js, staff.html, staff.js, styles.css, supabase/config.toml, supabase/functions/admin-team-access/index.ts, supabase/migrations/0016_admin_team_access.sql, docs/apply-0016.md, tests/admin-team.test.mjs, tests/admin-directory.test.mjs, tests/admin-directory.browser.mjs, tests/admin.test.mjs, tests/staff.test.mjs, tests/staff.browser.mjs, tests/sql/admin-team-access-behaviour.sql, CHATGPT-REPLY.md.
+
+**Not verified yet:** Node/browser/PG16 execution and exact-head CI; staging Edge Function deployment; 1,000-customer staging walk; real Admin/Manager/Staff/Orders acceptance. No staging or production SQL, auth, customer, password, email, payment, refund, or deploy action performed.
