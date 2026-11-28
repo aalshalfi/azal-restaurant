@@ -59,7 +59,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const {page,requests}=await open({role:"staff"});
  const t=await page.textContent("#adminRoot");
  check(t.includes("doesn’t have access")||t.includes("n’y a pas accès")||t.includes("لا يملك صلاحية"),"staff denied admin workspace");
- check(!requests.some(x=>x.url.includes("/rest/v1/profiles")||x.url.includes("/rest/v1/points_ledger")),"staff never requests customer directory or points");
+ check(!requests.some(x=>x.url.includes("/rest/v1/points_ledger")||(x.url.includes("/rest/v1/profiles")&&!x.url.includes("id=eq."))),"staff never requests the cross-customer directory or points (own profile reads remain allowed)");
  await page.close();
 }
 await browser.close();server.close();console.log(failures?failures+" failed":"all passed");process.exit(failures?1:0);
