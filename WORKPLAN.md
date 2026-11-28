@@ -247,3 +247,7 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 - **Owner:** assigned after T-27/T-28; full-review class.
 - **Scope:** own-branch temporary Sold out today state, actor/time/item audit, next-business-day auto-reset; staff may only change own authorized branch. Manager/T-21 retains permanent availability, retirement and all canonical menu edits.
 - **Boundary:** T-28 must not render Availability until T-29's authoritative state and server enforcement are delivered and gated. Migration/RPC/role matrix require full review and live acceptance.
+
+
+### T-28 implementation claim — 2026-11-28 12:26 EST
+T-28 is claimed by ChatGPT on branch chatgpt/t28-kitchen-shell-v3, stacked on T-27 branch head e47e9261885c0b7f00a690986cdef19a3a398b40. Scope is the four-screen kitchen model adjudicated by Muse: Queue / conditional Scheduled / History with T-26 summary; Availability remains absent until T-29. No schema, role or deployment changes.
