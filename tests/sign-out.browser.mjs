@@ -19,6 +19,7 @@ async function ctxFor(role, lang = "en", w = 390) {
     const u = decodeURIComponent(r.request().url()); sent.push(u);
     if (u.includes("/auth/v1/logout")) return r.fulfill({ status: 204, body: "" });
     if (u.includes("/rpc/azal_is_admin")) return r.fulfill({ json: role === "admin" });
+    if (u.includes("/rpc/azal_staff_my_branches")) return r.fulfill({ json: role === "staff" ? ["ottawa"] : [] });
     if (u.includes("/rpc/azal_staff_can_access")) return r.fulfill({ json: role === "admin" || role === "staff" });
     if (u.includes("/rest/v1/user_roles")) return r.fulfill({ json: role === "customer" ? [] : [{ role }] });
     if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: [] });
