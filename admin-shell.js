@@ -12,9 +12,9 @@
   };
   const locale = () => document.documentElement.lang === "fr" ? "fr" : document.documentElement.lang === "ar" ? "ar" : "en";
   const words = {
-    en: { home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",all:"All",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",back:"Back to customers",collected:"Collected sales",count:"Orders",collectedCount:"Collected orders",subtotal:"Subtotal",discount:"Discount",tax:"HST",noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",team:"Team & access",accounts:"Orders accounts",audit:"Access history" },
-    fr: { home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher",from:"Du",to:"Au",all:"Toutes",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",back:"Retour aux clients",collected:"Ventes encaissées",count:"Commandes",collectedCount:"Commandes encaissées",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",team:"Équipe et accès",accounts:"Comptes de commandes",audit:"Historique d’accès" },
-    ar: { home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",all:"الكل",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",back:"العودة إلى العملاء",collected:"المبيعات المحصّلة",count:"الطلبات",collectedCount:"الطلبات المستلمة",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",team:"الفريق والصلاحيات",accounts:"حسابات الطلبات",audit:"سجل الوصول" }
+    en: { home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",all:"All",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",back:"Back to customers",collected:"Gross collected",refunds:"Refunds",netCollected:"Net collected",count:"Orders",collectedCount:"Collected orders",subtotal:"Subtotal",discount:"Discount",tax:"HST",noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",team:"Team & access",accounts:"Orders accounts",audit:"Access history" },
+    fr: { home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher",from:"Du",to:"Au",all:"Toutes",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",back:"Retour aux clients",collected:"Total brut encaissé",refunds:"Remboursements",netCollected:"Total net encaissé",count:"Commandes",collectedCount:"Commandes encaissées",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",team:"Équipe et accès",accounts:"Comptes de commandes",audit:"Historique d’accès" },
+    ar: { home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",all:"الكل",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",back:"العودة إلى العملاء",collected:"إجمالي المحصّل",refunds:"المبالغ المستردة",netCollected:"صافي المحصّل",count:"الطلبات",collectedCount:"الطلبات المستلمة",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",team:"الفريق والصلاحيات",accounts:"حسابات الطلبات",audit:"سجل الوصول" }
   };
   const L = (key) => words[locale()][key] || words.en[key] || key;
   const cad = (cents) => new Intl.NumberFormat(locale()==="fr"?"fr-CA":locale()==="ar"?"ar-CA-u-nu-latn":"en-CA",{style:"currency",currency:"CAD"}).format(Number(cents||0)/100);
@@ -47,13 +47,16 @@
         if(!api||typeof api.salesReport!=="function")throw new Error("report_api_unavailable");
         const branch=role==="manager"?(branches&&branches[0]||null):null;
         const data=await api.salesReport({period:period.value,startDate:from.value,endDate:to.value,branchSlug:branch});
-        const totals=data&&data.totals||{};
+        const totals=data&&data.totals||{}, isAdmin=data&&data.role==="admin";
+        const metrics=[["order_count",L("count")],["collected_count",L("collectedCount")]];
+        if(isAdmin)metrics.push(["collected_cents",L("collected")],["refunds_cents",L("refunds")]);
+        metrics.push(["net_collected_cents",L("netCollected")]);
         const grid=make("dl","admin-report-kpis");
-        for(const [key,label] of [["order_count",L("count")],["collected_count",L("collectedCount")],["collected_cents",L("collected")]]) {
+        for(const [key,label] of metrics) {
           const item=make("div","admin-kpi");const value=totals[key];
           item.append(make("dt",null,label),make("dd",null,value==null?"—":key.endsWith("_cents")?cad(value):String(value)));grid.append(item);
         }
-        if(Object.prototype.hasOwnProperty.call(totals,"subtotal_cents")) {
+        if(isAdmin&&Object.prototype.hasOwnProperty.call(totals,"subtotal_cents")) {
           for(const [key,label] of [["subtotal_cents",L("subtotal")],["discount_cents",L("discount")],["tax_cents",L("tax")]]) {
             const item=make("div","admin-kpi");item.append(make("dt",null,label),make("dd",null,cad(totals[key])));grid.append(item);
           }
@@ -63,8 +66,9 @@
           const card=make("article","admin-record");
           card.append(make("strong",null,String(row.period_start||"")+" · "+(row.branch_slug||L("all"))),
             make("span","admin-record-meta",L("count")+": "+row.order_count+" · "+L("collectedCount")+": "+row.collected_count),
-            make("span","admin-record-meta",L("collected")+": "+cad(row.collected_cents)));
-          if(Object.prototype.hasOwnProperty.call(row,"subtotal_cents"))card.append(make("span","admin-record-meta",L("subtotal")+": "+cad(row.subtotal_cents)+" · "+L("discount")+": "+cad(row.discount_cents)+" · "+L("tax")+": "+cad(row.tax_cents)));
+            make("span","admin-record-meta",L("netCollected")+": "+cad(row.net_collected_cents)));
+          if(isAdmin)card.append(make("span","admin-record-meta",L("collected")+": "+cad(row.collected_cents)+" · "+L("refunds")+": "+cad(row.refunds_cents)));
+          if(isAdmin&&Object.prototype.hasOwnProperty.call(row,"subtotal_cents"))card.append(make("span","admin-record-meta",L("subtotal")+": "+cad(row.subtotal_cents)+" · "+L("discount")+": "+cad(row.discount_cents)+" · "+L("tax")+": "+cad(row.tax_cents)));
           results.append(card);
         }
         status.textContent="";
