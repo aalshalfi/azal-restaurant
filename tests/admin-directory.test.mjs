@@ -106,6 +106,7 @@ test("T-08 browser source stays read-only, admin-only in UI, EN/FR/AR, and no de
   assert.match(js,/handed_over/); assert.match(js,/cancelled/);
   assert.doesNotMatch(js,/method: "(PATCH|DELETE|PUT)"/);
   assert.doesNotMatch(js,/innerHTML/);
+  assert.match(js,/requestSeq!==seq/);\n  assert.match(js,/directoryRows = \[\]; orderRows = \[\]; detailRow = null/);
   assert.match(html,/<meta name="robots" content="noindex, nofollow">/);
   assert.match(css,/T-08 admin directory \+ complete order history/);
 });
