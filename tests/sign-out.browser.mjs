@@ -43,7 +43,7 @@ for (const [pg, role, btn, data] of [["admin", "admin", "#adminSignOut", /Collec
     ok(!(await p.locator(btn).isVisible()), "staff: Sign out is hidden until the profile disclosure opens");
     await profile.click();
   }
-  ok(await p.locator(btn).isVisible() && /Sign out/.test(await p.textContent(btn)) && /info@example\.invalid/.test(await p.textContent("main")), \`\${pg}: identity line and a labelled Sign out control\`);
+  ok(await p.locator(btn).isVisible() && /Sign out/.test(await p.textContent(btn)) && /info@example\.invalid/.test(await p.textContent("main")), `${pg}: identity line and a labelled Sign out control`);
   ok(data.test(await p.textContent("main")), `${pg}: shows its data before signing out`);
   await p.click(btn); await p.waitForURL(/member\.html$/, { timeout: 5000 }).catch(() => {});
   ok(/member\.html$/.test(p.url()), `${pg}: sign-out lands on the member page`);
