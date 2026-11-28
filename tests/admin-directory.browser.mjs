@@ -22,7 +22,7 @@ async function open({role="admin",lang="en",width=390}={}){
  const page=await browser.newPage({viewport:{width,height:900}}),requests=[];
  await page.route("**/supabase-config.js*",r=>r.fulfill({contentType:"text/javascript",body:'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});'}));
  await page.route("https://fake.supabase.co/**",r=>{
-  const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method()});
+  const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method(),body:req.postData()});
   if(path.endsWith("/rpc/azal_is_admin"))return r.fulfill({json:role==="admin"});
   if(path.endsWith("/rpc/azal_admin_customer_directory_page"))return r.fulfill({json:{rows:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z",balance:100,membership_status:"active",joined_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z",balance:55,membership_status:"suspended",joined_at:"2026-11-02T00:00:00Z"}],total:2,limit:50,offset:0}});
   if(path.endsWith("/rpc/azal_sales_report"))return r.fulfill({json:{role:"manager",totals:{order_count:2,collected_count:1,net_collected_cents:2500},rows:[{period_start:"2026-11-28",branch_slug:"ottawa",order_count:2,collected_count:1,net_collected_cents:2500}]}});
@@ -101,9 +101,16 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(managerDestinations.length===2&&expectedManagerDestinations.every(x=>managerDestinations.includes(x)),lang+" "+width+": Manager sees only authorized Orders and Reports destinations");
  await page.locator('.admin-shell-nav a[href="#reports"]').click();
  await page.waitForSelector(".admin-report-form select");
- check(await page.locator(".admin-report-form select option").count()===1&&await page.locator(".admin-report-form select option").first().textContent()==="ottawa",lang+" "+width+": Manager report filter contains only the assigned branch");
+ check(await page.locator(".admin-report-form select option").count()===2&&await page.locator(".admin-report-form select option").first().textContent()===(lang==="fr"?"Toutes les succursales attribuées":lang==="ar"?"كل الفروع المعيّنة":"All assigned branches")&&await page.locator(".admin-report-form select option").nth(1).textContent()==="ottawa",lang+" "+width+": Manager can choose all assigned branches or the authorized Ottawa branch");
  await page.locator(".admin-report-form button[type=submit]").click();
  await page.waitForSelector(".admin-report-results .admin-report-kpis");
+ const allBranchesCall=requests.filter(x=>x.url.includes("/rpc/azal_sales_report")).at(-1);
+ check(JSON.parse(allBranchesCall.body).p_branch_slug===null,lang+" "+width+": Manager's default report aggregates all server-assigned branches");
+ await page.locator(".admin-report-form select").selectOption("ottawa");
+ await page.locator(".admin-report-form button[type=submit]").click();
+ await page.waitForSelector(".admin-report-results .admin-report-kpis");
+ const oneBranchCall=requests.filter(x=>x.url.includes("/rpc/azal_sales_report")).at(-1);
+ check(JSON.parse(oneBranchCall.body).p_branch_slug==="ottawa",lang+" "+width+": Manager can filter to one authorized branch");
  const managerReportText=await page.textContent("#adminScreen-reports");
  check(/Net collected/.test(managerReportText)&&!/Refunds|Subtotal|Discount|HST|TVH|Tax/.test(managerReportText),lang+" "+width+": Manager report exposes net and counts only, with no tax/refund breakdown");
  await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
