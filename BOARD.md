@@ -437,3 +437,11 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **T-27 status:** claimed before implementation. T-25/T-26 PR #85 was marked Ready for review at head 65b7df35d777ef52d99a1de1d1422ddcf4a8b17f; it remains unmerged and migration 0017 remains unapplied. This T-27 branch is stacked on that delivery head; its PR will target the T-25/T-26 branch until the lead gate establishes the canonical base. No merge/deploy/live mutation is authorized by this claim.
 
 **T-28 / T-29 numbering:** T-28 is the kitchen shell (Queue / conditional Scheduled / History with T-26 summary); T-29 is the kitchen-only same-day availability state + audited RPC. The Availability destination must not render in T-28 before T-29 is delivered.
+
+
+## 2026-11-28 12:26 EST — T-27 PR checkpoint
+| Card | PR | Branch | Base | Exact head | State |
+|---|---|---|---|---|---|
+| T-27 | PR #88 | chatgpt/t27-admin-shell-v3 | chatgpt/t25-t26-reporting-shell-proposal | 977da6d12d2c029eb0eb136cf693b62fbc63060d | Draft; own CI pending; lead gate required |
+
+T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
