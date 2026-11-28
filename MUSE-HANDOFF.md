@@ -117,3 +117,37 @@ ChatGPT's detailed criteria are in `docs/cx-review-checklist.md`. Re-review is p
 ## Paid-online owner rule — 2026-11-26 (reported by Claude, owner direct 05:26)
 
 The owner rules: orders are paid online; no order without payment. Reservations may be unpaid. A test-mode payment system (`pay_order_test`, provider `azal-test`, fake cards only) is authorized on his direct instruction so readiness can be proven; no card number ever reaches the server, no real money moves. This supersedes the earlier "payments remain last / test-settlement path" paragraph for TEST mode only. Real payment processing stays forbidden until the owner authorizes it on his own provider account (Tier C). Counter payment is removed; the kitchen refuses unpaid orders; unpaid orders hold a slot 15 minutes; cancelling a paid order records a test refund. Points still earn once, on paid + handed over. Owner test path is now: register → order → pay (test card) → notes → points.
+
+## 2026-11-27 — Owner instruction: fast AZAL membership card inside customer account
+
+@Muse — the owner explicitly asks that the membership-card proposal be sent to the team for fast implementation. Please assign/sequence this as a small account-page UI task, coordinating with the active member/auth work and avoiding overlapping file claims.
+
+**Required placement and presentation**
+- Add an **AZAL Membership / عضوية AZAL** card near the top of the signed-in customer's account page.
+- Use the approved visual direction shown to the owner: premium Yemeni identity, deep brown/burgundy with restrained gold accents, subtle Sana'a architectural patterning, mobile-first and consistent with the existing AZAL brand.
+- Include EN/FR/AR copy and correct Arabic RTL. Keep existing account navigation and order history intact.
+- Do not make Apple Wallet / Google Wallet a dependency for this first release.
+
+**Critical requirement — points update automatically**
+- The points balance displayed on the card MUST be read from the authenticated customer's authoritative, ledger-backed account balance; it must never be hardcoded or manually maintained in the card.
+- Refresh/reconcile the balance automatically after any points-affecting event (eligible order completion/hand-over, redemption, reversal/refund/adjustment), and when the account page regains focus or the member returns to it.
+- Use the existing points source/RPC and safe server-side authorization; a customer can read only their own balance. Do not calculate or award points in browser code.
+- Prevent stale async responses from overwriting a newer balance; show a clear loading/temporarily-unavailable state rather than a fabricated or stale-looking number.
+- If real-time subscription infrastructure already exists and is safe, it may update the card immediately; otherwise use a reliable refetch on focus/return plus refresh after relevant in-app actions. Do not introduce a new realtime subsystem just for this card.
+- Show the last-updated indicator only if a trustworthy timestamp is available.
+
+**Card content / rules**
+- Show the member's real display name and current available points.
+- Show a membership number only if a stable, non-sensitive member identifier already exists; never expose internal database IDs.
+- State the approved redemption rule accurately: **10,000 points = $10 discount**. Do not show 5,000-point redemption or invent tiers/benefits.
+- A “View rewards / Voir les récompenses / عرض المكافآت” action may link to the existing rewards area if present; otherwise omit it for this fast slice.
+- No decorative/static QR, sample member data, or sample points. Secure QR/staff scanning can be a later separately reviewed task.
+
+**Fast first-release scope and acceptance**
+- Read-only membership card UI + live account/points data binding + responsive EN/FR/AR + tests. No changes to payment, checkout, redemption, ledger rules, or new personal-data collection.
+- Test: signed-in member sees their own balance; second member cannot see the first member's balance; loading/no-balance/error states; balance refreshes after a points change and on account refocus/return; stale request race; mobile widths; Arabic RTL; EN/FR/AR.
+- Register a separate exact file claim on BOARD before edits. Coordinate with the current T-22/auth work and sequence immediately after the overlapping account task if necessary.
+- Report exact branch/head SHA, changed files, test counts and exact-head CI before calling it ready. Muse retains merge/staging/release authority.
+
+This is the owner's product instruction to prioritize implementation quickly; it is not authorization to merge, apply unrelated migrations, change live financial logic, or activate production features.
+
