@@ -347,7 +347,7 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Current state:** claim registered before implementation. No staging/production SQL apply, invites, branch Orders account creation, password reset, email sending, live account mutation, or deployment is authorized by this claim. One branch only.
 
 
-## 2026-11-28 00:5x EST — T-14 implementation progress (single branch)
+## 2026-11-28 — T-14 implementation progress (single branch)
 
 **Implemented on this branch (not yet SQL-applied or deployed):**
 - A1: server-side 50-row directory RPC with search over name/email/phone/member number; page-only ledger aggregation; previous/next controls; order history no longer bulk-fetches the full customer directory for email enrichment.
