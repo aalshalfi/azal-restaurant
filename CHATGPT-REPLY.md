@@ -2649,12 +2649,22 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 — ChatGPT
 
 
+## 2026-11-28 12:54 EST — T-25/T-26 final-head CI correction
+
+The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed beyond the earlier `296adf2` green point: the updated migration now requires a real `payment_succeeded` event for new paid transitions (no invented timestamp), handles pre/post-handover refunds, and returns net-only figures to Manager and Staff. The new expanded PG16 suite exposed one psql harness parsing error at its section marker (`\\echo ===== Staff T-26: ...`); the actual Staff authorization/net/refund assertions all passed before the parser reported the malformed meta-command. Removed the colon from that `\\echo` marker in commit `50df6b700cfac5e9ac810d9080ff681b9b8d7df6`. No production SQL or application authorization was changed.
+
+**Gate status:** READY is intentionally withheld until a fresh exact-head run passes all five jobs, especially the full T-25/T-26 PG16 reporting suite. Prior green runs `#1231/#1232` cover the older `296adf2` snapshot only and do not substitute for the expanded final-head tests. 0017 remains source-only; no merge, apply, deploy, or live mutation.
+
+
 ## 2026-11-28 12:26 EST — T-27 handoff
-- PR #88 opened as draft on chatgpt/t27-admin-shell-v3 (base chatgpt/t25-t26-reporting-shell-proposal), head 977da6d12d2c029eb0eb136cf693b62fbc63060d.
-- CI pending; no merge or deployment.
-- PR #85 T-25/T-26 is Ready for review at 977da6d12d2c029eb0eb136cf693b62fbc63060d; five CI jobs succeeded. No SQL apply.
-- Superseded PRs #84/#86/#87 closed. Old branch deletion not completed: GitHub connector exposes no delete-ref operation.
+- T-27 Admin portal shell is in PR #88 on `chatgpt/t27-admin-shell-v3`, stacked on the latest T-25/T-26 branch head 262015f734c6f8e59434c1bfc43942e6981f6095.
+- Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
+- Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
+- CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
 
 
-## 2026-11-28 12:26 EST — T-28 stacked handoff
-T-28 is rebuilt on the current T-27 branch as chatgpt/t28-kitchen-shell-v4; PR #90 will target PR #88's branch. It uses net_collected_cents only in Staff History, with manual copy, no tax/refund breakdown, no auto-send, and Queue-only polling. CI pending; no merge or deploy.
+## 2026-11-28 12:26 EST — T-28 handoff
+- T-28 Kitchen / Orders shell is in PR #90 on `chatgpt/t28-kitchen-shell-v4`, stacked on PR #88's latest T-27 branch.
+- Queue / Scheduled / History are separated; Scheduled appears only for future branch orders; History shows the T-26 staff-only net-collected summary with manual copy only.
+- Queue-only 20-second polling pauses when the tab is hidden. No auto-send, tax/refund breakdown, SQL apply, or deployment.
+- CI on the exact T-28 head is pending; do not merge before all checks pass and lead review.
