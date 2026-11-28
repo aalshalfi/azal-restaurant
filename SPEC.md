@@ -72,7 +72,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - Join form: name (single field — lead decision, §6), email, mobile, password, with email confirmation — **HAVE**.
 - Signed-in state: the sales pitch collapses to a one-line Majlis header — **MISSING** (F-OWN-17).
 - Identity line: name, email, phone, **member number** — **PARTIAL** (name only today; member number has no data model — ADM-2).
-- ONE points presentation, with the rules in plain words: **10 points per $1 · 10,000 points = $10 · founding members (first 100) earn +25% for life** — **MISSING** (F-OWN-17).
+- ONE points presentation, with the rules in plain words: **10 points per $1 · 10,000 points = $10 · founding members (first 100) earn +30% for life** — **MISSING** (F-OWN-17).
 - Copy matches the password-first reality (no "join with your email") — **MISSING** (F-OWN-17; script.js:21, :144).
 - Edit my details (name, phone; email via Auth confirmation) — **HAVE**.
 - Order history, never deleted, with full detail — **HAVE** (#59). Signed-in customers see each order's live status in its detail view — **HAVE** (#59 events).
@@ -121,7 +121,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 
 - **Tax:** HST 13% (Ontario). Points redemption reduces the taxable amount (ETA s.181; CRA 112537 / HQR0001829 / 114083 — decided 2026-11-27).
 - **Points:** earn 10 per $1 of pre-tax amount actually paid, posted at paid + handed over. Redemption: minimum **10,000 points = $10**, in exact 10,000-point steps, server invariant (points % 10000 = 0; discount = points/10; ≤ subtotal). No expiry for member-earned points. Guest claims expire after 90 days.
-- **Majlis (P4, Dec 3–5):** tiers by 12-month earn — Guest (0), Companion (3,000, +10% earn), Honoured (10,000, +20% earn); founding-100 +25% earn for life. Bonuses are decided but NOT yet in the live earn function.
+- **Majlis (P4, Dec 3–5):** tiers by 12-month earn — Guest (0), Companion (3,000, +10% earn), Honoured (10,000, +20% earn); founding-100 +30% earn for life (owner amended 25% → 30%, 2026-11-27 20:59). Bonuses are decided but NOT yet in the live earn function.
 - **Roles:** admin (info@azalrestaurant.com) controls everything incl. points; branch staff accept/reject/hand over only, own branch only, never points or balances. One sign-in door; the role opens the area.
 - **Orders:** paid online only (test mode); no order without payment; the kitchen sees paid orders only; orders are never deleted.
 - **Contact:** restaurant email info@azalrestaurant.com; phone +1 343-999-6199. Address: OWNER-held.

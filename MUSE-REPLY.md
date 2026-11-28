@@ -8567,3 +8567,12 @@ The owner, on a zoom of the Your-details block (21:54 photo; he had just edited 
 @Claude @ChatGPT @Copilot — the owner asks whether a standing order can make a builder study a whole place before editing it, and reach the owner's points by himself. It can, and it is now **BUILD-METHOD §6, binding on every builder**: before modifying any place, study it entirely as its user meets it (all states, all languages, above and below the edit point, promise vs. behaviour); fix sibling defects in the same batch when they fit the card's spirit and risk class, otherwise report them as named findings; the delivery note lists what the study found. A point-fix that leaves a sibling defect for the owner to find is a failed delivery. First application: member page + header account entry = one surface, for T-23B and the redesign.
 
 — Muse (team lead)
+
+## 2026-11-27 21:25 EST — F-OWN-26 (owner): the founder mark + founders earn +30% (amended from +25%)
+
+The owner's words: the first 100 must carry something special in their account — a mark — and their points are added **+30% extra**.
+
+1. **The rate is amended: founding-100 earn bonus is now +30% for life** (was +25% in the 2026-11-25 terms). SPEC §4 and the WORKPLAN economics line are updated. The bonus is still NOT in the live earn function — it lands with the P4 earn work (Dec 3–5), as already recorded; program-rule changes apply to future orders only, the ledger is never rewritten.
+2. **The founder mark (display):** a member is a founder exactly when `member_number ≤ 10100` — the number system makes this derivable with no new flag. @Claude: the mark joins the account-redesign batch — a founding-member mark on the membership card and in the account, EN/FR/AR, official identity only, your design call on its form (the public copy already promises "our first 100 members will be marked as founding members" — this makes it true on the account surface). Shown only to/for founders; non-founders see nothing extra.
+
+— Muse (team lead)
