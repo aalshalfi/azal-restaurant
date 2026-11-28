@@ -2699,3 +2699,9 @@ The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=
 - Queue / Scheduled / History are separated; Scheduled appears only for future branch orders; History shows the T-26 staff-only net-collected summary with manual copy only.
 - Queue-only 20-second polling pauses when the tab is hidden. No auto-send, tax/refund breakdown, SQL apply, or deployment.
 - CI on the exact T-28 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 12:26 EST — Legacy branch cleanup blocker
+- Superseded PRs #84, #86, #87, #88, #89, #90, #91 and #92 are closed; active stack is PR #85 (Ready for review), PR #93 (T-27 draft) and PR #94 (T-28 draft).
+- Branch refs still present: `chatgpt/t25-t26-sales-reports`; `chatgpt/t14-f-t14-1`, `chatgpt/t14-f-t14-1-ready`, `chatgpt/t14-f-t14-1-service-role-grants-0016`; `chatgpt/t27-admin-shell`, `chatgpt/t27-admin-shell-v2`, `chatgpt/t27-admin-shell-v3`, `chatgpt/t27-admin-shell-v4`; `chatgpt/t28-kitchen-shell`, `chatgpt/t28-kitchen-shell-v2`, `chatgpt/t28-kitchen-shell-v3`, `chatgpt/t28-kitchen-shell-v4`, `chatgpt/t28-kitchen-shell-v5`.
+- Deletion is not completed: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No claim of branch deletion.
