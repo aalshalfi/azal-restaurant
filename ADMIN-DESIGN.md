@@ -105,19 +105,27 @@ Entry point: T-08 all-status order history → order detail. Display public six-
 
 Reports are secondary navigation cards, initially collapsed under “Reports”. They do not create a separate application or change the primary workflow.
 
-### T-25 — Sales & HST reports (Admin + scoped Manager; F-OWN-29; after T-14)
-**Lead ruling A4:** periods bucket collected sales by each order's `paid_at` timestamp, using Toronto calendar dates and the ADM-1 collected convention shown on the panel. Admin sees all branches and the financial breakdown. Manager sees only assigned-branch operational totals (order/status counts + collected total); subtotal, HST and discount breakdown are Admin-only.
+### T-25 — Sales & HST reports (Admin + assigned-branch Manager)
 
-Proposed screen when opened:
-- Period selector: Today / date range / month / year; branch selector for Admin; Manager only sees assigned branch.
-- Summary: order count, gross sales, subtotal, HST collected, total, refunds and net sales, with clear labels distinguishing paid/test/refunded records.
-- Daily table and monthly/yearly roll-ups; drill down to the underlying orders using T-08's order detail.
-- HST values are read from authoritative stored order tax amounts/snapshots; do not recompute using a new rate or expose tax detail to Managers. Admin-only subtotal/HST/discount columns; Manager receives assigned-branch counts + collected total only.
-- Exclude unpaid/failed orders from collected sales; show refunds separately and avoid double counting. Period assignment uses `paid_at` and Toronto dates.
-- Export is not included in this design; no CSV/PDF download until explicitly carded.
+**Period basis:** use order paid_at and Toronto calendar boundaries. Daily, monthly and yearly periods are derived from paid transactions, not order-created timestamps. Admin can select all branches or one branch; Manager is fixed to assigned branch(es).
 
-### T-26 — “Today's summary” on STAFF / Orders (A3; after T-14)
-This is **not** a collapsed Manager Reports card. It is a day-close panel on `staff.html`: headline = the day's total collected sales, with status counts beneath. It uses the same trusted aggregation as T-25, scoped to the branch Orders identity / assigned branch. The employee manually sends/shares the displayed summary using their normal workflow. **No send machinery, no outbox row, no SMTP/email integration in v1. No tax line is ever rendered for staff.**
+**Admin view:**
+- Paid order count, subtotal, discount, HST collected and collected total; refunds are shown separately and deducted only in the clearly labelled net figure.
+- Daily/monthly/yearly roll-ups and drill-through to T-08 order detail.
+- HST and discount breakdowns are Admin-only. Use stored authoritative order tax/discount values; do not recalculate historical tax or introduce new rates.
+- Unpaid/failed orders are excluded from collected sales; test-mode and refunded records are labelled and not counted as new collected revenue.
+
+**Manager view:**
+- Assigned-branch order count, status counts and collected total only.
+- No subtotal, discount, HST, payment details, customer directory, or cross-branch totals.
+- Every value is computed server-side from paid_at and the assigned branch; no raw financial table access.
+
+### T-26 — Today's staff summary (collapsed report section; A3)
+
+- A compact “Today” summary on staff.html: collected-sales total and order counts by fulfilment status for the signed-in branch.
+- Employees may manually share/read the summary; no email, push, outbox, SMTP, scheduled notification or automatic sending.
+- No HST/tax line and no payment credentials. The endpoint returns only the branch's operational summary and collected-sales total.
+- Server derives the branch from the authenticated Staff/Orders identity; callers cannot supply another branch. Manager/Admin access does not expand the Staff endpoint.
 
 ## 5. Permission matrix — decisive summary
 
