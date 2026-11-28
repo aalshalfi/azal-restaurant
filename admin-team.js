@@ -110,7 +110,7 @@
     const name=document.createElement("input"); name.name="display_name"; name.type="text"; name.required=true; name.maxLength=80; name.autocomplete="name";
     const email=document.createElement("input"); email.name="email"; email.type="email"; email.required=true; email.maxLength=254; email.autocomplete="email";
     const roleSelect=document.createElement("select"); roleSelect.name="role";
-    for(const [v,k] of [["manager","manager"],["staff","staff"],["admin","admin"]]){const o=el("option",null,L(k));o.value=v;roleSelect.append(o);}
+    for(const [v,k] of [["manager","manager"],["staff","staff"]]){const o=el("option",null,L(k));o.value=v;roleSelect.append(o);}
     form.append(label(L("name"),name),label(L("email"),email),label(L("role"),roleSelect));
     let checks=branchChecks([]);
     form.append(checks);
