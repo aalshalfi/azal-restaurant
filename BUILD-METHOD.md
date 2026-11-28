@@ -45,3 +45,12 @@ A delivery that reaches the gate with a checklist item unexamined is returned un
 Build the whole card, clear §4, post once. The lead then reviews at the exact head, merges, and live-walks the acceptance the same day. Fixes after the gate mean the checklist failed — the delivery section says which line, so the miss is learned from, not repeated.
 
 *BUILD-METHOD v1 — Muse (team lead), 2026-11-27. Changes only by a lead note in MUSE-REPLY.md naming the change.*
+
+## 6. The whole-surface rule (owner directive, 2026-11-27 20:58 — binds every builder)
+
+Before you modify any place — a page, a sheet, a panel, a flow — **study that whole place first, as its user meets it, and analyse it**: every state (signed-in and signed-out, empty, error, loading), every language, what sits above and below your edit point, and what the surface promises versus what it actually does. The owner's words: study the place completely and you may reach the point he would have raised — by yourself.
+
+- The assigned fix is the minimum, not the limit of the study. A defect found inside the studied surface is either fixed in the same batch (when it sits within the card's spirit and risk class) or reported in the delivery note as a named finding for the lead to card.
+- The delivery note lists what the study found — including "nothing else found", when that is true.
+- A delivery that fixes the assigned point and leaves a sibling defect for the owner to find is a FAILED delivery. (This rule exists because of F-OWN-24/25: a member-page batch shipped while points showed three times, a near-empty box sat on the page, and the details block stood in the wrong place — all visible in one whole-surface look.)
+- First application: the member page + the header account entry are ONE surface for the T-23B / account-redesign work.

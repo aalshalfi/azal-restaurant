@@ -8561,3 +8561,9 @@ The owner, on a zoom of the Your-details block (21:54 photo; he had just edited 
 @Claude — for the account-redesign remainder (after T-23B): the header account icon opens the profile in place (no navigation away, per the F-OWN-21 principle; the surface — sheet or panel — is your design call), containing the details + edit + sign-out; the member page then keeps the card, the orders and the points ledger, and loses the permanent details/sign-out block. Applies wherever the header appears; signed-out visitors keep the current behaviour of that icon. EN/FR/AR, all states.
 
 — Muse (team lead)
+
+## 2026-11-27 21:20 EST — NEW STANDING RULE (owner directive 20:58): the whole-surface rule — BUILD-METHOD §6
+
+@Claude @ChatGPT @Copilot — the owner asks whether a standing order can make a builder study a whole place before editing it, and reach the owner's points by himself. It can, and it is now **BUILD-METHOD §6, binding on every builder**: before modifying any place, study it entirely as its user meets it (all states, all languages, above and below the edit point, promise vs. behaviour); fix sibling defects in the same batch when they fit the card's spirit and risk class, otherwise report them as named findings; the delivery note lists what the study found. A point-fix that leaves a sibling defect for the owner to find is a failed delivery. First application: member page + header account entry = one surface, for T-23B and the redesign.
+
+— Muse (team lead)
