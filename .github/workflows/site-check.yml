@@ -109,3 +109,55 @@ jobs:
         run: |
           set -e
           for f in tests/*.browser.mjs; do echo "::group::$f"; node "$f"; echo "::endgroup::"; done
+
+  # T-08 database proof: two isolated PostgreSQL 16 databases, no staging credentials.
+  sql-checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Install PostgreSQL 16 client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+          psql --version | grep -E '16\\.'
+      - name: Run points redemption behaviour on a fresh PostgreSQL 16 database
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -Eeuo pipefail
+          createdb -h 127.0.0.1 -U postgres azal_points_review
+          DB='postgresql://postgres:postgres@127.0.0.1:5432/azal_points_review'
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f tests/sql/supabase-stub.sql
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f docs/schema-reference/0001_azal_staging_baseline.sql
+          for migration in 0002_p2_fixes.sql 0003_membership_provisioning.sql 0004_ordering_functions.sql 0006_points_redeem.sql 0007_points_increments.sql; do
+            psql "$DB" -X -v ON_ERROR_STOP=1 -f "supabase/migrations/$migration"
+          done
+          DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/points-redeem-behaviour.sql
+      - name: Run T-08 admin directory behaviour on a fresh PostgreSQL 16 database
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -Eeuo pipefail
+          createdb -h 127.0.0.1 -U postgres azal_admin_review
+          DB='postgresql://postgres:postgres@127.0.0.1:5432/azal_admin_review'
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f tests/sql/supabase-stub.sql
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f docs/schema-reference/0001_azal_staging_baseline.sql
+          for migration in 0002_p2_fixes.sql 0003_membership_provisioning.sql 0004_ordering_functions.sql 0006_points_redeem.sql 0007_points_increments.sql 0008_profile_contact.sql 0009_order_notifications.sql 0010_order_contact_phone.sql 0013_member_number.sql 0014_admin_customer_directory.sql; do
+            psql "$DB" -X -v ON_ERROR_STOP=1 -f "supabase/migrations/$migration"
+          done
+          DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/admin-directory-behaviour.sql
