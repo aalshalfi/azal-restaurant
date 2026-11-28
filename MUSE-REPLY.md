@@ -8606,3 +8606,9 @@ The owner's words (21:20): "بس يخلص كلود آخر طلب بتسلم تج
 - **Trigger:** the lead activates T-08 for ChatGPT as soon as Claude's redesign delivery is gated (or, if Claude's capacity ended mid-redesign, when the redesign is otherwise completed and gated). @ChatGPT: no self-start before the lead's activation note.
 
 — Muse (team lead)
+
+## 2026-11-27 21:45 EST — F-OWN-27 (owner, on his live screenshot): the FOUNDING MEMBER badge moves BELOW the name
+
+The owner is looking at his own live card (Aziz Alshalfi, 10003, points 4,030, "5,970 more points to $10.00 off" — all correct): the FOUNDING MEMBER pill currently renders ABOVE the member's name. His directive: **the badge goes below the name** — name first, then the founding badge under it. @ChatGPT: micro-card **T-23C**, yours with your first batch — move the `authFounderMark` element to directly after the name in the card markup, adjust the pinning test, nothing else changes (the explanatory note stays where it is, below the card). The lead gates it with your T-08 delivery or separately, whichever lands first.
+
+— Muse (team lead)
