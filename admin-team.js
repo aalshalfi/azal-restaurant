@@ -10,7 +10,7 @@
       team:"Team & access", add:"Add team member", edit:"Edit access", name:"Full name", email:"Email", role:"Role", admin:"Admin", manager:"Manager", staff:"Staff",
       branches:"Branch access", save:"Save access", cancel:"Cancel", pending:"Pending account", revokeInvite:"Revoke invitation", pendingNote:"No email was sent. Access will attach after this person creates and verifies an account through the existing sign-up flow.",
       members:"Team members", lastSeen:"Last sign-in", neverSignedIn:"No sign-in recorded", noMembers:"No named team members yet.", remove:"Remove access", reason:"Reason (required)", confirm:"Confirm removal",
-      orders:"Branch Orders accounts", accessHistory:"Recent access history", auditUnavailable:"Access history is temporarily unavailable.", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
+      orders:"Branch Orders accounts", accessHistory:"Recent access history", teamSearch:"Search name or email", teamRole:"Role", teamBranch:"Branch", teamStatus:"Status", teamAll:"All", teamActive:"Active team", teamPending:"Pending invitations", auditUnavailable:"Access history is temporarily unavailable.", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
       assigned:"Access saved.", removed:"Access revoked.", created:"Branch Orders account created.", resetDone:"Branch password reset.", error:"The action could not be completed. Refresh and check the current state before retrying.",
       anonymize:"Anonymize & deactivate customer", anonymizeNote:"This scrubs identifying details, disables sign-in and retires the member number. Financial/order history is retained without customer contact details.",
       confirmAnonymize:"Confirm anonymization", anonymized:"Customer anonymized and deactivated.", managerOrders:"Branch operations", noOrders:"No branch orders to display.", status:"Status", time:"Placed", pickup:"Pickup", items:"Items",
@@ -20,7 +20,7 @@
       team:"Équipe et accès", add:"Ajouter un membre", edit:"Modifier l’accès", name:"Nom complet", email:"Courriel", role:"Rôle", admin:"Admin", manager:"Gestionnaire", staff:"Personnel",
       branches:"Accès aux succursales", save:"Enregistrer l’accès", cancel:"Annuler", pending:"Compte en attente", revokeInvite:"Révoquer l’invitation", pendingNote:"Aucun courriel n’a été envoyé. L’accès sera attribué lorsque la personne aura créé et vérifié un compte avec le processus d’inscription existant.",
       members:"Membres de l’équipe", lastSeen:"Dernière connexion", neverSignedIn:"Aucune connexion enregistrée", noMembers:"Aucun membre nommé pour le moment.", remove:"Révoquer l’accès", reason:"Motif (obligatoire)", confirm:"Confirmer la révocation",
-      orders:"Comptes Commandes par succursale", accessHistory:"Historique récent des accès", auditUnavailable:"L’historique des accès est temporairement indisponible.", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
+      orders:"Comptes Commandes par succursale", accessHistory:"Historique récent des accès", teamSearch:"Rechercher nom ou courriel", teamRole:"Rôle", teamBranch:"Succursale", teamStatus:"État", teamAll:"Tous", teamActive:"Équipe active", teamPending:"Invitations en attente", auditUnavailable:"L’historique des accès est temporairement indisponible.", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
       assigned:"Accès enregistré.", removed:"Accès révoqué.", created:"Compte Commandes créé.", resetDone:"Mot de passe de succursale réinitialisé.", error:"L’action n’a pas abouti. Actualisez et vérifiez l’état avant de réessayer.",
       anonymize:"Anonymiser et désactiver le client", anonymizeNote:"Les renseignements identifiants sont effacés, la connexion est désactivée et le numéro de membre est retiré. L’historique financier et des commandes est conservé sans coordonnées client.",
       confirmAnonymize:"Confirmer l’anonymisation", anonymized:"Client anonymisé et désactivé.", managerOrders:"Opérations de la succursale", noOrders:"Aucune commande de succursale à afficher.", status:"État", time:"Créée", pickup:"Ramassage", items:"Articles",
@@ -30,7 +30,7 @@
       team:"الفريق والصلاحيات", add:"إضافة عضو للفريق", edit:"تعديل الصلاحية", name:"الاسم الكامل", email:"البريد الإلكتروني", role:"الدور", admin:"مدير النظام", manager:"مدير فرع", staff:"موظف",
       branches:"الفروع المصرّح بها", save:"حفظ الصلاحية", cancel:"إلغاء", pending:"حساب بانتظار التفعيل", revokeInvite:"إلغاء الدعوة", pendingNote:"لم يُرسل أي بريد. ستُربط الصلاحية بعد أن ينشئ الشخص حساباً ويتحقق من بريده عبر مسار التسجيل الحالي.",
       members:"أعضاء الفريق", lastSeen:"آخر تسجيل دخول", neverSignedIn:"لا يوجد تسجيل دخول مسجّل", noMembers:"لا يوجد أعضاء فريق مسجلون بعد.", remove:"إلغاء الصلاحية", reason:"السبب (مطلوب)", confirm:"تأكيد الإلغاء",
-      orders:"حسابات الطلبات للفروع", accessHistory:"سجل الصلاحيات الأخير", auditUnavailable:"سجل الصلاحيات غير متاح مؤقتاً.", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
+      orders:"حسابات الطلبات للفروع", accessHistory:"سجل الصلاحيات الأخير", teamSearch:"ابحث بالاسم أو البريد", teamRole:"الدور", teamBranch:"الفرع", teamStatus:"الحالة", teamAll:"الكل", teamActive:"الفريق النشط", teamPending:"دعوات معلّقة", auditUnavailable:"سجل الصلاحيات غير متاح مؤقتاً.", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
       assigned:"تم حفظ الصلاحية.", removed:"تم إلغاء الصلاحية.", created:"تم إنشاء حساب الطلبات.", resetDone:"تم تغيير كلمة مرور الفرع.", error:"تعذّر إتمام الإجراء. حدّث الصفحة وتحقق من الحالة قبل إعادة المحاولة.",
       anonymize:"إخفاء هوية العميل وتعطيل حسابه", anonymizeNote:"سيتم مسح بيانات التعريف وتعطيل الدخول وإحالة رقم العضوية للتقاعد. سيبقى السجل المالي وسجل الطلبات دون بيانات تواصل شخصية.",
       confirmAnonymize:"تأكيد إخفاء الهوية", anonymized:"تم إخفاء هوية العميل وتعطيل حسابه.", managerOrders:"عمليات الفرع", noOrders:"لا توجد طلبات للفرع لعرضها.", status:"الحالة", time:"وقت الطلب", pickup:"موعد الاستلام", items:"الأصناف",
@@ -84,6 +84,21 @@
     }
     return box;
   }
+  function applyTeamFilters(panel) {
+    const term=(panel.querySelector("#adminTeamSearch")?.value||"").trim().toLocaleLowerCase();
+    const role=panel.querySelector("#adminTeamRole")?.value||"";
+    const branch=panel.querySelector("#adminTeamBranch")?.value||"";
+    const state=panel.querySelector("#adminTeamStatus")?.value||"";
+    const members=panel.querySelector("#adminTeamMembers"),invites=panel.querySelector("#adminTeamInvites");
+    if(members)members.hidden=state==="pending";
+    if(invites)invites.hidden=state==="active";
+    for(const card of panel.querySelectorAll(".admin-team-filterable")){
+      const matchTerm=!term||(card.dataset.search||"").includes(term);
+      const matchRole=!role||(card.dataset.role||"").split(",").includes(role);
+      const matchBranch=!branch||(card.dataset.branches||"").split(",").includes(branch);
+      card.hidden=!(matchTerm&&matchRole&&matchBranch);
+    }
+  }
   function buildTeamPanel(host) {
     const panel=el("section","admin-panel admin-team-panel"); panel.id="adminTeamPanel";
     panel.append(el("h2",null,L("team")),el("p","admin-note",L("emailGate")));
@@ -112,15 +127,28 @@
       finally{busy=false;save.disabled=false;}
     });
     panel.append(form,el("h3",null,L("members")));
+    const filters=el("div","admin-team-filters");
+    const search=document.createElement("input");search.type="search";search.id="adminTeamSearch";search.placeholder=L("teamSearch");
+    const roleFilter=document.createElement("select");roleFilter.id="adminTeamRole";
+    for(const [v,k] of [["", "teamAll"],["admin","admin"],["manager","manager"],["staff","staff"]]){const o=el("option",null,L(k));o.value=v;roleFilter.append(o);}
+    const branchFilter=document.createElement("select");branchFilter.id="adminTeamBranch";const allBranches=el("option",null,L("teamAll"));allBranches.value="";branchFilter.append(allBranches);
+    const statusFilter=document.createElement("select");statusFilter.id="adminTeamStatus";
+    for(const [v,k] of [["","teamAll"],["active","teamActive"],["pending","teamPending"]]){const o=el("option",null,L(k));o.value=v;statusFilter.append(o);}
+    filters.append(label(L("teamSearch"),search),label(L("teamRole"),roleFilter),label(L("teamBranch"),branchFilter),label(L("teamStatus"),statusFilter));panel.append(filters);
+    for(const control of [search,roleFilter,branchFilter,statusFilter])control.addEventListener(control===search?"input":"change",()=>applyTeamFilters(panel));
     const members=el("div","admin-team-members"); members.id="adminTeamMembers"; panel.append(members);
     const invites=el("div","admin-team-invites"); invites.id="adminTeamInvites"; panel.append(invites);
     panel.append(el("h3",null,L("orders")));
     const orders=el("div","admin-orders-accounts"); orders.id="adminOrdersAccounts"; panel.append(orders);
+    panel.append(el("h3",null,L("accessHistory")));
+    const audit=el("div","admin-team-audit");audit.id="adminTeamAudit";panel.append(audit);
     host.append(panel);
     refreshTeam(panel).catch(()=>status(formStatus,L("error"),true));
   }
   function memberCard(member) {
-    const card=el("article","admin-record admin-team-member");
+    const card=el("article","admin-record admin-team-member admin-team-filterable");
+    card.dataset.search=((member.name||"")+" "+(member.email||"")).toLocaleLowerCase();
+    card.dataset.role=(member.roles||[]).join(",");card.dataset.branches=(member.branches||[]).join(",");
     card.append(el("strong",null,member.name||member.email),el("span","admin-record-meta",member.email||""),
       el("span","admin-record-meta",(member.roles||[]).map(x=>L(x)).join(" · ")),
       el("span","admin-record-meta",(member.branches||[]).join(", ")||"—"),
@@ -176,12 +204,13 @@
     if(!panel||!panel.isConnected)return;
     const data=await request("/rest/v1/rpc/azal_admin_team_list",{});
     let auditRows=[],auditFailed=false;try{auditRows=await request("/rest/v1/rpc/azal_admin_audit_recent",{p_limit:50});}catch{auditFailed=true;}
+    const branchFilter=panel.querySelector("#adminTeamBranch");branchFilter.replaceChildren();const allBranches=el("option",null,L("teamAll"));allBranches.value="";branchFilter.append(allBranches);for(const b of data.branches||[]){const o=el("option",null,b.name||b.slug);o.value=b.slug;branchFilter.append(o);}
     const members=panel.querySelector("#adminTeamMembers");members.replaceChildren();
     if(!(data.members||[]).length)members.append(el("p","admin-note",L("noMembers")));
     for(const m of data.members||[])members.append(memberCard(m));
     const invites=panel.querySelector("#adminTeamInvites");invites.replaceChildren();
     for(const i of data.invites||[]){
-      const card=el("article","admin-record");card.append(el("strong",null,L("pending")+": "+i.email),el("span","admin-record-meta",L(i.role)+" · "+(i.branches||[]).join(", ")+" · "+new Date(i.expires_at).toLocaleDateString(lang())));
+      const card=el("article","admin-record admin-team-filterable");card.dataset.search=(i.email||"").toLocaleLowerCase();card.dataset.role=i.role||"";card.dataset.branches=(i.branches||[]).join(",");card.append(el("strong",null,L("pending")+": "+i.email),el("span","admin-record-meta",L(i.role)+" · "+(i.branches||[]).join(", ")+" · "+new Date(i.expires_at).toLocaleDateString(lang())));
       const revoke=el("button","button admin-detail-button",L("revokeInvite"));revoke.type="button";
       revoke.addEventListener("click",()=>{
         if(card.querySelector("form"))return;
