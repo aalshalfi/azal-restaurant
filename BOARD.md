@@ -471,3 +471,14 @@ PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff
 - Superseded PRs #84, #86, #87, #88, #89, #90, #91 and #92 are closed; active stack is PR #85 (Ready for review), PR #93 (T-27 draft) and PR #94 (T-28 draft).
 - Branch refs still present: `chatgpt/t25-t26-sales-reports`; `chatgpt/t14-f-t14-1`, `chatgpt/t14-f-t14-1-ready`, `chatgpt/t14-f-t14-1-service-role-grants-0016`; `chatgpt/t27-admin-shell`, `chatgpt/t27-admin-shell-v2`, `chatgpt/t27-admin-shell-v3`, `chatgpt/t27-admin-shell-v4`; `chatgpt/t28-kitchen-shell`, `chatgpt/t28-kitchen-shell-v2`, `chatgpt/t28-kitchen-shell-v3`, `chatgpt/t28-kitchen-shell-v4`, `chatgpt/t28-kitchen-shell-v5`.
 - Deletion is not completed: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No claim of branch deletion.
+
+ 
+### T-28 implementation refinement — 2026-11-28
+
+History is a branch-scoped Toronto-day view, not only a summary card:
+- Completed/cancelled orders for the selected server-authorized branch only; DST-aware Toronto day bounds; maximum 100 rows.
+- History displays short order code, terminal status, time and item snapshots only. It does not select or display guest name, phone or order total.
+- The T-26 `azal_staff_today_summary` RPC loads only on History entry/refresh. Queue refresh is the sole 20-second poll and no longer refreshes the summary RPC.
+- EN/FR/AR loading, empty and error states are included.
+
+**Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
