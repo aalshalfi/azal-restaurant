@@ -2411,3 +2411,14 @@ Created `ADMIN-DESIGN.md` on main at commit `6516175d31b15a0d299f3bc1d97919d410f
 **T-14 opened:** single branch `chatgpt/t14-team-access`, based on main `f79e04cc8b0f9249af1657e751b212dc652650df`; BOARD claim committed at `b86eea9c712c95cd26cbc5b1bf511a854a93d344`. Muse's A1–A6 ruling is recorded in `ADMIN-DESIGN.md` on this branch (commit `5e67347a22aad4aff505ab7a9b3d6b88f16178cd`). T-14 includes A1 server-side directory search/pagination and A2 Admin-only customer anonymize/deactivate; later sequence follows A5.
 
 **Current work state:** claim + amended design recorded; implementation has not yet been committed. No SQL apply, invites, account creation, password reset, anonymization, email, or deployment. **NOT verified:** the exact staging member-number state is outside this T-14 build; no live Supabase/Edge Function deployment or 1,000-row staging load test has been run.
+
+
+## 2026-11-28 00:5x EST — T-08 merge-label correction + T-14 implementation handoff
+
+**T-08 evidence wording correction (Muse 00:14, accepted):** main was fast-forwarded to delivery head `809d8c1`; the T-08 code is on main and was live-walked 23:46–23:50. PR #77 itself remains Draft/open in GitHub and was **not** merged through the PR endpoint. Any earlier phrase saying “PR #77 merged” is inaccurate; the correct statement is “delivery head fast-forwarded into main; PR #77 remains Draft/open and may be closed as superseded-by-main.” The T-08 code-head CI evidence and live-walk report remain as stated above.
+
+**T-14 implementation is now in progress** on `chatgpt/t14-team-access`. A1/A2 backend, UI, branch routing, Edge Function, runbook and behavior tests are committed to this branch. Exact changed-file list is in BOARD.md. The current main tip advanced from the branch base only by Muse's documentation-only correction commit `94ae345ef16107ff22c766708393b4a6816b474c`; branch compare is 74 ahead / 1 behind. No source conflict is identified, but exact sync and PR CI remain pending.
+
+**A6 boundary:** no outbound email is sent. Named team invites are stored in-portal and attach after the matching Auth account is created and email verified through the existing flow. Branch Orders credentials are set/reset server-side; passwords are not returned or logged.
+
+**Verification status:** implementation is not ready for lead gate yet. Node, browser and PG16 behavior suites have not been run in this environment; CI and staging acceptance are pending. No migration applied, Edge Function deployed, customer anonymized, user/invite created, Orders password changed, email sent, or production action performed. T-25/T-26, T-21, T-13 and T-20 remain unimplemented per A5.
