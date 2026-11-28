@@ -104,7 +104,7 @@
         const balances = new Map();
         for (const row of ledger || []) balances.set(row.user_id, (balances.get(row.user_id) || 0) + Number(row.delta_points || 0));
         const term = String(search || "").trim().toLocaleLowerCase();
-        return (profiles || []).map(p => Object.assign({}, p, {
+        return (profiles || []).filter(p => { const r = rolesById.get(p.id); return !r || (!r.has("admin") && !r.has("staff")); }).map(p => Object.assign({}, p, {
           membership: memberById.get(p.id) || null, balance: balances.get(p.id) || 0
         })).filter(p => !term || [p.display_name, p.phone, p.member_number == null ? "" : String(p.member_number)].some(v => String(v || "").toLocaleLowerCase().includes(term)));
       },
