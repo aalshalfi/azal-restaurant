@@ -22,7 +22,8 @@
     const my=++seq;error=false;data=null;render();
     try{
       const s=auth&&await auth.session();if(my!==seq)return;token=s&&s.access_token;if(!token){render();return;}
-      const isAdmin=await call("/rest/v1/rpc/azal_is_admin",{});if(my!==seq)return;if(isAdmin===true){token=null;render();return;}\n      branches=await call("/rest/v1/rpc/azal_staff_my_branches",{});if(my!==seq)return;
+      const isAdmin=await call("/rest/v1/rpc/azal_is_admin",{});if(my!==seq)return;if(isAdmin===true){token=null;render();return;}
+      branches=await call("/rest/v1/rpc/azal_staff_my_branches",{});if(my!==seq)return;
       const chosen=document.getElementById("staffBranch")?.value;
       branch=branches.includes(chosen)?chosen:(branches[0]||"");
       if(!branch){token=null;render();return;}
