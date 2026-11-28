@@ -42,7 +42,7 @@ const po = (sent) => sent.filter((s) => s.u.endsWith("/rpc/place_order"));
   await p.fill("#coPhone", "(343) 999-0002"); await p.click("#placeOrder"); await p.waitForTimeout(500);
   ok(po(sent).length === 1 && po(sent)[0].body.p_guest_phone === "+13439990002", "guest mobile sent normalised as p_guest_phone");
   const join = p.locator("#coJoin");
-  ok(await join.isVisible() && /Join & collect these points/.test(await join.textContent()) && await join.getAttribute("href") === "member.html#join=amal%40example.invalid", "paid guest: a real 'Join & collect these points' button to the join form (email in the fragment only)");
+  ok(await join.isVisible() && /Join & collect these points/.test(await join.textContent()) && (await join.evaluate((e) => e.tagName)) === "BUTTON" && await join.getAttribute("href") === null, "paid guest: a real 'Join & collect these points' button (T-22: it opens the join form in the sheet)");
   await p.close(); }
 { const { p, sent } = await checkout({ pre0010: true });
   await p.fill("#coName", "Amal"); await p.fill("#coEmail", "amal@example.invalid"); await p.fill("#coPhone", "3439990002"); await p.fill("#coCard", "4242 4242 4242 4242");
@@ -100,38 +100,7 @@ const po = (sent) => sent.filter((s) => s.u.endsWith("/rpc/place_order"));
 { const { p } = await checkout({ signedIn: true, choose: false });
   ok(await p.locator("#coWho").isHidden() && await p.locator("#placeOrder").isVisible(), "signed in: never sees the choice");
   await p.close(); }
-{ // Sign in from the chooser and come back: cart, pickup time and note intact
-  const ctx = await b.newContext({ viewport: { width: 390, height: 900 } });
-  await ctx.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
-  await ctx.route("https://fake.supabase.co/**", (r) => { const u = decodeURIComponent(r.request().url());
-    if (u.includes("/auth/v1/token")) return r.fulfill({ json: { access_token: "T", refresh_token: "R", expires_in: 3600, user: { id: "u1", email: "m@example.com" } } });
-    if (u.endsWith("/rpc/redeem_options")) return r.fulfill({ json: { balance: 0, tiers: [{ points: 10000, cents: 1000 }] } });
-    if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Huda", phone: "+13439990001" }] });
-    if (u.includes("/rest/v1/memberships")) return r.fulfill({ json: [{ status: "active" }] });
-    if (u.includes("/rest/v1/points_ledger")) return r.fulfill({ json: [] });
-    if (u.includes("claim_guest_points")) return r.fulfill({ json: { points_added: 0 } });
-    return r.fulfill({ status: 404, json: {} }); });
-  await ctx.addInitScript(() => { if (!sessionStorage.getItem("s")) { sessionStorage.setItem("s", "1"); localStorage.setItem("azal-demo-cart-v1", JSON.stringify([[1, 2], [6, 1]])); } });
-  const p = await ctx.newPage(); await p.clock.setFixedTime(new Date("2026-11-26T17:00:00Z"));
-  await p.goto(base + "/menu.html"); await p.evaluate(() => document.getElementById("checkoutButton").click()); await p.waitForSelector("#coWho:not([hidden])");
-  await p.click("#coWhoGuest"); await p.fill("#coNote", "No onions please");
-  const choices = await p.locator("input[name='pickup']").count();
-  if (choices > 1) await p.locator("input[name='pickup']").nth(1).check();
-  const choiceBefore = await p.evaluate(() => pickupState.choice);
-  ok(await p.locator("#coWhoBack").isVisible() && /Sign in instead/.test(await p.textContent("#coWhoBack")), "a guest who changes their mind has a visible Sign in instead link");
-  await p.click("#coWhoBack"); await p.waitForURL(/member\.html$/);
-  ok(await p.locator("#authForm #authPassword").isVisible() && await p.locator("#authName").count() === 0, "Sign in: the member page opens the sign-in form");
-  await p.fill("#authEmail", "m@example.com"); await p.fill("#authPassword", "longenough"); await p.click("#authSubmit");
-  await p.waitForURL(/menu\.html$/, { timeout: 5000 }).catch(() => {}); await p.waitForTimeout(800);
-  ok(/menu\.html$/.test(p.url()) && !p.url().includes("#"), "after signing in: straight back to the menu page, clean address");
-  ok(await p.locator("#checkoutModal").evaluate((m) => m.classList.contains("open") || getComputedStyle(m).display !== "none") && await p.locator("#placeOrder").isVisible(), "the checkout sheet is open again");
-  ok(await p.inputValue("#coNote") === "No onions please", "the kitchen note is restored");
-  ok(await p.evaluate(() => pickupState.choice) === choiceBefore, "the pickup time is the one chosen before");
-  ok(await p.evaluate(() => JSON.stringify([...cart.entries()])) === "[[1,2],[6,1]]", "the cart is intact");
-  ok(await p.locator("#coWho").isHidden() && /Ordering as m@example\.com/.test(await p.textContent("#coSigned")), "now signed in: no chooser, ordering as the member");
-  ok(await p.evaluate(() => sessionStorage.getItem("azal-checkout-return")) === null, "the carried note/time are removed once used");
-  await ctx.close();
-}
+// T-22 replaced the leave-and-return round trip: tests/checkout-inline-auth.browser.mjs pins sign-in/join inside the sheet.
 { const { p } = await checkout({ lang: "ar", w: 320, choose: false });
   ok(/كيف تحب أن تطلب/.test(await p.textContent("#coWhoTitle")) && /المتابعة كضيف/.test(await p.textContent("#coWhoGuest")) && await p.evaluate(() => document.querySelector(".checkout-panel").scrollWidth <= document.querySelector(".checkout-panel").clientWidth + 1), "Arabic at 320px: the choice reads naturally, no sideways scroll");
   await p.close(); }

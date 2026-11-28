@@ -208,13 +208,7 @@
   let last = null, mode = "signin", codeSentTo = "", message = "", lastSentAt = 0, editing = false, detailMsg = "";
   // T-02: a guest arriving from their order confirmation ("Join & collect these points") lands on the join form with
   // that order's email filled in and locked, so the order's pending points attach to the account they create.
-  let joinEmail = "", returnToCheckout = false;
-  function goBackToCheckout() {
-    let back = null; try { back = JSON.parse(sessionStorage.getItem("azal-checkout-return") || "null"); } catch {}
-    if (!back || Date.now() - back.at > 30 * 60e3) return false;
-    const page = /^[a-z0-9-]+\.html$/.test(back.from) ? back.from : "menu.html";
-    try { root.location.replace(page + "#checkout"); return true; } catch { return false; }
-  }
+  let joinEmail = "";
 
   function errorKey(e) {
     return { invalid_credentials: "authErrCredentials", email_not_confirmed: "authErrConfirm", already_registered: "authErrExists",
@@ -325,7 +319,6 @@
     let claim = { added: 0, failed: false };
     if (afterSignIn) claim = await auth.claimGuestPoints();
     last = await auth.state();
-    if (last.status === "signed_in" && (returnToCheckout || afterSignIn) && goBackToCheckout()) return;
     if (claim.added > 0) last.claimed = claim.added;
     if (claim.failed) last.claimFailed = true;
     headerState(last);
@@ -425,13 +418,11 @@
       btn.disabled = false;
     }
   });
+  // T-22: the checkout sheet signed someone in on this page: refresh the header (and tell the page's listeners).
+  document.addEventListener("azal:signed-in", () => { refresh(); });
   document.getElementById("languageToggle")?.addEventListener("click", () => setTimeout(() => { headerState(last); renderCard(last || { status: "signed_out" }); }, 0));
   (async () => {
     const h = root.location && root.location.hash;
-    // F-OWN-20: arriving from the checkout chooser ("#return=checkout&mode=signin|join"): open that form; after a
-    // successful sign-in, go back to the page the order was on (#checkout), where the sheet reopens intact.
-    const rm = h && /^#return=checkout&mode=(signin|join)$/.exec(h);
-    if (rm) { mode = rm[1] === "join" ? "signup" : "signin"; returnToCheckout = true; try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch {} }
     const jm = h && /^#join=([^&]+)$/.exec(h);
     if (jm) {
       let e = ""; try { e = decodeURIComponent(jm[1]).trim().toLowerCase(); } catch {}

@@ -163,7 +163,7 @@
 
   const S = {
     en: { kicker: "TEST MODE", title: "Your order", text: "Payment is in test mode: use a test card below. No real money moves.",
-      guestName: "Your name", guestEmail: "Email for your receipt and points", phone: "Mobile number (so the kitchen can call you)", phoneMember: "Mobile for this order (so the kitchen can call you)", whoTitle: "How would you like to order?", whoSignIn: "Sign in", whoJoin: "Create an account", whoGuest: "Continue as guest", whoBack: "Have an account? Sign in instead", whoGuestNote: "As a guest you pay the same and get the same pickup. Points are for members: to collect this order’s points later, join with the same email.", joinBtn: "Join & collect these points", e_phone: "Please check your mobile number (10 digits, or + and country code).", e_phone_required: "Please add your mobile number.", e_invalid_phone: "Please check your mobile number (10 digits, or + and country code).", signedAs: "Ordering as {email}",
+      guestName: "Your name", guestEmail: "Email for your receipt and points", phone: "Mobile number (so the kitchen can call you)", phoneMember: "Mobile for this order (so the kitchen can call you)", whoTitle: "How would you like to order?", whoSignIn: "Sign in", whoJoin: "Create an account", whoGuest: "Continue as guest", whoBack: "Have an account? Sign in instead", inSignInGo: "Sign in and continue", inJoinGo: "Create account and continue", inBack: "Back", inToJoin: "New here? Create an account", inToSignIn: "Have an account? Sign in", inWelcome: "You’re signed in. Your order is just as you left it.", inSentTitle: "Check your email", inSent: "We sent a confirmation link to {email}. Open it, then sign in here: your order stays open. Or continue as a guest.", inSentPaid: "We sent a confirmation link to {email}. Open it, then sign in: this order’s points join your account when you do.", inSignInNow: "I’ve confirmed: sign in", whoGuestNote: "As a guest you pay the same and get the same pickup. Points are for members: to collect this order’s points later, join with the same email.", joinBtn: "Join & collect these points", e_phone: "Please check your mobile number (10 digits, or + and country code).", e_phone_required: "Please add your mobile number.", e_invalid_phone: "Please check your mobile number (10 digits, or + and country code).", signedAs: "Ordering as {email}",
       note: "Note for the kitchen (optional)", notePh: "Allergies, less spice, extra bread…",
       card: "Card number (test cards only)", cardHelp: "Test cards: 4242 4242 4242 4242 pays · 4000 0000 0000 0002 is declined · 4000 0000 0000 9995 has insufficient funds.",
       pay: "Pay {total}", payPlain: "Place order and pay", working: "One moment…",
@@ -179,7 +179,7 @@
       ptsNext: "Your first reward, {amount} off, comes at {points} points.", ptsNextMore: "Your next reward, {amount} off, comes at {points} points.", ptsMinOrder: "Your points can take {amount} off an order of {amount} or more.",
       e_points_insufficient: "Your points balance changed. Choose again.", e_invalid_redeem: "That reward is not available. Choose again.", e_redeem_exceeds_order: "That reward is larger than this order. Choose a smaller one.", e_redeem_members_only: "Sign in to use your points." },
     fr: { kicker: "MODE TEST", title: "Votre commande", text: "Le paiement est en mode test : utilisez une carte test ci-dessous. Aucun paiement réel n’est effectué.",
-      guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", phone: "Numéro de cellulaire (pour que la cuisine puisse vous appeler)", phoneMember: "Cellulaire pour cette commande (pour que la cuisine puisse vous appeler)", whoTitle: "Comment souhaitez-vous commander\u00a0?", whoSignIn: "Se connecter", whoJoin: "Créer un compte", whoGuest: "Continuer en invité", whoBack: "Vous avez un compte\u00a0? Connectez-vous plutôt", whoGuestNote: "En invité, vous payez le même prix et le retrait est le même. Les points sont réservés aux membres\u00a0: pour récupérer ceux de cette commande plus tard, inscrivez-vous avec le même courriel.", joinBtn: "S’inscrire et recevoir ces points", e_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", e_phone_required: "Veuillez indiquer votre numéro de cellulaire.", e_invalid_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", signedAs: "Commande au nom de {email}",
+      guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", phone: "Numéro de cellulaire (pour que la cuisine puisse vous appeler)", phoneMember: "Cellulaire pour cette commande (pour que la cuisine puisse vous appeler)", whoTitle: "Comment souhaitez-vous commander\u00a0?", whoSignIn: "Se connecter", whoJoin: "Créer un compte", whoGuest: "Continuer en invité", whoBack: "Vous avez un compte\u00a0? Connectez-vous plutôt", inSignInGo: "Se connecter et continuer", inJoinGo: "Créer le compte et continuer", inBack: "Retour", inToJoin: "Nouveau\u00a0? Créer un compte", inToSignIn: "Vous avez un compte\u00a0? Se connecter", inWelcome: "Vous êtes connecté. Votre commande est telle que vous l’avez laissée.", inSentTitle: "Vérifiez vos courriels", inSent: "Nous avons envoyé un lien de confirmation à {email}. Ouvrez-le, puis connectez-vous ici\u00a0: votre commande reste ouverte. Ou continuez en invité.", inSentPaid: "Nous avons envoyé un lien de confirmation à {email}. Ouvrez-le, puis connectez-vous\u00a0: les points de cette commande s’ajouteront alors à votre compte.", inSignInNow: "J’ai confirmé\u00a0: me connecter", whoGuestNote: "En invité, vous payez le même prix et le retrait est le même. Les points sont réservés aux membres\u00a0: pour récupérer ceux de cette commande plus tard, inscrivez-vous avec le même courriel.", joinBtn: "S’inscrire et recevoir ces points", e_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", e_phone_required: "Veuillez indiquer votre numéro de cellulaire.", e_invalid_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", signedAs: "Commande au nom de {email}",
       note: "Note pour la cuisine (facultatif)", notePh: "Allergies, moins épicé, plus de pain…",
       card: "Numéro de carte (cartes test seulement)", cardHelp: "Cartes test : 4242 4242 4242 4242 paie · 4000 0000 0000 0002 est refusée · 4000 0000 0000 9995 a des fonds insuffisants.",
       pay: "Payer {total}", payPlain: "Commander et payer", working: "Un instant…",
@@ -195,7 +195,7 @@
       ptsNext: "Votre première récompense, {amount} de rabais, arrive à {points} points.", ptsNextMore: "Votre prochaine récompense, {amount} de rabais, arrive à {points} points.", ptsMinOrder: "Vos points donnent {amount} de rabais sur une commande de {amount} ou plus.",
       e_points_insufficient: "Votre solde de points a changé. Choisissez de nouveau.", e_invalid_redeem: "Cette récompense n’est pas disponible. Choisissez de nouveau.", e_redeem_exceeds_order: "Cette récompense dépasse le montant de la commande. Choisissez-en une plus petite.", e_redeem_members_only: "Connectez-vous pour utiliser vos points." },
     ar: { kicker: "وضع التجربة", title: "طلبك", text: "الدفع هنا تجريبي: استخدم إحدى البطاقات التجريبية أدناه، ولن تُنقل أي أموال حقيقية.",
-      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", phone: "رقم الجوال (ليتصل بك المطبخ عند الحاجة)", phoneMember: "رقم الجوال لهذا الطلب (ليتصل بك المطبخ عند الحاجة)", whoTitle: "كيف تحب أن تطلب؟", whoSignIn: "تسجيل الدخول", whoJoin: "إنشاء حساب", whoGuest: "المتابعة كضيف", whoBack: "لديك حساب؟ سجّل الدخول بدلاً من ذلك", whoGuestNote: "كضيف تدفع السعر نفسه ويصلك الطلب بالطريقة نفسها. النقاط للأعضاء فقط، ولتحصل على نقاط هذا الطلب لاحقاً سجّل عضويتك بالبريد الإلكتروني نفسه.", joinBtn: "انضم واجمع نقاط هذا الطلب", e_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", e_phone_required: "اكتب رقم جوالك.", e_invalid_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", signedAs: "تطلب بحسابك {email}",
+      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", phone: "رقم الجوال (ليتصل بك المطبخ عند الحاجة)", phoneMember: "رقم الجوال لهذا الطلب (ليتصل بك المطبخ عند الحاجة)", whoTitle: "كيف تحب أن تطلب؟", whoSignIn: "تسجيل الدخول", whoJoin: "إنشاء حساب", whoGuest: "المتابعة كضيف", whoBack: "لديك حساب؟ سجّل الدخول بدلاً من ذلك", inSignInGo: "سجّل الدخول وتابع", inJoinGo: "أنشئ الحساب وتابع", inBack: "رجوع", inToJoin: "جديد هنا؟ أنشئ حساباً", inToSignIn: "لديك حساب؟ سجّل الدخول", inWelcome: "دخلت إلى حسابك، وطلبك كما تركته.", inSentTitle: "افتح بريدك", inSent: "أرسلنا رابط التأكيد إلى {email}. افتحه ثم سجّل الدخول هنا، وطلبك يبقى مفتوحاً. أو تابع كضيف.", inSentPaid: "أرسلنا رابط التأكيد إلى {email}. افتحه ثم سجّل الدخول، فتُضاف نقاط هذا الطلب إلى حسابك.", inSignInNow: "أكّدت بريدي: سجّل الدخول", whoGuestNote: "كضيف تدفع السعر نفسه ويصلك الطلب بالطريقة نفسها. النقاط للأعضاء فقط، ولتحصل على نقاط هذا الطلب لاحقاً سجّل عضويتك بالبريد الإلكتروني نفسه.", joinBtn: "انضم واجمع نقاط هذا الطلب", e_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", e_phone_required: "اكتب رقم جوالك.", e_invalid_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", signedAs: "تطلب بحسابك {email}",
       note: "ملاحظة للمطبخ (اختياري)", notePh: "حساسية، حار أقل، خبز إضافي…",
       card: "رقم البطاقة (بطاقات تجريبية فقط)", cardHelp: "بطاقات تجريبية: 4242 4242 4242 4242 تدفع · 4000 0000 0000 0002 تُرفض · 4000 0000 0000 9995 رصيدها غير كافٍ.",
       pay: "ادفع {total}", payPlain: "اطلب وادفع", working: "لحظة…",
@@ -236,11 +236,11 @@
   // F-OWN-20 (owner 18:58): a signed-out customer is first TOLD the options: sign in, create an account, or continue
   // as a guest (with the guest's points consequence stated before the fields). Signed-in customers never see it.
   box.innerHTML = '<div class="co-who" id="coWho" hidden><p class="co-who-title" id="coWhoTitle"></p><div class="co-who-actions">' +
-    '<a class="button button-gold" id="coWhoSignIn" href="member.html#return=checkout&mode=signin"></a>' +
-    '<a class="button co-who-join" id="coWhoJoin" href="member.html#return=checkout&mode=join"></a>' +
+    '<button type="button" class="button button-gold" id="coWhoSignIn"></button>' +
+    '<button type="button" class="button co-who-join" id="coWhoJoin"></button>' +
     '<button type="button" class="button co-who-guest" id="coWhoGuest"></button></div>' +
     '<p class="co-help" id="coWhoGuestNote"></p></div>' +
-    '<div id="coFields"><div class="co-guest" id="coGuest" hidden><a class="co-who-back" id="coWhoBack" href="member.html#return=checkout&mode=signin"></a><label for="coName"></label><input id="coName" autocomplete="name" maxlength="80"><label for="coEmail"></label><input id="coEmail" type="email" autocomplete="email" maxlength="254"></div>' +
+    '<div id="coFields"><div class="co-guest" id="coGuest" hidden><button type="button" class="co-who-back" id="coWhoBack"></button><label for="coName"></label><input id="coName" autocomplete="name" maxlength="80"><label for="coEmail"></label><input id="coEmail" type="email" autocomplete="email" maxlength="254"></div>' +
     '<label for="coPhone"></label><input id="coPhone" type="tel" dir="ltr" autocomplete="tel" maxlength="24">' +
     '<p class="co-signed" id="coSigned" hidden></p>' +
     '<fieldset class="co-points" id="coPoints" hidden><legend id="coPtsTitle"></legend><p class="co-help" id="coPtsBalance"></p><div id="coPtsChoices"></div><p class="co-help" id="coPtsNext" hidden></p></fieldset>' +
@@ -248,17 +248,31 @@
     '<label for="coCard"></label><input id="coCard" inputmode="numeric" autocomplete="off" maxlength="23" spellcheck="false"><p class="co-help" id="coCardHelp"></p></div>' +
     '<p class="co-error" id="coError" role="alert"></p>';
   btn.before(box);
-  // F-OWN-20: the choice sits at the top of the sheet, above the pickup time, so it is the first thing read.
-  { const pk = document.getElementById("pickup"); if (pk) pk.before(document.getElementById("coWho")); }
+  // T-22 / F-OWN-21 (owner): signing in and joining happen HERE, inside the sheet. Nothing navigates; the cart, the
+  // pickup time and the note never leave the page. One panel serves sign-in and join (rows shown per mode).
+  const authBox = document.createElement("div");
+  authBox.className = "co-auth"; authBox.id = "coAuth"; authBox.hidden = true;
+  authBox.innerHTML = '<p class="co-who-title" id="coAuthTitle" tabindex="-1"></p>' +
+    '<form class="co-auth-form" id="coAuthForm" novalidate>' +
+    '<div class="co-auth-row" id="coAuthNameRow"><label for="coAuthName"></label><input id="coAuthName" autocomplete="name" maxlength="80"></div>' +
+    '<div class="co-auth-row"><label for="coAuthEmail"></label><input id="coAuthEmail" type="email" dir="ltr" autocomplete="email" maxlength="254"><p class="co-help" id="coAuthLocked" hidden></p></div>' +
+    '<div class="co-auth-row" id="coAuthPhoneRow"><label for="coAuthPhone"></label><input id="coAuthPhone" type="tel" dir="ltr" autocomplete="tel" maxlength="24"></div>' +
+    '<div class="co-auth-row"><label for="coAuthPassword"></label><input id="coAuthPassword" type="password" autocomplete="current-password"></div>' +
+    '<p class="co-error" id="coAuthMsg" role="alert"></p>' +
+    '<button type="submit" class="button button-gold co-auth-submit" id="coAuthSubmit"></button></form>' +
+    '<p class="co-auth-sent" id="coAuthSent" role="status" hidden></p>' +
+    '<div class="co-auth-links"><button type="button" class="co-who-back" id="coAuthSwitch"></button>' +
+    '<button type="button" class="co-who-back" id="coAuthGuest" hidden></button>' +
+    '<button type="button" class="co-who-back" id="coAuthBack"></button></div>';
+  // The choice and the panel sit at the top of the sheet, above the pickup time, so they are the first thing read.
+  { const pk = document.getElementById("pickup"); const who = box.querySelector("#coWho"); if (pk) { pk.before(who); pk.before(authBox); } else who.after(authBox); }
   const $ = (id) => document.getElementById(id);
   const msg = $("checkoutMessage");
   let guestMode = true, busy = false, ptsOpts = null, redeem = 0, guestChosen = false;
-  // Leaving to sign in / join keeps the order: the cart is already saved; the note and the pickup choice ride along in
-  // this tab's sessionStorage for 30 minutes and are restored when the customer comes back (#checkout).
-  const STASH = "azal-checkout-return";
-  function stash() {
-    try { sessionStorage.setItem(STASH, JSON.stringify({ from: root.location.pathname.split("/").pop() || "menu.html", note: $("coNote").value, choice: (typeof pickupState !== "undefined" && pickupState.choice) || null, at: Date.now() })); } catch {}
-  }
+  // Inline auth state: authMode null | "signin" | "join" | "sent" (join done, email confirmation pending);
+  // authFrom "who" (the choice) | "guest" (the guest form's link) | "paid" (after a guest order); lockedEmail = that order's.
+  let signedEmail = "";
+  let authMode = null, authFrom = "who", lockedEmail = "", authBusy = false, sentTo = "", authGen = 0, welcome = "";
   const nf = () => new Intl.NumberFormat(locOf());
   const subtotalNow = () => { try { return cartTotals([...cart.entries()]).sub; } catch { return 0; } };
   const setRedeem = (pts, cents) => { redeem = pts; root.AZAL_REDEEM_CENTS = cents; try { if (typeof renderCart === "function") renderCart(); } catch {} };
@@ -302,8 +316,9 @@
 
   function paintWho() {
     if (box.hidden) { $("coWho").hidden = true; return; } // the success state owns the sheet until it is reopened
-    const ask = guestMode && !guestChosen;
-    $("coWho").hidden = !ask; $("coFields").hidden = ask; btn.hidden = ask;
+    const inAuth = Boolean(authMode) && authFrom !== "paid";
+    const ask = guestMode && !guestChosen && !inAuth;
+    $("coWho").hidden = !ask; $("coFields").hidden = ask || inAuth; btn.hidden = ask || inAuth;
     $("coWhoTitle").textContent = L("whoTitle"); $("coWhoSignIn").textContent = L("whoSignIn"); $("coWhoJoin").textContent = L("whoJoin");
     $("coWhoGuest").textContent = L("whoGuest"); $("coWhoGuestNote").textContent = L("whoGuestNote"); $("coWhoBack").textContent = L("whoBack");
   }
@@ -323,13 +338,42 @@
     btn.textContent = busy ? L("working") : co.order ? L("pay", { total: money(co.order.total_cents) }) : L("payPlain");
     paintPoints();
     paintWho();
+    paintAuth();
+    $("coSigned").textContent = guestMode ? "" : (welcome ? welcome + " " : "") + L("signedAs", { email: signedEmail });
+  }
+  const tg = (k) => (typeof t === "function" ? t(k) : k); // script.js's translator: the member page's own auth strings
+  function paintAuth() {
+    authBox.hidden = !authMode;
+    if (!authMode) return;
+    const join = authMode === "join", sent = authMode === "sent";
+    $("coAuthTitle").textContent = L(join || (sent && authFrom === "paid") ? "whoJoin" : sent ? "inSentTitle" : "whoSignIn");
+    $("coAuthForm").hidden = sent;
+    $("coAuthNameRow").hidden = !join; $("coAuthPhoneRow").hidden = !join;
+    // Labels are set on every paint, so a language switch keeps what was typed.
+    authBox.querySelector("label[for=coAuthName]").textContent = tg("authName");
+    authBox.querySelector("label[for=coAuthEmail]").textContent = tg("authEmail");
+    authBox.querySelector("label[for=coAuthPhone]").textContent = tg("authPhone");
+    authBox.querySelector("label[for=coAuthPassword]").textContent = tg("authPassword");
+    $("coAuthPassword").autocomplete = join ? "new-password" : "current-password";
+    const locked = join && Boolean(lockedEmail);
+    $("coAuthEmail").readOnly = locked; if (locked) $("coAuthEmail").value = lockedEmail;
+    $("coAuthLocked").hidden = !locked; $("coAuthLocked").textContent = tg("authJoinLocked");
+    $("coAuthSubmit").textContent = authBusy ? L("working") : L(join ? "inJoinGo" : "inSignInGo");
+    $("coAuthSubmit").disabled = authBusy;
+    $("coAuthSent").hidden = !sent;
+    $("coAuthSent").textContent = sent ? L(authFrom === "paid" ? "inSentPaid" : "inSent", { email: sentTo }) : "";
+    // Every state has a way on: switch sign-in <-> join, continue as guest (before an order), and back.
+    $("coAuthSwitch").textContent = L(sent ? "inSignInNow" : join ? "inToSignIn" : "inToJoin");
+    $("coAuthSwitch").hidden = authFrom === "paid" && !sent;
+    $("coAuthGuest").hidden = authFrom === "paid" || !guestMode;
+    $("coAuthGuest").textContent = L("whoGuest");
+    $("coAuthBack").textContent = L("inBack");
   }
   async function prepare() {
     let s = null; try { s = auth && (await auth.session()); } catch {}
-    guestMode = !s;
+    guestMode = !s; signedEmail = (s && s.user && s.user.email) || "";
     $("coGuest").hidden = !guestMode;
     $("coSigned").hidden = guestMode;
-    if (s) $("coSigned").textContent = L("signedAs", { email: (s.user && s.user.email) || "" });
     // Members: the profile mobile (0008) is filled in; changing it here applies to this order only.
     if (s && !$("coPhone").value) { try { const st = auth && (await auth.state()); if (st && st.phone) $("coPhone").value = st.phone; } catch {} }
     paint();
@@ -375,7 +419,8 @@
         const sg = root.AzalSigil && root.AzalSigil.sigil(o.order_id);
         if (msg && sg) { const big = document.createElement("span"); big.className = "co-sigil"; big.textContent = root.AzalSigil.label(o.order_id, lang()); msg.append(big); }
         // T-02 / F-OWN-16: the join line is a real action for guests: the join form with this order's email, locked.
-        if (msg && guest) { const a = document.createElement("a"); a.className = "button button-gold co-join"; a.id = "coJoin"; a.href = joinHref(guest.email); a.textContent = L("joinBtn"); msg.append(a); }
+        // T-22: it opens the join form right here, with that email locked (no page change).
+        if (msg && guest) { const a = document.createElement("button"); a.type = "button"; a.className = "button button-gold co-join"; a.id = "coJoin"; a.textContent = L("joinBtn"); const em = guest.email, nm = guest.name, ph = phone; a.addEventListener("click", () => { a.hidden = true; openAuth("join", "paid", em, { name: nm, phone: ph }); }); msg.append(a); }
         root.AZAL_REDEEM_CENTS = 0; redeem = 0;
         try { c.clear(); if (typeof renderCart === "function") renderCart(); } catch {}
         co.reset(); unlock(); box.hidden = true; btn.hidden = true; const pk = $("pickup"); if (pk) pk.hidden = true;
@@ -390,19 +435,88 @@
     } finally { busy = false; paint(); }
   });
   $("coWhoGuest").addEventListener("click", () => { guestChosen = true; paint(); $("coName").focus(); });
-  for (const id of ["coWhoSignIn", "coWhoJoin", "coWhoBack"]) $(id).addEventListener("click", stash);
-  // Back from sign-in/join (#checkout): reopen the sheet with the cart, the pickup choice and the note as they were.
-  try {
-    const back = root.location.hash === "#checkout" && JSON.parse(sessionStorage.getItem(STASH) || "null");
-    if (root.location.hash === "#checkout") { try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch {} }
-    if (back && Date.now() - back.at < 30 * 60e3) {
-      sessionStorage.removeItem(STASH);
-      // The checkout button copies the CURRENT choice into `keep`, so the carried choice must be the current one.
-      if (back.choice && typeof pickupState !== "undefined") pickupState.choice = back.choice;
-      setTimeout(() => { document.getElementById("checkoutButton")?.click(); setTimeout(() => { if (back.note) $("coNote").value = back.note; }, 0); }, 0);
+  $("coWhoSignIn").addEventListener("click", () => openAuth("signin", "who"));
+  $("coWhoJoin").addEventListener("click", () => openAuth("join", "who"));
+  $("coWhoBack").addEventListener("click", () => openAuth("signin", "guest"));
+
+  function openAuth(mode, from, email, known) {
+    authGen++; authBusy = false; authMode = mode; authFrom = from; lockedEmail = email || ""; sentTo = "";
+    $("coAuthMsg").textContent = ""; $("coAuthPassword").value = "";
+    // After an order the guest already gave a name and a mobile: they are filled in, only the password is new.
+    if (known) { if (known.name && !$("coAuthName").value) $("coAuthName").value = known.name; if (known.phone && !$("coAuthPhone").value) $("coAuthPhone").value = known.phone; }
+    if (from === "paid" && msg) msg.after(authBox); else { const pk = $("pickup"); if (pk) pk.before(authBox); }
+    paint();
+    const first = mode !== "join" ? "coAuthEmail" : !$("coAuthName").value ? "coAuthName" : !lockedEmail ? "coAuthEmail" : !$("coAuthPhone").value ? "coAuthPhone" : "coAuthPassword";
+    $(first).focus();
+  }
+  function closeAuth() {
+    authGen++; authBusy = false;
+    const from = authFrom; authMode = null; lockedEmail = ""; sentTo = "";
+    if (from === "paid") { const j = $("coJoin"); if (j) { j.hidden = false; j.focus(); } paint(); return; }
+    guestChosen = from === "guest"; paint();
+    (guestChosen ? $("coName") : $("coWhoSignIn")).focus();
+  }
+  $("coAuthBack").addEventListener("click", closeAuth);
+  $("coAuthGuest").addEventListener("click", () => { authGen++; authMode = null; authBusy = false; guestChosen = true; paint(); $("coName").focus(); });
+  $("coAuthSwitch").addEventListener("click", () => {
+    const em = $("coAuthEmail").value;
+    if (authMode === "sent") { authMode = "signin"; lockedEmail = ""; $("coAuthEmail").value = sentTo; }
+    else { authMode = authMode === "join" ? "signin" : "join"; }
+    authGen++; authBusy = false; $("coAuthMsg").textContent = ""; $("coAuthEmail").value = em || $("coAuthEmail").value;
+    paint(); $(authMode === "join" ? "coAuthName" : $("coAuthEmail").value ? "coAuthPassword" : "coAuthEmail").focus();
+  });
+  const authErr = (e) => ({ invalid_credentials: "authErrCredentials", email_not_confirmed: "authErrConfirm", already_registered: "authErrExists",
+    signups_closed: "authErrClosed", weak_password: "authErrWeak", rate_limited: "authErrRate", network: "authErrNetwork",
+    invalid_name: "authErrName", invalid_phone: "authErrPhone" }[e && e.code] || "authErrGeneric");
+  // Signed in (either way): the sheet flips to the member state in place. Points earned as a guest are claimed first.
+  async function becameMember(gen) {
+    let claim = { added: 0 }; try { claim = await auth.claimGuestPoints(); } catch {}
+    if (gen !== authGen) return;
+    const from = authFrom;
+    authMode = null; authBusy = false; lockedEmail = ""; guestChosen = false;
+    try { document.dispatchEvent(new CustomEvent("azal:signed-in")); } catch {} // auth.js updates the header
+    if (from === "paid") {
+      if (msg) { const p = document.createElement("p"); p.className = "co-auth-done"; p.id = "coAuthDone"; p.setAttribute("role", "status");
+        p.textContent = claim.added > 0 ? tg("authClaimed").replace("{points}", nf().format(claim.added)) : L("inWelcome"); msg.append(p); }
+      paint(); return;
     }
-  } catch {}
+    welcome = L("inWelcome");
+    await prepare();
+    if (gen === authGen) $("coSigned").focus();
+  }
+  $("coAuthForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (authBusy) return;
+    const say = (k, focusId) => { $("coAuthMsg").textContent = tg(k); if (focusId) $(focusId).focus(); };
+    const join = authMode === "join";
+    const email = $("coAuthEmail").value.trim(), password = $("coAuthPassword").value;
+    const name = $("coAuthName").value.trim(), phone = join ? normalizePhone($("coAuthPhone").value) : null;
+    if (join && (!name || name.length > 80)) return say("authErrName", "coAuthName");
+    if (!email) return say("authErrMissing", "coAuthEmail");
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return say("authErrInvalidEmail", "coAuthEmail");
+    if (join && !phone) return say("authErrPhone", "coAuthPhone");
+    if (!password) return say("authErrMissing", "coAuthPassword");
+    if (join && password.length < 8) return say("authErrWeak", "coAuthPassword");
+    const gen = ++authGen; authBusy = true; $("coAuthMsg").textContent = ""; paint();
+    try {
+      if (join) {
+        const r = await auth.signUp(email, password, { name, phone });
+        if (gen !== authGen) return;
+        // F-OWN-14: if the project asks for email confirmation there is no session yet: say so plainly, and offer
+        // sign-in right here (and the guest path) so it is never a dead end.
+        if (!r.session) { authBusy = false; authMode = "sent"; sentTo = email; $("coAuthPassword").value = ""; paint(); $("coAuthTitle").focus(); return; }
+      } else {
+        await auth.signIn(email, password);
+        if (gen !== authGen) return;
+      }
+      $("coAuthPassword").value = "";
+      await becameMember(gen);
+    } catch (err) {
+      if (gen !== authGen) return;
+      authBusy = false; paint(); say(authErr(err), "coAuthPassword");
+    }
+  });
   // Reopening after success shows the form again.
-  document.getElementById("checkoutButton")?.addEventListener("click", () => { box.hidden = false; btn.hidden = false; const pk = $("pickup"); if (pk) pk.hidden = false; });
+  document.getElementById("checkoutButton")?.addEventListener("click", () => { box.hidden = false; btn.hidden = false; const pk = $("pickup"); if (pk) { pk.hidden = false; pk.before(authBox); } authGen++; authMode = null; authBusy = false; welcome = ""; });
   prepare();
 })(typeof window !== "undefined" ? window : globalThis);

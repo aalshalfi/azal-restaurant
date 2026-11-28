@@ -928,3 +928,20 @@ html.role-leaving .member-card,html.role-leaving #memberHistory,html.role-leavin
 #coFields[hidden]{display:none}
 .co-who-actions .button{font-size:15px;letter-spacing:.02em;text-transform:none;font-weight:700}
 .checkout-panel .co-who{margin:4px 0 18px}
+/* T-22: sign-in / join inside the checkout sheet */
+.co-auth{margin:4px 0 18px}
+.co-auth-form,.co-auth-row{display:grid;gap:6px}
+.co-auth-row[hidden],.co-auth-form[hidden]{display:none}
+.co-auth-submit{width:100%;min-height:48px;margin-top:8px;font-size:15px;text-transform:none;letter-spacing:.02em;font-weight:700}
+.co-auth-links{display:flex;flex-wrap:wrap;gap:4px 18px}
+button.co-who-back{background:none;border:0;padding:0;cursor:pointer;font:inherit;font-weight:600;text-align:start}
+.co-auth-sent,.co-auth-done{margin:0;color:#42220E;font-weight:600;line-height:1.5}
+.co-auth-done{margin-top:10px}
+.co-signed:focus{outline:none}
+.co-who-title:focus{outline:none}
+.co-auth{display:grid;gap:6px}
+.co-auth[hidden]{display:none}
+.co-auth label{font-weight:600;font-size:.92rem;color:#42220E;margin-top:6px;text-transform:none;letter-spacing:0}
+.co-auth input{width:100%;font:inherit;font-size:16px;padding:11px 12px;border:1px solid rgba(66,34,14,.3);border-radius:10px;background:#fff;color:#42220E;min-height:44px}
+.co-auth input:focus-visible{outline:3px solid #CD8E2D;outline-offset:1px}
+.co-auth input[readonly]{background:#F8F1E7;color:#914820}
