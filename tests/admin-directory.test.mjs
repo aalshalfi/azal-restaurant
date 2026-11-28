@@ -107,3 +107,12 @@ test("SQL behaviour runner fails on psql errors and explicit FAIL output", () =>
   assert.match(runner, /ERROR:|FAIL/);
   assert.match(runner, /DATABASE_URL/);
 });
+
+test("T-08 SQL suite pins retained terminal history, snapshots and events", () => {
+  const sql = read("tests/sql/admin-directory-behaviour.sql");
+  assert.match(sql, /\\\\ir admin-scope-behaviour\\.sql/);
+  assert.match(sql, /cancelled,handed_over/);
+  assert.match(sql, /order_items/);
+  assert.match(sql, /order_events/);
+  assert.match(sql, /not deleted/);
+});
