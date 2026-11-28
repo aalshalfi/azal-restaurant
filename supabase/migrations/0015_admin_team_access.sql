@@ -376,7 +376,7 @@ begin
   if v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' or pg_catalog.char_length(v_email)>254 then raise exception 'invalid_email'; end if;
   if v_name='' or pg_catalog.char_length(v_name)>80 then raise exception 'invalid_name'; end if;
   if p_role is null or p_role not in ('admin','manager','staff') then raise exception 'invalid_role'; end if;
-  if p_role='admin' and cardinality(v_branches)<>0 then raise exception 'admin_has_no_branch_scope'; end if;
+  if p_role='admin' then raise exception 'admin_role_reserved'; end if;
   if p_role in ('manager','staff') and cardinality(v_branches)=0 then raise exception 'branch_required'; end if;
   foreach v_branch in array v_branches loop
     if not exists(select 1 from public.branches b where b.slug=v_branch and b.active) then raise exception 'invalid_branch'; end if;
