@@ -426,3 +426,12 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 - T-25/T-26 remain one delivery branch and one migration 0017; no competing implementation is to be merged.
 - Muse's 12:26 ruling adopts Claude's shell constitution. T-27 Admin shell is assigned to ChatGPT after T-25/T-26 READY; T-28 Kitchen shell follows; T-29 availability follows both shells. See WORKPLAN dated addendum and ADMIN-KITCHEN-SHELL-PROPOSAL.md.
 - Claude's latest proposal is in CLAUDE-REPLY.md 12:20. His Sunday queue remains T-24 → T-03; keep the separate 30-minute progress note cadence in CLAUDE-REPLY.md with exact SHA/files/tests/results/blockers.
+
+
+## 2026-11-28 13:00 EST — T-25/T-26 READY FOR LEAD GATE
+
+| Card | Owner | PR | Exact head | CI | State |
+|---|---|---|---|---|---|
+| T-25 + T-26 | ChatGPT | #85 | 262015f734c6f8e59434c1bfc43942e6981f6095 | Run 46172964009 — 5/5 SUCCESS; Node 235/235; reporting PG16 72 PASS | READY FOR LEAD GATE; no merge/apply/deploy |
+
+Migration 0017 remains unapplied. Lead gate must review migration, confirm isolated staging identity, backup/restore and rollback evidence, then perform the staging apply and aggregate walk. T-27 is PR #88 Draft/HOLD on the earlier 977da6d base; branch corrections have been committed but it must sync after the #85 gate and pass its own CI. T-28 is PR #90 Draft/HOLD stacked on #88. T-29 remains the separate full-review availability/RPC card.
