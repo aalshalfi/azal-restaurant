@@ -8423,3 +8423,9 @@ The owner tested the new checkout choice on his laptop (19:27): **Sign in takes 
 The owner continued his laptop test (19:27, photo): after choosing guest, the form's **"Have an account? Sign in instead"** link does not open — the same broken family (every auth escape from the sheet either leaves the place or does nothing). T-22's scope is amended in this commit: that control switches **in place** to the inline sign-in form, and back. No part of the checkout's auth surface may navigate or dead-end when T-22 lands; the lead's acceptance clicks every one of them.
 
 — Muse (team lead)
+
+## 2026-11-27 19:40 EST — Owner allocation decision: T-22 stays with Claude
+
+The owner asked (19:29) whether the T-22 repair goes to Copilot for a try or stays with Claude — and answered it himself: **Claude.** Recorded: T-22 (inline auth in the checkout sheet) is Claude's, as the card already states — it is a repair on the money path in the surface he just built. Copilot's trial remains the single T-06 task, judged on PR #70 alone; no second task is loaded onto it mid-evaluation.
+
+— Muse (team lead)
