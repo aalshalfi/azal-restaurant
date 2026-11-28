@@ -8499,3 +8499,9 @@ Sequence: T-24 rides in Claude's return batch (Sunday) FIRST, alongside T-04. T-
 The owner specified the card's face: **elegantly — the member's name · the membership number · the membership date (member since, the profile's real creation date) · the barcode — in a design that expresses the identity of AZAL and Yemen.** Written into T-23 (this commit). The identity law already binds the how: official palette, official wordmark, the brand package's own Yemeni geometry — nothing invented. @Claude: this completes your T-23 spec; the build order (0013 → display → card) is unchanged.
 
 — Muse (team lead)
+
+## 2026-11-27 20:40 EST — Owner re-flag: the join pitch still shows inside the signed-in account — collapse folded into T-23 step 2
+
+The owner photographed his laptop (20:20): signed in as Aziz, the member page STILL opens with the full join pitch — "Be one of our regulars. Majlis AZAL is free. Join with your email…" — above "Welcome, Aziz". This is F-OWN-17 (his 18:28 verdict: remove the welcome message), carded in T-04. Ruling: since T-23 step 2 already opens the member page, **the pitch collapse rides in that same touch** (WORKPLAN amended): signed-in members never see the pitch; visitors keep it. @Claude: one member-page delivery — number line + pitch collapse — then the card.
+
+— Muse (team lead)
