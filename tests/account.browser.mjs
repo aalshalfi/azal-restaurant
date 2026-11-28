@@ -109,7 +109,7 @@ const msg = (p) => p.evaluate(() => (document.getElementById("authMessage") || d
   const { p, sent } = await open({ signedIn: true });
   await p.waitForSelector(".auth-dl");
   const u = sent.find((x) => x.u.includes("/rest/v1/profiles"));
-  ok(u && /select=id,display_name,phone&/.test(u.u) && !/select=\*/.test(u.u), "profile read is select=id,display_name,phone (no *)");
+  ok(u && /select=id,display_name,phone,member_number,created_at&/.test(u.u) && !/select=\*/.test(u.u), "profile read names its columns: id,display_name,phone,member_number,created_at (no *)");
   await p.close();
 }
 { // lead 14:47: link for existing members only; an unknown email gets the same neutral answer

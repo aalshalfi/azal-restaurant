@@ -156,7 +156,10 @@
           [profile, membership, rows] = await Promise.all([
             // select=* so the 0008 phone column comes along once it exists, and nothing breaks before.
             // B4: explicit columns; one fallback for a server without 0008 (no phone column -> 400).
-            q("/rest/v1/profiles?select=id,display_name,phone&id=eq." + encodeURIComponent(uid)).catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name&id=eq." + encodeURIComponent(uid)); throw e; }).then((r) => r[0] || null),
+            // T-23: member_number (0013) first; each 400 steps down one migration, so the page works before the apply.
+            q("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&id=eq." + encodeURIComponent(uid))
+              .catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name,phone&id=eq." + encodeURIComponent(uid)); throw e; })
+              .catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name&id=eq." + encodeURIComponent(uid)); throw e; }).then((r) => r[0] || null),
             q("/rest/v1/memberships?select=status,joined_at&user_id=eq." + encodeURIComponent(uid)).then((r) => r[0] || null),
             q("/rest/v1/points_ledger?select=delta_points&user_id=eq." + encodeURIComponent(uid))
           ]);
@@ -166,7 +169,7 @@
         }
         if (!profile) return { status: "no_profile", email: s.user && s.user.email };
         const points = (rows || []).reduce((a, r) => a + Number(r.delta_points || 0), 0);
-        return { status: "signed_in", email: s.user && s.user.email, name: profile.display_name || null, phone: profile.phone || null, hasPhoneField: "phone" in profile, membership: membership ? membership.status : null, points };
+        return { status: "signed_in", email: s.user && s.user.email, name: profile.display_name || null, phone: profile.phone || null, hasPhoneField: "phone" in profile, memberSince: profile.created_at || null, memberNumber: Number.isSafeInteger(Number(profile.member_number)) && Number(profile.member_number) >= 10001 ? Number(profile.member_number) : null, membership: membership ? membership.status : null, points };
       }
     };
   }
@@ -192,7 +195,28 @@
     if (String(password || "").length < 8) return "password";
     return null;
   }
-  const api = { createAuth, KEY, normalizePhone, signUpProblem };
+  // T-23 step 3: Code 39 for the membership number (digits only). Each character is 9 elements, bar/space
+  // alternating from a bar; "1" = wide. Start/stop "*". Returns [{ bar, wide }] including the narrow gaps between characters.
+  const C39 = { "0": "000110100", "1": "100100001", "2": "001100001", "3": "101100000", "4": "000110001", "5": "100110000",
+    "6": "001110000", "7": "000100101", "8": "100100100", "9": "001100100", "*": "010010100" };
+  function code39(digits) {
+    const txt = String(digits);
+    if (!/^\d{1,20}$/.test(txt)) return null;
+    const out = [];
+    ("*" + txt + "*").split("").forEach((ch, i, all) => {
+      C39[ch].split("").forEach((w, k) => out.push({ bar: k % 2 === 0, wide: w === "1" }));
+      if (i < all.length - 1) out.push({ bar: false, wide: false });
+    });
+    return out;
+  }
+  function code39Svg(digits, label) {
+    const els = code39(digits); if (!els) return "";
+    const N = 2, W = 5, Q = 20, H = 54; let x = Q, rects = "";
+    for (const e of els) { const w = e.wide ? W : N; if (e.bar) rects += `<rect x="${x}" y="0" width="${w}" height="${H}"/>`; x += w; }
+    const tot = x + Q;
+    return `<svg class="mcard-barcode" viewBox="0 0 ${tot} ${H}" preserveAspectRatio="none" role="img" aria-label="${String(label).replace(/[&<>"]/g, "")}" shape-rendering="crispEdges" fill="#42220E">${rects}</svg>`;
+  }
+  const api = { createAuth, KEY, normalizePhone, signUpProblem, code39, code39Svg };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -243,15 +267,37 @@
       `<button class="text-link dark-link auth-switch" type="button" id="authCancelDetails">${esc(tr("authCancel"))}</button></div></form>`;
   }
 
+  // T-23 step 3 (owner 20:20, "بشكل انيق"): name · membership number · member since · barcode, on the official palette with
+  // the official AZAL symbol (the brand's own Sana'a arch) — nothing invented. Shown only when the server has the number.
+  function memberCard(st) {
+    const l = document.documentElement.lang;
+    let since = "";
+    try { if (st.memberSince) since = new Intl.DateTimeFormat(l === "fr" ? "fr-CA" : l === "ar" ? "ar-CA-u-nu-latn" : "en-CA", { month: "long", year: "numeric", timeZone: "America/Toronto" }).format(new Date(st.memberSince)); } catch {}
+    return `<figure class="mcard" aria-label="${esc(tr("memberCardKicker"))}">` +
+      `<img class="mcard-mark" src="assets/azal-symbol.svg" alt="" aria-hidden="true">` +
+      `<img class="mcard-watermark" src="assets/azal-symbol.svg" alt="" aria-hidden="true">` +
+      `<div class="mcard-kicker">${esc(tr("memberCardKicker"))}</div>` +
+      `<div class="mcard-name">${esc(st.name || st.email || "")}</div>` +
+      `<div class="mcard-meta"><div id="authMemberNo"><span>${esc(tr("authMemberNo"))}</span> <strong><bdi dir="ltr">${st.memberNumber}</bdi></strong></div>` +
+      (since ? `<div id="authMemberSince"><span>${esc(tr("authMemberSince"))}</span> <strong>${esc(since)}</strong></div>` : "") + `</div>` +
+      `<div class="mcard-code">${code39Svg(st.memberNumber, tr("authBarcode").replace("{number}", st.memberNumber))}<div class="mcard-digits" dir="ltr">${st.memberNumber}</div></div>` +
+      `</figure>`;
+  }
+
   function renderCard(st) {
     try { document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: st && st.status } })); } catch {} // member-history.js listens
     const card = document.querySelector(".member-card");
     if (!card) return;
+    // T-23 step 2 / F-OWN-17 (owner, twice): a signed-in member never sees the join pitch; visitors keep it.
+    const banner = document.querySelector(".member-banner");
+    if (banner) banner.hidden = st.status === "signed_in" || st.status === "no_profile" || st.status === "error";
     if (st.status === "signed_in" || st.status === "no_profile" || st.status === "error") {
       const pending = st.status !== "signed_in";
       card.innerHTML =
         `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
         `<p class="auth-hello">${esc(tr("authHello").replace("{name}", st.name || st.email || ""))}</p>` +
+        // T-23: the membership number (plain digits, left-to-right even in Arabic). Shown only when the server has it.
+        (st.memberNumber ? memberCard(st) : "") +
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
         // Owner 21:31: no placeholder where personal data would go; the points card renders only with real points behind it.
         (pending ? "" : `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +
