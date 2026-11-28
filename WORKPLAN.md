@@ -184,3 +184,41 @@ Muse approved `ADMIN-DESIGN.md` with A1–A6 at 00:10 EST (commit `f79e04cc8b0f9
 
 ### A5 migration ordering clarification — lead ruling 2026-11-28
 Because A5 moves T14 before T21 and T13, the old T13=0015 placeholder is superseded. T14 owns migration 0015. T25/T26, T21, T13 and T20 must receive new monotonically increasing migration versions in the approved A5 task order as their actual schema needs become known. Never apply a lower-numbered migration after 0015 has been applied.
+
+
+## 2026-11-28 12:26 EST — Muse adjudication: T-25/T-26, T-27, T-28, T-29
+
+This dated addendum is authoritative over earlier unadjudicated shell sketches; prior history remains unchanged.
+
+### T-25 — Sales reports (Admin / Manager)
+- One server-side reporting RPC, Toronto day/month/year buckets using immutable paid_at.
+- ADM-1: only handed-over orders count as collected.
+- Admin sees gross collected, refunds separately, net, status counts, and stored subtotal/discount/HST snapshots.
+- Manager sees assigned-branch counts and net collected only; no gross/refund/tax/customer breakdown.
+- Refunds after handover reduce net once; refunds before handover do not become collected refunds.
+- One canonical migration 0017 only. Staging apply and live role walk are Muse/lead gates.
+
+### T-26 — Staff Today's summary
+- Staff-only, server-enforced own-branch Toronto-day status counts and net collected only.
+- Lives in Kitchen History after T-28; employee may manually copy/share.
+- No tax breakdown, email, SMTP, outbox, scheduled or automatic sending.
+
+### T-27 — Admin shell (ChatGPT, assigned 2026-11-28 12:26)
+- Five destinations: Home, Orders, Customers, Reports, More.
+- Orders tabs: Active / Scheduled / History. Reports tabs: Daily / Monthly / Yearly.
+- More: Team & access (Active/Pending), Orders accounts, Access history.
+- Menu is absent until T-21. Identity/sign-out remain behind the header profile icon.
+- One job per screen, max five destinations, unauthorized destinations absent, no empty containers, stable hash addresses, load data on entry, poll only Home.
+- T-25 Reports UI mounts here; no reports UI on the old stacked page.
+
+### T-28 — Kitchen shell (ChatGPT after T-27)
+- Four screens: Queue, Scheduled, History, Availability.
+- Queue chips: All / New / Preparing / Ready. Scheduled appears only when non-empty. T-26 summary lives at top of History.
+- Availability is not rendered until T-29's authoritative state/RPC exists. No Settings destination.
+
+### T-29 — Availability state + audited kitchen RPC (full review)
+- Temporary Sold out today / In stock is Kitchen-only, own branch, audited actor/time/item/branch, auto-reset next business day.
+- Manager/T-21 retains permanent unavailability, item retirement and canonical menu edits.
+- Requires authoritative branch × item state, server-side branch enforcement and audit; never a client-only toggle.
+
+**Sequence:** T-25/T-26 data gate → T-27 Admin shell → T-28 Kitchen shell → T-29 availability. Claude's Sunday queue remains T-24 → T-03 and is separate from ChatGPT's shell work.
