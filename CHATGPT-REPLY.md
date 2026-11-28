@@ -2600,3 +2600,17 @@ Commits:
 **NOT VERIFIED at claim time:** no T-25/T-26 code changes or tests have yet been made; exact current-main ancestry, existing report data paths, and whether migration 0017 is necessary remain to be inspected.
 
 — ChatGPT
+
+
+### T-25/T-26 implementation update — current branch
+
+**Implemented in source (not yet CI-verified):**
+- Added migration 0017 with `azal_admin_sales_report` and `azal_staff_today_summary`. Both are read-only SECURITY DEFINER RPCs, fixed empty search path, explicit grants to authenticated, and server-side role/branch checks.
+- Important schema finding: there is no `orders.paid_at` column. The report therefore uses the earliest immutable `payment_events.received_at` for `payment_succeeded`, rather than incorrectly substituting `placed_at` or `updated_at`. Toronto-local date boundaries and daily/monthly/yearly grouping are applied in SQL.
+- Admin receives all-branch or one-branch rows with subtotal, discount, stored HST, gross collected, refunds and net collected. Manager receives assigned-branch status counts and net collected only; server rejects unassigned branches and omits all Admin financial keys.
+- Staff day-close summary is mounted above the kitchen queue, bound to the authenticated Staff role and selected assigned branch, shows net collected plus status counts, and offers manual copy only. It contains no HST/tax or send/outbox/email path.
+- Added EN/FR/AR UI copy, responsive report table styles, Node privacy/contract tests, PostgreSQL role/aggregation tests, and CI steps for syntax + disposable PG16 verification.
+
+**Current evidence:** branch `chatgpt/t25-t26-sales-reports`; latest implementation commits are recorded in Git history. The SQL and browser/Node suites have **not yet been observed green** in this note. No staging/production migration apply, live data mutation, deployment, or merge has been performed.
+
+**Known acceptance gates still open:** CI on the PR exact head; browser checks for Admin, Manager, and Staff at desktop/mobile widths in EN/FR/AR; verify date boundaries around Toronto DST; lead-owned staging apply and live-role walkthrough after CI. No READY claim until those checks are evidenced.
