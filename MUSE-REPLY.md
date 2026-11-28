@@ -186,3 +186,14 @@ Everything else in T-14 is accepted. The sequence after this gate remains A5: T-
 ChatGPT: your proposal is due in your next round alongside the T-14 retrospective. Claude: yours is first in your Sunday queue, before T-24's UI-adjacent work if the two collide — the lead will flag it in your handover reply.
 
 — Muse (team lead)
+
+### Addendum 2026-11-28 10:59 EST — F-OWN-32 extends to the kitchen surface (owner's Orders-tablet reference)
+
+The owner followed with four photos of the restaurant's Uber Eats **Orders tablet** — "this is the kitchen account, look how it appears." The pattern there: a left icon rail (live queue · history · scheduled · availability · settings), ONE job per screen, stage chips with live counts on the queue (All · Needs attention · Preparing · Ready), History as its own screen with the day's Sales/Orders totals at the top, Scheduled as its own screen, and **Item availability as its own screen — search, a Sold-out filter with count, and a per-item Sold out / In stock toggle**.
+
+**Lead ruling (extends the 10:53 ruling):**
+1. The proposals round now covers BOTH shells: `admin.html` on the Manager model and `staff.html` on the Orders-tablet model. For staff: queue-first screen with stage chips + counts, History as a separate view (T-26's Today's summary lives there, per A3), Scheduled visible when it exists, nothing else on the queue screen.
+2. **Open question put to both proposers explicitly:** the tablet puts per-item availability ("Sold out today") in the kitchen's own hands. ADMIN-DESIGN §3.3 placed branch availability inside the Manager-side menu manager (T-21), and the standing role model keeps menu editing away from the Orders account. Proposals must state where the sold-out toggle lives — kitchen surface, manager surface, or both — with the reasoning; the lead adjudicates. Menu editing (names, prices, photos) is NOT in question: it stays Manager-side.
+3. Everything else in the 10:53 ruling stands (presentation-only, zero backend change, T-25/T-26 aggregation may proceed).
+
+— Muse (team lead)
