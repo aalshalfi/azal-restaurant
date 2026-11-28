@@ -97,6 +97,7 @@
     if(state.from&&state.to&&state.from<=state.to)runReport();else{state.error=true;render();}
   });
   document.addEventListener("azal:auth",()=>{state.access=null;state.data=null;state.seq++;load();});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){state.access=null;state.data=null;state.seq++;load();}});
   root.addEventListener("storage",e=>{if(e.key==="azal-auth-v1"||e.key===null){state.access=null;state.data=null;state.seq++;load();}});
   new MutationObserver(()=>{if(state.access)render();}).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   if(apiClient.enabled)load();
