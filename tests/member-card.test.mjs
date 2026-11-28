@@ -11,3 +11,10 @@ test("only digits are encoded; anything else gives no barcode", () => {
   assert.equal(A.code39("10a01"), null); assert.equal(A.code39(""), null); assert.equal(A.code39Svg("<x>", "l"), "");
   assert.match(A.code39Svg(10001, 'Membership barcode 10001"'), /aria-label="Membership barcode 10001"/);
 });
+test("V-2 wire: pulse.js announces a collected order exactly on the change to handed_over", async () => {
+  const { readFileSync } = await import("node:fs");
+  const s = readFileSync(new URL("../pulse.js", import.meta.url), "utf8");
+  assert.match(s, /if \(lastStatus !== null\) \{[^}]*if \(key === "handed_over"\) \{ try \{ document\.dispatchEvent\(new CustomEvent\("azal:order-collected"\)\)/);
+  const a = readFileSync(new URL("../auth.js", import.meta.url), "utf8");
+  assert.match(a, /addEventListener\("azal:order-collected", \(\) => quietRefresh\(true\)\)/);
+});

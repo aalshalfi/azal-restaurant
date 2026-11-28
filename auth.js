@@ -279,9 +279,29 @@
       `<div class="mcard-kicker">${esc(tr("memberCardKicker"))}</div>` +
       `<div class="mcard-name">${esc(st.name || st.email || "")}</div>` +
       `<div class="mcard-meta"><div id="authMemberNo"><span>${esc(tr("authMemberNo"))}</span> <strong><bdi dir="ltr">${st.memberNumber}</bdi></strong></div>` +
-      (since ? `<div id="authMemberSince"><span>${esc(tr("authMemberSince"))}</span> <strong>${esc(since)}</strong></div>` : "") + `</div>` +
+      (since ? `<div id="authMemberSince"><span>${esc(tr("authMemberSince"))}</span> <strong>${esc(since)}</strong></div>` : "") +
+      // V-1 (adopted 2-0): the balance lives on the card (presented once; the stats line folds into it).
+      `<div id="authCardPoints"><span>${esc(tr("memberPointsLabel"))}</span> <strong aria-live="polite">${fmtPoints(st.points || 0)}</strong></div></div>` +
+      `<p class="mcard-next" id="authCardNext"${nextText(st) ? "" : " hidden"}>${esc(nextText(st))}</p>` +
       `<div class="mcard-code">${code39Svg(st.memberNumber, tr("authBarcode").replace("{number}", st.memberNumber))}<div class="mcard-digits" dir="ltr">${st.memberNumber}</div></div>` +
       `</figure>`;
+  }
+
+  // V-1: the next reward, from checkout's own redeemView rule applied to THIS balance (st.points, the one source).
+  // Stored as numbers, formatted at paint time, so a language switch re-words it.
+  const fmtMoney = (c) => { const l = document.documentElement.lang; const s = new Intl.NumberFormat(l === "fr" ? "fr-CA" : l === "ar" ? "ar-CA-u-nu-latn" : "en-CA", { style: "currency", currency: "CAD" }).format(c / 100); const t = s.replace(/ /g, "\u00a0"); return l === "ar" ? "\u2066" + t.replace(/\u200f/g, "") + "\u2069" : t; }; // the amount never splits
+  const nextText = (st) => st && st.nextMore > 0 && st.nextCents > 0 ? tr("authCardNext").replace("{points}", fmtPoints(st.nextMore)).replace("{amount}", fmtMoney(st.nextCents)) : "";
+  async function withNext(st) {
+    if (!st || st.status !== "signed_in") return st;
+    try {
+      const co = root.AZALCheckout, rv = root.AZALRedeemView;
+      if (co && co.options && rv) {
+        const opts = await co.options();
+        const v = rv(Object.assign({}, opts, { balance: Number(st.points) || 0 }), Number.MAX_SAFE_INTEGER);
+        if (v && v.any && v.next && v.next.points > (Number(st.points) || 0)) { st.nextMore = v.next.points - (Number(st.points) || 0); st.nextCents = v.next.cents; }
+      }
+    } catch {} // no rewards info: the balance still shows, the next line stays hidden
+    return st;
   }
 
   function renderCard(st) {
@@ -300,7 +320,7 @@
         (st.memberNumber ? memberCard(st) : "") +
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
         // Owner 21:31: no placeholder where personal data would go; the points card renders only with real points behind it.
-        (pending ? "" : `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +
+        (pending || st.memberNumber ? "" : `<div class="member-stat member-stat-points"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +
         (st.claimed ? `<p class="auth-claimed" role="status">${esc(tr("authClaimed").replace("{points}", fmtPoints(st.claimed)))}</p>` : "") +
         (st.claimFailed ? `<p class="auth-claimed auth-claim-failed" role="alert">${esc(tr("authClaimFailed"))} <button type="button" class="text-link dark-link" id="authClaimRetry">${esc(tr("authClaimRetry"))}</button></p>` : "") +
         (pending ? "" : detailsBlock(st)) +
@@ -361,10 +381,14 @@
   }
 
   const here = () => { try { return root.location.origin + root.location.pathname; } catch { return undefined; } };
+  let rSeq = 0, lastQuiet = 0;
   async function refresh(afterSignIn) {
+    const my = ++rSeq;
     let claim = { added: 0, failed: false };
     if (afterSignIn) claim = await auth.claimGuestPoints();
-    last = await auth.state();
+    const st = await withNext(await auth.state());
+    if (my !== rSeq) return; // a newer refresh, or a sign-out, owns the page now
+    last = st;
     if (claim.added > 0) last.claimed = claim.added;
     if (claim.failed) last.claimFailed = true;
     headerState(last);
@@ -373,7 +397,7 @@
 
   document.addEventListener("click", async (e) => {
     if (e.target && e.target.id === "authSwitch") { mode = mode === "signin" ? "signup" : "signin"; message = ""; if (mode === "signin") joinEmail = ""; renderCard(last); }
-    if (e.target && e.target.id === "authSignOut") { await auth.signOut(); message = ""; mode = "signin"; codeSentTo = ""; editing = false; detailMsg = ""; refresh(); }
+    if (e.target && e.target.id === "authSignOut") { rSeq++; await auth.signOut(); message = ""; mode = "signin"; codeSentTo = ""; editing = false; detailMsg = ""; refresh(); }
     if (e.target && e.target.id === "authEditDetails") { editing = true; detailMsg = ""; renderCard(last); }
     if (e.target && e.target.id === "authCancelDetails") { editing = false; detailMsg = ""; renderCard(last); document.getElementById("authEditDetails")?.focus(); }
     if (e.target && e.target.id === "authClaimRetry") { e.target.disabled = true; message = ""; refresh(true); return; }
@@ -464,6 +488,26 @@
       btn.disabled = false;
     }
   });
+  // V-2 (adopted 2-0): the balance refreshes itself — on returning to the tab, and when this member's order is collected
+  // (pulse.js). It re-reads the same auth.state(); no polling loop, no new endpoint. Only the two numbers are patched in
+  // place, so an open details form is never wiped; a sign-out or a different account takes the full path instead.
+  async function quietRefresh(force) {
+    if (!last || last.status !== "signed_in") return;
+    if (!force && Date.now() - lastQuiet < 15000) return;
+    lastQuiet = Date.now();
+    const my = ++rSeq, who = last.email;
+    let st; try { st = await withNext(await auth.state()); } catch { return; }
+    if (my !== rSeq || !last || last.email !== who) return;
+    if (st.status !== "signed_in" || st.email !== who) { refresh(); return; }
+    Object.assign(last, { points: st.points, nextMore: st.nextMore || 0, nextCents: st.nextCents || 0 });
+    const pe = document.querySelector("#authCardPoints strong, .member-stat-points strong");
+    if (pe) pe.textContent = fmtPoints(last.points);
+    const ne = document.getElementById("authCardNext");
+    if (ne) { ne.textContent = nextText(last); ne.hidden = !ne.textContent; }
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") quietRefresh(); });
+  root.addEventListener("focus", () => quietRefresh());
+  document.addEventListener("azal:order-collected", () => quietRefresh(true));
   // T-22: the checkout sheet signed someone in on this page: refresh the header (and tell the page's listeners).
   document.addEventListener("azal:signed-in", () => { refresh(); });
   document.getElementById("languageToggle")?.addEventListener("click", () => setTimeout(() => { headerState(last); renderCard(last || { status: "signed_out" }); }, 0));
