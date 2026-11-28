@@ -79,6 +79,7 @@ for (const [lang, word] of [["fr", /Se déconnecter/], ["ar", /تسجيل الخ
   await p.route("https://fake.supabase.co/rest/v1/orders**", (r) => heldOrders.then(() => r.fulfill({ json: [{ id: "abc12300-0000-4000-8000-000000000001", branch_slug: "ottawa", fulfilment_status: "placed", payment_status: "paid", total_cents: 2824, order_items: [{ quantity: 1, item_name_en_snapshot: "Lamb Mandi" }], guest_name: "Guest" }] })));
   await p.route("https://fake.supabase.co/auth/v1/logout**", (r) => heldLogout.then(() => r.fulfill({ status: 204, body: "" })));
   await p.click("#staffRefresh"); await p.waitForTimeout(150);           // a load is now waiting on the orders answer
+  await p.locator(".staff-profile summary").click();                    // reveal the header profile action before signing out
   await p.click("#staffSignOut"); await p.waitForTimeout(150);           // sign-out starts; logout is held too
   releaseOrders(); await p.waitForTimeout(400);                           // the old load resumes BEFORE logout returns
   ok(!/Lamb Mandi/.test(await p.textContent("main")), "race: the late orders answer never repaints the queue");
