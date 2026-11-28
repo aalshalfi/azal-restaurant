@@ -267,3 +267,9 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 **Branch:** chatgpt/t08-admin-directory, created from current main after this reservation commit. One builder owns these paths until the T-08 gate. No T-14/T-21/T-13/T-20 files are claimed or opened.
 
 **Sequence:** deliver T-08 + points SQL test repair + T-23C together for exact-head ChatGPT review; then wait for Muse's lead gate before T-14. Later tasks remain closed in the fixed order.
+
+
+## 2026-11-27 — ChatGPT execution discipline
+- Every ChatGPT work round ends with a repository-visible artifact: a code/test/doc commit, or a concise status update in the relevant coordination file recording what was checked, what changed, blockers, and the next action.
+- A conversational progress message alone does not close a work round.
+- Current T-08 work remains on `chatgpt/t08-admin-directory`; no merge, production change, or live database operation is implied by this note.
