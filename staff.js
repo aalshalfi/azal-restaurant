@@ -175,6 +175,7 @@
     // pressed (a 20 s refresh or a manual one) can never repaint the queue afterwards.
     const my = ++gen;
     const stale = () => my !== gen || signingOut;
+    if (activeView === "history") { historyLoading = true; historyError = ""; paint(); }
     try { const s = auth && (await auth.session()); if (stale()) return; email = (s && s.user && s.user.email) || ""; if (!s) { state = "signed_out"; rows = []; return paint(); } } catch {}
     try {
       if (!branchOptions.length) { branchOptions = await st.branches(); if (stale()) return; if (!branchOptions.length) { state = "not_staff"; return paint(); } st.setBranch(branchOptions[0]); }
