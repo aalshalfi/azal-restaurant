@@ -31,6 +31,8 @@ select zz_eq('directory page includes ledger-derived balance',
   ((public.azal_admin_customer_directory_page('c1@example.invalid',50,0)->'rows'->0)->>'balance'),'300');
 select zz_eq('owner Admin cannot be removed',
   public.zz_try($$select public.azal_admin_team_remove('00000000-0000-0000-0000-0000000000a0','no')$$),'root_admin_protected');
+select zz_eq('Admin cannot grant a second Admin role',
+  public.zz_try('select public.azal_admin_team_assign(''info@example.invalid'',''Owner'',''admin'',array[]::text[],''no'')'),'admin_role_reserved');
 select zz_eq('owner Admin cannot be demoted',
   public.zz_try($$select public.azal_admin_team_assign('info@example.invalid','Owner','staff',array['ottawa'],'no')$$),'admin_cannot_be_demoted');
 select zz_eq('admin team list returns a structured member collection',
