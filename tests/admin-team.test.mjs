@@ -28,14 +28,19 @@ test("A1 directory search and pagination run in a fixed-path Admin RPC with a ha
 
 test("A2 anonymization is Admin-only, reason-required, and preserves append-only history", () => {
   const sql=read("supabase/migrations/0016_admin_team_access.sql");
-  const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_anonymize_customer"),sql.indexOf("create or replace function public.azal_apply_team_invite"));
-  assert.match(fn,/auth\.uid\(\) is null or not public\.azal_is_admin\(\)/);
+  const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_anonymize_customer_server"),sql.indexOf("-- Apply pending in-portal invitations"));
+  assert.match(fn,/p_actor_id is null or not exists/);
+  assert.match(fn,/r\.role='admin'/);
   assert.match(fn,/reason_required/);
+  assert.match(fn,/update auth\.users[\s\S]*raw_user_meta_data='\{\}'::jsonb/);
+  assert.match(fn,/update auth\.identities/);
   assert.match(fn,/display_name=null, phone=null, anonymized_at=/);
   assert.match(fn,/member_number_retired=true/);
   assert.match(fn,/update public\.memberships set status='suspended'/);
+  assert.match(fn,/contact_phone=null, guest_name=null, guest_email=null/);
   assert.doesNotMatch(fn,/delete from public\.(orders|points_ledger|order_items)/);
   assert.match(fn,/customer_anonymized/);
+  assert.match(sql,/grant execute on function public\.azal_admin_anonymize_customer_server\(uuid,uuid,text\) to service_role/);
 });
 
 test("Team invitations are in-portal only and activate only after verified email", () => {
