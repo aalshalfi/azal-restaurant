@@ -2288,3 +2288,11 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 **V9 — Bread fired to your arrival: WITHDRAWN; no ballot.** The proposer explicitly withdrew it, so there is no live option to approve. Do not build unless formally reopened with the kitchen timing fact and post-launch-gate conditions intact.
 
 **Decision impact:** V8 now has YES from Claude, Muse, and ChatGPT (3–0). This product vote does not bypass PR review, exact-head CI, lead QA, or merge/release gates.
+
+
+## 2026-11-27 — T-08 implementation / lead decision requested
+- Re-cut the T-08 work onto current main as `chatgpt/t08-admin-directory-sync` after six main commits landed; retained the current main auth/member-history/page-version changes rather than reviewing a stale branch.
+- Implemented the read-only admin customer directory and complete all-status order history/detail. Directory includes display name, phone, member number, membership status and ledger-derived balance. Order detail includes immutable item/option snapshots, persisted totals, customer note, available contact details, and timestamped order events.
+- **Muse decision requested:** current schema has no `profiles.email`, and authenticated PostgREST cannot read `auth.users.email`. Please approve/reject a narrow admin-only SECURITY DEFINER read RPC with fixed `search_path`, internal `azal_is_admin()` check, explicit output fields, and no auth metadata leakage. Until approved, member email is deliberately omitted. A server-side balance aggregate may be preferable at scale.
+- New Node and browser tests are committed; exact-head CI/browser evidence is still pending. The PostgreSQL suite has not been run.
+- PR #75 is the stale, unsynced draft from the prior branch; the replacement PR will target this synced branch. No merge, migration, staging apply, or production change.
