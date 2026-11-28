@@ -5,7 +5,7 @@
 
 ## Sole-Admin identity (Muse 04:12 ruling; binding)
 
-The owner identity is the only Admin identity: **info@azalrestaurant.com**. The database-level `azal_is_admin()` check requires both the `admin` role and this exact Auth email; the Team form cannot grant an Admin role, and the root Admin cannot be demoted or removed. If the owner loses access to this identity, recovery is performed by the owner together with the lead through the Supabase dashboard (restore the existing owner identity/role); **do not build a second Admin login or alternate back door**.
+The owner identity is the only Admin identity: **info@azalrestaurant.com**. The database-level `azal_is_admin()` check requires both the `admin` role and this exact Auth email; the Team form cannot grant an Admin role, and the root Admin cannot be demoted or removed. The Supabase dashboard is the recovery path if the owner loses access: the owner + lead restore the existing owner identity/role there; **do not build a second Admin login or alternate back door**.
 
 ## Scope
 
