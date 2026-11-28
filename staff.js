@@ -140,7 +140,7 @@
         '<div><dt>' + esc(L("cancelledCount")) + '</dt><dd>' + esc(summary.cancelled_count) + '</dd></div></dl>' +
         '<button type="button" class="button button-gold" id="staffCopySummary">' + esc(L("copySummary")) + '</button><textarea class="staff-summary-copy" id="staffSummaryText" readonly aria-label="' + esc(L("summary")) + '">' + esc(summaryText) + '</textarea>' :
         '<p class="staff-note">' + esc(L("summaryUnavailable")) + '</p>') + '</section></section>';
-    box.innerHTML = head + nav + '<div class="staff-shell-content">' + queue + scheduled + historyScreen + '</div>';
+    box.innerHTML = '<div class="staff-shell-head">' + head + '</div>' + nav + '<div class="staff-shell-content">' + queue + scheduled + historyScreen + '</div>';
   }
   async function load() {
     if (!st.enabled) { state = "inert"; return paint(); }
