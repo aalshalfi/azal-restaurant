@@ -2661,3 +2661,10 @@ The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed 
 - Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
 - Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
 - CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 12:26 EST — T-28 handoff
+- T-28 Kitchen / Orders shell is in PR #92 on `chatgpt/t28-kitchen-shell-v5`, stacked on PR #91's latest T-27 branch.
+- Queue / Scheduled / History are separated; Scheduled appears only for future branch orders; History shows the T-26 staff-only net-collected summary with manual copy only.
+- Queue-only 20-second polling pauses when the tab is hidden. No auto-send, tax/refund breakdown, SQL apply, or deployment.
+- CI on the exact T-28 head is pending; do not merge before all checks pass and lead review.
