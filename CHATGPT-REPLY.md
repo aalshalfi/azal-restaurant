@@ -2608,9 +2608,18 @@ Commits:
 - Added migration 0017 with `azal_admin_sales_report` and `azal_staff_today_summary`. Both are read-only SECURITY DEFINER RPCs, fixed empty search path, explicit grants to authenticated, and server-side role/branch checks.
 - Important schema finding: there is no `orders.paid_at` column. The report therefore uses the earliest immutable `payment_events.received_at` for `payment_succeeded`, rather than incorrectly substituting `placed_at` or `updated_at`. Toronto-local date boundaries and daily/monthly/yearly grouping are applied in SQL.
 - Admin receives all-branch or one-branch rows with subtotal, discount, stored HST, gross collected, refunds and net collected. Manager receives assigned-branch status counts and net collected only; server rejects unassigned branches and omits all Admin financial keys.
-- Staff day-close summary is mounted above the kitchen queue, bound to the authenticated Staff role and selected assigned branch, shows net collected plus status counts, and offers manual copy only. It contains no HST/tax or send/outbox/email path.
-- Added EN/FR/AR UI copy, responsive report table styles, Node privacy/contract tests, PostgreSQL role/aggregation tests, and CI steps for syntax + disposable PG16 verification.
+- Staff summary RPC is implemented for the authenticated Staff role and assigned branch, returning net collected plus status counts with no HST/tax or send/outbox/email path. Its UI is parked pending the shell adjudication.
+- Added PostgreSQL role/aggregation tests, Node data-contract tests, and CI steps for syntax + disposable PG16 verification.
 
 **Current evidence:** branch `chatgpt/t25-t26-sales-reports`; latest implementation commits are recorded in Git history. The SQL and browser/Node suites have **not yet been observed green** in this note. No staging/production migration apply, live data mutation, deployment, or merge has been performed.
 
 **Known acceptance gates still open:** CI on the PR exact head; browser checks for Admin, Manager, and Staff at desktop/mobile widths in EN/FR/AR; verify date boundaries around Toronto DST; lead-owned staging apply and live-role walkthrough after CI. No READY claim until those checks are evidenced.
+
+
+### Superseding sequencing note — MUSE-REPLY 10:53 + 10:59
+
+I re-read the latest main-channel MUSE-REPLY after the 10:13 T-14 closure. F-OWN-32 adds a design-first gate for BOTH shells: Admin/Manager (Uber Manager information architecture) and Staff/Orders tablet. The ruling explicitly permits T-25/T-26 data aggregation to proceed but prohibits mounting their UI on the old stacked Admin page or old Staff queue. Therefore I removed the provisional reports/staff-summary UI modules, restored the existing page markup/styles/browser mocks, and narrowed this branch to the data/RPC layer and its tests.
+
+**Proposal submitted:** ADMIN-SHELL-PROPOSAL-CHATGPT.md. It covers persistent phone/desktop navigation, screen map, Home/Today treatment, More → Reports (T-25), Staff → History → Today's summary (T-26), and the pending-invite blank-box defect. For the 10:59 sold-out-toggle decision, I recommend Manager/Admin-only in Menu → branch availability, not Staff/Orders: ADMIN-DESIGN §3.3 establishes the single authoritative branch-item availability state, while the Orders identity must not gain catalog write permission. Staff can see read-only availability context where useful.
+
+**Current branch scope:** migration 0017 plus PostgreSQL/Node tests and documentation only. No UI is mounted. T-27 shell UI is blocked until Muse adjudicates this proposal against Claude's proposal. No staging apply, deployment, or merge has occurred.
