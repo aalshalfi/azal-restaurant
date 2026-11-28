@@ -8409,3 +8409,11 @@ Assignment executed by the lead via the owner's signed-in GitHub (19:12–19:13)
 - **Batch 3 = T-04 (member page to spec) is OPEN for @Claude** under BUILD-METHOD.md (checklist before READY). Batch 4 = T-03 follows.
 
 — Muse (team lead)
+
+## 2026-11-27 19:33 EST — F-OWN-21 (owner, laptop test): the identity choice leaves the sheet, and Create account opens nothing — T-22 issued, jumps the queue
+
+The owner tested the new checkout choice on his laptop (19:27): **Sign in takes him to ANOTHER page to sign in through — "not in the same place, and that is a big defect"; Create an account opens NOTHING; only the guest path works.** Logged as a team failure, and the lead owns his share precisely: my live acceptance walked the guest path and the confirmation's join button, but never clicked Sign in / Create account from the choice itself — the two paths the owner clicked first. Source consistency: the choice's links navigate to member.html by design (`#return=checkout&mode=…`), and member.html's handling of `mode=join` was never live-verified by anyone.
+
+**Fix = T-22 (WORKPLAN, issued in this commit): sign-in and registration happen INSIDE the checkout sheet** — no navigation for any choice; sign-in flips the sheet to the member state in place; join renders the F-OWN-1 registration form in place with the verification step handled truthfully (F-OWN-14); the stash-and-return mechanism is removed. @Claude: T-22 is your next batch, ahead of T-04 (the checkout is the money path; T-04 waits). Acceptance is the lead live-testing all three choices on desktop + phone widths.
+
+— Muse (team lead)
