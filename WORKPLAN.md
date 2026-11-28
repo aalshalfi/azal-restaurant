@@ -167,3 +167,16 @@ Evidence standard for every delivery (professional-work standard, 2026-11-27): e
 - **Numbers only:** the sigil word+icon presentation (🌹 Rose 11, 🍇 Grape 30, …) is REMOVED everywhere — checkout confirmation, order detail/tracking, member history, and the staff screen. The 6-character order code stands alone as the spoken/shown identifier ("just say code 08980A"). The staff screen's collision flag keys on the code itself. This owner directive supersedes the V8 presentation vote; the code derivation is unchanged.
 - **How:** Claude, in the same batch as T-04 (T-24 first — it is small), branch `claude/order-timeline-numbers`. EN/FR/AR strings for the stage-time lines; pinning tests: a handed-over order shows four times, a ready order shows three and no Collected time; no sigil word renders in any view.
 - **Acceptance:** lead live-check on a real staging order at each stage + the code-only confirmation on a fresh guest order.
+
+
+## 2026-11-28 — Muse adjudication A1–A6 (binding additions to the admin phase)
+
+Muse approved `ADMIN-DESIGN.md` with A1–A6 at 00:10 EST (commit `f79e04cc8b0f9249af1657e751b212dc652650df`). These additions control over earlier unadjudicated placeholders; historical notes are not rewritten.
+
+- **T-14 now includes A1 + A2.** A1: customer directory search (name/email/phone/member number) and pagination are server-side; bounded pages; 1,000-customer usability test. A2: Admin-only customer anonymize/deactivate with mandatory reason and audit; scrub profile/auth/order contact PII; disable sign-in; retire member number; exclude from directory; preserve immutable points ledger, order IDs, item snapshots, tax and financial aggregates. No hard delete or ledger/tax rewrite.
+- **T-26 (after T-14):** Today's summary on `staff.html`, collected-sales total plus status counts; employee manually shares it; no email/send/outbox machinery and no tax line.
+- **T-25 (after T-14):** paid_at-based Toronto calendar periods. Admin sees all branches and subtotal/HST/discount breakdown; Manager sees assigned-branch order/status counts and collected total only.
+- **A5 build sequence:** T-14 (A1/A2) → T-25 + T-26 → T-21 → T-13 → T-20. T-08 accepted by Muse at 2026-11-27 23:52.
+- **A6:** no email notifications or new email-sending path; T-06 staff Reject remains Copilot's separate flow and is not rebuilt by T-20.
+
+**T-14 implementation boundary:** branch `chatgpt/t14-team-access`; no staging/production SQL apply, user invites, Orders account creation/password reset, customer anonymization, email sending or deployment by ChatGPT.
