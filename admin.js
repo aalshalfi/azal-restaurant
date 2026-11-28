@@ -147,6 +147,9 @@
       r_admin: "Administrator", r_staff: "Branch staff", r_customer: "Member", overview: "Today", since: "Since midnight, all branches",
       k_new: "New, paid", k_kitchen: "In the kitchen", k_ready: "Ready for pickup", k_collected: "Collected", k_cancelled: "Cancelled", k_unpaid: "Unpaid (never reach the kitchen)",
       sales: "Collected sales today: {amount}", members: "Active Majlis members: {n}", kitchen: "Kitchen orders screen", next: "Next in this area: order history and customers, then points adjustments, then staff access.",
+      directory: "Customer directory", customerSearch: "Search name, phone or member number", search: "Search", customers: "Customers", noCustomers: "No matching customers.", memberNo: "Member #", balance: "Points balance", membership: "Membership", joined: "Joined", active: "Active", suspended: "Suspended", noMembership: "No membership row", ordersTitle: "All orders", orderSearch: "Search order, branch, customer, phone or email", allStatuses: "All statuses", placed: "Received", accepted: "Accepted", preparing: "Preparing", ready: "Ready", handed_over: "Handed over", cancelled: "Cancelled", unpaid: "Unpaid", paid: "Paid", refunded: "Refunded", voided: "Voided", noOrders: "No matching orders.", view: "View details", order: "Order", customer: "Customer", branch: "Branch", payment: "Payment", fulfilment: "Fulfilment", subtotal: "Subtotal", discount: "Discount", tax: "Tax", total: "Total", items: "Items", events: "Order timeline", note: "Customer note", guest: "Guest", back: "Close details", emailUnavailable: "Member email is not exposed by the current database read policies; lead-approved server access is required.", dataError: "Could not load the directory or order history.", showing: "Showing {n} of {total}",
+      directory: "Répertoire des clients", customerSearch: "Rechercher par nom, téléphone ou numéro de membre", search: "Rechercher", customers: "Clients", noCustomers: "Aucun client correspondant.", memberNo: "Membre nº", balance: "Solde de points", membership: "Adhésion", joined: "Inscrit le", active: "Active", suspended: "Suspendue", noMembership: "Aucune adhésion", ordersTitle: "Toutes les commandes", orderSearch: "Rechercher commande, succursale, client, téléphone ou courriel", allStatuses: "Tous les statuts", placed: "Reçue", accepted: "Acceptée", preparing: "En préparation", ready: "Prête", handed_over: "Remise", cancelled: "Annulée", unpaid: "Non payée", paid: "Payée", refunded: "Remboursée", voided: "Annulée", noOrders: "Aucune commande correspondante.", view: "Voir les détails", order: "Commande", customer: "Client", branch: "Succursale", payment: "Paiement", fulfilment: "État", subtotal: "Sous-total", discount: "Rabais", tax: "Taxes", total: "Total", items: "Articles", events: "Historique", note: "Note du client", guest: "Invité", back: "Fermer les détails", emailUnavailable: "Le courriel des membres n’est pas exposé par les règles de lecture actuelles; un accès serveur approuvé par la direction est requis.", dataError: "Impossible de charger le répertoire ou l’historique.", showing: "Affichage de {n} sur {total}",
+      directory: "دليل العملاء", customerSearch: "ابحث بالاسم أو الهاتف أو رقم العضوية", search: "بحث", customers: "العملاء", noCustomers: "لا يوجد عملاء مطابقون.", memberNo: "رقم العضوية", balance: "رصيد النقاط", membership: "العضوية", joined: "تاريخ الانضمام", active: "نشطة", suspended: "موقوفة", noMembership: "لا توجد عضوية", ordersTitle: "جميع الطلبات", orderSearch: "ابحث برقم الطلب أو الفرع أو العميل أو الهاتف أو البريد", allStatuses: "كل الحالات", placed: "وصل الطلب", accepted: "تم القبول", preparing: "قيد التحضير", ready: "جاهز للاستلام", handed_over: "تم التسليم", cancelled: "ملغي", unpaid: "غير مدفوع", paid: "مدفوع", refunded: "مسترد", voided: "ملغي الدفع", noOrders: "لا توجد طلبات مطابقة.", view: "عرض التفاصيل", order: "الطلب", customer: "العميل", branch: "الفرع", payment: "الدفع", fulfilment: "حالة التنفيذ", subtotal: "المجموع الفرعي", discount: "الخصم", tax: "الضريبة", total: "الإجمالي", items: "الأصناف", events: "سجل الأحداث", note: "ملاحظة العميل", guest: "ضيف", back: "إغلاق التفاصيل", emailUnavailable: "بريد العضو غير متاح عبر صلاحيات القراءة الحالية؛ يحتاج إلى مسار خادمي بموافقة المدير.", dataError: "تعذّر تحميل دليل العملاء أو سجل الطلبات.", showing: "نعرض {n} من {total}",
       branch: "{branch}: {orders} orders today, {collected} collected", signOut: "Sign out", signingOut: "Signing out…", error: "We couldn’t load the overview. Refresh to try again.", truncated: "Showing the first 1,000 orders of today." },
     fr: { title: "Gestion", inert: "L’espace de gestion s’active quand le site est connecté.", signedOut: "Connectez-vous d’abord sur la page Majlis avec votre compte de gestion.", signIn: "Aller à la connexion",
       notAdmin: "Cet espace est réservé à la gestion d’AZAL. Votre compte n’y a pas accès.", staffGo: "Ouvrir l’écran des commandes de cuisine", signedAs: "Connecté : {email} · {role}",
@@ -170,6 +173,7 @@
   const link = (href, text, cls) => { const a = el("a", cls || "text-link dark-link", text); a.href = href; return a; };
 
   let acc = null, ov = null, failed = false, seq = 0, signingOut = false;
+  let directoryRows = [], orderRows = [], detailRow = null, workspaceError = false;
   // Sign-out ends the session (server logout + the local session key) and drops every number on this page at once,
   // then lands on the member page, signed out. A later visit here finds no session and shows the signed-out state.
   async function signOut() {
@@ -178,6 +182,55 @@
     try { if (auth) await auth.signOut(); } catch {}
     acc = { status: "signed_out" }; paint();
     try { root.location.replace("member.html"); } catch {}
+  }
+  function workspace() {
+    const wrap = el("div", "admin-workspace");
+    if (workspaceError) wrap.append(el("p", "member-history-error", L("dataError")));
+    const customers = el("section", "admin-panel"); customers.append(el("h2", null, L("directory")));
+    const cform = el("form", "admin-filter");
+    const ci = el("input", "admin-search"); ci.type = "search"; ci.placeholder = L("customerSearch"); ci.setAttribute("aria-label", L("customerSearch"));
+    const cb = el("button", "button button-gold", L("search")); cb.type = "submit"; cform.append(ci,cb);
+    cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; try { directoryRows=await adm.customers({search:ci.value}); workspaceError=false; } catch { workspaceError=true; } paint(); });
+    customers.append(cform,el("p","admin-note",L("showing",{n:num(Math.min(100,directoryRows.length)),total:num(directoryRows.length)})));
+    if(!directoryRows.length) customers.append(el("p","admin-note",L("noCustomers")));
+    for(const p of directoryRows.slice(0,100)){
+      const card=el("article","admin-record");
+      card.append(el("strong",null,p.display_name||"—"),el("span","admin-record-meta",L("memberNo")+": "+(p.member_number==null?"—":num(p.member_number))),
+        el("span","admin-record-meta",(p.phone||"—")+" · "+L("balance")+": "+num(p.balance||0)),
+        el("span","admin-record-meta",L("membership")+": "+(p.membership?L(p.membership.status):L("noMembership"))));
+      customers.append(card);
+    }
+    const orders=el("section","admin-panel"); orders.append(el("h2",null,L("ordersTitle")));
+    const oform=el("form","admin-filter");
+    const oi=el("input","admin-search"); oi.type="search"; oi.placeholder=L("orderSearch"); oi.setAttribute("aria-label",L("orderSearch"));
+    const os=el("select","admin-status"); os.setAttribute("aria-label",L("allStatuses"));
+    for(const [v,label] of [["all",L("allStatuses")],["placed",L("placed")],["accepted",L("accepted")],["preparing",L("preparing")],["ready",L("ready")],["handed_over",L("handed_over")],["cancelled",L("cancelled")]]){const op=el("option",null,label);op.value=v;os.append(op);}
+    const ob=el("button","button button-gold",L("search")); ob.type="submit"; oform.append(oi,os,ob);
+    oform.addEventListener("submit",async e=>{e.preventDefault();ob.disabled=true;try{orderRows=await adm.orders({search:oi.value,status:os.value});workspaceError=false;}catch{workspaceError=true;}paint();});
+    orders.append(oform,el("p","admin-note",L("showing",{n:num(Math.min(100,orderRows.length)),total:num(orderRows.length)})));
+    if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
+    for(const o of orderRows.slice(0,100)){
+      const card=el("article","admin-record");
+      const who=o.guest_name||o.user_id||L("guest");
+      card.append(el("strong",null,L("order")+" "+String(o.id).slice(0,8).toUpperCase()),
+        el("span","admin-record-meta",who+" · "+o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
+        el("span","admin-record-meta",money(o.total_cents)+" · "+new Date(o.placed_at).toLocaleString(loc())));
+      const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;try{detailRow=await adm.orderDetail(o.id);workspaceError=false;}catch{workspaceError=true;}paint();});
+      card.append(view);orders.append(card);
+    }
+    if(detailRow){
+      const d=el("section","admin-panel admin-order-detail");d.append(el("h2",null,L("order")+" "+String(detailRow.id).slice(0,8).toUpperCase()));
+      const cust=detailRow.customer;
+      for(const [k,v] of [["customer",cust?((cust.display_name||"—")+" · "+(cust.phone||"—")+" · #"+(cust.member_number||"—")):(detailRow.guest_name||L("guest")+" · "+(detailRow.guest_email||"")+" · "+(detailRow.contact_phone||""))],["branch",detailRow.branch_slug],["fulfilment",L(detailRow.fulfilment_status)],["payment",L(detailRow.payment_status)],["subtotal",money(detailRow.subtotal_cents)],["discount",money(detailRow.discount_cents)],["tax",money(detailRow.tax_cents)+" ("+(Number(detailRow.tax_rate_bps||0)/100)+"%)"],["total",money(detailRow.total_cents)],["note",detailRow.customer_note||"—"]])d.append(el("p","admin-line",L(k)+": "+v));
+      d.append(el("h3",null,L("items")));
+      for(const it of detailRow.order_items||[]){d.append(el("p","admin-line",num(it.quantity)+" × "+it.item_name_en_snapshot+" · "+money(it.line_total_cents)));for(const op of it.order_item_options||[])d.append(el("p","admin-record-meta","— "+op.option_name_en_snapshot+" × "+num(op.quantity)+" · "+money(op.line_delta_cents)));}
+      d.append(el("h3",null,L("events")));
+      for(const ev of detailRow.order_events||[])d.append(el("p","admin-record-meta",new Date(ev.created_at).toLocaleString(loc())+" · "+ev.event_type+" · "+(ev.from_status||"—")+" → "+(ev.to_status||"—")+" · "+JSON.stringify(ev.details||{})));
+      const close=el("button","button admin-detail-button",L("back"));close.type="button";close.addEventListener("click",()=>{detailRow=null;paint();});d.append(close);
+      wrap.append(d);
+    }
+    customers.append(el("p","admin-note",L("emailUnavailable")));
+    wrap.append(customers,orders);return wrap;
   }
   function paint() {
     const h = el("h1", "admin-title", L("title"));
@@ -210,7 +263,7 @@
     }
     parts.push(sec, el("p", "admin-actions"));
     parts[parts.length - 1].append(link("staff.html", L("kitchen"), "button button-gold"));
-    parts.push(el("p", "admin-note", L("next")));
+    parts.push(workspace());
     rootEl.replaceChildren(...parts);
   }
   async function load() {
@@ -223,7 +276,9 @@
       let o = null, bad = false;
       try { o = await adm.overview(); } catch { bad = true; }
       if (my !== seq) return; // invalidated while waiting: discard
-      ov = o; failed = bad; paint();
+      ov = o; failed = bad;
+      if (!bad) { try { const data = await Promise.all([adm.customers(), adm.orders()]); if (my !== seq) return; directoryRows=data[0]; orderRows=data[1]; workspaceError=false; } catch { if (my !== seq) return; workspaceError=true; } }
+      paint();
     }
   }
   // ChatGPT #62 review: management data never outlives the session that fetched it. On a sign-out here, a sign-out or
