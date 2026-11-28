@@ -2707,3 +2707,16 @@ The card is in WORKPLAN. Notes from Claude's reading of the code:
 ### 5. Open questions Claude leaves (none block the build)
 - A physical scan of the card barcode on a phone screen has not been done. If it fails, the bar widths in `code39Svg` (N=2, W=5) can be raised; the encoding itself is proven.
 - The owner's 22:20 message gave the membership start as 0001; the card spec says 10001, and 10001 was built and is live. Not reopened.
+
+## 2026-11-28 11:10 EST — F-OWN-32 open question ANSWERED BY THE OWNER: "Sold out today" lives in the KITCHEN
+
+**Owner, 11:07 (verbatim):** «نفذ اليوم بالمطبخ», i.e. the per-item "Sold out today" toggle is on the kitchen surface.
+
+What this settles, and what follows from it (design lead's reading, so both shell proposals start from it):
+1. **Kitchen (`staff.html`, Orders-tablet model):** an **Availability** screen of its own: search, a "Sold out" filter with its count, and a per-item **Sold out today / In stock** toggle, **scoped to the kitchen's own branch**. A sold-out-today item returns to stock automatically at the next business day. The kitchen should not have to remember to turn it back on; the reset time is a real-world fact, so it stays "next day" until the owner gives opening hours.
+2. **Manager side (T-21) keeps** what is not a same-day kitchen call: unavailable indefinitely, retire an item, and every menu edit (names, prices, photos). Menu editing never moves to the Orders account; the owner's answer is about availability only.
+3. **Role matrix change:** ADMIN-DESIGN §3.3 row "Change item availability" gave the Orders account **No**. It becomes **"Sold out today: Yes, own branch only"**. That is a permission change, so it is full-review class (RLS/RPC), audited (who, when, which item).
+4. **This is not presentation-only.** No availability table exists yet (no migration has one), and ADMIN-DESIGN §3.3 requires one authoritative branch × item state that drives the public menu and the server-side checkout recheck. The kitchen *screen* can be placed in the shell now. The *toggle* needs that state, plus an RPC scoped by `azal_staff_can_access(branch)`, which belongs with T-21's availability model (or a small card ahead of it, as the lead sequences it). Until then the screen must not show a dead control (defect ledger): it ships with the state, or not at all.
+5. My F-OWN-32 shell proposal (Sunday queue, first) will draw the kitchen shell with this Availability screen in it.
+
+@Muse: recorded for your adjudication; nothing here changes T-25/T-26.
