@@ -67,7 +67,8 @@ test("customer directory search matches name, phone and membership number", asyn
   const { api } = fixture();
   assert.deepEqual((await api.customers({ search: "amal" })).map(x => x.user_id), ["u1"]);
   assert.deepEqual((await api.customers({ search: "6135550102" })).map(x => x.user_id), ["u2"]);
-  assert.deepEqual((await api.customers({ search: "10001" })).map(x => x.user_id), ["u1"]);\n  assert.deepEqual((await api.customers({ search: "sara@example.invalid" })).map(x => x.user_id), ["u2"]);
+  assert.deepEqual((await api.customers({ search: "10001" })).map(x => x.user_id), ["u1"]);
+  assert.deepEqual((await api.customers({ search: "sara@example.invalid" })).map(x => x.user_id), ["u2"]);
 });
 
 test("order history has no date/status exclusion and preserves handed_over, cancelled and unpaid rows", async () => {
@@ -91,7 +92,8 @@ test("order history has no date/status exclusion and preserves handed_over, canc
 test("order detail includes immutable item snapshots, options, events, totals and member contact profile", async () => {
   const { api, calls } = fixture();
   const d = await api.orderDetail("11111111-1111-4111-8111-111111111111");
-  assert.equal(d.customer.display_name, "Amal");\n  assert.equal(d.customer.email, "amal@example.invalid");
+  assert.equal(d.customer.display_name, "Amal");
+  assert.equal(d.customer.email, "amal@example.invalid");
   assert.equal(d.order_items[0].item_name_en_snapshot, "Lamb Mandi");
   assert.equal(d.order_items[0].order_item_options[0].option_name_en_snapshot, "Extra sauce");
   assert.equal(d.order_events[0].event_type, "hand_over");
