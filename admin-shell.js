@@ -18,7 +18,7 @@
     en: {
       home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",
       daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",
-      allAssigned:"All assigned branches",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",
+      allAssigned:"All assigned branches",branch:"Branch",placed:"Placed",accepted:"Accepted",preparing:"Preparing",ready:"Ready",cancelled:"Cancelled",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",
       back:"Back to customers",grossCollected:"Gross collected",refunds:"Refunds",netCollected:"Net collected",
       count:"Orders",collectedCount:"Handed over",subtotal:"Subtotal",discount:"Discount",tax:"HST",
       noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",
@@ -28,7 +28,7 @@
     fr: {
       home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",
       daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher le rapport",from:"Du",to:"Au",
-      allAssigned:"Toutes les succursales attribuées",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",
+      allAssigned:"Toutes les succursales attribuées",branch:"Succursale",placed:"Passées",accepted:"Acceptées",preparing:"En préparation",ready:"Prêtes",cancelled:"Annulées",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",
       back:"Retour aux clients",grossCollected:"Brut encaissé",refunds:"Remboursements",netCollected:"Net encaissé",
       count:"Commandes",collectedCount:"Remises",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",
       noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",
@@ -38,7 +38,7 @@
     ar: {
       home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",
       daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",
-      allAssigned:"كل الفروع المعيّنة",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",
+      allAssigned:"كل الفروع المعيّنة",branch:"الفرع",placed:"جديدة",accepted:"مقبولة",preparing:"قيد التحضير",ready:"جاهزة",cancelled:"ملغاة",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",
       back:"العودة إلى العملاء",grossCollected:"إجمالي المحصّل",refunds:"المبالغ المستردة",netCollected:"صافي المحصّل",
       count:"الطلبات",collectedCount:"تم تسليمها",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",
       noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",
@@ -72,8 +72,8 @@
     let branchSelect = null;
     if (!admin && Array.isArray(branches) && branches.length > 1) {
       const branchLabel=make("label","admin-report-field");
-      const branchText=make("span",null,L("allAssigned"));branchText.dataset.shellLabel="allAssigned";
-      branchSelect=document.createElement("select");branchSelect.setAttribute("aria-label",L("allAssigned"));
+      const branchText=make("span",null,L("branch"));branchText.dataset.shellLabel="branch";
+      branchSelect=document.createElement("select");branchSelect.setAttribute("aria-label",L("branch"));
       const all=make("option",null,L("allAssigned"));all.value="";branchSelect.append(all);
       for(const slug of branches){const option=make("option",null,slug);option.value=slug;branchSelect.append(option);}
       branchLabel.append(branchText,branchSelect);form.append(branchLabel);
@@ -85,7 +85,7 @@
     const setPeriod = (p) => {
       period.value=p;
       for(const x of tabs.querySelectorAll("button"))x.setAttribute("aria-pressed",String(x.dataset.period===p));
-      const range=dateRangeFor(p,today);
+      const range=dateRangeFor(p,torontoDate());
       from.value=range.from;to.value=range.to;clearResults();
     };
     for (const p of ["day","month","year"]) {
@@ -104,7 +104,7 @@
         const branch=branchSelect&&branchSelect.value?branchSelect.value:null;
         const data=await api.salesReport({period:period.value,startDate:from.value,endDate:to.value,branchSlug:branch});
         const totals=data&&data.totals||{};
-        const metrics=[["order_count",L("count"),false],["collected_count",L("collectedCount"),false]];
+        const metrics=[["order_count",L("count"),false],["placed_count",L("placed"),false],["accepted_count",L("accepted"),false],["preparing_count",L("preparing"),false],["ready_count",L("ready"),false],["collected_count",L("collectedCount"),false],["cancelled_count",L("cancelled"),false]];
         if(admin)metrics.push(["collected_cents",L("grossCollected"),true],["refunds_cents",L("refunds"),true],["net_collected_cents",L("netCollected"),true],
           ["subtotal_cents",L("subtotal"),true],["discount_cents",L("discount"),true],["tax_cents",L("tax"),true]);
         else metrics.push(["net_collected_cents",L("netCollected"),true]);
@@ -119,7 +119,7 @@
         for(const row of rows){
           const card=make("article","admin-record");
           card.append(make("strong",null,String(row.period_start||"")+" · "+(row.branch_slug||L("allAssigned"))),
-            make("span","admin-record-meta",L("count")+": "+row.order_count+" · "+L("collectedCount")+": "+row.collected_count));
+            make("span","admin-record-meta",L("count")+": "+row.order_count+" · "+L("placed")+": "+row.placed_count+" · "+L("accepted")+": "+row.accepted_count),make("span","admin-record-meta",L("preparing")+": "+row.preparing_count+" · "+L("ready")+": "+row.ready_count+" · "+L("collectedCount")+": "+row.collected_count+" · "+L("cancelled")+": "+row.cancelled_count));
           if(admin){
             card.append(make("span","admin-record-meta",L("grossCollected")+": "+cad(row.collected_cents)+" · "+L("refunds")+": "+cad(row.refunds_cents)),
               make("span","admin-record-meta",L("netCollected")+": "+cad(row.net_collected_cents)));
@@ -132,7 +132,7 @@
       finally {run.disabled=false;}
     });
     panel.append(tabs,form,status,results);
-    panel.__refreshLanguage=()=>{clearResults();if(branchSelect)branchSelect.setAttribute("aria-label",L("allAssigned"));};
+    panel.__refreshLanguage=()=>{clearResults();if(branchSelect)branchSelect.setAttribute("aria-label",L("branch"));};
     return panel;
   }
 
@@ -183,7 +183,7 @@
     const top=make("div","admin-shell-heading");top.append(title);
     const profile=make("div","admin-profile");
     const profileButton=make("button","admin-profile-trigger");
-    profileButton.type="button";profileButton.setAttribute("aria-label",L("profile"));profileButton.setAttribute("aria-expanded","false");profileButton.setAttribute("aria-controls","adminProfileMenu");
+    profileButton.type="button";profileButton.setAttribute("aria-haspopup","true");profileButton.setAttribute("aria-label",L("profile"));profileButton.setAttribute("aria-expanded","false");profileButton.setAttribute("aria-controls","adminProfileMenu");
     const profileIcon=make("span","admin-profile-icon");profileIcon.setAttribute("aria-hidden","true");profileButton.append(profileIcon);
     const profileMenu=make("div","admin-profile-menu");profileMenu.id="adminProfileMenu";profileMenu.hidden=true;profileMenu.setAttribute("role","group");profileMenu.setAttribute("aria-label",L("profile"));
     profileMenu.append(who);profile.append(profileButton,profileMenu);top.append(profile);
