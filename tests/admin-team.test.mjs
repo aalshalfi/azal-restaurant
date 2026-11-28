@@ -146,6 +146,7 @@ test("A2 preflights customer identity and restores the complete Auth snapshot on
   assert.match(edge,/anonymization_commit_state_unverified/);
   assert.match(edge,/if \(alreadyAnonymized\) return reply\(200, \{ status: "already_anonymized" \}\)/);
   assert.ok(edge.indexOf("if (alreadyAnonymized)") < edge.indexOf("updateUserById("),"idempotent retry exits before any Auth mutation");
+  assert.doesNotMatch(edge,/if \(alreadyAnonymized\) return reply\(502/,"a retry must not enter an error/compensation path after the durable marker exists");
   assert.match(auth,/email_confirm: snapshot\.email_confirm/);
   assert.match(auth,/user_metadata: cloneJson\(snapshot\.user_metadata\)/);
   assert.match(auth,/ban_duration: snapshot\.ban_duration/);

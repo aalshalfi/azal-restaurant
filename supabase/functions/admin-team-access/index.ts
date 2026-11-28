@@ -124,7 +124,6 @@ Deno.serve(async (req: Request) => {
           return reply(500, { error: "anonymization_commit_state_unverified" });
         }
         if (afterErrorProfile.anonymized_at) {
-          if (alreadyAnonymized) return reply(502, { error: "anonymization_retry_failed" });
           return reply(200, { status: "anonymized", recovered_after_lost_response: true });
         }
         const { error: rollbackError } = await service.auth.admin.updateUserById(
