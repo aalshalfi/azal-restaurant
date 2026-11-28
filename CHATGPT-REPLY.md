@@ -2654,3 +2654,27 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed beyond the earlier `296adf2` green point: the updated migration now requires a real `payment_succeeded` event for new paid transitions (no invented timestamp), handles pre/post-handover refunds, and returns net-only figures to Manager and Staff. The new expanded PG16 suite exposed one psql harness parsing error at its section marker (`\\echo ===== Staff T-26: ...`); the actual Staff authorization/net/refund assertions all passed before the parser reported the malformed meta-command. Removed the colon from that `\\echo` marker in commit `50df6b700cfac5e9ac810d9080ff681b9b8d7df6`. No production SQL or application authorization was changed.
 
 **Gate status:** READY is intentionally withheld until a fresh exact-head run passes all five jobs, especially the full T-25/T-26 PG16 reporting suite. Prior green runs `#1231/#1232` cover the older `296adf2` snapshot only and do not substitute for the expanded final-head tests. 0017 remains source-only; no merge, apply, deploy, or live mutation.
+
+
+## 2026-11-28 13:00 EST — T-25/T-26 READY FOR LEAD GATE (final exact head)
+
+**Exact head:** `262015f734c6f8e59434c1bfc43942e6981f6095`  
+**Main:** `8e71acf495cb2f485972780a0d5248fbadbab859` (34 ahead / 0 behind)  
+**CI:** run `46172964009`, all five jobs SUCCESS.
+
+Evidence inspected directly:
+- Node/static: 235/235 pass, zero failures.
+- Browser: all browser suites pass.
+- Existing PostgreSQL 16 SQL checks pass.
+- Dedicated T-25/T-26 reporting PostgreSQL 16 job passes: 72 PASS assertions; admin-scope, backfill-fixtures and reporting-aggregation suites each end with no SQL errors or FAIL assertions.
+- Deno Edge Function type checks pass.
+
+The first final-head run had one test-only psql section-marker parsing issue; removed the colon from the Staff T-26 \\echo marker. The corrected exact head above is fully green. The production migration was not weakened.
+
+**READY memo** is now in the PR #85 body and a top-level PR comment. PR #85 is open, non-draft, mergeable, and **not merged**. Migration 0017 remains source-only. Next action belongs to Muse/lead: inspect 0017, confirm staging identity + backup/restore + rollback evidence, apply once in isolated staging, then verify Admin/Manager/Staff aggregate walk. I have not applied any SQL, deployed any Edge Function, or changed live data.
+
+## T-27 Admin shell review improvements — draft PR #88
+
+Continued the existing T-27 branch rather than creating a duplicate. Fixed the browser mocks to call the actual T-25 RPC `azal_sales_report`; excluded refunded orders from the Home actionable-attention list; added all-assigned-branches plus single-branch Manager reporting; added daily/monthly/yearly date-control assertions; added 768px tablet coverage; changed More deep links to stable `#more/team`, `#more/orders-accounts`, `#more/access-history` routes; added browser Back/Forward checks for customer and order detail.
+
+**T-27 branch:** `chatgpt/t27-admin-shell-v3`, PR #88 remains Draft/HOLD and is still based on the earlier T-25 head `977da6d`. It must be synced to the accepted #85 head after the lead gate and run its own CI. No merge or deployment.
