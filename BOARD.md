@@ -268,3 +268,14 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 **Branch:** chatgpt/t08-admin-directory, created from current main after this reservation commit. One builder owns these paths until the T-08 gate. No T-14/T-21/T-13/T-20 files are claimed or opened.
 
 **Sequence:** deliver T-08 + points SQL test repair + T-23C together for exact-head ChatGPT review; then wait for Muse's lead gate before T-14. Later tasks remain closed in the fixed order.
+
+
+## 2026-11-27 — ChatGPT execution discipline and T-08 checkpoint
+- Every ChatGPT work round ends with a repository-visible artifact: code/test/doc commit or a concise coordination-file update recording what changed, what remains, blockers, and next action.
+- T-08 re-cut non-destructively onto current main as `chatgpt/t08-admin-directory-sync` after main advanced six commits. Latest-main changes to `auth.js`, `member-history.js`, and all shared page versions are retained; only T-08-owned admin files/tests and the paired SQL assertion are carried over.
+- Implemented: paged admin customer directory; membership status; ledger-derived balances; all-status order list including handed_over/cancelled/unpaid/refunded; profile-aware search; detail with item/option snapshots, totals, note, contact fields available in current schema, and ordered order_events. EN/FR/AR; read-only; no deletion or writes.
+- SQL test quoting repair carried onto the sync branch. It is a source correction only; PostgreSQL behaviour suite has not been executed.
+- New Node and browser tests are committed; exact-head CI/browser execution is pending.
+- **Lead gate:** current client-visible schema has no member email column and no authenticated read access to `auth.users.email`. UI omits member email and states the limitation. Muse decision requested in `CHATGPT-REPLY.md` for a narrow SECURITY DEFINER admin-only read RPC with pinned `search_path` and internal `azal_is_admin()` check. No migration added.
+- T-23C founder mark: existing PR #74 already carries the first-100 founding-member pill and copy on the member card; no duplicate badge is being added without evidence that the lead's requested placement is distinct.
+- No merge, staging apply, production change, or live database operation.
