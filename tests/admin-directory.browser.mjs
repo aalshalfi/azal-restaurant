@@ -25,7 +25,7 @@ async function open({role="admin",lang="en",width=390}={}){
   const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method()});
   if(path.endsWith("/rpc/azal_is_admin"))return r.fulfill({json:role==="admin"});
   if(path.endsWith("/rpc/azal_admin_customer_directory_page"))return r.fulfill({json:{rows:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z",balance:100,membership_status:"active",joined_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z",balance:55,membership_status:"suspended",joined_at:"2026-11-02T00:00:00Z"}],total:2,limit:50,offset:0}});
-  if(path.endsWith("/rpc/azal_admin_sales_report"))return r.fulfill({json:{role:"manager",totals:{order_count:2,collected_count:1,net_collected_cents:2500},rows:[{period_start:"2026-11-28",branch_slug:"ottawa",order_count:2,collected_count:1,net_collected_cents:2500}]}});
+  if(path.endsWith("/rpc/azal_sales_report"))return r.fulfill({json:{role:"manager",totals:{order_count:2,collected_count:1,net_collected_cents:2500},rows:[{period_start:"2026-11-28",branch_slug:"ottawa",order_count:2,collected_count:1,net_collected_cents:2500}]}});
   if(path.endsWith("/rpc/azal_admin_team_list"))return r.fulfill({json:{members:[],invites:[],branches:[{slug:"ottawa",name:"Ottawa"}],orders_accounts:[]}});
   if(path.endsWith("/rpc/azal_admin_audit_recent"))return r.fulfill({json:[]});
   if(path.endsWith("/rpc/azal_admin_customer_contact"))return r.fulfill({json:{user_id:"u1",display_name:"Amal",phone:"+16135550101",member_number:10001,email:"amal@example.invalid"}});
@@ -60,7 +60,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_directory_page")),lang+" "+width+": directory uses the server-side page RPC");
-  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_customer_directory")||x.url.includes("/rpc/azal_admin_sales_report")),lang+" "+width+": workspace is read-only");
+  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_customer_directory")||x.url.includes("/rpc/azal_sales_report")),lang+" "+width+": workspace is read-only");
  const contactBeforeDetail=requests.filter(x=>{
   const u=new URL(x.url);
   if(u.pathname.endsWith("/profiles"))return u.searchParams.get("id")!=="eq.admin";
