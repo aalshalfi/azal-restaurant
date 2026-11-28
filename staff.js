@@ -154,7 +154,9 @@
       if (!branchOptions.length) { branchOptions = await st.branches(); if (stale()) return; if (!branchOptions.length) { state = "not_staff"; return paint(); } st.setBranch(branchOptions[0]); }
       if (state !== "ready") { const ok = await st.isStaff(); if (stale()) return; if (!ok) { state = "not_staff"; return paint(); } }
       const r = await st.list(); if (stale()) return;
-      rows = r; lastAt = new Date(); state = "ready";
+      let summary = null; try { summary = await st.todaySummary(); } catch {}
+      if (stale()) return;
+      rows = r; today = summary; lastAt = new Date(); state = "ready";
     } catch (e) {
       if (stale()) return;
       if (e.code === "signed_out") state = "signed_out"; else flash = L("e_network");
@@ -164,12 +166,33 @@
 
   box.addEventListener("change", async (e) => {
     if (e.target && e.target.id === "staffBranch" && branchOptions.includes(e.target.value)) {
-      try { st.setBranch(e.target.value); rows=[]; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }
+      try { st.setBranch(e.target.value); rows=[]; today=null; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }
     }
   });
+  async function loadSummary() {
+    try { today = await st.todaySummary(); } catch { today = null; }
+    paint();
+  }
   box.addEventListener("click", async (e) => {
+    const nav = e.target.closest && e.target.closest("a[data-staff-view]");
+    if (nav) {
+      e.preventDefault();
+      activeView = nav.dataset.staffView;
+      if (location.hash !== nav.getAttribute("href")) history.pushState(null,"",nav.getAttribute("href"));
+      paint();
+      if (activeView === "history" && !today) await loadSummary();
+      return;
+    }
+    const stage = e.target.closest && e.target.closest("button[data-stage]");
+    if (stage) { stageFilter = stage.dataset.stage; paint(); return; }
     const b = e.target.closest && e.target.closest("button");
     if (!b) return;
+    if (b.id === "staffCopySummary") {
+      const value = document.getElementById("staffSummaryText")?.value || "";
+      try { await navigator.clipboard.writeText(value); flash = L("copied"); }
+      catch { flash = L("copyFailed"); }
+      paint(); return;
+    }
     if (b.id === "staffRefresh") { flash = ""; return load(); }
     if (b.id === "staffSignOut") {
       if (signingOut) return;
@@ -186,7 +209,17 @@
       busyId = null; await load();
     }
   });
+  function routeFromHash() {
+    const view = location.hash.slice(1).split("/")[0];
+    if (["queue","history","scheduled"].includes(view)) activeView = view;
+    if (activeView === "scheduled" && !rows.some(r => r.scheduled_for && new Date(r.scheduled_for).getTime() > Date.now())) activeView = "queue";
+    paint();
+    if (activeView === "history" && !today && state === "ready") loadSummary();
+  }
+  root.addEventListener("hashchange", routeFromHash);
+  root.addEventListener("popstate", routeFromHash);
+  if (["queue","history","scheduled"].includes(location.hash.slice(1))) activeView = location.hash.slice(1);
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   load();
-  if (st.enabled) timer = setInterval(() => { if (!busyId && state === "ready" && !document.hidden) load(); }, 20000);
+  if (st.enabled) timer = setInterval(() => { if (!busyId && state === "ready" && activeView === "queue" && !document.hidden) load(); }, 20000);
 })(typeof window !== "undefined" ? window : globalThis);
