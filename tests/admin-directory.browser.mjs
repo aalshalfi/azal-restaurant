@@ -47,7 +47,7 @@ async function open({role="admin",lang="en",width=390}={}){
  await page.goto(base+"/admin.html");if(role==="admin"){await page.waitForSelector(".admin-shell-nav");await page.locator('.admin-shell-nav a[href="#more"]').click();await page.waitForSelector(".admin-workspace");}else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
  return {page,requests};
 }
-for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
+for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  const {page,requests}=await open({lang,width});
  const text=await page.textContent("#adminRoot");
  const directory=lang==="en"?"Customer directory":lang==="fr"?"Répertoire des clients":"دليل العملاء";
@@ -94,7 +94,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  await page.close();
 }
 
-for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
+for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  const {page,requests}=await open({role:"manager",lang,width});
  const managerDestinations=await page.locator("#adminRoot .admin-shell-link").allTextContents();
  const expectedManagerDestinations=lang==="fr"?["Commandes","Rapports"]:lang==="ar"?["الطلبات","التقارير"]:["Orders","Reports"];
