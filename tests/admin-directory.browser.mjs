@@ -19,7 +19,7 @@ const allOrders=[
 {id:"33333333-3333-4333-8333-333333333333",user_id:null,branch_slug:"ottawa",fulfilment_status:"placed",payment_status:"unpaid",subtotal_cents:599,discount_cents:0,redeemed_points:0,tax_rate_bps:1300,tax_cents:78,total_cents:677,placed_at:"2026-11-22T10:00:00Z",guest_name:"Guest",guest_email:"guest@example.invalid",contact_phone:"+16135550103"}
 ];
 async function open({role="admin",lang="en",width=390}={}){
- const page=await browser.newPage({viewport:{width,height:900}}),requests=[];
+ const page=await browser.newPage({viewport:{width,height:900}}),requests=[],reportCalls=[];
  await page.route("**/supabase-config.js*",r=>r.fulfill({contentType:"text/javascript",body:'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});'}));
  await page.route("https://fake.supabase.co/**",r=>{
   const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method()});
@@ -32,7 +32,8 @@ async function open({role="admin",lang="en",width=390}={}){
   if(path.endsWith("/rpc/azal_manager_branch_orders"))return r.fulfill({json:[{id:"4d9d36ab-1111-4111-8111-111111111111",branch_slug:"ottawa",fulfilment_status:"placed",placed_at:"2026-11-20T10:00:00Z",items:[{quantity:1,name_en:"Lamb Mandi",name_fr:"Mandi"}]}]});
   if(path.endsWith("/rpc/azal_admin_customer_directory"))return r.fulfill({json:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z"}]});
   if(path.endsWith("/user_roles"))return r.fulfill({json:role==="admin"?[{role:"admin"}]:role==="manager"?[{role:"manager"}]:role==="staff"?[{role:"staff"}]:[]});
-  if(path.endsWith("/staff_branch_access"))return r.fulfill({json:role==="staff"||role==="manager"?[{branch_slug:"ottawa"}]:[]});
+  if(path.endsWith("/staff_branch_access"))return r.fulfill({json:role==="staff"?[{branch_slug:"ottawa"}]:role==="manager"?[{branch_slug:"ottawa"},{branch_slug:"second"}]:[]});
+   if(path.endsWith("/rpc/azal_sales_report")){reportCalls.push(JSON.parse(req.postData()||"{}"));const totals=role==="admin"?{order_count:1,placed_count:0,accepted_count:0,preparing_count:0,ready_count:0,collected_count:1,cancelled_count:0,collected_cents:2824,refunds_cents:500,net_collected_cents:2324,subtotal_cents:2499,discount_cents:0,tax_cents:325}:{order_count:1,placed_count:0,accepted_count:0,preparing_count:0,ready_count:0,collected_count:1,cancelled_count:0,net_collected_cents:2324};return r.fulfill({json:{role,rows:[{period_start:"2026-11-01",branch_slug:"ottawa",...totals}],totals}});}
   if(path==="/rest/v1/orders"&&url.includes("order_items("))return r.fulfill({json:[{...allOrders[0],customer_note:"No onions",scheduled_for:"2026-11-20T10:30:00Z",order_items:[{id:"i1",quantity:1,item_name_en_snapshot:"Lamb Mandi",item_name_fr_snapshot:"Mandi",unit_price_cents:2499,line_total_cents:2499,order_item_options:[{id:"op1",option_name_en_snapshot:"Extra sauce",option_name_fr_snapshot:"Sauce",quantity:1,line_delta_cents:100}]}],order_events:[{id:1,event_type:"hand_over",from_status:"ready",to_status:"handed_over",details:{source:"staff"},created_at:"2026-11-20T11:00:00Z"}]}]});
   if(path==="/rest/v1/orders"&&url.includes("placed_at=gte."))return r.fulfill({json:[{...allOrders[0],fulfilment_status:"handed_over"},{...allOrders[1],fulfilment_status:"cancelled"},{...allOrders[2],fulfilment_status:"placed"}]});
   if(path==="/rest/v1/orders")return r.fulfill({json:allOrders});
@@ -43,12 +44,14 @@ async function open({role="admin",lang="en",width=390}={}){
   return r.fulfill({status:404,json:{}});
  });
  await page.addInitScript(l=>{localStorage.setItem("azal-language",l);localStorage.setItem("azal-auth-v1",JSON.stringify({access_token:"T",refresh_token:"R",expires_at:4e12,user:{id:"admin",email:"admin@example.invalid"}}));},lang);
- await page.goto(base+"/admin.html");if(role==="admin"){await page.waitForSelector(".admin-shell-nav");await page.locator('.admin-shell-nav a[href="#more"]').click();await page.waitForSelector(".admin-workspace");}else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
- return {page,requests};
+ await page.goto(base+"/admin.html");if(role==="admin"){await page.waitForSelector(".admin-shell-nav");await page.locator('.admin-shell-nav a[href="#more"]').click();await page.waitForSelector(".admin-workspace");}else if(role==="manager"){await page.waitForSelector("#managerOperations");await page.waitForSelector(".admin-shell-nav");}else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
+ return {page,requests,reportCalls};
 }
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const {page,requests}=await open({lang,width});
- const text=await page.textContent("#adminRoot");
+ const teamLink=page.locator('.admin-more-link[href="#more/team"]');
+  if(await teamLink.count()){await teamLink.click();check(page.url().endsWith("#more/team"),lang+" "+width+": More sub-destination has a stable address");check(await page.evaluate(()=>document.activeElement?.id==="adminTeamMembersTitle"),lang+" "+width+": More deep link focuses the correct section");}
+  const text=await page.textContent("#adminRoot");
  const directory=lang==="en"?"Customer directory":lang==="fr"?"Répertoire des clients":"دليل العملاء";
  const orders=lang==="en"?"All orders":lang==="fr"?"Toutes les commandes":"جميع الطلبات";
  check(text.includes(directory)&&text.includes(orders),lang+" "+width+": directory and order history localized");
@@ -74,13 +77,30 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(await customerCard.locator(".admin-customer-anonymize").count()===0,lang+" "+width+": anonymize is absent from the customer directory");
  await customerCard.locator(".admin-customer-open").click();
  await page.waitForSelector("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize");
+  check(page.url().endsWith("#customers/u1"),lang+" "+width+": customer detail has a stable address");
  check(await page.locator("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize").count()===1,lang+" "+width+": anonymize is available only inside customer detail");
- await page.locator("#adminScreen-customers .admin-customer-detail > button").click();
+ await page.goBack();
+  await page.waitForFunction(()=>location.hash==="#customers"&&document.querySelector("#adminScreen-customers .admin-panel")?.hidden===false);
+  check(await page.locator("#adminScreen-customers .admin-customer-detail").isHidden(),lang+" "+width+": browser Back restores the customer directory");
+  await page.goForward();
+  await page.waitForSelector("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize");
+  check(page.url().endsWith("#customers/u1"),lang+" "+width+": browser Forward restores the customer detail route");
+  await page.locator("#adminScreen-customers .admin-customer-detail > button").click();
  await page.waitForFunction(()=>document.querySelectorAll('#adminScreen-customers .admin-record[data-user-id="u1"] .admin-customer-anonymize').length===0);
  await page.locator('.admin-shell-nav a[href="#orders"]').click();
  const button=page.locator('#adminScreen-orders [data-admin-screen-part="orders"] .admin-record button').first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
+  check(page.url().endsWith("#orders/4D9D36"),lang+" "+width+": order detail has a stable address");
  check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
+  await page.goBack();
+  await page.waitForFunction(()=>location.hash==="#orders"&&!document.querySelector(".admin-order-detail"));
+  check(await page.locator("#adminScreen-orders").isVisible(),lang+" "+width+": browser Back restores the Orders list");
+  await page.goForward();
+  await page.waitForSelector(".admin-order-detail");
+  check(page.url().endsWith("#orders/4D9D36"),lang+" "+width+": browser Forward restores the order detail");
+  await page.reload();
+  await page.waitForSelector(".admin-order-detail");
+  check(page.url().endsWith("#orders/4D9D36"),lang+" "+width+": direct order deep link restores after reload");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_contact")),lang+" "+width+": single-customer contact is fetched only after opening order detail");
  check(!requests.some(x=>x.url.includes("/rpc/azal_admin_order_customer_emails")),lang+" "+width+": bulk customer-email RPC is never called");
  await page.close();
@@ -94,13 +114,24 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
 }
 
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
- const {page,requests}=await open({role:"manager",lang,width});
+ const {page,requests,reportCalls}=await open({role:"manager",lang,width});
  const managerDestinations=await page.locator("#adminRoot .admin-shell-link").allTextContents();
  const expectedManagerDestinations=lang==="fr"?["Commandes","Rapports"]:lang==="ar"?["الطلبات","التقارير"]:["Orders","Reports"];
  check(managerDestinations.length===2&&expectedManagerDestinations.every(x=>managerDestinations.includes(x)),lang+" "+width+": Manager sees only authorized Orders and Reports destinations");
  await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
  const text=await page.textContent("#managerOperations");
  check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
+  await page.locator('.admin-shell-nav a[href="#reports"]').click();
+  const branchSelect=page.locator("#adminScreen-reports select");
+  check(await branchSelect.count()===1&&await branchSelect.inputValue()==="",lang+" "+width+": Manager report defaults to all assigned branches");
+  await page.locator('#adminScreen-reports button[type="submit"]').click();
+  await page.waitForFunction(()=>document.querySelector("#adminScreen-reports .admin-report-results")?.textContent.includes("Net collected"));
+  const reportText=await page.textContent("#adminScreen-reports");
+  check(/Net collected|Net encaissé|صافي المحصّل/.test(reportText)&&!/Gross collected|Refunds|Brut encaissé|Remboursements|إجمالي المحصّل|المبالغ المستردة/.test(reportText),lang+" "+width+": Manager report shows net only, no gross/refund breakdown");
+  check(reportCalls.length===1&&reportCalls[0].p_branch_slug==null,lang+" "+width+": Manager default query covers all assigned branches");
+  await branchSelect.selectOption("ottawa");
+  await page.locator('#adminScreen-reports button[type="submit"]').click();
+  check(reportCalls.length===2&&reportCalls[1].p_branch_slug==="ottawa",lang+" "+width+": Manager can filter to an assigned branch");
  const financial=/Payment|Subtotal|Discount|Tax|Total|taxe|Sous-total|الضريبة|الإجمالي|الدفع/.test(text);
  const raw=requests.filter(x=>{
   const u=new URL(x.url),p=u.pathname;
