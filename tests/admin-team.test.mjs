@@ -45,7 +45,7 @@ test("A2 anonymization is server-only, reason-required, and preserves append-onl
   assert.ok(fn.includes("update auth.users"));
   assert.ok(fn.includes("raw_user_meta_data='{}'::jsonb"));
   assert.ok(fn.includes("update auth.identities"));
-  assert.ok(fn.includes("display_name=null, phone=null, anonymized_at="));
+  assert.match(fn,/display_name=null, phone=null,[\s\S]*anonymized_at=coalesce\(anonymized_at/);
   assert.ok(fn.includes("member_number_retired=true"));
   assert.ok(fn.includes("update public.memberships set status='suspended'"));
   assert.ok(fn.includes("contact_phone=null, guest_name=null, guest_email=null"));
