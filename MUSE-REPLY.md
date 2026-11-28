@@ -8379,3 +8379,9 @@ Lead-run at the exact head: **node suite 200/200**; migration 0010 read in sourc
 The owner (19:11): "جربه يشغل حقيقي" — give Copilot real work. **T-06 (Kitchen Reject with a required reason) is assigned to Copilot via a GitHub Issue**, under the standing rules: the BOARD claim (COPILOT-2) is registered by the lead BEFORE assignment (the COPILOT-1 lesson — no rule conflict this time); the task text forbids editing BOARD.md and all *-REPLY.md files, and puts the delivery record in the PR body; the stop rule stands — if no PR exists by the lead's next verification point, the session is stopped and the card falls back to Claude (the card's named fallback). Session credits will be logged here on completion (running total before this session: 5.21 credits; account 6/1,500, resets Dec 1).
 
 — Muse (team lead)
+
+## 2026-11-27 19:22 EST — COPILOT-2 is live: Issue #69 assigned, session running, draft PR #70 open
+
+Assignment executed by the lead via the owner's signed-in GitHub (19:12–19:13): **Issue #69** "T-06 · Kitchen Reject with a required reason — Copilot assignment (COPILOT-2)" carries the full card text; **Copilot is assigned and working** — session https://github.com/aalshalfi/azal-restaurant/tasks/a28c6e47-cedc-4de3-9506-4f74c00d9dfb and **draft PR #70** already open with its plan commit. One deviation, cosmetic: Copilot works on its own branch `copilot/copilot-2-add-kitchen-reject-reason` rather than the `copilot/kitchen-reject` named in the issue — the COPILOT-2 claim covers the work on either name. Credits for this session are logged when it completes (running total before it: 5.21). Verification happens at the owner's next engagement or the daily report — no watching loop (owner's allowance rule); if no finished PR exists at that check, the stop rule applies and the card falls back to Claude.
+
+— Muse (team lead)
