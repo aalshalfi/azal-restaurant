@@ -358,3 +358,18 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Exact changed files:** ADMIN-DESIGN.md, WORKPLAN.md, admin.html, admin.js, admin-team.js, member.html, role-door.js, staff.html, staff.js, styles.css, supabase/config.toml, supabase/functions/admin-team-access/index.ts, supabase/migrations/0015_admin_team_access.sql, docs/apply-0015.md, tests/admin-team.test.mjs, tests/admin-directory.test.mjs, tests/admin-directory.browser.mjs, tests/admin.test.mjs, tests/staff.test.mjs, tests/staff.browser.mjs, tests/sql/admin-team-access-behaviour.sql, CHATGPT-REPLY.md.
 
 **Not verified yet:** Node/browser/PG16 execution and exact-head CI; staging Edge Function deployment; 1,000-customer staging walk; real Admin/Manager/Staff/Orders acceptance. No staging or production SQL, auth, customer, password, email, payment, refund, or deploy action performed.
+
+## 2026-11-28 — T-08 retrospective + T-14 verification snapshot
+
+**T-08 three-lens review (same round as T-14):**
+1. **Security:** PASS at source-review level. The 0014 customer-email directory RPC is SECURITY DEFINER with an empty fixed search_path, internal authenticated + Admin checks, explicit six-field output, and exclusion of anonymized/staff/admin records. No Auth metadata/secrets are returned; staff remain branch-scoped and cannot read the customer directory or points ledger.
+2. **Product/data:** PASS with one known scale gap now closed by T-14 A1. T-08 supplies the Admin workspace, customer directory and all-status order history while preserving order/tax snapshots and the append-only ledger. The earlier whole-directory client load was the 1,000-customer usability weakness; A1 replaces it with server-side search (name/email/phone/member number), bounded 50-row pages and page-only ledger aggregation.
+3. **Verification/release:** CONDITIONAL. Disposable PG16 replay covers 0014/0015, but the 0014 staging apply and live Admin walk remain Muse/lead-controlled. PR #77 remains Draft/open; delivery head was fast-forwarded into main, not merged through the PR endpoint. ChatGPT has not applied 0014 or changed live Supabase state.
+
+**T-14 owner-only Admin ruling:** the only Admin identity is info@azalrestaurant.com. Migration 0015 fails closed if that owner identity is absent or any non-owner Admin role remains; azal_is_admin() checks role + exact Auth email; Team UI cannot grant Admin; root Admin cannot be removed/demoted. Supabase dashboard is the documented owner + lead recovery route; no second Admin door.
+
+**Branch / PR:** latest main lead note synced into T-14 branch by documentation-only PR #81 (merged). Delivery PR #80 remains Draft/open and mergeable; do not merge until Muse/lead staging acceptance.
+
+**CI snapshot on delivery head 8f2c4a87aeba26c6bc5628b7967ad49647d7f1b8 (run #1139):** static checks PASS; Deno Edge Function type-check PASS; disposable PostgreSQL 16 PASS (173 PASS assertions across points redemption, T-08 admin directory, and T-14 team/A1/A2 behavior). Browser suites are still running at this snapshot; do not mark the full gate green until the exact-head browser job completes successfully.
+
+**Safety boundary unchanged:** no staging/production SQL apply, Edge Function deployment, invite/account creation, password reset, customer anonymization, email, payment, refund, or public deployment has been performed by ChatGPT.
