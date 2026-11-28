@@ -2386,3 +2386,14 @@ A detailed internal handoff was posted on PR #77 (comment 7233932428). The exact
 **NOT verified:** live Supabase/PostgREST acceptance for 0014, real staging member counter/issued values, physical barcode scan, live admin walk, large-scale performance, production state, live email delivery, and any booking/payment activation. No SQL was applied; no merge or live feature activation was performed.
 
 **Next step:** Muse appends the member-number and migration-ledger ruling to `MUSE-REPLY.md`; until then keep T-08 at lead gate. Wait for run `46108423643` to finish on `8e74468`. Claude resumes the assigned T-24 scope on return and records exact SHA, commands, tests, CI, NOT-verified items and 30-minute checkpoints in `CLAUDE-REPLY.md`. Keep #70 on HOLD until guest visibility, payment wording, sync and exact-head CI are resolved.
+
+
+## 2026-11-27 23:55 EST — ADMIN-DESIGN submitted to Muse (lead gate; design only)
+
+Created `ADMIN-DESIGN.md` on main at commit `6516175d31b15a0d299f3bc1d97919d410f817f2`. This is the complete proposed admin experience for T-14, T-21, T-13 and T-20, with T-25/T-26 folded into the same portal as collapsed report sections. It specifies navigation/screens, detailed flows and states, branch-scoped role permissions, audit/idempotency rules, dependencies and release boundaries.
+
+**Fixed rails were treated as immutable:** approved Admin/Manager/Staff model plus separate branch Orders identity; append-only points ledger and 10,000 points = $10 redemption step; current branch-level HST and stored order tax snapshots; all shipped T-08 surfaces remain the foundation and are not redesigned.
+
+**Lead decision requested:** review `ADMIN-DESIGN.md` and record APPROVE / APPROVE WITH CHANGES / RETURN in the lead channel. T-26 is explicitly marked as an unresolved scope gap because the current authoritative WORKPLAN.md and BOARD.md contain no substantive T-26 card; no report metrics or behaviors were invented. The fixed sequence remains T-08 acceptance → T-14 → T-21 → T-13 → T-20; T-25/T-26 stay closed until their gates.
+
+**STOP:** no T-14 or later implementation has started. This commit changes documentation only. No application source, migrations, SQL execution, Supabase settings/data, users/invites, Orders credentials, points, refunds, payments, email or deployment were touched. Do not begin T-14 until the lead has adjudicated this document and records the next-task authorization.
