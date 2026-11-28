@@ -54,6 +54,7 @@ test("A2 anonymization is server-only, reason-required, and preserves append-onl
   assert.ok(fn.includes("customer_anonymized"));
   assert.ok(fn.includes("update public.points_claims"));
   assert.ok(fn.includes("update public.order_outbox"));
+  assert.match(sql,/guest_identity_scrubbed boolean not null default false/);
   assert.ok(fn.includes("already_anonymized"));
   assert.ok(sql.includes("grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text,text) to service_role"));
 });
