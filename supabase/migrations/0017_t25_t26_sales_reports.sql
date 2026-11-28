@@ -108,7 +108,7 @@ begin
       'period_start',period_start,'paid_orders',paid_orders,
       'placed_count',placed_count,'accepted_count',accepted_count,'preparing_count',preparing_count,
       'ready_count',ready_count,'handed_over_count',handed_over_count,'cancelled_count',cancelled_count,
-      'collected_cents',coalesce(collected_cents,0)
+      'collected_cents',coalesce(collected_cents,0)-coalesce(collected_refund_cents,0)
     ) end order by period_start
   ),'[]'::jsonb) into v_rows
   from bucketed;
