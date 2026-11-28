@@ -22,7 +22,7 @@ test("A1 all-orders list is contact-blind until one order detail is opened", () 
   const detail=admin.slice(admin.indexOf("async orderDetail("),admin.indexOf("const api ="));
   assert.doesNotMatch(list,/guest_name|guest_email|contact_phone|azal_admin_order_customer_emails|rest\/v1\/profiles/);
   assert.match(detail,/azal_admin_customer_contact/);
-  assert.doesNotMatch(read("supabase/migrations/0015_admin_team_access.sql"),/create or replace function public\\.azal_admin_order_customer_emails/);
+  assert.doesNotMatch(read("supabase/migrations/0015_admin_team_access.sql"),/create or replace function public\.azal_admin_order_customer_emails/);
   assert.match(admin,/Search order code or branch/);
 });
 test("A1 directory search and pagination run in a fixed-path Admin RPC with a hard page cap", () => {
