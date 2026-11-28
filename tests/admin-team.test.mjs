@@ -89,7 +89,7 @@ test("Admin UI uses safe DOM APIs, mandatory reasons and server mutation paths",
   assert.match(ui,/orders_reset/);
   assert.match(ui,/azal_admin_audit_recent/);
   assert.match(ui,/adminTeamAudit/);
-  assert.match(ui,/input\.required=true/);
+  assert.match(ui,/reason\.required=true/);\n  assert.match(ui,/why\.required=true/);
   assert.match(admin,/azal_admin_customer_directory_page/);
   assert.match(admin,/directoryPage/);
   assert.match(role,/role === "manager"/);
