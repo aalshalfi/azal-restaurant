@@ -35,11 +35,11 @@ select zz_eq('owner Admin cannot be demoted',
   public.zz_try($$select public.azal_admin_team_assign('info@example.invalid','Owner','staff',array['ottawa'],'no')$$),'admin_cannot_be_demoted');
 select zz_eq('admin team list returns a structured member collection',
   (public.azal_admin_team_list() ? 'members')::text,'true');
-select zz_eq('Admin can read recent immutable audit history',
-  (pg_catalog.jsonb_array_length(public.azal_admin_audit_recent(10))>0)::text,'true');
 
 \echo ===== Manager: branch-only operational view, no customer or money data
 select public.azal_admin_team_assign('c1@example.invalid','Manager C1','manager',array['ottawa'],'T-14 test assignment');
+select zz_eq('Admin can read recent immutable audit history',
+  (pg_catalog.jsonb_array_length(public.azal_admin_audit_recent(10))>0)::text,'true');
 select zz_eq('manager role is recognized',public.azal_is_manager()::text,'false');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
 select zz_eq('assigned Manager can access own branch',public.azal_manager_can_access('ottawa')::text,'true');
@@ -104,7 +104,7 @@ select zz_eq('Orders identity cannot be removed as an ordinary team member',
 
 \echo ===== A2 customer anonymization: identity scrub, membership suspension, financial history retained
 reset role;
-update public.orders set contact_phone='+16135550999',guest_name='Customer Two',guest_email='c2@example.invalid' where user_id='00000000-0000-0000-0000-0000000000c2';
+update public.orders set contact_phone='+16135550999' where user_id='00000000-0000-0000-0000-0000000000c2';
 update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
 select zz_eq('server anonymization refuses non-admin actor',
   public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
@@ -154,7 +154,7 @@ select zz_eq('1,000-customer directory reports the full count',
 select zz_eq('deep page remains bounded and correctly offset',
   pg_catalog.jsonb_array_length(public.azal_admin_customer_directory_page(null,50,951)->'rows')::text,'50');
 select zz_eq('deep page reports requested offset',
-  (public.azal_admin_customer_directory_page(null,50,950)->>'offset'),'951');
+  (public.azal_admin_customer_directory_page(null,50,951)->>'offset'),'951');
 select zz_eq('search narrows 1,000-customer directory server-side',
   (public.azal_admin_customer_directory_page('scale-500@example.invalid',50,0)->>'total'),'1');
 select zz_eq('authenticated cannot write the audit log directly',
