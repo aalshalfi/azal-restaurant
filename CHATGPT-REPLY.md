@@ -2692,3 +2692,10 @@ Continued the existing T-27 branch rather than creating a duplicate. Fixed the b
 - Queue / Scheduled / History are separated; Scheduled appears only for future branch orders; History shows the T-26 staff-only net-collected summary with manual copy only.
 - Queue-only 20-second polling pauses when the tab is hidden. No auto-send, tax/refund breakdown, SQL apply, or deployment.
 - CI on the exact T-28 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 13:06 EST — T-28 Kitchen shell implementation review (PR #92 Draft)
+
+Current branch head: `970689560f346e66026527ad3812e79f3ba13000`. The existing v5 branch includes the T-28 History list in addition to the T-26 summary: Toronto-day completed/cancelled branch tickets, order code/status/item snapshots only, no guest identity/contact. The summary uses `net_collected_cents`; tests assert no tax breakdown, no gross/refund fields, manual copy only, and that Queue does not call the History-only summary RPC. Queue is the only 20-second polling screen; Scheduled is conditional; Availability and Settings remain absent.
+
+PR #92 is Draft/HOLD and 20 ahead / 7 behind T-27 v4; base is stale relative to the moving T-27 branch and no exact-head CI result is recorded. Do not mark READY or merge. After T-27 acceptance, sync to its final head and run the complete Node/browser matrix. No SQL, availability state, role change, automatic send, merge or deployment.
