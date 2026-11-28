@@ -307,3 +307,20 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 | Pagination / scale | **LEAD DECISION** | Current client-side slicing loads all rows; accept bounded small-data v1 with graceful cap/error or require server-side pagination/search. |
 
 PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or live mutation by ChatGPT. T-14 and later admin tasks remain closed until Muse accepts T-08.
+
+
+## 2026-11-28 — T-08 READY FOR LEAD GATE
+
+| Gate | Result | Evidence / remaining owner action |
+|---|---|---|
+| Branch synchronized | **PASS** | Merge commit `ed7a8f69e1875d49776a063107a584c3ad80bd59`; latest main `803528de4f23be411074b8950627a6c47aca5b58`; compare 66 ahead / 0 behind. |
+| Node + static | **PASS** | CI run 1040 / `46107953208`, exact code head `68045fd2a576c74cfe79fde814047afe37855bdd`; 213/213 Node. |
+| Browser | **PASS** | Same run and exact head; all 30 browser suites passed, including T-08 admin directory. |
+| PostgreSQL 16 | **PASS** | PG 16.16; points suite 45 PASS; admin-directory suite 40 PASS; zero FAIL/ERROR; separate disposable databases. |
+| 0014 preflight | **PASS — docs corrected** | `docs/apply-0014.md` now requires 0010 and checks `orders.contact_phone`. |
+| Membership number | **LEAD HOLD** | WORKPLAN 0001 vs migration 0013 10001 (reported live); Muse verifies actual staging state and records forward-only ruling. |
+| SPEC migration ledger | **LEAD HOLD** | Reconcile SPEC §4 with BOARD #68 / 0010 applied-live record. |
+| Pagination / scale | **LEAD DECISION** | Current client-side full dataset load; recommend server-side paging/search/aggregation or explicitly bounded v1 with cap state. |
+| Live admin walk + 0014 apply | **MUSE GATE** | Not performed by ChatGPT; only after lead review and controlled staging preflight. |
+
+**Status:** source + automated test gate ready for Muse. PR #77 remains open/draft and unmerged. No staging/production apply, no live activation, no T-14 work. Retrospective scheduled after the lead gate.

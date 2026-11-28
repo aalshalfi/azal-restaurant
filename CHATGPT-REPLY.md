@@ -2324,3 +2324,48 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 5. **Scale note:** T-08 currently fetches complete customer/order datasets and slices “More” client-side. This is not server-side pagination. Muse must either accept/document a bounded small-data v1 with a graceful cap/error state or require server-side paging/search and balance aggregation.
 
 A detailed internal handoff was posted on PR #77 (comment 7233932428). The exact-head CI result remains valid only for the reviewed SHA. The T-08 gate stays HOLD pending lead reconciliation, SQL evidence, branch sync and a new exact-head run. No main merge, migration apply, staging mutation, sign-up/order/booking/payment/email activation, or production change was performed.
+
+
+## 2026-11-28 23:36 EST — READY FOR LEAD GATE (T-08)
+
+**Disposition: READY FOR MUSE'S LEAD GATE.** The T-08 source and automated verification gates pass on the exact code head below. This is not a merge authorization: the lead-held product/data decisions and live admin acceptance remain open.
+
+### Exact source and synchronization evidence
+- Delivery branch: `chatgpt/t08-admin-directory-final`; active delivery PR: #77 (still open, draft).
+- **Exact code HEAD tested:** `68045fd2a576c74cfe79fde814047afe37855bdd`.
+- Latest `main` at synchronization: `803528de4f23be411074b8950627a6c47aca5b58`.
+- Normal, non-destructive merge commit incorporating that main: `ed7a8f69e1875d49776a063107a584c3ad80bd59`.
+- GitHub compare after the merge: **66 ahead / 0 behind**. No rebase or force-push. PR #77 has not been merged.
+
+### Exact-head CI evidence
+- **Workflow run 1040:** [46107953208](https://github.com/aalshalfi/azal-restaurant/actions/runs/46107953208) — **completed / success**, attached to the exact code HEAD above.
+- Static checks: PASS. Node: **213/213 PASS, 0 FAIL**.
+- Browser: **30/30 `tests/*.browser.mjs` suites PASS**, including `admin-directory.browser.mjs`; no failure/error lines.
+- SQL: actual disposable **PostgreSQL 16.16** service, two fresh isolated databases, no staging credentials:
+  - `tests/sql/points-redeem-behaviour.sql`: **45 PASS, 0 FAIL, 0 ERROR**.
+  - `tests/sql/admin-directory-behaviour.sql`: **40 PASS, 0 FAIL, 0 ERROR**.
+  - Both ran through `DATABASE_URL=<isolated CI database> bash tests/sql/run-one.sh <suite>`; runner exits non-zero on psql errors or explicit FAIL/ERROR assertions.
+  - Points chain: stub + baseline 0001 + 0002/0003/0004/0006/0007.
+  - Admin chain: stub + baseline 0001 + 0002/0003/0004/0006/0007/0008/0009/0010/0013/0014.
+- The SQL job is now part of `.github/workflows/site-check.yml`, so future PR runs exercise PostgreSQL rather than relying on local-only claims.
+
+### Verification corrections included
+- `docs/apply-0014.md` now includes 0010 in the required chain and checks for `orders.contact_phone`, which the T-08 order-history query reads. 0005 remains intentionally excluded.
+- SQL ASAP fixtures use a near-24-hour overnight window so the CI wall clock cannot make a valid fixture appear closed at the end of a day.
+- The admin refund assertion now sequences the mutating cancellation call before reading its returned status; it no longer combines a side effect and a separate table read in one expression with unspecified SQL evaluation order.
+- No application/payment behaviour was altered to make the SQL assertions pass.
+
+### Lead decisions still required (do not silently change these)
+1. **Membership number:** current WORKPLAN says sequence from 1 displayed as 0001, superseding 10001; migration 0013 still enforces 10001 onward and Claude's handover reports it applied/live. Muse must verify the real staging counter and already-issued values, then record a forward-only compatibility/display ruling. Do not renumber existing members or change the founder predicate until that ruling exists.
+2. **Migration ledger:** `docs/apply-0014.md` now correctly requires 0010. SPEC §4 still conflicts with BOARD's #68 / 0010 applied-and-live record. Muse should reconcile SPEC with a dated lead note and verify the live staging state.
+3. **Scale:** the current admin UI loads full customer/order datasets and slices “More” client-side. Recommendation: server-side pagination/search and server-side balance aggregation before meaningful scale; otherwise the lead must explicitly bound v1 and require a graceful cap state. This is not represented as a performance-tested large-data design.
+4. **Live acceptance:** Muse still owns the real staging admin walk and the controlled 0014 apply after the lead gate. The local PG16 harness is not a substitute for live Supabase/RLS acceptance.
+
+### NOT verified / release boundaries
+- 0014 has **not** been applied by ChatGPT to staging or production.
+- No live admin walk, production deployment, large-scale load test, or production database verification is claimed.
+- No merge of PR #77, no staging/production mutation, and no activation of sign-ups, real orders, reservations, payments, or email sending.
+- T-14 and all later cards remain **not started**. Stop here pending Muse's gate.
+- Retrospective: scheduled after Muse records the gate outcome; preserve the two test-harness lessons above.
+
+*This memo records verification of code HEAD `68045fd2a576c74cfe79fde814047afe37855bdd`. The following commit is documentation-only (this memo and BOARD status); no application, migration, or test code changes are included in that record commit.*
