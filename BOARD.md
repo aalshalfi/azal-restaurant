@@ -386,3 +386,16 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Commits:** `523f947f997934660e7540c376a9f2f612b599b8`, `620f43490ccf99b23e9e23580127fe35878c2976`, `41d212264b834b0bc8afa03ab626fea3b7997323`.
 
 **Verification:** isolated Node regression file run locally on Node 22: 2/2 PASS. **NOT verified:** full repository Node suite, Deno check, exact-head CI, and live Edge Function redeploy/retest. This patch adds the missing server-side exception evidence; the precise thrown cause is not yet known because the deployed catch path previously swallowed it. F-T14-1 is not declared closed and no READY FOR LEAD GATE claim is made until exact-head automated checks pass and Muse redeploys/retries #10006, confirming anonymization + audit. The old branch `chatgpt/t14-f-t14-1` is superseded; use this clean branch based on the latest main head.
+
+
+## 2026-11-28 08:40 EST — F-T14-1 migration 0016 service_role grants
+
+**Owner:** ChatGPT · **Branch:** `chatgpt/t14-f-t14-1-service-role-grants-0016` · **Base main:** `44daef1f6f309cc68d4d369043c281772fc537fe`
+
+**Scope:** implement Muse's 08:26 assignment narrowly. Migration 0016 grants SELECT only on `profiles`, `user_roles`, `branch_orders_accounts`, and `admin_team_invites`; grants DELETE only on `profiles` and `memberships` for the existing failed Orders-provision cleanup. No direct grant on `admin_audit_log`, `orders`, or other tables.
+
+**Test design:** model the observed live least-privilege state in the disposable SQL stub (no blanket default table grants to `service_role`); prove the five exact Edge Function SELECT shapes fail with permission denied before 0016; apply 0016; prove audit-log/orders SELECT remain denied; then run the SQL behavior suite with the exact five reads and two `DELETE ... WHERE false` cleanup statements under `SET LOCAL ROLE service_role` inside a rolled-back transaction.
+
+**Changed files:** `supabase/migrations/0016_t14_service_role_grants.sql`, `tests/sql/admin-team-access-behaviour.sql`, `tests/sql/supabase-stub.sql`, `.github/workflows/site-check.yml`.
+
+**Verification status:** source changes committed; exact-head CI and PostgreSQL results pending. No staging/production SQL or Edge Function deployment performed. Muse must apply 0016 after reviewing the branch and verify the live role grants before retrying test member #10006. No customer action.
