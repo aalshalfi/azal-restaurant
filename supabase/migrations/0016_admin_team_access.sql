@@ -47,6 +47,21 @@ create index if not exists admin_audit_target_created_idx
   on public.admin_audit_log (target_type, target_id, created_at desc, id desc);
 create index if not exists admin_audit_actor_created_idx
   on public.admin_audit_log (actor_user_id, created_at desc, id desc);
+
+create or replace function public.azal_reject_admin_audit_mutation()
+returns trigger
+language plpgsql
+set search_path = ''
+as $fn$
+begin
+  raise exception 'admin_audit_log_is_append_only' using errcode='42501';
+end;
+$fn$;
+revoke all on function public.azal_reject_admin_audit_mutation() from public, anon, authenticated;
+drop trigger if exists admin_audit_log_no_update_delete on public.admin_audit_log;
+create trigger admin_audit_log_no_update_delete
+  before update or delete on public.admin_audit_log
+  for each row execute function public.azal_reject_admin_audit_mutation();
 alter table public.admin_audit_log enable row level security;
 revoke all on public.admin_audit_log from public, anon, authenticated;
 
