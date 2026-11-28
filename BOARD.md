@@ -437,3 +437,14 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **T-27 status:** claimed before implementation. T-25/T-26 PR #85 was marked Ready for review at head 65b7df35d777ef52d99a1de1d1422ddcf4a8b17f; it remains unmerged and migration 0017 remains unapplied. This T-27 branch is stacked on that delivery head; its PR will target the T-25/T-26 branch until the lead gate establishes the canonical base. No merge/deploy/live mutation is authorized by this claim.
 
 **T-28 / T-29 numbering:** T-28 is the kitchen shell (Queue / conditional Scheduled / History with T-26 summary); T-29 is the kitchen-only same-day availability state + audited RPC. The Availability destination must not render in T-28 before T-29 is delivered.
+
+
+## 2026-11-28 12:26 EST — T-27 progress / T-28 claim
+
+**T-27 implementation:** PR #88 opened from chatgpt/t27-admin-shell-v2, stacked on PR #85's delivery branch. The Admin shell code, responsive navigation, report screen, role-shaped destinations, customer detail entry and tests are committed. Current branch head at PR creation: e47e9261885c0b7f00a690986cdef19a3a398b40. CI is being run on delivery branch pushes; no merge or deployment.
+
+| Files reserved | Owner | Batch | Branch / base | Scope |
+|---|---|---|---|---|
+| staff.js, staff.html, styles.css, tests/staff.browser.mjs, tests/staff.test.mjs, WORKPLAN.md, BOARD.md, CHATGPT-REPLY.md | ChatGPT | **T-28 Kitchen shell** | chatgpt/t28-kitchen-shell-v2, based on T-27 branch | Queue / conditional Scheduled / History; T-26 today's summary and manual copy; Queue-only polling; no Availability before T-29; no Settings destination. |
+
+**T-28 status:** claimed before implementation. Branch is stacked on T-27; PR will target chatgpt/t27-admin-shell-v2 until the lead establishes the canonical merge sequence. No Availability control, schema change, SQL apply, merge or deployment.
