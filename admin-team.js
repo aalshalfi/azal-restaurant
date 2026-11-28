@@ -8,7 +8,7 @@
   const S = {
     en: {
       team:"Team & access", add:"Add team member", edit:"Edit access", name:"Full name", email:"Email", role:"Role", admin:"Admin", manager:"Manager", staff:"Staff",
-      branches:"Branch access", save:"Save access", cancel:"Cancel", pending:"Pending account", pendingNote:"No email was sent. Access will attach after this person creates and verifies an account through the existing sign-up flow.",
+      branches:"Branch access", save:"Save access", cancel:"Cancel", pending:"Pending account", revokeInvite:"Revoke invitation", pendingNote:"No email was sent. Access will attach after this person creates and verifies an account through the existing sign-up flow.",
       members:"Team members", noMembers:"No named team members yet.", remove:"Remove access", reason:"Reason (required)", confirm:"Confirm removal",
       orders:"Branch Orders accounts", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
       assigned:"Access saved.", removed:"Access revoked.", created:"Branch Orders account created.", resetDone:"Branch password reset.", error:"The action could not be completed. Refresh and check the current state before retrying.",
@@ -18,7 +18,7 @@
     },
     fr: {
       team:"Équipe et accès", add:"Ajouter un membre", edit:"Modifier l’accès", name:"Nom complet", email:"Courriel", role:"Rôle", admin:"Admin", manager:"Gestionnaire", staff:"Personnel",
-      branches:"Accès aux succursales", save:"Enregistrer l’accès", cancel:"Annuler", pending:"Compte en attente", pendingNote:"Aucun courriel n’a été envoyé. L’accès sera attribué lorsque la personne aura créé et vérifié un compte avec le processus d’inscription existant.",
+      branches:"Accès aux succursales", save:"Enregistrer l’accès", cancel:"Annuler", pending:"Compte en attente", revokeInvite:"Révoquer l’invitation", pendingNote:"Aucun courriel n’a été envoyé. L’accès sera attribué lorsque la personne aura créé et vérifié un compte avec le processus d’inscription existant.",
       members:"Membres de l’équipe", noMembers:"Aucun membre nommé pour le moment.", remove:"Révoquer l’accès", reason:"Motif (obligatoire)", confirm:"Confirmer la révocation",
       orders:"Comptes Commandes par succursale", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
       assigned:"Accès enregistré.", removed:"Accès révoqué.", created:"Compte Commandes créé.", resetDone:"Mot de passe de succursale réinitialisé.", error:"L’action n’a pas abouti. Actualisez et vérifiez l’état avant de réessayer.",
@@ -28,7 +28,7 @@
     },
     ar: {
       team:"الفريق والصلاحيات", add:"إضافة عضو للفريق", edit:"تعديل الصلاحية", name:"الاسم الكامل", email:"البريد الإلكتروني", role:"الدور", admin:"مدير النظام", manager:"مدير فرع", staff:"موظف",
-      branches:"الفروع المصرّح بها", save:"حفظ الصلاحية", cancel:"إلغاء", pending:"حساب بانتظار التفعيل", pendingNote:"لم يُرسل أي بريد. ستُربط الصلاحية بعد أن ينشئ الشخص حساباً ويتحقق من بريده عبر مسار التسجيل الحالي.",
+      branches:"الفروع المصرّح بها", save:"حفظ الصلاحية", cancel:"إلغاء", pending:"حساب بانتظار التفعيل", revokeInvite:"إلغاء الدعوة", pendingNote:"لم يُرسل أي بريد. ستُربط الصلاحية بعد أن ينشئ الشخص حساباً ويتحقق من بريده عبر مسار التسجيل الحالي.",
       members:"أعضاء الفريق", noMembers:"لا يوجد أعضاء فريق مسجلون بعد.", remove:"إلغاء الصلاحية", reason:"السبب (مطلوب)", confirm:"تأكيد الإلغاء",
       orders:"حسابات الطلبات للفروع", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
       assigned:"تم حفظ الصلاحية.", removed:"تم إلغاء الصلاحية.", created:"تم إنشاء حساب الطلبات.", resetDone:"تم تغيير كلمة مرور الفرع.", error:"تعذّر إتمام الإجراء. حدّث الصفحة وتحقق من الحالة قبل إعادة المحاولة.",
@@ -178,7 +178,18 @@
     if(!(data.members||[]).length)members.append(el("p","admin-note",L("noMembers")));
     for(const m of data.members||[])members.append(memberCard(m));
     const invites=panel.querySelector("#adminTeamInvites");invites.replaceChildren();
-    for(const i of data.invites||[])invites.append(el("p","admin-record-meta",L("pending")+": "+i.email+" · "+L(i.role)+" · "+(i.branches||[]).join(", ")));
+    for(const i of data.invites||[]){
+      const card=el("article","admin-record");card.append(el("strong",null,L("pending")+": "+i.email),el("span","admin-record-meta",L(i.role)+" · "+(i.branches||[]).join(", ")+" · "+new Date(i.expires_at).toLocaleDateString(lang())));
+      const revoke=el("button","button admin-detail-button",L("revokeInvite"));revoke.type="button";
+      revoke.addEventListener("click",()=>{
+        if(card.querySelector("form"))return;
+        const form=el("form","admin-team-revoke"),why=document.createElement("input");why.required=true;why.maxLength=500;why.placeholder=L("reason");
+        const go=el("button","button button-gold",L("confirm"));go.type="submit";form.append(why,go);
+        form.addEventListener("submit",async e=>{e.preventDefault();go.disabled=true;try{await edge("team_invite_revoke",{invite_id:i.id,reason:why.value});status(card,L("removed"));await refreshTeam(panel);}catch{status(card,L("error"),true);go.disabled=false;}});
+        card.append(form);
+      });
+      card.append(revoke);invites.append(card);
+    }
     const orders=panel.querySelector("#adminOrdersAccounts");orders.replaceChildren();
     const byBranch=new Map((data.orders_accounts||[]).map(x=>[x.branch_slug,x]));
     for(const b of data.branches||[])orders.append(orderAccountCard(b,byBranch.get(b.slug)||null));
