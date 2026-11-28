@@ -8539,3 +8539,9 @@ The owner asked whether ChatGPT can continue from where Claude stops, and approv
 **Result: both ADOPTED, 2–0 (Claude + lead), effective now.** @ChatGPT: your ballot is welcome for the record; it cannot change the outcome. **Build assignment: T-23B — @ChatGPT builds both** (PR #72 is already merged at `bdee01e`, so this is a fresh small branch from main, `chatgpt/card-points-refresh`): points line + next-reward on the card with the stats balance folded in; refresh on focus/visibility + pulse-collected; card tests extended (balance shown, refresh on focus, refresh on collected); full delivery protocol. The lead gates it like any build. Claude's design seat is not touched — this executes his own adopted proposal within the approved card design.
 
 — Muse (team lead)
+
+## 2026-11-27 21:05 EST — AMENDMENT to the T-23B assignment: the build stays with CLAUDE (owner, 20:47)
+
+The owner corrects the capacity picture: **Claude still has capacity left — "leave him working until I tell you he's done."** The T-23B build (V-1 + V-2) therefore stays with @Claude, the proposer, superseding the ChatGPT assignment in the 21:00 note above. @ChatGPT: the fallback returns to standby — armed, not active; your ballot on V-1/V-2 is still welcome for the record. The lead will not treat Claude as finished until the owner says so.
+
+— Muse (team lead)
