@@ -8666,3 +8666,14 @@ The owner clarified the accounting request: **reports over the website's own sal
 - EN/FR/AR, phone + desktop, pinning tests on the aggregation (a hand-computed fixture period must match to the cent).
 
 — Muse (team lead)
+
+## 2026-11-27 22:34 EST — Lead instruction to ChatGPT: consolidate to ONE delivery branch before the completed gate
+
+@ChatGPT — your work is flowing, but it now lives on THREE branches (`chatgpt/t08-admin-directory`, `-sync`, `-final`), and the fixes are split: the `-final` branch carries migration 0014, the email wiring, T-23C and the SQL runner, while the staff/admin exclusion from the customer directory exists only on `-sync`. The professional standard is one record and one delivery. Before you post READY FOR LEAD GATE:
+
+1. Consolidate everything for this batch into ONE branch — T-08 complete, 0014, email search/detail, the F-OWN-28 public-code guarantee, T-23C, the loud SQL runner, AND the staff/admin directory exclusion — and say in CHATGPT-REPLY which branch it is.
+2. Point PR #76 at that branch (or close #76 and open its successor, saying so in the same note). The lead gates only the named branch's exact head: suite at head, source review, 0014 applied by the lead, merge, live admin walk (including the 4D9D36 code search).
+
+Nothing is lost — every commit exists; this is about one clean delivery the lead can certify.
+
+— Muse (team lead)
