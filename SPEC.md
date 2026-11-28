@@ -54,7 +54,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - Itemised summary (lines, quantities, unit prices) above the totals — **MISSING** (F-WALK-11).
 - Subtotal / points discount / HST / total exactly as the server computes — **HAVE**.
 - Pickup time choice with real capacity — **HAVE** (slot abandon/release hardening is a pre-launch gate, §7).
-- Guest: name + email + **mobile (required, validated)** — **PARTIAL**: name+email HAVE; mobile **MISSING** (F-OWN-16, migration 0010).
+- Guest: name + email + **mobile (required, validated)** — **HAVE** (0010 applied 2026-11-27; T-02 closed).
 - Member: profile details pre-filled; phone editable for this order — **PARTIAL**.
 - Kitchen note field — **HAVE**.
 - Points redemption in 10,000-point steps — **HAVE** (0006+0007 live).
@@ -84,7 +84,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 ### 3.4 Staff / kitchen (staff.html)
 - **Sign-out control** — **MISSING** (F-OWN-19).
 - Signed-in identity + branch shown — **PARTIAL**.
-- Open paid queue by pickup time, with sigil and the guest's **phone (tap to call)** — **PARTIAL** (phone needs 0010).
+- Open paid queue by pickup time, with the guest's **phone (tap to call)** — **HAVE** (0010 applied 2026-11-27; order identity is numbers-only per F-OWN-23/T-24).
 - Accept / prepare / ready / hand over — **HAVE**.
 - **Reject with a REQUIRED reason, shown to the customer** — **MISSING** (Copilot assignment; Claude takes it if Copilot stays blocked).
 - Every action server-checked; branch-scoped — **HAVE** (27-assertion matrix).
@@ -125,7 +125,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - **Roles:** admin (info@azalrestaurant.com) controls everything incl. points; branch staff accept/reject/hand over only, own branch only, never points or balances. One sign-in door; the role opens the area.
 - **Orders:** paid online only (test mode); no order without payment; the kitchen sees paid orders only; orders are never deleted.
 - **Contact:** restaurant email info@azalrestaurant.com; phone +1 343-999-6199. Address: OWNER-held.
-- **Backend:** Supabase project azal (nrnkhnmlgkjytyryinlj). Migrations applied: 0001–0004, 0006, 0007, 0008, 0009. Not applied: 0005 (gated). Next numbers: 0010 (guest phone).
+- **Backend:** Supabase project azal (nrnkhnmlgkjytyryinlj). Migrations applied: 0001–0004, 0006, 0007, 0008, 0009, 0010, 0013, 0014 (ledger reconciled by the lead at the T-08 gate, 2026-11-27). Not applied: 0005 (gated on a real email sender), 0012 (on the T-06 branch; applied at its gate). Next number: 0015.
 
 ## 5. Journeys & their named live tests (acceptance)
 
