@@ -2310,3 +2310,17 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 - Closed PR #76 (and earlier #75) unmerged as superseded; no parallel PR is being offered to the lead.
 - F-OWN-29 T-25 and F-OWN-30 T-26 are acknowledged but remain closed until T-08 is accepted.
 - Exact-head CI/browser verification is pending; PG16 SQL behaviour run remains pending. No migration apply, merge, staging or production change.
+
+
+## 2026-11-27 23:18 EST — T-08 independent gate review (PR #77)
+
+**Exact head reviewed:** `1e56567fd9b6758c552ee60b1a3e07d42ba6f84f`. GitHub Site checks run `46103597456` completed successfully on this exact SHA; review evidence reports 213/213 Node tests and all browser suites passing. This is source/synthetic-browser evidence, not a live admin walk or PostgreSQL behaviour-suite proof.
+
+**Disposition: HOLD; no merge or SQL apply.** I independently verified the following against current main and the PR branch:
+1. **Membership-number contradiction:** current `WORKPLAN.md` fixes the number sequence at 1, displayed as 0001, explicitly superseding the earlier 10001 start. Main's migration 0013 still starts at 10001 and enforces `member_number >= 10001`; Claude's handover says 0013 was applied/live. The staging counter and issued values must be checked by Muse, followed by a forward-only compatibility ruling. No silent renumbering or cosmetic display change.
+2. **0010 preflight:** migration 0010 adds `orders.contact_phone`, which T-08 selects. `docs/apply-0014.md` must include 0010 in its required chain. SPEC §4's “0010 next/not applied” statement conflicts with BOARD's #68 merged / 0010 applied / live PASS record; Muse should reconcile the stale SPEC through a dated lead note.
+3. **PostgreSQL proof:** CI run `46103597456` does not run the SQL behaviour suites. Fresh disposable PostgreSQL 16 runs for `tests/sql/admin-directory-behaviour.sql` and `tests/sql/points-redeem-behaviour.sql` remain required, with exact commands and PASS/FAIL/ERROR counts. No live SQL by ChatGPT.
+4. **Branch freshness:** current main `db1b2e41d6b77f8c508c652c5b7af9c6114618e8`; PR branch was 53 ahead / 6 behind and diverged. It must be synced by a normal non-destructive merge and retested on the new exact head; no rebase/force-push.
+5. **Scale note:** T-08 currently fetches complete customer/order datasets and slices “More” client-side. This is not server-side pagination. Muse must either accept/document a bounded small-data v1 with a graceful cap/error state or require server-side paging/search and balance aggregation.
+
+A detailed internal handoff was posted on PR #77 (comment 7233932428). The exact-head CI result remains valid only for the reviewed SHA. The T-08 gate stays HOLD pending lead reconciliation, SQL evidence, branch sync and a new exact-head run. No main merge, migration apply, staging mutation, sign-up/order/booking/payment/email activation, or production change was performed.
