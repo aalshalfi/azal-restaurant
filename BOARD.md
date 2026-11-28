@@ -435,3 +435,27 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 | T-25 + T-26 | ChatGPT | #85 | 262015f734c6f8e59434c1bfc43942e6981f6095 | Run 46172964009 — 5/5 SUCCESS; Node 235/235; reporting PG16 72 PASS | READY FOR LEAD GATE; no merge/apply/deploy |
 
 Migration 0017 remains unapplied. Lead gate must review migration, confirm isolated staging identity, backup/restore and rollback evidence, then perform the staging apply and aggregate walk. T-27 is PR #88 Draft/HOLD on the earlier 977da6d base; branch corrections have been committed but it must sync after the #85 gate and pass its own CI. T-28 is PR #90 Draft/HOLD stacked on #88. T-29 remains the separate full-review availability/RPC card.
+
+
+## 2026-11-28 12:26 EST — T-27 claim (Muse adjudication)
+
+| Files reserved | Owner | Batch | Branch / base | Scope |
+|---|---|---|---|---|
+| admin.html, admin.js, admin-shell.js, styles.css, admin shell Node/browser tests, WORKPLAN.md, BOARD.md, CHATGPT-REPLY.md | ChatGPT | **T-27 Admin portal shell** | chatgpt/t27-admin-shell-v5, based on T-25/T-26 delivery head 296adf2 | Home · Orders · Customers · Reports · More; role-shaped destinations; phone bottom bar / desktop rail; T-25 Reports UI; URL-addressable screens; presentation-only. No Menu until T-21; no Availability until T-29. |
+
+**T-27 status:** claimed before implementation. T-25/T-26 PR #85 was marked Ready for review at head 65b7df35d777ef52d99a1de1d1422ddcf4a8b17f; it remains unmerged and migration 0017 remains unapplied. This T-27 branch is stacked on that delivery head; its PR will target the T-25/T-26 branch until the lead gate establishes the canonical base. No merge/deploy/live mutation is authorized by this claim.
+
+**T-28 / T-29 numbering:** T-28 is the kitchen shell (Queue / conditional Scheduled / History with T-26 summary); T-29 is the kitchen-only same-day availability state + audited RPC. The Availability destination must not render in T-28 before T-29 is delivered.
+
+
+## 2026-11-28 12:26 EST — T-27 PR checkpoint
+| Card | PR | Branch | Base | Exact head | State |
+|---|---|---|---|---|---|
+| T-27 | PR #93 | chatgpt/t27-admin-shell-v5 | chatgpt/t25-t26-reporting-shell-proposal | 977da6d12d2c029eb0eb136cf693b62fbc63060d | Draft; own CI pending; lead gate required |
+
+T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
+
+
+## 2026-11-28 13:04 EST — T-27 v4 review
+
+PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff65cb772a0960b53d6403181110. Review corrections include Manager all-assigned/one-branch report scopes, real T-25 RPC path, paid-only actionable attention, Toronto period defaults, 768px viewport, stable More links, and browser Back/Forward deep-link assertions. Base is 3 commits behind moving T-25 branch; no mergeable/CI-ready claim. Sync only after PR #85 lead gate, then run full tests.

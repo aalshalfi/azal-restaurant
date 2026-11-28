@@ -2680,14 +2680,34 @@ Continued the existing T-27 branch rather than creating a duplicate. Fixed the b
 **T-27 branch:** `chatgpt/t27-admin-shell-v3`, PR #88 remains Draft/HOLD and is still based on the earlier T-25 head `977da6d`. It must be synced to the accepted #85 head after the lead gate and run its own CI. No merge or deployment.
 
 
-## 2026-11-28 13:08 EST — FINAL T-25/T-26 READY memo at current branch head
+## 2026-11-28 12:26 EST — T-27 handoff
+- T-27 Admin portal shell is in PR #93 on `chatgpt/t27-admin-shell-v5`, stacked on the latest T-25/T-26 branch head 262015f734c6f8e59434c1bfc43942e6981f6095.
+- Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
+- Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
+- CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
 
-**Current exact branch head:** `a6f94b0e9045e97b30c78811e011b3b8ac463a41`  
-**Main:** `8e71acf495cb2f485972780a0d5248fbadbab859` (37 ahead / 0 behind)  
-**Exact-head CI:** run `46173536921`, **5/5 SUCCESS**.
 
-Inspected the check results and logs: Node/static **235/235** (0 failures); Browser all suites passed; existing SQL checks passed; T-25/T-26 PostgreSQL 16 reporting gate passed with **72 PASS assertions** and all three SQL suites ending without SQL errors or FAIL assertions; Deno Edge Function checks passed. The sole PostgreSQL ERROR line is the intentional negative migration replay rejecting a paid row without payment provenance and proving atomic rollback.
+## 2026-11-28 13:04 EST — T-27 review pass on v4 branch
 
-PR #85 body and top-level comments carry the exact-head evidence and the lead's staging instructions. PR #85 is open, non-draft, mergeable, and **not merged**. Migration 0017 is source-only. Waiting for Muse/lead to inspect 0017, confirm isolated staging identity + backup/restore/rollback evidence, apply once in staging, and run the Admin/Manager/Staff aggregate walk. No SQL apply, merge, deploy, live mutation, or outbound send by ChatGPT.
+Current T-27 code head at review: `cc0bd0c1447cff65cb772a0960b53d6403181110` (PR #93, Draft). Inherited the corrected report RPC mocks, paid-only Home attention list, Manager all-assigned/single-branch report selector, daily/monthly/yearly Toronto date controls, 768px tablet viewport, and stable More route slugs. Added the missing browser assertions for `#more/team` and customer/order detail Back/Forward behavior.
 
-T-27 is Draft PR #93 and T-28 is Draft PR #94. T-27 has no verified exact-head CI yet; T-28 remains dependent on T-27 and Claude's T-24 code-only ticket identity. T-29 availability remains separate and unstarted until both shells are accepted.
+The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=false. The exact T-27 browser suite is not yet verified green. Keep Draft; after PR #85 lead/staging gate, sync branch to the accepted base and run the full Node/browser matrix. No merge, SQL, permission, live-data or deployment changes.
+
+
+## READY FOR LEAD GATE — T-27 Admin Shell
+
+- **Status:** READY FOR LEAD GATE. This is a handoff for lead review, not approval to merge.
+- **Tested code head:** `5617d769ecd5f9c27caf02d21a4692afbe4e1bfc`
+- **Main head synchronized:** `ac30b3b25d391cc0bd9e2d55f3259343c1722896`
+- **Tree:** `631f1985f242a1de27edf90d96fc98c9cb41df62`
+- **Exact-head CI:** [Run #46176155585](https://github.com/aalshalfi/azal-restaurant/actions/runs/46176155585) — completed successfully, 5/5 jobs:
+  - edge-function-checks — success
+  - static-checks — success
+  - reporting-checks — success
+  - sql-checks — success
+  - browser-checks — success
+- PR #93 remains open; branch comparison at synchronization was 14 commits ahead / 0 behind main, with no merge conflict.
+- T-27 scope includes the admin shell/navigation, role-aware destinations, report integration, paged customer directory, and URL/deep-link behavior described in the PR.
+- **Lead review still required:** verify Manager-shaped report output and the role/destination UX matrix on staging; no Manager staging account was available to verify the live Manager view.
+- No PR merge, SQL application, deployment, production/staging data mutation, or live feature activation was performed.
+- This handoff entry is a documentation-only commit written after the tested code head above; CI run #46176155585 validates the stated code head, not this subsequent memo-only commit.

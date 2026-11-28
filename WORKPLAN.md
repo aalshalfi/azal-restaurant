@@ -232,3 +232,36 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 - Next dependency: Muse/lead's isolated staging gate and explicit review of migration/backfill/rollback before any apply.
 - T-27 PR #88 is still Draft/HOLD, base currently 977da6d; it has report RPC mock, paid-only attention, Manager all-assigned/single-branch filter, period controls, 768px coverage and stable deep-link/back-forward test improvements. Sync it to #85 after the lead gate and run its own CI.
 - T-28 PR #90 remains Draft/HOLD on #88; T-29 availability remains separate and not exposed in T-28.
+
+
+## 2026-11-28 12:26 EST — Muse T-27 adjudication (binding)
+
+### T-27 · Admin portal shell — F-OWN-32
+- **Owner:** ChatGPT · **Sequence:** immediately after T-25/T-26 READY; before T-28.
+- **Constitution:** one job per screen; at most five persistent destinations; unauthorized destinations are absent (never greyed); no empty containers; every screen has a URL hash; load each screen's data on entry; poll only Home/live operational surfaces.
+- **Destinations:** Home · Orders · Customers · Reports · More. Menu is absent until T-21 lands. Home is headline tiles + actionable Needs attention only; Orders has Active/Scheduled/History; Customers has server-paged directory and a customer detail view (Anonymize only inside detail); Reports mounts T-25 with Daily/Monthly/Yearly tabs; More contains Team & access (Active/Pending), Orders accounts, and Access history. Manager uses the same shell but only destinations/actions allowed by the server role matrix are rendered.
+- **Responsive shell:** phone bottom bar; tablet/desktop left rail; profile/sign-out remains in the header; deep links and browser Back work; aria-current, focus management, and no empty placeholders.
+- **Today panel:** detailed figures move to Reports; Home retains only concise headline operational facts.
+- **Boundary:** presentation-only; preserve all T-08/T-14 RPC, permissions, audit and data behavior. No SQL, backend permission change, deployment or live mutation.
+- **Acceptance:** Node + browser CI; EN/FR/AR at 320/390/768/1280; Admin/Manager destination matrix; navigation/deep-link/back/focus; no dead Menu or Availability links; T-25 UI consumes existing RPC and preserves role-redacted payloads.
+
+### T-28 · Kitchen / Orders shell — F-OWN-32
+- **Owner:** ChatGPT · **Sequence:** after T-27.
+- **Screens:** Queue (start) · Scheduled (only if at least one scheduled order exists) · History (T-26 Today's summary at top). Availability is deliberately absent until T-29. Settings is absent; identity/sign-out remain behind the header profile icon.
+- **Queue:** stage chips All · New · Preparing · Ready with live counts; tickets retain code-only identity and existing guarded action flow. Queue is the only polling screen (20-second cadence, hidden tab pauses).
+- **History:** collected-sales total + status counts from azal_staff_today_summary; employee copy/share is manual only; no tax, email, outbox, auto-send, or fabricated history rows.
+- **Boundary:** no backend/schema/role change; branch picker remains a view filter backed by server-authorized branch list.
+- **Acceptance:** Node + browser CI; EN/FR/AR and 320/390/768/1280; stage filters/counts; scheduled visibility; summary redaction; Queue-only polling; keyboard/focus and deep links.
+
+### T-29 · Kitchen same-day availability state + audited RPC — owner ruling 11:07, Muse renumbering 12:26
+- **Owner:** assigned after T-27/T-28; full-review class.
+- **Scope:** own-branch temporary Sold out today state, actor/time/item audit, next-business-day auto-reset; staff may only change own authorized branch. Manager/T-21 retains permanent availability, retirement and all canonical menu edits.
+- **Boundary:** T-28 must not render Availability until T-29's authoritative state and server enforcement are delivered and gated. Migration/RPC/role matrix require full review and live acceptance.
+
+
+## 2026-11-28 12:26 EST — T-27 delivery checkpoint
+- PR #88 opened as a stacked draft PR; branch chatgpt/t27-admin-shell-v5; base chatgpt/t25-t26-reporting-shell-proposal.
+- Exact head at PR creation: 977da6d12d2c029eb0eb136cf693b62fbc63060d. Own Node/browser CI remains pending; do not merge until every required job passes and the lead reviews the exact head.
+- T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
+- Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
+- Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.

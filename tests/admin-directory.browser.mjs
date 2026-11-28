@@ -22,9 +22,10 @@ async function open({role="admin",lang="en",width=390}={}){
  const page=await browser.newPage({viewport:{width,height:900}}),requests=[];
  await page.route("**/supabase-config.js*",r=>r.fulfill({contentType:"text/javascript",body:'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});'}));
  await page.route("https://fake.supabase.co/**",r=>{
-  const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method()});
+  const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method(),body:req.postData()});
   if(path.endsWith("/rpc/azal_is_admin"))return r.fulfill({json:role==="admin"});
   if(path.endsWith("/rpc/azal_admin_customer_directory_page"))return r.fulfill({json:{rows:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z",balance:100,membership_status:"active",joined_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z",balance:55,membership_status:"suspended",joined_at:"2026-11-02T00:00:00Z"}],total:2,limit:50,offset:0}});
+  if(path.endsWith("/rpc/azal_sales_report"))return r.fulfill({json:{role:"manager",totals:{order_count:2,collected_count:1,net_collected_cents:2500},rows:[{period_start:"2026-11-28",branch_slug:"ottawa",order_count:2,collected_count:1,net_collected_cents:2500}]}});
   if(path.endsWith("/rpc/azal_admin_team_list"))return r.fulfill({json:{members:[],invites:[],branches:[{slug:"ottawa",name:"Ottawa"}],orders_accounts:[]}});
   if(path.endsWith("/rpc/azal_admin_audit_recent"))return r.fulfill({json:[]});
   if(path.endsWith("/rpc/azal_admin_customer_contact"))return r.fulfill({json:{user_id:"u1",display_name:"Amal",phone:"+16135550101",member_number:10001,email:"amal@example.invalid"}});
@@ -43,10 +44,14 @@ async function open({role="admin",lang="en",width=390}={}){
   return r.fulfill({status:404,json:{}});
  });
  await page.addInitScript(l=>{localStorage.setItem("azal-language",l);localStorage.setItem("azal-auth-v1",JSON.stringify({access_token:"T",refresh_token:"R",expires_at:4e12,user:{id:"admin",email:"admin@example.invalid"}}));},lang);
- await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
+ await page.goto(base+"/admin.html");if(role==="admin"){await page.waitForSelector(".admin-shell-nav");await page.locator('.admin-shell-nav a[href="#more"]').click();await page.waitForSelector(".admin-workspace");}else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");
+ await page.locator('#adminScreen-more .admin-more-link[href="#more/team"]').click();
+ await page.waitForFunction(()=>location.hash==="#more/team");
+ check(await page.locator("#adminTeamMembersTitle").isVisible(),"Team deep link uses stable #more/team route");
+}
  return {page,requests};
 }
-for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
+for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  const {page,requests}=await open({lang,width});
  const text=await page.textContent("#adminRoot");
  const directory=lang==="en"?"Customer directory":lang==="fr"?"Répertoire des clients":"دليل العملاء";
@@ -59,7 +64,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_directory_page")),lang+" "+width+": directory uses the server-side page RPC");
-  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_customer_directory")),lang+" "+width+": workspace is read-only");
+  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_customer_directory")||x.url.includes("/rpc/azal_sales_report")),lang+" "+width+": workspace is read-only");
  const contactBeforeDetail=requests.filter(x=>{
   const u=new URL(x.url);
   if(u.pathname.endsWith("/profiles"))return u.searchParams.get("id")!=="eq.admin";
@@ -69,9 +74,31 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const listRead=requests.find(x=>x.url.includes("/rest/v1/orders?")&&!x.url.includes("order_items("));
  const listSelect=listRead?new URL(listRead.url).searchParams.get("select")||"":"";
  check(!!listRead&&!/user_id|guest_name|guest_email|contact_phone/.test(listSelect),lang+" "+width+": order-list SELECT excludes guest name, email and phone");
- const button=page.locator(".admin-workspace > .admin-panel:nth-child(2) .admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
+ await page.locator('.admin-shell-nav a[href="#customers"]').click();
+ const customerCard=page.locator('#adminScreen-customers .admin-record[data-user-id="u1"]');
+ check(await customerCard.locator(".admin-customer-anonymize").count()===0,lang+" "+width+": anonymize is absent from the customer directory");
+ await customerCard.locator(".admin-customer-open").click();
+ await page.waitForFunction(()=>location.hash==="#customers/u1");
+ await page.goBack();
+ await page.waitForFunction(()=>location.hash==="#customers");
+ check(await page.locator("#adminScreen-customers .admin-customer-detail").isHidden(),lang+" "+width+": browser Back returns to customer directory");
+ await page.goForward();
+ await page.waitForFunction(()=>location.hash==="#customers/u1");
+ await page.waitForSelector("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize");
+ check(await page.locator("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize").count()===1,lang+" "+width+": customer detail deep link restores anonymize inside detail only");
+ await page.locator("#adminScreen-customers .admin-customer-detail > button").click();
+ await page.waitForFunction(()=>document.querySelectorAll('#adminScreen-customers .admin-record[data-user-id="u1"] .admin-customer-anonymize').length===0);
+ await page.locator('.admin-shell-nav a[href="#orders"]').click();
+ const button=page.locator('#adminScreen-orders [data-admin-screen-part="orders"] .admin-record button').first();await button.click();await page.waitForSelector(".admin-order-detail");
+ await page.waitForFunction(()=>location.hash==="#orders/4D9D36");
  const detail=await page.textContent(".admin-order-detail");
  check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
+ await page.goBack();
+ await page.waitForFunction(()=>location.hash==="#orders");
+ check(await page.locator("#adminScreen-orders").isVisible(),lang+" "+width+": browser Back returns from order detail");
+ await page.goForward();
+ await page.waitForFunction(()=>location.hash==="#orders/4D9D36");
+ await page.waitForSelector(".admin-order-detail");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_contact")),lang+" "+width+": single-customer contact is fetched only after opening order detail");
  check(!requests.some(x=>x.url.includes("/rpc/azal_admin_order_customer_emails")),lang+" "+width+": bulk customer-email RPC is never called");
  await page.close();
@@ -84,8 +111,25 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  await page.close();
 }
 
-for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
+for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  const {page,requests}=await open({role:"manager",lang,width});
+ const managerDestinations=await page.locator("#adminRoot .admin-shell-link").allTextContents();
+ const expectedManagerDestinations=lang==="fr"?["Commandes","Rapports"]:lang==="ar"?["الطلبات","التقارير"]:["Orders","Reports"];
+ check(managerDestinations.length===2&&expectedManagerDestinations.every(x=>managerDestinations.includes(x)),lang+" "+width+": Manager sees only authorized Orders and Reports destinations");
+ await page.locator('.admin-shell-nav a[href="#reports"]').click();
+ await page.waitForSelector(".admin-report-form select");
+ check(await page.locator(".admin-report-form select option").count()===2&&await page.locator(".admin-report-form select option").first().textContent()===(lang==="fr"?"Toutes les succursales attribuées":lang==="ar"?"كل الفروع المعيّنة":"All assigned branches")&&await page.locator(".admin-report-form select option").nth(1).textContent()==="ottawa",lang+" "+width+": Manager can choose all assigned branches or the authorized Ottawa branch");
+ await page.locator(".admin-report-form button[type=submit]").click();
+ await page.waitForSelector(".admin-report-results .admin-report-kpis");
+ const allBranchesCall=requests.filter(x=>x.url.includes("/rpc/azal_sales_report")).at(-1);
+ check(JSON.parse(allBranchesCall.body).p_branch_slug===null,lang+" "+width+": Manager's default report aggregates all server-assigned branches");
+ await page.locator(".admin-report-form select").selectOption("ottawa");
+ await page.locator(".admin-report-form button[type=submit]").click();
+ await page.waitForSelector(".admin-report-results .admin-report-kpis");
+ const oneBranchCall=requests.filter(x=>x.url.includes("/rpc/azal_sales_report")).at(-1);
+ check(JSON.parse(oneBranchCall.body).p_branch_slug==="ottawa",lang+" "+width+": Manager can filter to one authorized branch");
+ const managerReportText=await page.textContent("#adminScreen-reports");
+ const netLabel=lang==="fr"?/Total net encaissé/:lang==="ar"?/صافي المحصّل/:/Net collected/; const restrictedBreakdown=/Refunds|Remboursements|المبالغ المستردة|Subtotal|Sous-total|المجموع الفرعي|Discount|Rabais|الخصم|HST|TVH|Tax|ضريبة/; check(netLabel.test(managerReportText)&&!restrictedBreakdown.test(managerReportText),lang+" "+width+": Manager report exposes localized net and counts only, with no tax/refund breakdown");
  await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
  const text=await page.textContent("#managerOperations");
  check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
