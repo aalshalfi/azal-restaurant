@@ -83,7 +83,7 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.ok(!q.url.includes("payment_status=eq.paid"));
   assert.equal(rows[0].customer.display_name, "Amal");
   assert.equal(rows[0].customerEmail, "amal@example.invalid");
-  assert.equal((await api.orders({ search: "Sara" })).length, 1);
+  assert.equal((await api.orders({ search: "Sara" })).length, 1);\n  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1);
   assert.equal((await api.orders({ status: "cancelled" })).length, 1);
 });
 
@@ -100,7 +100,7 @@ test("order detail includes immutable item snapshots, options, events, totals an
 
 test("T-08 browser source stays read-only, admin-only in UI, EN/FR/AR, and no destructive history controls", () => {
   const js=read("admin.js"), html=read("admin.html"), css=read("styles.css");
-  for (const term of ["directory","ordersTitle","emailUnavailable"]) assert.match(js,new RegExp(term));
+  for (const term of ["directory","ordersTitle","azal_admin_customer_directory"]) assert.match(js,new RegExp(term));
   assert.match(js,/if \(acc\.role !== "admin"\)/);
   assert.match(js,/handed_over/); assert.match(js,/cancelled/);
   assert.doesNotMatch(js,/method: "(PATCH|DELETE|PUT)"/);
