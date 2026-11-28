@@ -546,7 +546,10 @@
     let st; try { st = await withNext(await auth.state()); } catch { return; }
     if (my !== rSeq || !last || last.email !== who) return;
     if (st.status !== "signed_in" || st.email !== who) { refresh(); return; }
+    const changed = Number(last.points) !== Number(st.points);
     Object.assign(last, { points: st.points, nextMore: st.nextMore || 0, nextCents: st.nextCents || 0 });
+    // Lead's 21:35 finding: the page must not contradict itself — the points ledger below re-reads too.
+    if (changed) { try { document.dispatchEvent(new CustomEvent("azal:points-changed")); } catch {} }
     const pe = document.querySelector("#authCardPoints strong, .member-stat-points strong");
     if (pe) pe.textContent = fmtPoints(last.points);
     const ne = document.getElementById("authCardNext");

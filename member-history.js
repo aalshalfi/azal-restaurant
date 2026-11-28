@@ -256,5 +256,7 @@
       refresh();
     } else { seq++; forget(); lastUid = null; data = null; failed = false; paint(); }
   });
+  // T-23B residual (lead 21:35): when the card's balance changes in place, this section re-reads as well (same guards).
+  document.addEventListener("azal:points-changed", () => { if (lastUid) refresh(); });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 })(typeof window !== "undefined" ? window : globalThis);

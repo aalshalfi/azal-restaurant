@@ -14,7 +14,7 @@ async function open({ lang = "en", w = 390, options = true, num = 10001 } = {}) 
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await p.route("https://fake.supabase.co/**", async (r) => { const u = decodeURIComponent(r.request().url());
     if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Aziz", phone: "+16135550180", member_number: num, created_at: "2026-11-20T15:00:00Z" }] });
-    if (u.includes("/rest/v1/points_ledger")) { srvState.ledgerCalls++; if (srvState.hold) await srvState.hold; return r.fulfill({ json: [{ delta_points: srvState.points }] }); }
+    if (u.includes("/rest/v1/points_ledger")) { srvState.ledgerCalls++; if (srvState.hold) await srvState.hold; return r.fulfill({ json: [{ id: "l1", entry_type: "earn", delta_points: srvState.points, created_at: "2026-11-26T18:00:00Z", order_id: null }] }); }
     if (u.endsWith("/rpc/redeem_options")) return options ? r.fulfill({ json: { balance: srvState.points, step_points: 10000, cents_per_step: 1000, max_steps: 20 } }) : r.fulfill({ status: 404, json: {} });
     if (u.includes("/auth/v1/logout")) return r.fulfill({ status: 204, body: "" });
     if (u.includes("/rpc/azal_is_admin")) return r.fulfill({ json: false });
@@ -36,6 +36,8 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
   ok(srvState.ledgerCalls === n, "V-2: no request storm (one re-read per 15 s from focus/visibility)");
   srvState.points = 20824; await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(500);
   ok(/20,824/.test(await p.textContent("#authCardPoints")) && /9,176 more points to \$30\.00 off/.test(await p.textContent("#authCardNext")), "V-2: an order collected refreshes it at once");
+  await p.waitForTimeout(300);
+  ok(/20,824/.test(await p.textContent(".mh-balance")), "lead 21:35: the points ledger section below says the same balance (no contradiction, no reload)");
   await p.click(".majlis-quick"); await p.click("#authEditDetails"); await p.fill("#pfName", "Aziz typing");
   srvState.points = 21000; await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(500);
   ok(await p.inputValue("#pfName") === "Aziz typing" && /21,000/.test(await p.textContent("#authCardPoints")), "V-2: only the numbers are patched; an open details form keeps what was typed");
