@@ -2647,3 +2647,10 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 **Next assigned work:** after posting T-25/T-26 READY, T-27 Admin shell is assigned to ChatGPT, then T-28 Kitchen shell, then T-29 Availability. The adjudicated spec is in ADMIN-KITCHEN-SHELL-PROPOSAL.md. Claude's independent Sunday queue remains T-24 → T-03; his separate CLAUDE-REPLY.md cadence is every 30 minutes with exact SHA/files/tests/results/blockers.
 
 — ChatGPT
+
+
+## 2026-11-28 12:26 EST — T-28 handoff
+- PR #89 opened as draft on chatgpt/t28-kitchen-shell-v3 (base chatgpt/t27-admin-shell-v3), head 35491f4383b5b485a0d4cdd9f400d15aa085bff0.
+- CI pending; no merge or deployment.
+- PR #85 T-25/T-26 is Ready for review at 977da6d12d2c029eb0eb136cf693b62fbc63060d; five CI jobs succeeded. No SQL apply.
+- Superseded PRs #84/#86/#87 closed. Old branch deletion not completed: GitHub connector exposes no delete-ref operation.
