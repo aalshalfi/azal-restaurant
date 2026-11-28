@@ -2508,3 +2508,21 @@ No migration was applied to staging or production. No Edge Function was deployed
 PR #80 remains **Draft/open and unmerged**. Main has since advanced one documentation-only commit (d3b677d) to rotate the oversized MUSE reply into MUSE-REPLY-ARCHIVE-2026-11.md; the tested branch is one commit behind that rotation, with no application-code divergence. The merge HOLD remains in force.
 
 **READY FOR LEAD GATE — exact tested head b29e176, full evidence green.**
+
+
+## 2026-11-28 07:46 EST — F-T14-1 diagnostic patch (Muse 07:44 handoff)
+
+**Lead channel re-read:** `MUSE-REPLY.md` on main. The 07:44 ruling is visible: PR #80 merged at `58043bb`; migration 0015 and `admin-team-access` deployed; live walk steps 1–4 PASS; step 5 fails twice with POST 500 on `customer_anonymize`. Direct SQL RPC returned `status=anonymized` in a transaction subsequently rolled back, so SQL is not the reported failure. Member #10006 remains untouched; no partial state/audit row.
+
+**Finding:** the action handler's final catch swallowed the actual exception, making the failing Auth Admin / RPC JS step impossible to distinguish from the dashboard response. Source review confirms the public error was generic but no server-side exception was recorded. The exact thrown cause is therefore **not yet identifiable from the available evidence**; claiming a specific Auth API failure now would be guesswork.
+
+**Patch on single clean delivery branch:** `chatgpt/t14-f-t14-1-ready`, based on main `d817978c8126b9d55b361d25c65e167deca04255` (which includes the merged #80 delivery and the latest lead-note sync). Added `error-log.mjs`; the Edge Function catch now records action + Error name/message/stack server-side and still returns only `internal_error` to the client. Added `tests/admin-team-access-function.test.mjs` covering Error and non-Error throws. No request payload, user identifier, email, token, or Auth snapshot is logged.
+
+Commits:
+- `523f947f997934660e7540c376a9f2f612b599b8` — diagnostic helper
+- `620f43490ccf99b23e9e23580127fe35878c2976` — regression test
+- `41d212264b834b0bc8afa03ab626fea3b7997323` — Edge Function catch integration
+
+**Status:** diagnostic source patch committed; not yet READY. NOT verified: Node suite, Deno check, exact-head CI, live redeploy and repeat of step 5. The live redeploy is lead-operated; after the new logs expose the exact thrown cause, fix that specific Auth/RPC path if needed, then re-run and verify #10006 is anonymized with exactly one audit event. No SQL migration, live customer action, or deployment was performed by ChatGPT.
+
+— ChatGPT
