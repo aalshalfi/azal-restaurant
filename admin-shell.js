@@ -161,7 +161,8 @@
         const detail=rootEl.querySelector(".admin-customer-detail");const back=detail&&detail.querySelector(":scope > button");
         if(back&&!detail.hidden)back.click();
       } else if(id==="more"&&sub){
-        const target=rootEl.querySelector("#"+sub);if(target){target.scrollIntoView({block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});}
+        const moreTargets={team:"adminTeamMembersTitle","orders-accounts":"adminOrdersAccounts","access-history":"adminTeamAudit"};
+        const target=rootEl.querySelector("#"+(moreTargets[sub]||sub));if(target){target.scrollIntoView({block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});}
       }
     }
     if(root.__AZALAdminShellRouteHandler){root.removeEventListener("popstate",root.__AZALAdminShellRouteHandler);root.removeEventListener("hashchange",root.__AZALAdminShellRouteHandler);}
@@ -262,9 +263,9 @@
     const morePanel=more&&more.querySelector("#adminTeamPanel");
     if(morePanel&&!morePanel.querySelector(".admin-more-links")){
       const links=make("nav","admin-more-links");links.setAttribute("aria-label",L("more"));
-      for(const [id,label] of [["adminTeamMembersTitle",L("team")],["adminOrdersAccounts",L("accounts")],["adminTeamAudit",L("audit")]]){
+      for(const [slug,id,label] of [["team","adminTeamMembersTitle",L("team")],["orders-accounts","adminOrdersAccounts",L("accounts")],["access-history","adminTeamAudit",L("audit")]]){
         const target=morePanel.querySelector("#"+id);if(!target)continue;
-        const a=make("a","admin-more-link",label);a.href="#more/"+id;a.addEventListener("click",e=>{e.preventDefault();history.pushState(null,"",a.href);target.scrollIntoView({behavior:"smooth",block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});});links.append(a);
+        const a=make("a","admin-more-link",label);a.href="#more/"+slug;a.addEventListener("click",e=>{e.preventDefault();history.pushState(null,"",a.href);target.scrollIntoView({behavior:"smooth",block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});});links.append(a);
       }
       morePanel.prepend(links);
     }
