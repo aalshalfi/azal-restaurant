@@ -12,12 +12,15 @@ function fixture() {
   const data = {
     "/rest/v1/profiles": [
       { id: "u1", display_name: "Amal", phone: "+16135550101", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },
-      { id: "u2", display_name: "Sara", phone: "+16135550102", member_number: 10002, created_at: "2026-11-02T00:00:00Z" },\n      { id: "staff", display_name: "Kitchen Staff", phone: "+16135550103", member_number: 10003, created_at: "2026-11-03T00:00:00Z" },\n      { id: "admin", display_name: "Site Admin", phone: "+16135550104", member_number: 10004, created_at: "2026-11-04T00:00:00Z" }
+      { id: "u2", display_name: "Sara", phone: "+16135550102", member_number: 10002, created_at: "2026-11-02T00:00:00Z" },
+      { id: "staff", display_name: "Kitchen Staff", phone: "+16135550103", member_number: 10003, created_at: "2026-11-03T00:00:00Z" },
+      { id: "admin", display_name: "Site Admin", phone: "+16135550104", member_number: 10004, created_at: "2026-11-04T00:00:00Z" }
     ],
     "/rest/v1/memberships": [
       { user_id: "u1", status: "active", joined_at: "2026-11-01T00:00:00Z" },
       { user_id: "u2", status: "suspended", joined_at: "2026-11-02T00:00:00Z" }
     ],
+    "/rest/v1/user_roles": [{ user_id: "staff", role: "staff" }, { user_id: "admin", role: "admin" }],
     "/rest/v1/points_ledger": [
       { user_id: "u1", delta_points: 120 }, { user_id: "u1", delta_points: -20 }, { user_id: "u2", delta_points: 55 }
     ],
