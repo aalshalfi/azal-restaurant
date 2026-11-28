@@ -116,3 +116,10 @@ test("sole Admin identity is fixed to the owner's verified email; Team UI cannot
   assert.match(read("docs/apply-0015.md"),/owner identity.*info@azalrestaurant\.com/i);
   assert.match(read("docs/apply-0015.md"),/Supabase dashboard.*recovery/i);
 });
+
+
+test("A2 Edge rollback preserves an existing Auth ban if the database anonymization transaction fails", () => {
+  const edge=read("supabase/functions/admin-team-access/index.ts");
+  assert.match(edge,/const previousBanDuration = wasBanned \?/);
+  assert.match(edge,/ban_duration: previousBanDuration/);
+});
