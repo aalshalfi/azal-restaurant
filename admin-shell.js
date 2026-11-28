@@ -152,11 +152,8 @@
         detail.replaceChildren(back);detail.hidden=true;directory.hidden=false;history.pushState(null,"","#customers");
       });
       detail.append(back);customers.append(detail);
-      directory.addEventListener("click",e=>{
-        const card=e.target.closest(".admin-record[data-user-id]");
-        if(!card||e.target.closest("button"))return;
-        const open=card.querySelector(".admin-customer-open");
-        if(open)return;
+      const openCustomer=(card)=>{
+        if(card.querySelector(".admin-customer-open"))return;
         const b=make("button","button admin-detail-button admin-customer-open",L("open"));b.type="button";
         b.addEventListener("click",()=>{
           detailCard=card;restoreParent=card.parentElement;restoreNext=card.nextSibling;
@@ -164,7 +161,13 @@
           history.pushState(null,"","#customers/"+encodeURIComponent(card.dataset.userId));
         });
         card.append(b);
-      });
+      };
+      for(const card of directory.querySelectorAll(".admin-record[data-user-id]"))openCustomer(card);
+      const deepId=decodeURIComponent(location.hash.slice("#customers/".length));
+      if(location.hash.startsWith("#customers/")){
+        const card=[...directory.querySelectorAll(".admin-record[data-user-id]")].find(x=>x.dataset.userId===deepId);
+        if(card){const button=card.querySelector(".admin-customer-open");if(button)button.click();}
+      }
     }
     const orders=rootEl.querySelector("#adminScreen-orders");
     const orderPanel=orders&&orders.querySelector('[data-admin-screen-part="orders"]');
