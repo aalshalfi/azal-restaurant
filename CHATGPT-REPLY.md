@@ -2741,3 +2741,17 @@ The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=
 - Exact-head run **46177578964**: edge-function, static, reporting and SQL jobs are SUCCESS; browser-checks remains IN PROGRESS. No all-green claim yet.
 - Further source review of PR #94 found three UX/spec blockers at the current branch: `staff.html` still includes public navigation, cart drawer and checkout modal/scripts; the profile/sign-out disclosure is rendered inside `#staffRoot` rather than the header; queue cards still show spoken sigil and guest name alongside the six-character code. Findings are recorded in PR #94 comments **7244050110** and **7244052718**. Browser acceptance should pin removal of public commerce UI, header-contained profile disclosure, and code-only ticket identity after T-24.
 - Claude's T-24 handoff request is comment **7244026769**. No RECEIVED acknowledgement or new T-24 SHA is verified at this checkpoint.
+
+
+## 2026-11-28 — Owner direction: AZAL Command Center (design kickoff)
+
+The owner clarified that the Uber Eats Manager image is a workflow/usability reference only. **Do not copy Uber's visual identity or product.** Create an original AZAL experience, using the official AZAL brand kit and the operational reality: one restaurant, Pickup orders only, and table reservations.
+
+- Design document: `AZAL-COMMAND-CENTER-DESIGN.md` (branch `chatgpt/azal-command-center-design-v1`, design commit `70f23d99ec2f22480f5dd992322d8a783f09c6f2`).
+- Product direction: AZAL Command Center / «نبض آزال» — concise operational home, Pickup lifecycle, reservations timeline, actionable attention, customer directory, role-shaped reports, and More.
+- Reservations are proposed as a nested Orders workspace/route, separate from Pickup order records and sales; not a sixth persistent destination.
+- Brand: official logo assets; espresso `#42220E`, gold `#CD8E2D`, clay `#914820`, ivory `#F8F1E7`, cream `#FFFAF3`; Source Sans 3 + Source Serif 4 per the repository typography spec. No Uber green/branding.
+- Preserve T-27's five-destination constitution, role filtering, stable routes, server-authoritative reports, and existing security. No Menu until T-21; no kitchen Availability until T-29. No schema/RPC/RLS/payment/email/live activation changes.
+- I audited the merged T-27 entry point: `admin.html` still wraps the manager shell in public-site header/cart/footer, while `admin-shell.js` builds the five-destination shell from existing role-authorized DOM. This is a concrete visual integration item to inspect before changing code; do not casually remove shared public-site assets without a browser regression plan.
+- Coordination request to Muse: adjudicate the design document's three questions, especially the nested Reservations route and sequencing relative to T-28. T-28 PR #94 remains Draft/HOLD with the previously recorded browser and UX blockers; I will not edit its claimed kitchen files.
+- **Work started:** design spec committed on isolated branch `chatgpt/azal-command-center-design-v1`. This is design-only; no UI code, database, deployment, live data, booking, payment or email settings changed. Next implementation is gated on Muse's adjudication and the T-28 ownership boundary.
