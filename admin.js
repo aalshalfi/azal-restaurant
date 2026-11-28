@@ -92,11 +92,14 @@
             if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
           }
         }
-        const [profiles, memberships, ledger] = await Promise.all([
+        const [profiles, memberships, ledger, roles] = await Promise.all([
           pages("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&order=created_at.desc,id.desc"),
           pages("/rest/v1/memberships?select=user_id,status,joined_at&order=user_id.asc"),
-          pages("/rest/v1/points_ledger?select=user_id,delta_points&order=created_at.asc,id.asc")
+          pages("/rest/v1/points_ledger?select=user_id,delta_points&order=created_at.asc,id.asc"),
+          pages("/rest/v1/user_roles?select=user_id,role&order=user_id.asc,role.asc")
         ]);
+        const rolesById = new Map();
+        for (const row of roles || []) { const set = rolesById.get(row.user_id) || new Set(); set.add(row.role); rolesById.set(row.user_id, set); }
         const memberById = new Map((memberships || []).map(x => [x.user_id, x]));
         const balances = new Map();
         for (const row of ledger || []) balances.set(row.user_id, (balances.get(row.user_id) || 0) + Number(row.delta_points || 0));
