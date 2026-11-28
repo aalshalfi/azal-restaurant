@@ -106,6 +106,7 @@ select zz_eq('Orders identity cannot be removed as an ordinary team member',
 \echo ===== A2 customer anonymization: identity scrub, membership suspension, financial history retained
 reset role;
 update public.orders set contact_phone='+16135550999' where user_id='00000000-0000-0000-0000-0000000000c2';
+create temporary table t14_order_financial_snapshot as select id,subtotal_cents,tax_cents,total_cents from public.orders where user_id='00000000-0000-0000-0000-0000000000c2';
 update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
 select zz_eq('server anonymization refuses non-admin actor',
   public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
@@ -133,6 +134,8 @@ select zz_eq('order contact phone is scrubbed while the order remains',
   (select coalesce(contact_phone,'∅') from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'∅');
 select zz_eq('order guest name and email are scrubbed',
   (select (guest_name is null and guest_email is null)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'true');
+select zz_eq('order tax and financial snapshots are unchanged',
+  (select count(*)::text from public.orders o join t14_order_financial_snapshot x using(id) where o.subtotal_cents=x.subtotal_cents and o.tax_cents=x.tax_cents and o.total_cents=x.total_cents),'1');
 select zz_eq('customer order and its financial snapshot remain',
   (select count(*)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'1');
 select zz_eq('anonymization is audited with actor and reason',
