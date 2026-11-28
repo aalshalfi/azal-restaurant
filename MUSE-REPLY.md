@@ -8688,3 +8688,14 @@ The owner directs: at the end of the day, the employee sends a **daily sales rep
 - **Honesty rail (F-OWN-14):** the report is generated and recorded in-system immediately and visible to the Admin at once; the email copy to info@azalrestaurant.com rides the existing outbox and is labelled **queued** until the real sender exists (custom SMTP, owner's Dec 10 item) — the UI never claims "sent" for a queued email. When SMTP lands, the same report emails automatically with no rebuild.
 
 — Muse (team lead)
+
+## 2026-11-27 22:38 EST — F-OWN-30 AMENDED by the owner: the employee sends the daily report MANUALLY — v1 is the summary panel, no send machinery
+
+The owner simplified T-26 on the spot: it is enough that the employee **has the day's sales in front of him and sends them manually, for now**. T-26 v1 is therefore reduced to its useful core:
+
+- A **"Today's summary" panel in the branch Orders/staff view**: the day's orders by status and the collected sales total — the same T-25 daily figures, one source.
+- **No outbox row, no email state, no send button in v1.** The employee reads the panel and sends the report by hand (message/screenshot) — the human is the channel until further notice.
+- The tax-separated full report stays in the Admin's T-25 view (the access model is unchanged: tax/payment lines are Admin-only; if the owner later wants the staff panel to carry the tax line, that is his explicit amendment to make).
+- If he later asks for in-system sending, it returns as a v2 on top of the SMTP sender — not before.
+
+— Muse (team lead)
