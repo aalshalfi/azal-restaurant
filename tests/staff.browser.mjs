@@ -26,7 +26,7 @@ async function open({ staff = true, session = true, clash = false, width = 390 }
   });
   if (session) await page.addInitScript(() => localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "STAFF", refresh_token: "R", expires_at: 4e12, user: { id: "s1", email: "staff@example.invalid" } })));
   await page.goto(`http://localhost:${port}/staff.html`);
-  return { page, acts };
+  return { page, acts, orders };
 }
 { const { page, acts } = await open({}); await page.waitForSelector(".staff-order");
   await page.locator(".staff-order.is-placed .staff-reject").click();
@@ -35,6 +35,12 @@ async function open({ staff = true, session = true, clash = false, width = 390 }
   await page.locator(".staff-reject-form textarea").fill("  Sold out  "); await page.locator(".staff-reject-form button[type=submit]").click();
   await page.waitForFunction(() => document.querySelectorAll(".staff-order").length === 1);
   ok(acts.length === 1 && acts[0].p_action === "reject" && acts[0].p_reason === "Sold out", "confirmed rejection sends reason and removes order from queue"); await page.close(); }
+{ const { page, orders } = await open({}); await page.waitForSelector(".staff-order");
+  await page.locator(".staff-order.is-placed .staff-reject").click();
+  ok(await page.locator(".staff-order.is-ready .staff-act").isDisabled(), "other ticket actions cannot conflict with an open rejection");
+  orders[0].fulfilment_status = "handed_over"; await page.locator("#staffRefresh").click(); await page.waitForFunction(() => document.querySelectorAll(".staff-order").length === 1);
+  ok(await page.locator(".staff-order.is-ready .staff-act").isEnabled() && await page.locator(".staff-reject-form").count() === 0, "refresh clears rejection state when another staff member closes the ticket");
+  await page.close(); }
 for (const width of [320, 390, 1280]) for (const language of ["en", "fr", "ar"]) {
   const { page } = await open({ width }); await page.waitForSelector(".staff-order");
   await page.evaluate((l) => { document.documentElement.lang = l; document.documentElement.dir = l === "ar" ? "rtl" : "ltr"; }, language);
