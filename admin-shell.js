@@ -49,8 +49,9 @@
         const data=await api.salesReport({period:period.value,startDate:from.value,endDate:to.value,branchSlug:branch});
         const totals=data&&data.totals||{};
         const grid=make("dl","admin-report-kpis");
-        for(const [key,label,value] of [["order_count",L("count"),totals.order_count],["collected_count",L("collectedCount"),totals.collected_count],["collected_cents",L("collected"),cad(totals.collected_cents)]]) {
-          const item=make("div","admin-kpi");item.append(make("dt",null,label),make("dd",null,value==null?"—":typeof value==="number"&&key.endsWith("_cents")?value===0?cad(0):value:value));grid.append(item);
+        for(const [key,label] of [["order_count",L("count")],["collected_count",L("collectedCount")],["collected_cents",L("collected")]]) {
+          const item=make("div","admin-kpi");const value=totals[key];
+          item.append(make("dt",null,label),make("dd",null,value==null?"—":key.endsWith("_cents")?cad(value):String(value)));grid.append(item);
         }
         if(Object.prototype.hasOwnProperty.call(totals,"subtotal_cents")) {
           for(const [key,label] of [["subtotal_cents",L("subtotal")],["discount_cents",L("discount")],["tax_cents",L("tax")]]) {
@@ -143,8 +144,13 @@
     const directory=customers&&customers.querySelector(".admin-panel");
     if(directory&&!customers.querySelector(".admin-customer-detail")){
       const detail=make("section","admin-panel admin-customer-detail");detail.hidden=true;
+      let detailCard=null, restoreParent=null, restoreNext=null;
       const back=make("button","button admin-detail-button",L("back"));back.type="button";
-      back.addEventListener("click",()=>{detail.replaceChildren(back);detail.hidden=true;directory.hidden=false;});
+      back.addEventListener("click",()=>{
+        if(detailCard&&restoreParent)restoreParent.insertBefore(detailCard,restoreNext);
+        detailCard=null;restoreParent=null;restoreNext=null;
+        detail.replaceChildren(back);detail.hidden=true;directory.hidden=false;history.pushState(null,"","#customers");
+      });
       detail.append(back);customers.append(detail);
       directory.addEventListener("click",e=>{
         const card=e.target.closest(".admin-record[data-user-id]");
@@ -152,7 +158,11 @@
         const open=card.querySelector(".admin-customer-open");
         if(open)return;
         const b=make("button","button admin-detail-button admin-customer-open",L("open"));b.type="button";
-        b.addEventListener("click",()=>{directory.hidden=true;detail.hidden=false;detail.append(card);history.pushState(null,"","#customers/"+encodeURIComponent(card.dataset.userId));});
+        b.addEventListener("click",()=>{
+          detailCard=card;restoreParent=card.parentElement;restoreNext=card.nextSibling;
+          directory.hidden=true;detail.hidden=false;detail.append(card);
+          history.pushState(null,"","#customers/"+encodeURIComponent(card.dataset.userId));
+        });
         card.append(b);
       });
     }
