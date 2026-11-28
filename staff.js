@@ -148,6 +148,10 @@
     const scheduled = scheduledRows.length ? '<section class="staff-shell-screen" id="staffScreen-scheduled"' + (activeView === "scheduled" ? "" : " hidden") + '>' + renderOrders(scheduledRows) + '</section>' : "";
     const summary = today;
     const summaryText = summary ? ["AZAL · " + (summary.local_date || ""), L("netCollectedSales") + ": " + money(summary.net_collected_cents), L("ordersCount") + ": " + summary.order_count, L("placedCount") + ": " + summary.placed_count, L("acceptedCount") + ": " + summary.accepted_count, L("preparingCount") + ": " + summary.preparing_count, L("readyCount") + ": " + summary.ready_count, L("collectedCount") + ": " + summary.collected_count, L("cancelledCount") + ": " + summary.cancelled_count].join("\n") : "";
+    const historyCards = historyRows.map(r => {
+      const items = (r.order_items || []).map(i => '<li><strong>' + esc(i.quantity) + '×</strong> ' + esc(lang() === "fr" ? i.item_name_fr_snapshot || i.item_name_en_snapshot : i.item_name_en_snapshot) + '</li>').join("");
+      return '<article class="staff-history-order"><header><span class="staff-code">' + esc(code(r.id)) + '</span><span class="staff-status">' + esc(L("s_" + r.fulfilment_status)) + '</span><time>' + esc(tf(new Date(r.placed_at))) + '</time></header><ul class="staff-items">' + items + '</ul></article>';
+    }).join("");
     const historyScreen = '<section class="staff-shell-screen staff-history-screen" id="staffScreen-history"' + (activeView === "history" ? "" : " hidden") + '><section class="staff-summary-panel"><h2>' + esc(L("summary")) + '</h2>' +
       (summary ? '<dl class="staff-summary-grid"><div><dt>' + esc(L("netCollectedSales")) + '</dt><dd>' + esc(money(summary.net_collected_cents)) + '</dd></div>' +
         '<div><dt>' + esc(L("ordersCount")) + '</dt><dd>' + esc(summary.order_count) + '</dd></div>' +
@@ -158,7 +162,10 @@
         '<div><dt>' + esc(L("collectedCount")) + '</dt><dd>' + esc(summary.collected_count) + '</dd></div>' +
         '<div><dt>' + esc(L("cancelledCount")) + '</dt><dd>' + esc(summary.cancelled_count) + '</dd></div></dl>' +
         '<button type="button" class="button button-gold" id="staffCopySummary">' + esc(L("copySummary")) + '</button><textarea class="staff-summary-copy" id="staffSummaryText" readonly aria-label="' + esc(L("summary")) + '">' + esc(summaryText) + '</textarea>' :
-        '<p class="staff-note">' + esc(L("summaryUnavailable")) + '</p>') + '</section></section>';
+        '<p class="staff-note">' + esc(L("summaryUnavailable")) + '</p>') + '</section>' +
+      '<section class="staff-history-list"><h2>' + esc(L("historyOrders")) + '</h2>' +
+        (historyError ? '<p class="staff-note">' + esc(L("historyError")) + '</p>' : historyCards || '<p class="staff-note">' + esc(L("emptyHistory")) + '</p>') +
+      '</section></section>';
     box.innerHTML = '<div class="staff-shell-head">' + head + '</div>' + nav + '<div class="staff-shell-content">' + queue + scheduled + historyScreen + '</div>';
   }
   async function load() {
