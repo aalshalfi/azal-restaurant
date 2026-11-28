@@ -277,3 +277,9 @@ T-28 is claimed by ChatGPT on branch chatgpt/t28-kitchen-shell-v6, stacked on T-
 - T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
 - Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
 - Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
+
+
+## 2026-11-28 12:26 EST — Legacy branch cleanup blocker
+- Superseded PRs #84, #86, #87, #88, #89, #90, #91 and #92 are closed; active stack is PR #85 (Ready for review), PR #93 (T-27 draft) and PR #94 (T-28 draft).
+- Branch refs still present: `chatgpt/t25-t26-sales-reports`; `chatgpt/t14-f-t14-1`, `chatgpt/t14-f-t14-1-ready`, `chatgpt/t14-f-t14-1-service-role-grants-0016`; `chatgpt/t27-admin-shell`, `chatgpt/t27-admin-shell-v2`, `chatgpt/t27-admin-shell-v3`, `chatgpt/t27-admin-shell-v4`; `chatgpt/t28-kitchen-shell`, `chatgpt/t28-kitchen-shell-v2`, `chatgpt/t28-kitchen-shell-v3`, `chatgpt/t28-kitchen-shell-v4`, `chatgpt/t28-kitchen-shell-v5`.
+- Deletion is not completed: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No claim of branch deletion.
