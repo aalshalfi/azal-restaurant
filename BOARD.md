@@ -459,3 +459,9 @@ T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc6
 ## 2026-11-28 13:04 EST — T-27 v4 review
 
 PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff65cb772a0960b53d6403181110. Review corrections include Manager all-assigned/one-branch report scopes, real T-25 RPC path, paid-only actionable attention, Toronto period defaults, 768px viewport, stable More links, and browser Back/Forward deep-link assertions. Base is 3 commits behind moving T-25 branch; no mergeable/CI-ready claim. Sync only after PR #85 lead gate, then run full tests.
+
+
+## 2026-11-28 12:26 EST — T-28 claim
+- PR #94, branch `chatgpt/t28-kitchen-shell-v6`, stacked directly on PR #93 / T-27 v5.
+- Queue / Scheduled / History, conditional Scheduled, net-only Staff summary with manual copy, and Queue-only polling are implemented.
+- CI pending; no merge, SQL apply, automatic send, or deployment.
