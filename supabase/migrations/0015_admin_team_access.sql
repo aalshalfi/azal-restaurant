@@ -28,6 +28,18 @@ begin
      or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='order_items' and column_name='item_name_fr_snapshot') then
     raise exception '0015 requires Auth identity metadata, T-08 order contact and localized item snapshots';
   end if;
+  if not exists (
+    select 1 from public.user_roles r join auth.users u on u.id=r.user_id
+    where r.role='admin' and pg_catalog.lower(u.email)='info@azalrestaurant.com'
+  ) then
+    raise exception '0015 requires the existing owner Admin identity info@azalrestaurant.com';
+  end if;
+  if exists (
+    select 1 from public.user_roles r left join auth.users u on u.id=r.user_id
+    where r.role='admin' and coalesce(pg_catalog.lower(u.email),'')<>'info@azalrestaurant.com'
+  ) then
+    raise exception '0015 requires non-owner Admin roles to be reconciled before migration';
+  end if;
 end;
 $preflight$;
 
