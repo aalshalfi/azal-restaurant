@@ -6,15 +6,15 @@ const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = nullConfig(await chromium.launch()); const port = srv.address().port;
-async function open({ staff = true, session = true, clash = false }) {
+async function open({ staff = true, session = true, clash = false, branches = ["ottawa"] }) {
   const page = await b.newPage({ viewport: { width: 390, height: 844 } });
   const orders = [
-    { id: "aaaaaa11-0000-4000-8000-000000000001", pickup_slot: "2026-11-26T17:15:00Z", guest_name: "Sara", customer_note: "Less spice", fulfilment_status: "placed", total_cents: 6325, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi", item_name_fr_snapshot: "Mandi d’agneau" }] },
-    { id: "bbbbbb22-0000-4000-8000-000000000002", pickup_slot: "2026-11-26T17:15:00Z", guest_name: null, customer_note: null, fulfilment_status: "ready", total_cents: 451, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] }
+    { id: "aaaaaa11-0000-4000-8000-000000000001", pickup_slot: "2026-11-26T17:15:00Z", guest_name: "Sara", customer_note: "Less spice", fulfilment_status: "placed", branch_slug: "ottawa", total_cents: 6325, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi", item_name_fr_snapshot: "Mandi d’agneau" }] },
+    { id: "bbbbbb22-0000-4000-8000-000000000002", pickup_slot: "2026-11-26T17:15:00Z", guest_name: null, customer_note: null, fulfilment_status: "ready", branch_slug: "ottawa", total_cents: 451, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] }
   ];
   // V8: same first 8 hex as Sara's order -> same pickup sigil
   if (clash) orders.push({ id: "aaaaaa11-9999-4000-8000-000000000003", pickup_slot: "2026-11-26T17:30:00Z", guest_name: "Omar", customer_note: null, fulfilment_status: "placed", total_cents: 999, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] });
-  const acts = [];
+  if (branches.includes("second")) orders.push({ id:"cccccc33-0000-4000-8000-000000000003", pickup_slot:"2026-11-26T18:00:00Z", guest_name:"Second branch", customer_note:null, fulfilment_status:"placed", branch_slug:"second", total_cents:700, order_items:[{quantity:1,item_name_en_snapshot:"Second Branch Dish",item_name_fr_snapshot:"Plat deuxième succursale"}] });\n  const acts = [], requests = [];
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await page.route("https://fake.supabase.co/**", async (r) => {
     const u = r.request().url();
@@ -26,7 +26,7 @@ async function open({ staff = true, session = true, clash = false }) {
   });
   if (session) await page.addInitScript(() => localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "STAFF", refresh_token: "R", expires_at: 4e12, user: { id: "s1", email: "staff@example.invalid" } })));
   await page.goto(`http://localhost:${port}/staff.html`);
-  return { page, acts };
+  return { page, acts, requests };
 }
 {
   const { page, acts } = await open({});
@@ -54,4 +54,15 @@ async function open({ staff = true, session = true, clash = false }) {
 { const { page } = await open({ clash: true }); await page.waitForSelector(".staff-order");
   ok(await page.locator(".staff-order.is-clash").count() === 2 && /check the code/.test(await page.textContent(".staff-order.is-clash .staff-clash")), "V8: two active orders sharing a sigil are both flagged");
   await page.close(); }
-await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
+
+{
+  const { page, requests } = await open({ branches: ["ottawa","second"] });
+  await page.waitForSelector(".staff-order");
+  ok(await page.locator("#staffBranch").count() === 1, "named staff with multiple assignments gets a branch selector");
+  await page.selectOption("#staffBranch","second");
+  await page.waitForFunction(() => /Second Branch Dish/.test(document.querySelector("#staffRoot")?.textContent || ""));
+  ok(requests.some(u => u.includes("branch_slug=eq.second")), "branch switch reloads only the selected assigned branch");
+  ok(!(await page.textContent("#staffRoot")).includes("Lamb Mandi"), "orders from the previous branch disappear after switching");
+  await page.close();
+}
+\nawait b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
