@@ -96,7 +96,7 @@ Deno.serve(async (req: Request) => {
         await service.auth.admin.updateUserById(userId, {
           email: oldEmail,
           email_confirm: true,
-          ban_duration: "none"
+          ban_duration: previousBanDuration
         });
         return reply(400, { error: error.message });
       }
