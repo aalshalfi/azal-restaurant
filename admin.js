@@ -106,20 +106,23 @@
           if (!page || page.length < 500) break;
           if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
         }
+        const ids = [...new Set(rows.map(o => o.user_id).filter(Boolean))];
         const profiles = [];
-        for (let offset = 0; ; offset += 500) {
-          const page = await call("/rest/v1/profiles?select=id,display_name,phone,member_number&order=created_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
+        for (let offset = 0; offset < ids.length; offset += 100) {
+          const batch = ids.slice(offset, offset + 100).map(encodeURIComponent).join(",");
+          const page = await call("/rest/v1/profiles?select=id,display_name,phone,member_number,member_number_retired&id=in.(" + batch + ")&limit=100", s.access_token);
           profiles.push(...(page || []));
-          if (!page || page.length < 500) break;
-          if (profiles.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
         }
-        const directory = await call("/rest/v1/rpc/azal_admin_customer_directory", s.access_token, { method: "POST", body: {} });
-        const profileById = new Map(profiles.map(p => [p.id, p]));
-        const directoryById = new Map((directory || []).map(p => [p.user_id, p]));
-        const enriched = rows.map(o => Object.assign({}, o, { customer: profileById.get(o.user_id) || null, customerEmail: (directoryById.get(o.user_id) || {}).email || null }));
+        const profileById = new Map(profiles.map(p => [p.id, Object.assign({}, p, {
+          member_number: p.member_number_retired ? null : p.member_number
+        })]));
+        const enriched = rows.map(o => Object.assign({}, o, {
+          customer: profileById.get(o.user_id) || null,
+          customerEmail: null
+        }));
         const term = String(search || "").trim().toLocaleLowerCase();
         return enriched.filter(o => (status === "all" || o.fulfilment_status === status) &&
-          (!term || [o.id, publicCode(o.id), o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id, o.customer && o.customer.display_name, o.customer && o.customer.phone, o.customer && o.customer.member_number, o.customerEmail].some(v => String(v || "").toLocaleLowerCase().includes(term))));
+          (!term || [o.id, publicCode(o.id), o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id, o.customer && o.customer.display_name, o.customer && o.customer.phone, o.customer && o.customer.member_number].some(v => String(v || "").toLocaleLowerCase().includes(term))));
       },
       async orderDetail(orderId) {
         const s = await getSession();
@@ -128,13 +131,10 @@
         const rows = await call("/rest/v1/orders?select=id,user_id,branch_slug,fulfilment_type,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,guest_name,guest_email,contact_phone,placed_at,updated_at,handed_over_at,order_items(id,quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot,order_item_options(id,option_name_en_snapshot,option_name_fr_snapshot,quantity,unit_delta_cents,line_delta_cents)),order_events(id,actor_user_id,event_type,from_status,to_status,details,created_at)&id=eq." + encodeURIComponent(orderId) + "&order_events.order=created_at.asc,id.asc&limit=1", s.access_token);
         if (!rows || !rows.length) throw Object.assign(new Error("not_found"), { code: "not_found" });
         const order = rows[0];
-        const [profiles, directory] = order.user_id ? await Promise.all([
-          call("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&id=eq." + encodeURIComponent(order.user_id) + "&limit=1", s.access_token),
-          call("/rest/v1/rpc/azal_admin_customer_directory", s.access_token, { method: "POST", body: {} })
-        ]) : [[], []];
-        const customer = profiles && profiles[0] || null;
-        if (customer) customer.email = ((directory || []).find(p => p.user_id === order.user_id) || {}).email || null;
-        return Object.assign({}, order, { customer });
+        const customer = order.user_id ? await call("/rest/v1/rpc/azal_admin_customer_contact", s.access_token, {
+          method: "POST", body: { p_user_id: order.user_id }
+        }) : null;
+        return Object.assign({}, order, { customer: customer || null });
       }
     };
   }
