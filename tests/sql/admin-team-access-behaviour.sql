@@ -1,4 +1,4 @@
--- T-14 + A1/A2 behavior. Run on a FRESH disposable PG16 database after stub + 0001-0014 + 0015.
+-- T-14 + A1/A2 behavior. Run on a FRESH disposable PG16 database after stub + 0001-0014 + 0015 + 0016.
 -- Includes the existing ADM-1 two-branch fixtures, then exercises server paging, Manager scope,
 -- pending verified invites, branch Orders identities and customer anonymization.
 \ir admin-scope-behaviour.sql
@@ -251,3 +251,37 @@ select zz_eq('authenticated cannot update the audit log',
 select zz_eq('authenticated cannot delete the audit log',
   public.zz_try($$delete from public.admin_audit_log where action='customer_anonymized'$$),'42501');
 reset role;
+
+\echo ===== F-T14-1: service_role receives only the Edge Function's direct table privileges
+select zz_eq('service_role has no direct audit-log SELECT',
+  pg_catalog.has_table_privilege('service_role','public.admin_audit_log','SELECT')::text,'false');
+select zz_eq('service_role has no direct orders SELECT',
+  pg_catalog.has_table_privilege('service_role','public.orders','SELECT')::text,'false');
+select zz_eq('service_role has no direct profiles INSERT',
+  pg_catalog.has_table_privilege('service_role','public.profiles','INSERT')::text,'false');
+select zz_eq('service_role has no direct profiles UPDATE',
+  pg_catalog.has_table_privilege('service_role','public.profiles','UPDATE')::text,'false');
+select zz_eq('service_role has no direct memberships SELECT',
+  pg_catalog.has_table_privilege('service_role','public.memberships','SELECT')::text,'false');
+
+begin;
+set local role service_role;
+-- Exact read shapes used by customer_anonymize preflight.
+select id, anonymized_at from public.profiles
+  where id='00000000-0000-0000-0000-0000000000c1' limit 0;
+select role from public.user_roles
+  where user_id='00000000-0000-0000-0000-0000000000c1' limit 0;
+select auth_user_id from public.branch_orders_accounts
+  where auth_user_id='00000000-0000-0000-0000-0000000000c1' limit 0;
+-- Exact read used by orders_provision pending-invite guard.
+select id from public.admin_team_invites
+  where email='orders@example.invalid' and accepted_at is null and revoked_at is null limit 0;
+-- Exact read used by orders_reset.
+select auth_user_id from public.branch_orders_accounts
+  where branch_slug='ottawa' limit 0;
+-- Exact failed-provision cleanup operations; WHERE false verifies DELETE privilege
+-- without mutating a fixture or a live identity.
+delete from public.profiles where false;
+delete from public.memberships where false;
+rollback;
+\echo PASS F-T14-1 service_role preflight reads and cleanup deletes are granted narrowly
