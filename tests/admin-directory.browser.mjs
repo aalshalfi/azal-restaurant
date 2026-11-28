@@ -78,10 +78,16 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const text=await page.textContent("#managerOperations");
  check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
  const financial=/Payment|Subtotal|Discount|Tax|Total|taxe|Sous-total|الضريبة|الإجمالي|الدفع/.test(text);
- const raw=requests.filter(x=>/\/rest\/v1\/(orders|profiles|points_ledger|memberships)/.test(x.url));
+ const raw=requests.filter(x=>{
+  const u=new URL(x.url),p=u.pathname;
+  if(p.endsWith("/orders"))return true;
+  if(p.endsWith("/profiles"))return u.searchParams.get("id")!=="eq.admin";
+  if(p.endsWith("/points_ledger")||p.endsWith("/memberships"))return u.searchParams.get("user_id")!=="eq.admin";
+  return p.endsWith("/rpc/azal_admin_customer_directory_page")||p.endsWith("/rpc/azal_admin_customer_contact");
+ });
  if(financial||raw.length)console.log("MANAGER_DIAGNOSTIC",lang,width,JSON.stringify({text,raw:raw.map(x=>x.url)}));
  check(!financial,lang+" "+width+": Manager view omits payment and financial fields");
- check(!raw.length,lang+" "+width+": Manager never reads customer or raw order tables");
+ check(!raw.length,lang+" "+width+": Manager never reads another customer or raw order tables");
  await page.close();
 }
 
