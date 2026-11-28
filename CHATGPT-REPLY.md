@@ -2716,3 +2716,10 @@ History is a branch-scoped Toronto-day view, not only a summary card:
 - EN/FR/AR loading, empty and error states are included.
 
 **Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
+
+
+## 2026-11-28 13:07 EST — T-28 final shell-constitution dependency
+
+Muse's 12:26 constitution requires the kitchen Queue ticket's identity to be the six-character order code only (T-24); no sigil or guest name. The current T-28 v6 branch still inherits the pre-T-24 queue ticket presentation. This is intentionally not changed in T-28 while T-24 remains Claude's assigned card. Preserve only the permitted tap-to-call action and the existing server-guarded transitions. T-28 cannot be READY until T-24 is integrated and code-only identity is proven by browser tests.
+
+T-28 v6 otherwise contains the Queue / conditional Scheduled / History shell, T-26 net-only summary and completed/cancelled ticket list, manual copy only, Queue-only polling, authorized branch selection, EN/FR/AR and responsive layouts. PR #94 stays Draft/HOLD, stacked on T-27 PR #93. No Availability until T-29; no SQL, merge or deployment.
