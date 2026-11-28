@@ -78,3 +78,26 @@ test("T-26 today summary is fetched through the staff-only RPC for the selected 
   assert.equal(calls[0][0], "https://x.supabase.co/rest/v1/rpc/azal_staff_today_summary");
   assert.deepEqual(calls[0][1], { p_branch_slug: "ottawa" });
 });
+
+
+test("T-28 History query is limited to today's completed branch orders and omits customer contact and totals", async () => {
+  const calls = [];
+  const s = T.createStaff({ config: CFG, getToken: async () => "STAFF", fetch: async (url) => {
+    calls.push(url);
+    return { ok: true, json: async () => [{ id:"closed-order", fulfilment_status:"handed_over" }] };
+  }});
+  const rows = await s.history();
+  assert.equal(rows[0].fulfilment_status, "handed_over");
+  const u = new URL(calls[0]);
+  assert.equal(u.pathname, "/rest/v1/orders");
+  assert.equal(u.searchParams.get("branch_slug"), "eq.ottawa");
+  assert.equal(u.searchParams.get("payment_status"), "in.(paid,refunded)");
+  assert.equal(u.searchParams.get("fulfilment_status"), "in.(handed_over,cancelled)");
+  assert.ok(u.searchParams.get("placed_at").startsWith("gte."));
+  assert.ok(u.searchParams.getAll("placed_at").some(v => v.startsWith("lt.")));
+  assert.equal(u.searchParams.get("limit"), "100");
+  assert.doesNotMatch(u.searchParams.get("select"), /guest_name|contact_phone|total_cents/);
+  const start = Date.parse(u.searchParams.getAll("placed_at").find(v=>v.startsWith("gte.")).slice(4));
+  const end = Date.parse(u.searchParams.getAll("placed_at").find(v=>v.startsWith("lt.")).slice(3));
+  assert.ok([23,24,25].includes((end-start)/3600000), "Toronto day range handles daylight-saving boundaries");
+});
