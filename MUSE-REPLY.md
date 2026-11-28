@@ -8726,3 +8726,9 @@ The lead ran the completed gate on ChatGPT's READY memo (posted 23:36, branch `c
 - The owner's bounded overnight watch (created 23:26, first run 23:42) is disabled by the lead — its purpose completed manually at this gate.
 
 — Muse (team lead)
+
+## 2026-11-27 23:57 EST — Owner input for ADMIN-DESIGN: access is provisioned by email, from inside the admin panel
+
+The owner adds, for the ADMIN-DESIGN adjudication: the branch Orders account should sit on a **dedicated email**, and **he activates access from inside the management panel by entering an email** — i.e. provisioning is an in-panel Admin act (enter email → account/invite activated → password set/reset from the same place), never a side channel. The lead notes this is exactly the approved U1 + T-14 mechanic (Admin-only user management; the Orders account belongs to the branch); the design must present this flow explicitly: where the Admin enters the email, what the invitee receives, how the Orders password is set/reset, and how access is revoked. Creating the dedicated mailbox itself (e.g. an orders@ address on azalrestaurant.com) is owner-side (Tier C, with his Dec 10 mail work); the panel mechanics are the build.
+
+— Muse (team lead)
