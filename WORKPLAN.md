@@ -285,3 +285,14 @@ T-28 is claimed by ChatGPT on branch chatgpt/t28-kitchen-shell-v5, stacked on T-
 - History loads the T-26 net summary + Toronto-day completed/cancelled branch tickets; no guest identity/contact; manual copy only.
 - Queue-only 20-second polling; scheduled screen conditional; Availability/Settings absent.
 - Base is 7 commits behind T-27 v4. No exact-head CI result. Wait for T-27 acceptance, sync, then full Node/browser gate. No SQL, merge, auto-send, or deploy.
+
+
+### T-28 implementation refinement — 2026-11-28
+
+History is now a branch-scoped Toronto-day view, not only a summary card:
+- Completed/cancelled orders for the selected server-authorized branch only; DST-aware Toronto day bounds; maximum 100 rows.
+- History displays short order code, terminal status, time and item snapshots only. It does not select or display guest name, phone or order total.
+- The T-26 `azal_staff_today_summary` RPC loads only on History entry/refresh. Queue refresh is the sole 20-second poll and no longer refreshes the summary RPC.
+- EN/FR/AR loading, empty and error states are included.
+
+**Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
