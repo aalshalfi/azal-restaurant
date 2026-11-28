@@ -202,6 +202,31 @@ $fn$;
 revoke all on function public.azal_admin_customer_directory_page(text,integer,integer) from public, anon, authenticated;
 grant execute on function public.azal_admin_customer_directory_page(text,integer,integer) to authenticated;
 
+-- Single-customer contact lookup for an Admin opening one order detail.
+-- Avoids pulling the entire customer directory into the all-status order list.
+create or replace function public.azal_admin_customer_contact(p_user_id uuid)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $fn$
+declare v_contact jsonb;
+begin
+  if auth.uid() is null or not public.azal_is_admin() then raise exception 'not_admin' using errcode='42501'; end if;
+  select pg_catalog.jsonb_build_object(
+    'user_id',p.id,'display_name',p.display_name,'phone',p.phone,
+    'member_number',p.member_number,'email',u.email
+  ) into v_contact
+  from public.profiles p join auth.users u on u.id=p.id
+  where p.id=p_user_id and p.anonymized_at is null and not p.member_number_retired
+    and not exists(select 1 from public.user_roles r where r.user_id=p.id and r.role in ('admin','staff','manager'));
+  return v_contact;
+end;
+$fn$;
+revoke all on function public.azal_admin_customer_contact(uuid) from public, anon, authenticated;
+grant execute on function public.azal_admin_customer_contact(uuid) to authenticated;
+
 -- Admin-only Team directory; it returns only named team identities and pending in-portal invites.
 create or replace function public.azal_admin_team_list()
 returns jsonb
