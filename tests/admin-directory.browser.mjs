@@ -131,7 +131,9 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  const oneBranchCall=requests.filter(x=>x.url.includes("/rpc/azal_sales_report")).at(-1);
  check(JSON.parse(oneBranchCall.body).p_branch_slug==="ottawa",lang+" "+width+": Manager can filter to one authorized branch");
  const managerReportText=await page.textContent("#adminScreen-reports");
- check(/Net collected/.test(managerReportText)&&!/Refunds|Subtotal|Discount|HST|TVH|Tax/.test(managerReportText),lang+" "+width+": Manager report exposes net and counts only, with no tax/refund breakdown");
+ const netLabel=lang==="fr"?"Total net encaissé":lang==="ar"?"صافي المحصّل":"Net collected";
+ const forbidden=lang==="fr"?/Remboursements|Sous-total|Rabais|TVH|Taxes?/ : lang==="ar"?/المبالغ المستردة|المجموع الفرعي|الخصم|ضريبة/ : /Refunds|Subtotal|Discount|HST|Tax/;
+ check(managerReportText.includes(netLabel)&&!forbidden.test(managerReportText),lang+" "+width+": Manager report exposes localized net and counts only, with no tax/refund breakdown");
  await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
  const text=await page.textContent("#managerOperations");
  check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
@@ -146,6 +148,17 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  if(financial||raw.length)console.log("MANAGER_DIAGNOSTIC",lang,width,JSON.stringify({text,raw:raw.map(x=>x.url)}));
  check(!financial,lang+" "+width+": Manager view omits payment and financial fields");
  check(!raw.length,lang+" "+width+": Manager never reads another customer or raw order tables");
+ await page.close();
+}
+
+
+
+// T-27: More subpages must resolve from a copied/deep-linked URL, not only from a click handler.
+for (const [slug,targetId] of [["team","adminTeamMembersTitle"],["orders-accounts","adminOrdersAccounts"],["access-history","adminTeamAudit"]]) {
+ const {page}=await open({role:"admin",lang:"en",width:390});
+ await page.evaluate(slug=>{location.hash="#more/"+slug;},slug);
+ await page.waitForFunction(id=>document.activeElement&&document.activeElement.id===id,targetId);
+ check(await page.evaluate(()=>location.hash.startsWith("#more/")), "More deep link #more/"+slug+" focuses its named destination");
  await page.close();
 }
 
