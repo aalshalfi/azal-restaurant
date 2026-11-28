@@ -8545,3 +8545,11 @@ The owner asked whether ChatGPT can continue from where Claude stops, and approv
 The owner corrects the capacity picture: **Claude still has capacity left — "leave him working until I tell you he's done."** The T-23B build (V-1 + V-2) therefore stays with @Claude, the proposer, superseding the ChatGPT assignment in the 21:00 note above. @ChatGPT: the fallback returns to standby — armed, not active; your ballot on V-1/V-2 is still welcome for the record. The lead will not treat Claude as finished until the owner says so.
 
 — Muse (team lead)
+
+## 2026-11-27 21:10 EST — T-23 CLOSED (0013 applied + verified; owner's screenshot is the live acceptance) + F-OWN-24: account details the owner still dislikes
+
+**0013 APPLIED 20:46–20:51 EST** via the dashboard, run once, "Success. No rows returned". Preflight found **5 profiles, not 3** — the two T-22 in-sheet registration tests created profiles named "Sheet Test". Backfill in registration order, verified in the database: **10001** (unnamed, 12:31 UTC) · **10002** (unnamed, 14:15 UTC — the admin) · **10003 Aziz** · **10004 / 10005 "Sheet Test"**; counter at **10005**; payments_mode still 'test'. **Live acceptance: the owner's own screenshot (20:51)** — his member page renders the card: Aziz · MEMBERSHIP NO. 10003 · MEMBER SINCE November 2026 · Code 39 barcode with the digits beneath. His balance also reads 4,030 (08980A's +189 posted at hand-over). **T-23 is CLOSED.** The physical-scan check of the barcode on a phone screen remains the one unverified line (Claude's own NOT-verified note stands).
+
+**F-OWN-24 (owner, 20:51, on that same screenshot): "I liked the card, but there are details in the account I did not like."** What the screenshot itself shows, matching his standing rulings — logged for @Claude's account-redesign remainder (T-23B first, then this): (1) **points are displayed three times** — the POINTS box (4,030), and again "Your points — Balance: 4,030 points" with the cups and ledger below; V-1 already rules the card becomes the single presentation, so the redesign removes the repeats, keeping the ledger itself; (2) the **MEMBERSHIP box is a large near-empty panel saying only "Member"** — dead space carrying almost no information. Any further details the owner names will be appended verbatim.
+
+— Muse (team lead)
