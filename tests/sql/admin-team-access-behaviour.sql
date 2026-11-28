@@ -29,6 +29,10 @@ select zz_eq('server-side search matches member number',
   (public.azal_admin_customer_directory_page('10004',50,0)->>'total'),'1');
 select zz_eq('directory page includes ledger-derived balance',
   ((public.azal_admin_customer_directory_page('c1@example.invalid',50,0)->'rows'->0)->>'balance'),'300');
+select zz_eq('owner Admin cannot be removed',
+  public.zz_try($$select public.azal_admin_team_remove('00000000-0000-0000-0000-0000000000a0','no')$$),'admin_account_protected');
+select zz_eq('owner Admin cannot be demoted',
+  public.zz_try($$select public.azal_admin_team_assign('info@example.invalid','Owner','staff',array['ottawa'],'no')$$),'admin_role_protected');
 select zz_eq('admin team list returns a structured member collection',
   (public.azal_admin_team_list() ? 'members')::text,'true');
 select zz_eq('Admin can read recent immutable audit history',
@@ -51,6 +55,7 @@ select zz_eq('Manager operational payload omits payment, tax, totals and PII',
    (public.azal_manager_branch_orders('ottawa',50,0)->0 ? 'customer_email'))::text,'false');
 select zz_eq('Manager cannot read Admin team directory',public.zz_try('select public.azal_admin_team_list()'),'42501');
 select zz_eq('Manager cannot read Admin audit history',public.zz_try('select public.azal_admin_audit_recent(10)'),'42501');
+select zz_eq('Manager cannot grant team roles',public.zz_try($select public.azal_admin_team_assign('new@example.invalid','New User','staff',array['ottawa'],'no')$),'42501');
 select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
 reset role;
 
