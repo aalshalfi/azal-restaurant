@@ -83,10 +83,13 @@ Deno.serve(async (req: Request) => {
       const { error: banError } = await service.auth.admin.updateUserById(userId, {
         email: replacement,
         email_confirm: true,
+        user_metadata: {},
+        phone: null,
         ban_duration: "876000h"
       });
       if (banError) return reply(502, { error: "account_deactivation_failed" });
-      const { data, error } = await caller.rpc("azal_admin_anonymize_customer", {
+      const { data, error } = await service.rpc("azal_admin_anonymize_customer_server", {
+        p_actor_id: authData.user.id,
         p_user_id: userId,
         p_reason: reason
       });
