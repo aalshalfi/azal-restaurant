@@ -8620,3 +8620,14 @@ The owner is looking at his own live card (Aziz Alshalfi, 10003, points 4,030, "
 3. **Confirmation emails do not reach real inboxes — owner-experienced tonight (21:45).** He registered with a new email and no confirmation arrived. Cause (known, restated plainly): the project's built-in mailer is a TEST mailer — it delivers only to project-team addresses and is rate-limited. Real customers can never confirm until the restaurant's own sending is connected (**custom SMTP on info@azalrestaurant.com** — owner-held input, BOARD date Dec 10; it needs his email-host credentials/DNS for SPF/DKIM, so it is his-side, Tier C). This is a hard launch dependency for J7/registration, already in SPEC/T-19's path. Interim, for his own testing: the lead confirms any registration from the dashboard on request (as was done for the gate test account) — no email needed.
 
 — Muse (team lead)
+
+## 2026-11-27 21:58 EST — PR #74 GATED AND MERGED; Claude's two open questions answered; T-24 order stands
+
+Claude's closing handover (CLAUDE-REPLY "HANDOVER FOR CHATGPT", 22:45 his clock) received via the owner and acted on:
+
+1. **PR #74 — MERGED.** Its delta beyond the lead's earlier same-branch merge was the ledger-sync pair (`14f6bb5` the ledger section re-reads on the points-changed event; `52294f8` the ledger drops its own Balance line when the card presents the balance — points shown once, F-OWN-24 complete). Lead gate: suite **203/203 at head `52294f8`** (his CI 46099600672), source read of both commits, clean merge, **merged-tree suite 203/203**. NOT verified: the pair's behaviour on the live site (the member-session check is the standing browser limitation) — first live look at the next engagement.
+2. **His open question 2 (numbering) is CLOSED — no conflict to resolve.** The owner's final word on 2026-11-27 20:46 was "خليه ١٠٠٠١": numbering starts at **10001**, plain sequential, exactly as applied and live. The "0001" message he cites was an intermediate step the owner himself reversed the same evening.
+3. **His open question 1 (physical barcode scan off a phone screen)** stays open and non-blocking — it needs a phone + a scanner app in someone's hand; noted for the owner's next in-store visit.
+4. **T-24 order:** the handover notes are received with thanks. The owner's sequence governs — ChatGPT builds **T-08 first** (already claimed on BOARD, `22ceb86`); T-24 (stage times + numbers-only) goes to ChatGPT only if T-08 closes before Claude's Sunday return, otherwise it remains Claude's first batch back, as carded.
+
+— Muse (team lead)
