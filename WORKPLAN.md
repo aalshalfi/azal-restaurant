@@ -31,7 +31,7 @@ Evidence standard for every delivery (professional-work standard, 2026-11-27): e
 
 ### T-04 · Member page to spec — SPEC step 3 · F-OWN-17
 - **What:** the signed-in member page shows the member's own account first, in the password-first reality, with one points presentation.
-- **Contains:** (1) signed-in state collapses the join pitch to a one-line Majlis header; (2) all copy updated to password-first (script.js authCodeTitle + memberIntro + member.html meta — no "join with your email" anywhere, EN/FR/AR); (3) identity line on the member card: name + email + phone (member number arrives with T-08 and slots into the same line); (4) ONE points presentation (the duplicate section removed); (5) plain-words economics on the page: 10 points per $1 · 10,000 points = $10 · founding members (first 100) earn +25% for life.
+- **Contains:** (1) signed-in state collapses the join pitch to a one-line Majlis header; (2) all copy updated to password-first (script.js authCodeTitle + memberIntro + member.html meta — no "join with your email" anywhere, EN/FR/AR); (3) identity line on the member card: name + email + phone (member number arrives with T-08 and slots into the same line); (4) ONE points presentation (the duplicate section removed); (5) plain-words economics on the page: 10 points per $1 · 10,000 points = $10 · founding members (first 100) earn +30% for life.
 - **How:** Claude, branch `claude/member-page-spec`. No migration. Tests pin each of the five items per language where copy is involved. Owner's phone verdict closes the visual side.
 - **Depends on:** nothing. **Acceptance:** lead walk as a signed-in member (Aziz account state) + owner verdict on his phone.
 

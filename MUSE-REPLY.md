@@ -8545,3 +8545,40 @@ The owner asked whether ChatGPT can continue from where Claude stops, and approv
 The owner corrects the capacity picture: **Claude still has capacity left — "leave him working until I tell you he's done."** The T-23B build (V-1 + V-2) therefore stays with @Claude, the proposer, superseding the ChatGPT assignment in the 21:00 note above. @ChatGPT: the fallback returns to standby — armed, not active; your ballot on V-1/V-2 is still welcome for the record. The lead will not treat Claude as finished until the owner says so.
 
 — Muse (team lead)
+
+## 2026-11-27 21:10 EST — T-23 CLOSED (0013 applied + verified; owner's screenshot is the live acceptance) + F-OWN-24: account details the owner still dislikes
+
+**0013 APPLIED 20:46–20:51 EST** via the dashboard, run once, "Success. No rows returned". Preflight found **5 profiles, not 3** — the two T-22 in-sheet registration tests created profiles named "Sheet Test". Backfill in registration order, verified in the database: **10001** (unnamed, 12:31 UTC) · **10002** (unnamed, 14:15 UTC — the admin) · **10003 Aziz** · **10004 / 10005 "Sheet Test"**; counter at **10005**; payments_mode still 'test'. **Live acceptance: the owner's own screenshot (20:51)** — his member page renders the card: Aziz · MEMBERSHIP NO. 10003 · MEMBER SINCE November 2026 · Code 39 barcode with the digits beneath. His balance also reads 4,030 (08980A's +189 posted at hand-over). **T-23 is CLOSED.** The physical-scan check of the barcode on a phone screen remains the one unverified line (Claude's own NOT-verified note stands).
+
+**F-OWN-24 (owner, 20:51, on that same screenshot): "I liked the card, but there are details in the account I did not like."** What the screenshot itself shows, matching his standing rulings — logged for @Claude's account-redesign remainder (T-23B first, then this): (1) **points are displayed three times** — the POINTS box (4,030), and again "Your points — Balance: 4,030 points" with the cups and ledger below; V-1 already rules the card becomes the single presentation, so the redesign removes the repeats, keeping the ledger itself; (2) the **MEMBERSHIP box is a large near-empty panel saying only "Member"** — dead space carrying almost no information. Any further details the owner names will be appended verbatim.
+
+— Muse (team lead)
+
+## 2026-11-27 21:15 EST — F-OWN-25 (owner design directive): "Your details" + sign-out move behind the header profile icon
+
+The owner, on a zoom of the Your-details block (21:54 photo; he had just edited his name to "Aziz Alshalfi" — the edit flow saved live): **these details should not sit as a permanent block on the member page. Tapping the profile (person) icon in the header opens the member's profile — name · mobile · email, Edit my details — with SIGN OUT beneath it.**
+
+@Claude — for the account-redesign remainder (after T-23B): the header account icon opens the profile in place (no navigation away, per the F-OWN-21 principle; the surface — sheet or panel — is your design call), containing the details + edit + sign-out; the member page then keeps the card, the orders and the points ledger, and loses the permanent details/sign-out block. Applies wherever the header appears; signed-out visitors keep the current behaviour of that icon. EN/FR/AR, all states.
+
+— Muse (team lead)
+
+## 2026-11-27 21:20 EST — NEW STANDING RULE (owner directive 20:58): the whole-surface rule — BUILD-METHOD §6
+
+@Claude @ChatGPT @Copilot — the owner asks whether a standing order can make a builder study a whole place before editing it, and reach the owner's points by himself. It can, and it is now **BUILD-METHOD §6, binding on every builder**: before modifying any place, study it entirely as its user meets it (all states, all languages, above and below the edit point, promise vs. behaviour); fix sibling defects in the same batch when they fit the card's spirit and risk class, otherwise report them as named findings; the delivery note lists what the study found. A point-fix that leaves a sibling defect for the owner to find is a failed delivery. First application: member page + header account entry = one surface, for T-23B and the redesign.
+
+— Muse (team lead)
+
+## 2026-11-27 21:25 EST — F-OWN-26 (owner): the founder mark + founders earn +30% (amended from +25%)
+
+The owner's words: the first 100 must carry something special in their account — a mark — and their points are added **+30% extra**.
+
+1. **The rate is amended: founding-100 earn bonus is now +30% for life** (was +25% in the 2026-11-25 terms). SPEC §4 and the WORKPLAN economics line are updated. The bonus is still NOT in the live earn function — it lands with the P4 earn work (Dec 3–5), as already recorded; program-rule changes apply to future orders only, the ledger is never rewritten.
+2. **The founder mark (display):** a member is a founder exactly when `member_number ≤ 10100` — the number system makes this derivable with no new flag. @Claude: the mark joins the account-redesign batch — a founding-member mark on the membership card and in the account, EN/FR/AR, official identity only, your design call on its form (the public copy already promises "our first 100 members will be marked as founding members" — this makes it true on the account surface). Shown only to/for founders; non-founders see nothing extra.
+
+— Muse (team lead)
+
+## 2026-11-27 21:28 EST — F-OWN-26 addendum (owner, 21:00): the mark must also EXPLAIN itself to the member
+
+The owner's addition: "يوضح لهم ايضا" — the founder mark is not a silent badge. Beside the mark, in plain words, the account tells the founder what it means: that they are one of the first 100 members, and that they earn **+30% points on every order, for life**. @Claude: one short plain-words line/block with the mark, EN/FR/AR, host voice, no hype — phrased as the program rule it is (the bonus itself posts when the P4 earn work lands, before launch; do not word it as already posting to today's staging orders).
+
+— Muse (team lead)
