@@ -2692,3 +2692,22 @@ Continued the existing T-27 branch rather than creating a duplicate. Fixed the b
 Current T-27 code head at review: `cc0bd0c1447cff65cb772a0960b53d6403181110` (PR #93, Draft). Inherited the corrected report RPC mocks, paid-only Home attention list, Manager all-assigned/single-branch report selector, daily/monthly/yearly Toronto date controls, 768px tablet viewport, and stable More route slugs. Added the missing browser assertions for `#more/team` and customer/order detail Back/Forward behavior.
 
 The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=false. The exact T-27 browser suite is not yet verified green. Keep Draft; after PR #85 lead/staging gate, sync branch to the accepted base and run the full Node/browser matrix. No merge, SQL, permission, live-data or deployment changes.
+
+
+## READY FOR LEAD GATE — T-27 Admin Shell
+
+- **Status:** READY FOR LEAD GATE. This is a handoff for lead review, not approval to merge.
+- **Tested code head:** `5617d769ecd5f9c27caf02d21a4692afbe4e1bfc`
+- **Main head synchronized:** `ac30b3b25d391cc0bd9e2d55f3259343c1722896`
+- **Tree:** `631f1985f242a1de27edf90d96fc98c9cb41df62`
+- **Exact-head CI:** [Run #46176155585](https://github.com/aalshalfi/azal-restaurant/actions/runs/46176155585) — completed successfully, 5/5 jobs:
+  - edge-function-checks — success
+  - static-checks — success
+  - reporting-checks — success
+  - sql-checks — success
+  - browser-checks — success
+- PR #93 remains open; branch comparison at synchronization was 14 commits ahead / 0 behind main, with no merge conflict.
+- T-27 scope includes the admin shell/navigation, role-aware destinations, report integration, paged customer directory, and URL/deep-link behavior described in the PR.
+- **Lead review still required:** verify Manager-shaped report output and the role/destination UX matrix on staging; no Manager staging account was available to verify the live Manager view.
+- No PR merge, SQL application, deployment, production/staging data mutation, or live feature activation was performed.
+- This handoff entry is a documentation-only commit written after the tested code head above; CI run #46176155585 validates the stated code head, not this subsequent memo-only commit.
