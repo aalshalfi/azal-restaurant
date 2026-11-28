@@ -25,6 +25,7 @@ test("role comes from the server: azal_is_admin() first, then the caller's own u
   const base = { config: { url: "https://x.supabase.co", anonKey: "a" }, session: { access_token: "T", user: { id: "u1" } } };
   assert.equal(await R.roleOf({ ...base, fetch: fake(true, []) }), "admin");
   assert.equal(await R.roleOf({ ...base, fetch: fake(false, [{ role: "staff" }]) }), "staff");
+  assert.equal(await R.roleOf({ ...base, fetch: fake(false, [{ role: "manager" }]) }), "manager");
   assert.equal(await R.roleOf({ ...base, fetch: fake(false, [{ role: "customer" }]) }), "customer");
   assert.equal(await R.roleOf({ ...base, fetch: async () => ({ ok: false, json: async () => null }) }), "customer", "a failed check never grants anything");
   assert.equal(await R.roleOf({ ...base, session: null, fetch: fake(true, []) }), "none");
