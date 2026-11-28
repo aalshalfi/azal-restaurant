@@ -29,6 +29,8 @@ Confirm this is the intended staging project and the following are present:
            to_regclass('public.profiles') as profiles,
            to_regclass('public.memberships') as memberships,
            to_regclass('public.points_ledger') as points_ledger,
+           to_regclass('public.points_claims') as points_claims,
+           to_regclass('public.order_outbox') as order_outbox,
            to_regclass('public.orders') as orders,
            to_regclass('public.order_items') as order_items,
            to_regclass('public.branches') as branches,
@@ -123,7 +125,7 @@ Deploy admin-team-access to the staging project only after SQL review:
 
 Confirm verify_jwt = true in supabase/config.toml. Set SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY in the Edge Function secret store. The service-role key must never appear in browser config, source literals, logs, or GitHub Actions output.
 
-The function supports Admin-checked team assignment/removal, branch Orders account provision/reset, and customer anonymization. It sends no email. Branch Orders password creation/reset requires 16+ characters; the password is not read back or stored in browser state after completion.
+The function supports Admin-checked team assignment/removal, branch Orders account provision/reset, and customer anonymization. The anonymization action preflights the customer profile, team roles and branch Orders identity before Auth mutation; after an RPC error it re-reads the durable anonymization marker before deciding whether restoring the saved Auth state is safe. It sends no email. Branch Orders password creation/reset requires 16+ characters; the password is not read back or stored in browser state after completion.
 
 ## Staging acceptance (Muse / lead)
 
