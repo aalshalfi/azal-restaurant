@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 
 test("0016 extends the existing role model; Admin and Manager checks are server-side", () => {
-  const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
   assert.ok(sql.includes("create or replace function public.azal_admin_audit_recent"));
   assert.ok(sql.includes("create or replace function public.azal_staff_my_branches"));
   assert.match(sql,/role in \('customer','staff','admin','manager'\)/);
@@ -17,7 +17,7 @@ test("0016 extends the existing role model; Admin and Manager checks are server-
 });
 
 test("A1 directory search and pagination run in a fixed-path Admin RPC with a hard page cap", () => {
-  const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
   const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_customer_directory_page"),sql.indexOf("create or replace function public.azal_admin_team_list"));
   assert.match(fn,/security definer[\s\S]*set search_path = ''/);
   assert.match(fn,/auth\.uid\(\) is null or not public\.azal_is_admin\(\)/);
@@ -29,7 +29,7 @@ test("A1 directory search and pagination run in a fixed-path Admin RPC with a ha
 });
 
 test("A2 anonymization is server-only, reason-required, and preserves append-only history", () => {
-  const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
   const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_anonymize_customer_server"),sql.indexOf("-- Apply pending in-portal invitations"));
   assert.ok(fn.includes("p_actor_id is null or not exists"));
   assert.ok(fn.includes("r.role='admin'"));
@@ -46,7 +46,7 @@ test("A2 anonymization is server-only, reason-required, and preserves append-onl
   assert.ok(sql.includes("grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text) to service_role"));
 });
 test("Team invitations are in-portal only and activate only after verified email", () => {
-  const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
   const invite=sql.slice(sql.indexOf("create or replace function public.azal_admin_team_assign"),sql.indexOf("create or replace function public.azal_admin_team_remove"));
   const trigger=sql.slice(sql.indexOf("create or replace function public.azal_apply_team_invite"),sql.indexOf("create or replace function public.azal_manager_branch_orders"));
   assert.match(invite,/pending_account/);
@@ -58,7 +58,7 @@ test("Team invitations are in-portal only and activate only after verified email
 });
 
 test("branch Orders credentials are branch-owned, Admin-gated, and use server-only service key", () => {
-  const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
   assert.match(sql,/create table if not exists public\.branch_orders_accounts/);
   assert.match(sql,/branch_slug text primary key/);
   assert.match(sql,/auth_user_id uuid not null unique/);
@@ -73,7 +73,7 @@ test("branch Orders credentials are branch-owned, Admin-gated, and use server-on
 });
 
 test("Manager order RPC returns branch-only operational data and excludes financial/PII fields", () => {
-  const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
   const fn=sql.slice(sql.indexOf("create or replace function public.azal_manager_branch_orders"),sql.lastIndexOf("commit;"));
   assert.match(fn,/azal_manager_can_access\(p_branch_slug\)/);
   assert.match(fn,/where o\.branch_slug=p_branch_slug/);
