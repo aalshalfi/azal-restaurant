@@ -2567,3 +2567,34 @@ The owner told me 17:19 «نحن نعاني انصحنا» ("we are suffering, a
   - dead controls: none (each one pinned).
 - **Review class:** delta review (checkout.js, auth.js, CSS, tests).
 - **Next:** T-04 after T-22 merges.
+
+## 2026-11-27 21:50 EST — T-23 all three steps delivered: PR #72 @ `737a850` (CI 46094121941 ✓)
+
+- **Branch:** `claude/member-number` (not `-card` as the 20:52 note assumed). One commit per step, in the ordered build:
+  1. **`2dfe21a` · 0013:**
+     - A plain integer from **10001** (the card's owner spec; the owner's message here said 0001, but WORKPLAN T-23 fixes 10001, so 10001 was built).
+     - Backfill in registration order.
+     - **Gap-free:** one counter row, updated in the same transaction, so a refused sign-up leaves no hole.
+     - Immutable (trigger), unique, ≥ 10001. The member reads it through the existing RLS; no client writes it or sees the counter.
+     - SQL **12/12** on PG16 (0001–0010, then 0013 run twice). Apply guide: `docs/apply-0013.md`, **apply AFTER merge and deploy.**
+  2. **`a46d20f` · member page:**
+     - The number line, read with a stepped 400 fallback, so the page works before the apply.
+     - **F-OWN-17:** the join pitch is hidden for signed-in members; visitors keep it.
+  3. **`45fb1df` · card + barcode:**
+     - Contents: name · membership number · member since (`profiles.created_at`, Toronto month and year) · barcode, with the digits printed under it.
+     - Identity: official palette and the official AZAL symbol only, as the mark and a 9% watermark.
+     - The barcode is **Code 39** of the number in SVG, with no library. Its patterns are **identical to ReportLab's independent encoder** for five numbers, pinned in `tests/member-card.test.mjs`.
+- **Design verdict (my seat):** the card as built is the approved design. The step-2 line now lives inside the card.
+- **BUILD-METHOD §4:**
+  1. **States:** signed in with the number; before 0013 (no card, page works); visitor (pitch kept, no card); no_profile/error (pitch hidden, no card).
+  2. **Async:** no new async; the existing auth flow.
+  3. **Strings:** `authMemberNo`, `authMemberSince` and `authBarcode` in EN/FR/AR; `arabic.test` passes; script tags unchanged.
+  4. **Widths:** 320 (AR), 390 (FR), 1280 (EN): the card stays inside the screen and the page has no overflow (pinned). I looked at EN and AR screenshots.
+  5. **Tests:** node **202/202**; browser **27 files, 585 checks**; SQL 12/12; CI **46094121941** ✓. `member-number.browser.mjs` fails on main. No new server action beyond 0013's own (it is pinned for anon, authenticated and owner).
+  6. **NOT verified:** the live apply and backfill on the real project (lead); **a physical scan of the barcode on a phone screen** (the encoding is proven, but scanning off a screen is not); real accounts' creation dates.
+- **Defect ledger:**
+  - bidi: digits are LTR isolates in Arabic;
+  - truncation: long names wrap;
+  - silent loss: the number is passed through as an integer and checked to be at least 10001 before display;
+  - dead controls: none (the card is read-only).
+- **Stopping point (for the 20:52 fallback protocol):** **T-23 is complete; nothing to hand over.** Next: the lead's review, merge, apply 0013, live check. Then T-04's remaining items.
