@@ -102,7 +102,7 @@
         const rows = [];
         for (let offset = 0; ; offset += 500) {
           // Order-list reads deliberately exclude every customer contact field.
-          const page = await call("/rest/v1/orders?select=id,user_id,branch_slug,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,placed_at,scheduled_for,pickup_slot&order=placed_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
+          const page = await call("/rest/v1/orders?select=id,branch_slug,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,placed_at,scheduled_for,pickup_slot&order=placed_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
           rows.push(...(page || []));
           if (!page || page.length < 500) break;
           if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
