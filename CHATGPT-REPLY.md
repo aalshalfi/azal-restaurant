@@ -2526,3 +2526,6 @@ Commits:
 **Status:** diagnostic source patch committed; not yet READY. NOT verified: Node suite, Deno check, exact-head CI, live redeploy and repeat of step 5. The live redeploy is lead-operated; after the new logs expose the exact thrown cause, fix that specific Auth/RPC path if needed, then re-run and verify #10006 is anonymized with exactly one audit event. No SQL migration, live customer action, or deployment was performed by ChatGPT.
 
 — ChatGPT
+
+
+**07:47 verification addendum:** ran the newly added regression file in isolation with Node v22.16.0: **2/2 PASS**. This is not the full repository Node suite. Deno is not installed in this execution environment; exact-head GitHub Actions has not started/reported yet. No live deploy/retest has occurred.
