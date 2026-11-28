@@ -39,6 +39,57 @@ Expected: every object exists. Confirm profiles.display_name, phone, member_numb
 
 The migration itself preflights T-08's directory RPC and the required tables. It is transaction-wrapped. Do not infer that a successful local PG16 test means staging is ready.
 
+## Mandatory backup, restore rehearsal and rollback plan (lead-operated)
+
+**This is a hard precondition, not an optional checklist.** Do not apply 0015 or exercise A2 on staging until the lead has a verified pre-change backup and a successful restore rehearsal. Use only the designated staging project and synthetic customer identities; never anonymize a real customer as an acceptance test.
+
+1. Record the staging project reference, database name, operator, UTC capture time and intended change window. Confirm the target is staging, not production.
+2. Create a full logical backup with an authorized database connection. Keep credentials in the operator's secret environment; do not paste connection strings into notes or CI logs.
+
+       export BACKUP_FILE="azal-staging-before-0015-$(date -u +%Y%m%dT%H%M%SZ).dump"
+       pg_dump --format=custom --no-owner --no-acl "$STAGING_DATABASE_URL" --file="$BACKUP_FILE"
+       sha256sum "$BACKUP_FILE" | tee "$BACKUP_FILE.sha256"
+       pg_restore --list "$BACKUP_FILE" > "$BACKUP_FILE.toc"
+
+3. Rehearse the restore into a **separate empty disposable recovery database/project**, never over staging or production:
+
+       pg_restore --exit-on-error --no-owner --no-acl \
+         --dbname="$RESTORE_TEST_DATABASE_URL" "$BACKUP_FILE"
+       psql "$RESTORE_TEST_DATABASE_URL" -v ON_ERROR_STOP=1 \
+         -c "select current_database();" \
+         -c "select count(*) from public.orders;" \
+         -c "select count(*) from public.profiles;" \
+         -c "select count(*) from public.points_claims;" \
+         -c "select count(*) from public.order_outbox;"
+
+   Compare the restored database identity and row counts with the recorded staging baseline. The restore rehearsal must finish without errors; retain its command output and the dump checksum.
+
+4. Complete the evidence record below and have the lead verify it before the migration window. If the backup, checksum, restore rehearsal or evidence is missing, stop; do not apply 0015.
+5. Immediately before apply, pause staging writes for the change window and take a second backup if any staging data changed since the rehearsed snapshot. Record the exact migration SHA and the pre-apply snapshot identifier.
+
+### Rollback / recovery decision tree
+
+- **Migration fails before COMMIT:** stop the run, capture the SQL error, allow the transaction to roll back, and verify the 0015 objects/constraints are absent or unchanged. Do not retry until the cause is fixed and the disposable PG16 suite is green.
+- **Migration committed but application/Edge acceptance fails:** keep the site and Edge action disabled; do not improvise destructive reverse SQL. Because 0015 is additive, prefer restoring the previous application code while leaving the reviewed schema untouched. The lead decides whether a full staging restore is necessary.
+- **Staging data must be restored:** restore the verified snapshot into a separate recovery target first, validate Auth + profiles + orders + claims + outbox counts, then have the lead authorize the staging recovery. A full restore rewinds all staging writes after the snapshot; record and reconcile that loss before replacing staging.
+- **A2 synthetic-customer test needs recovery:** restore the pre-A2 snapshot into an isolated recovery target or recreate the synthetic fixture. Do not attempt to reconstruct the customer's old email, metadata, claims or outbox payload by hand. No real-customer A2 operation is permitted in this release gate.
+- Never restore a staging dump into production. Never remove the sole-Admin guard or create a second Admin identity as a recovery shortcut.
+
+### Required evidence fields (complete before apply)
+
+| Evidence | Recorded value |
+|---|---|
+| Staging project reference + database name | |
+| Backup file / provider snapshot ID | |
+| Backup UTC timestamp + operator | |
+| SHA-256 checksum | |
+| `pg_restore --list` output location | |
+| Isolated restore target + restore result | |
+| Baseline vs restored counts (orders / profiles / claims / outbox) | |
+| Lead backup + restore approval and timestamp | |
+| Pre-apply snapshot ID + migration SHA | |
+| Recovery decision owner | |
+
 ## Disposable PostgreSQL 16 behavior run
 
 Build a fresh disposable database using the repository's documented schema chain through 0014, then apply 0015 to that disposable database. Run:
@@ -50,7 +101,7 @@ Expected coverage:
 - Manager cannot read the Admin team directory or access another branch; the Manager operational payload contains no PII/payment/tax/financial columns.
 - Orders account is branch-linked and cannot be removed through the ordinary named-team action.
 - A1 search by name/email/phone/member number, bounded pages, deep offsets and a 1,000-customer fixture.
-- A2 requires a reason, scrubs identifying profile/order contact data, disables directory visibility, retires the member number, suspends membership, and retains points ledger + order financial history.
+- A2 rejects non-customer/team/Orders identities before Auth mutation; requires a reason; scrubs Auth/profile/order contact + free-text note data, pending/claimed guest emails and durable outbox PII; disables directory visibility; retires the member number; suspends membership; and retains points ledger + order financial history. Duplicate/lost-response retry is idempotent.
 - Direct authenticated writes to the audit log are denied.
 
 Also run:
@@ -78,7 +129,7 @@ The function supports Admin-checked team assignment/removal, branch Orders accou
 2. Create one branch Orders account and verify it can open only that branch's kitchen queue; reset its password and verify the old password no longer works. No email is sent.
 3. Remove a named Staff user; confirm server-side access is denied on the next request. Confirm the owner/Admin root cannot be demoted or removed.
 4. Exercise A1 with at least 1,000 synthetic staging customers; verify page size stays bounded and search matches all four fields.
-5. Exercise A2 only with a disposable staging customer; verify Auth sign-in is banned, Auth email and identity metadata replaced/scrubbed, Auth sign-in banned, profile/order contact PII scrubbed, member number retired, directory exclusion, and ledger/order/tax aggregates retained.
+5. Exercise A2 only with a disposable staging customer; verify Auth sign-in is banned, Auth email/phone/identity metadata scrubbed, profile/order contact + customer note PII scrubbed, pending and claimed points-claim emails replaced, outbox recipient/payload PII removed, member number retired, directory exclusion, and ledger/order/tax aggregates retained. Repeat the same request to verify idempotent success and no duplicate audit event.
 6. Confirm Manager branch RPC exposes no customer PII, payment state, subtotal, discount or HST.
 7. Walk EN/FR/AR at 320 / 390 / 1280 px, including signed-out, forbidden, loading, empty, error, stale, success and sign-out states.
 
