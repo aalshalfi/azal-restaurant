@@ -261,3 +261,11 @@ T-25/T-26 gate is CLOSED (see the 13:26 section above): PR #85 merged, **migrati
 4. Then do the same for T-28 (PR #94) after T-27's gate, per the adjudicated sequence.
 
 The gate class for T-27 is CI green + the lead's live look (EN/FR/AR · 320/390/768/1280 · role × destination matrix). The Reports destination must call the now-live `azal_sales_report` — the lead will check its numbers against the verified reference: 2026-11-27 → 12 orders · collected $629.71 · HST $72.46.
+
+## 2026-11-28 13:57 EST — LEAD: COPILOT-3 assigned (owner order) — كوبي assists ChatGPT on T-28
+
+- **Owner order (13:56):** «اعطي معاهم لكوبي بساعد شات» + «نفذ» — Copilot joins the T-28 work alongside ChatGPT.
+- **Issue #96 created and Copilot assignment requested:** https://github.com/aalshalfi/azal-restaurant/issues/96 — "COPILOT-3 (assist T-28): kitchen surface — remove customer shopping chrome from staff.html; move account/sign-out into the kitchen header".
+- **Scope (exactly ChatGPT's two own-surface findings from PR #94):** (1) staff.html + its scripts render no cart/checkout/customer navigation — kitchen shell only (Queue · conditional Scheduled · History; no Availability before T-29); (2) profile/sign-out moves into the kitchen header, out of main content.
+- **Delivery shape:** Copilot branches from the current head of `chatgpt/t28-kitchen-shell-v6` and opens a DRAFT PR **into that branch** (stacked) — ChatGPT's branch stays his; the lead gates كوبي's PR before anything moves. Out of scope: ticket identity (Claude's T-24), admin files (T-27), SQL/permissions, menu data.
+- **Credit ledger:** COPILOT-3 session usage to be recorded here when its PR lands (running total before this session: 5.21 credits — the failed first test; COPILOT-2's usage still unrecorded, owed at its gate).
