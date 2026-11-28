@@ -72,7 +72,7 @@ begin
       and (
         (v_admin and (p_branch_slug is null or o.branch_slug=p_branch_slug))
         or
-        (v_manager and o.branch_slug = any(v_manager_scope))
+        (v_manager and o.branch_slug = any(v_manager_scope) and (p_branch_slug is null or o.branch_slug=p_branch_slug))
       )
   ),
   bucketed as (
@@ -143,16 +143,20 @@ begin
     where pe.event_type='payment_succeeded'
     group by pe.order_id
   ),
+  refunds as (
+    select pe.order_id,sum(pe.amount_cents)::bigint as refund_cents
+    from public.payment_events pe where pe.event_type='refund_succeeded' group by pe.order_id
+  ),
   today_orders as (
-    select o.fulfilment_status,o.total_cents,pt.paid_at
-    from public.orders o join payment_time pt on pt.order_id=o.id
+    select o.fulfilment_status,o.total_cents,pt.paid_at,coalesce(r.refund_cents,0)::bigint as refund_cents
+    from public.orders o join payment_time pt on pt.order_id=o.id left join refunds r on r.order_id=o.id
     where o.branch_slug=p_branch_slug
       and pt.paid_at >= (v_today::timestamp at time zone 'America/Toronto')
       and pt.paid_at < ((v_today+1)::timestamp at time zone 'America/Toronto')
   )
   select jsonb_build_object(
     'date',v_today,
-    'collected_cents',coalesce(sum(total_cents) filter(where fulfilment_status='handed_over'),0),
+    'collected_cents',coalesce(sum(total_cents-refund_cents) filter(where fulfilment_status='handed_over'),0),
     'placed_count',count(*) filter(where fulfilment_status='placed'),
     'accepted_count',count(*) filter(where fulfilment_status='accepted'),
     'preparing_count',count(*) filter(where fulfilment_status='preparing'),
