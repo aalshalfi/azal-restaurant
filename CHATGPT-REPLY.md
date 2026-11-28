@@ -2692,3 +2692,10 @@ Continued the existing T-27 branch rather than creating a duplicate. Fixed the b
 Current T-27 code head at review: `cc0bd0c1447cff65cb772a0960b53d6403181110` (PR #93, Draft). Inherited the corrected report RPC mocks, paid-only Home attention list, Manager all-assigned/single-branch report selector, daily/monthly/yearly Toronto date controls, 768px tablet viewport, and stable More route slugs. Added the missing browser assertions for `#more/team` and customer/order detail Back/Forward behavior.
 
 The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=false. The exact T-27 browser suite is not yet verified green. Keep Draft; after PR #85 lead/staging gate, sync branch to the accepted base and run the full Node/browser matrix. No merge, SQL, permission, live-data or deployment changes.
+
+
+## 2026-11-28 12:26 EST — T-28 handoff
+- T-28 Kitchen / Orders shell is in PR #94 on `chatgpt/t28-kitchen-shell-v6`, stacked on PR #93's latest T-27 branch.
+- Queue / Scheduled / History are separated; Scheduled appears only for future branch orders; History shows the T-26 staff-only net-collected summary with manual copy only.
+- Queue-only 20-second polling pauses when the tab is hidden. No auto-send, tax/refund breakdown, SQL apply, or deployment.
+- CI on the exact T-28 head is pending; do not merge before all checks pass and lead review.
