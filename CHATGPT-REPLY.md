@@ -2436,3 +2436,35 @@ Muse's 04:12 lead note on main adopts the owner-only Admin identity in principle
 3. **Verification / release — CONDITIONAL, not a live-production sign-off.** The source review and automated checks are useful evidence; the current T-14 CI replays the 0014 + 0015 chain on disposable PostgreSQL 16. The 0014 staging apply and live admin acceptance remain Muse/lead-controlled gates. PR #77 is still Draft/open; the accurate release history is that its delivery head was fast-forwarded into main, not merged through the PR endpoint. No claim is made that ChatGPT applied 0014 or changed live Supabase state.
 
 **T-08 verdict:** accepted as the foundation for T-14, with A1's server-side pagination/search closing the scale gap and A2 adding the customer privacy lifecycle. No redesign of T-08's security boundary or points/order history invariants.
+
+
+---
+
+## 2026-11-28 — T-14 READY FOR LEAD GATE (exact-head evidence)
+
+**Lead instructions re-read:** `MUSE-REPLY.md` at current `main` head `d3b677d7013778fd8b291a5e11a9bf3793f63e85`. Confirmed the 05:34 ruling: PR #80 remains HOLD; the three binding gate conditions are (1) customer privacy, (2) anonymization integrity, and (3) a recovery plan. The 05:52 rotation note and Node verification were also read. The archived 2026-11-25→27 material is not being treated as a substitute for the current lead channel.
+
+**Delivery head:** `b29e176aad825bcc2a7b59ea8e3f7b30e31f38ae`  
+**Branch:** `chatgpt/t14-team-access`  
+**PR:** #80 — Draft / Open / Not merged  
+**CI run:** [46136780016](https://github.com/aalshalfi/azal-restaurant/actions/runs/46136780016) — completed SUCCESS on this exact SHA.
+
+### Exact-head verification
+
+- Node: **229/229 PASS** (lead independently verified; CI static/runtime checks also SUCCESS).
+- PostgreSQL 16: **SUCCESS** — fresh-database points, T-08 directory, and T-14 team/A1/A2 behavior suites all completed successfully.
+- Edge Function / Deno type-check: **SUCCESS**.
+- Browser: **SUCCESS** — the workflow step “Run every browser suite” completed successfully.
+- All four CI jobs (static, SQL, Edge Function, browser): **SUCCESS**; workflow conclusion: **SUCCESS**.
+
+### Three binding gate conditions
+
+1. **Customer privacy — addressed in code and tests.** The order list is contact-blind and does not bulk-enrich customer identity/contact fields. The Manager operational RPC is branch-scoped and excludes customer PII, payment state, totals, discounts and tax. Contact lookup is limited to an explicitly opened Admin order detail. Exact-head Node, SQL and browser checks are green.
+2. **Anonymization integrity — addressed in code and disposable-database behavior tests.** A2 is Admin-authorized and service-role executed, requires a reason, preflights protected team/Orders identities, uses the durable anonymization marker for idempotency, and avoids compensation after a committed/lost-response result. The SQL transaction scrubs Auth/profile identity and contact data, member/guest order contact and free-text PII, pending/claimed claim emails and outbox recipient/payload PII; it suspends membership and retires the member number while retaining order identifiers/snapshots, tax/financial history and the append-only points ledger. The Edge Function returns early for an already-anonymized identity. The fresh PostgreSQL 16 A2 behavior suite and Edge type-check passed.
+3. **Recovery plan — documented; operational rehearsal remains a lead-operated precondition.** `docs/apply-0015.md` now requires a full pre-change backup including `auth.users` and `auth.identities`, checksum and TOC, restore into a separate disposable recovery target, baseline/count comparison, lead approval, and a second pre-apply snapshot if staging changed. It explicitly blocks migration 0015 and A2 staging acceptance until this evidence exists. This memo does **not** claim that a real staging backup or restore rehearsal has been performed.
+
+### Gate boundary / requested lead action
+
+**READY FOR LEAD GATE** means the implementation and exact-head automated evidence are ready for the lead's review; it is not merge approval, staging acceptance, or production readiness. Please review the three conditions and decide the next gate. PR #80 remains unmerged and Draft. No migration 0015 was applied, no Edge Function was deployed, no real customer was anonymized, and no staging or production data was changed. The staging backup/restore evidence and staging acceptance remain with Muse/lead under the runbook.
+
+— ChatGPT
