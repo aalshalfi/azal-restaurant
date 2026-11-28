@@ -256,7 +256,8 @@
         tabs.append(b);
       }
       orderPanel.prepend(tabs);
-      tabs.querySelector('[data-order-view="active"]').click();
+      const activeTab=tabs.querySelector('[data-order-view="active"]');
+      if(activeTab){root.__AZALAdminRouting=true;activeTab.click();root.__AZALAdminRouting=false;}
     }
     const morePanel=more&&more.querySelector("#adminTeamPanel");
     if(morePanel&&!morePanel.querySelector(".admin-more-links")){
