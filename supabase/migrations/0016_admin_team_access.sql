@@ -448,19 +448,37 @@ grant execute on function public.azal_admin_orders_password_audit(text,text,text
 
 -- A2: scrub customer PII in public profile and suspend membership. Auth email + ban are handled
 -- by the server-only Edge Function; ledger/order snapshots are retained against the pseudonymous profile.
-create or replace function public.azal_admin_anonymize_customer(p_user_id uuid,p_reason text)
+-- A2 anonymization is callable only from the server-side Edge Function after it has banned
+-- sign-in. It also scrubs Auth metadata/identities so no old email, phone or name survives there.
+create or replace function public.azal_admin_anonymize_customer_server(
+  p_actor_id uuid,p_user_id uuid,p_reason text
+)
 returns jsonb
 language plpgsql
 security definer
 set search_path = ''
 as $fn$
-declare v_member bigint;
+declare v_member bigint; v_replacement text;
 begin
-  if auth.uid() is null or not public.azal_is_admin() then raise exception 'not_admin' using errcode='42501'; end if;
+  if p_actor_id is null or not exists(
+    select 1 from public.user_roles r where r.user_id=p_actor_id and r.role='admin'
+  ) then raise exception 'not_admin' using errcode='42501'; end if;
   if p_user_id is null or pg_catalog.btrim(coalesce(p_reason,''))='' then raise exception 'reason_required'; end if;
+  v_replacement := 'removed+'||pg_catalog.replace(p_user_id::text,'-','')||'@example.invalid';
   select p.member_number into v_member from public.profiles p where p.id=p_user_id and p.anonymized_at is null for update;
   if v_member is null then raise exception 'customer_not_found_or_already_removed'; end if;
   if exists(select 1 from public.user_roles r where r.user_id=p_user_id and r.role in ('admin','staff','manager')) then raise exception 'not_customer_account'; end if;
+
+  update auth.users
+     set email=v_replacement, phone=null, raw_user_meta_data='{}'::jsonb
+   where id=p_user_id;
+  update auth.identities
+     set identity_data=pg_catalog.jsonb_build_object(
+       'sub',coalesce(identity_data->>'sub',p_user_id::text),'email',v_replacement
+     ),
+     updated_at=pg_catalog.now()
+   where user_id=p_user_id;
+
   update public.profiles
      set display_name=null, phone=null, anonymized_at=pg_catalog.now(), member_number_retired=true
    where id=p_user_id;
@@ -468,13 +486,13 @@ begin
   -- Remove contact PII from historical orders while preserving order IDs, item snapshots, tax and totals.
   update public.orders set contact_phone=null, guest_name=null, guest_email=null where user_id=p_user_id;
   insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
-  values(auth.uid(),'customer_anonymized','customer',p_user_id::text,pg_catalog.btrim(p_reason),
-         pg_catalog.jsonb_build_object('member_number_retired',true));
+  values(p_actor_id,'customer_anonymized','customer',p_user_id::text,pg_catalog.btrim(p_reason),
+         pg_catalog.jsonb_build_object('member_number_retired',true,'auth_email_replaced',true));
   return pg_catalog.jsonb_build_object('status','anonymized','user_id',p_user_id);
 end;
 $fn$;
-revoke all on function public.azal_admin_anonymize_customer(uuid,text) from public, anon, authenticated;
-grant execute on function public.azal_admin_anonymize_customer(uuid,text) to authenticated;
+revoke all on function public.azal_admin_anonymize_customer_server(uuid,uuid,text) from public, anon, authenticated;
+grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text) to service_role;
 
 -- Apply pending in-portal invitations only after the invitee has verified the matching email.
 create or replace function public.azal_apply_team_invite()
