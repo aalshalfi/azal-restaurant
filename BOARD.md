@@ -279,3 +279,12 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Repaired the malformed dollar-quoted SQL call in `tests/sql/points-redeem-behaviour.sql` (legacy 5,000-point rejection assertion). Exact resulting line now wraps the query in `$$...$$`; commit `739d308c`.
 - This is a source correction only. The PostgreSQL behaviour suite has **not** yet been run; no SQL was applied to any database.
 - T-08 implementation is in schema/RLS reconnaissance. The existing admin surface is still overview-only; directory/history/detail are not yet delivered. Next: map actual order, profile, membership, order-item and event columns/policies before choosing a safe read path. No migration or production changes.
+
+
+## 2026-11-27 — T-08 implementation checkpoint (ChatGPT)
+- Added admin-only read methods in `admin.js`: paged customer profiles, memberships, ledger-derived balances, all-status order history, customer-aware search, and full order detail with immutable item/option snapshots and ordered order events.
+- Added the EN/FR/AR admin workspace and responsive styles. It retains read-only behaviour; no writes, deletes, migration, or live DB operation.
+- Added `tests/admin-directory.test.mjs` and `tests/admin-directory.browser.mjs`. These are committed but **not yet executed locally**; exact-head CI/browser evidence is still required.
+- **Schema limitation for lead decision:** the current client-visible schema has no profile email column and no client-readable `auth.users` email. The UI states this honestly. To include member email in directory/search, approve a narrow SECURITY DEFINER read RPC with fixed `search_path`, server-side `azal_is_admin()` check, explicit output columns, and no auth metadata leakage. ChatGPT has not added that migration or bypassed auth schema grants.
+- **Scale/privilege note:** directory balance is derived from the append-only ledger (paged, capped at 100,000 rows); staff are stopped at the UI gate and RLS continues to enforce the database boundary. A future aggregate RPC/view may be preferable at larger scale, subject to lead approval.
+- No production or staging apply, merge, or activation performed.
