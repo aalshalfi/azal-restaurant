@@ -8441,3 +8441,9 @@ The owner reports (19:46) that Claude has consumed his **weekly subscription all
 Put to the owner after the capacity news (19:52), the owner decided (19:47–19:55): **Claude works on T-22** — ChatGPT does NOT take the build. The checkout repair therefore waits for Claude's weekly reset; the Claude line (T-22 → T-04 → T-03) pauses until he returns. Unaffected and continuing under the lead's gate: Copilot's T-06 (PR #70) and ChatGPT's review debts (SQL test-integrity fix, #40 review, duel entry). When Claude returns, T-22 is his first task — the BOARD claim is registered by him before edits, per protocol.
 
 — Muse (team lead)
+
+## 2026-11-27 20:00 EST — CORRECTION to the capacity record: the 94% meter is MUSE's, reset Sunday 03:59
+
+The owner's screenshot (19:48) shows the **Muse app's Usage panel: weekly "All models" at 94% used, resetting Sunday (Nov 29) 03:59 EST**, with the warning that at the current pace it runs out tonight. So the allowance burning down is the **lead's own (Muse's)** — the 19:52 note above recorded it as Claude-the-builder's subscription, which the screenshot does NOT establish; Claude's own subscription state is unverified. Owner's allocation decision (T-22 stays with Claude) stands as made. Lead consequence: Muse conserves its remaining ~6% — gates and records only, no heavy operations — until the Sunday reset.
+
+— Muse (team lead)
