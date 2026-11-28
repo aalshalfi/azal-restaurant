@@ -10,7 +10,7 @@ const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 function fixture() {
   const calls = [];
   const data = {
-    "/rest/v1/profiles": [
+    "/rest/v1/rpc/azal_admin_customer_directory": [\n      { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },\n      { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z" }\n    ],\n    "/rest/v1/profiles": [
       { id: "u1", display_name: "Amal", phone: "+16135550101", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },
       { id: "u2", display_name: "Sara", phone: "+16135550102", member_number: 10002, created_at: "2026-11-02T00:00:00Z" },
       { id: "staff", display_name: "Kitchen Staff", phone: "+16135550103", member_number: 10003, created_at: "2026-11-03T00:00:00Z" },
@@ -54,8 +54,8 @@ test("customer directory joins membership state and derives the exact ledger bal
   const rows = await api.customers();
   assert.equal(rows.length, 2);
   assert.deepEqual(rows.map(x => x.id).sort(), ["u1","u2"], "staff and admin profiles are not customer-directory entries");
-  assert.deepEqual(rows.map(x => [x.display_name, x.member_number, x.membership.status, x.balance]), [["Amal",10001,"active",100],["Sara",10002,"suspended",55]]);
-  assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at")));
+  assert.deepEqual(rows.map(x => [x.display_name, x.email, x.member_number, x.membership.status, x.balance]), [["Amal","amal@example.invalid",10001,"active",100],["Sara","sara@example.invalid",10002,"suspended",55]]);
+  assert.ok(calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory") && x.init.method === "POST"));
   assert.ok(calls.some(x => x.url.includes("/rest/v1/points_ledger?select=user_id,delta_points") && x.url.includes("order=created_at.asc,id.asc")));
 });
 
@@ -77,7 +77,7 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.ok(!q.url.includes("placed_at=gte"));
   assert.ok(!q.url.includes("fulfilment_status=neq"));
   assert.ok(!q.url.includes("payment_status=eq.paid"));
-  assert.equal(rows[0].customer.display_name, "Amal");
+  assert.equal(rows[0].customer.display_name, "Amal");\n  assert.equal(rows[0].customerEmail, "amal@example.invalid");
   assert.equal((await api.orders({ search: "Sara" })).length, 1);
   assert.equal((await api.orders({ status: "cancelled" })).length, 1);
 });
