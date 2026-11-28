@@ -2563,3 +2563,34 @@ Commits:
 **READY scope:** READY FOR MUSE/LEAD REVIEW AND STAGING APPLY GATE ONLY. This is not authorization to apply SQL. The CI database is disposable PostgreSQL 16, not the user's Supabase staging project. Muse/owner must independently confirm the isolated staging project, current backup and restore evidence, inspect the exact migration bytes/hash, apply 0016 once, verify the six grants and continued denial on audit_log/orders, then retry only synthetic member #10006 and confirm one audit entry. Do not reapply 0015. No production SQL, live customer action, Edge Function redeploy, booking, order, payment, email, or spend was performed by this delivery.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-28 11:03 EST — T-14 three-line retrospective + F-OWN-32 dual-shell proposal
+
+### T-14 retrospective (three lenses)
+
+1. **Security:** T-14 demonstrated that the live privilege model must be represented faithfully in tests; the service_role gap escaped because the old SQL stub was more permissive than Supabase.
+2. **Engineering:** the narrow six-grant 0016 migration, pre-apply denial checks, post-apply exact-grant checks and SET ROLE test are the right durable correction; broad grants would have hidden rather than solved the defect.
+3. **Release/product:** the lead's disposable-member walk proved the full customer lifecycle and exactly-one audit event, closing T-14 on evidence rather than a green code-only suite. Future Edge Function gates should inspect role_table_grants before live acceptance.
+
+### F-OWN-32 proposal submitted
+
+Read Muse's 10:53 ruling and 10:59 addendum on current main. The detailed proposal is in `ADMIN-KITCHEN-SHELL-PROPOSAL.md`.
+
+**Admin shell:** persistent Home / Orders / Menu / More navigation (bottom on phone, left rail on desktop). Home keeps headline stats and actionable alerts; Orders becomes Active / Scheduled / History; Menu is the future T-21 workspace; More holds focused pages for Reports, Customers, Team & access, Invitations, Orders accounts and Audit. T-25 Reports is More → Reports with Daily / Monthly / Yearly periods. The Today panel is reduced to a compact Home snapshot, not retained as a long stacked section.
+
+**Kitchen shell:** persistent Queue / History / Scheduled / Availability / Settings rail. Queue is first and contains stage chips with live counts; History owns T-26 Today's summary and manual copy/share only; Scheduled and Availability are separate screens. No tax line or automatic send appears in staff summary.
+
+**Sold-out placement:** recommend both surfaces with distinct semantics: kitchen staff can set a temporary branch-scoped “Sold out today” flag; Manager owns canonical menu/branch availability in T-21 and can see the temporary flag. These must not be the same write operation. If a safe server-side distinction is unavailable, kitchen control stays read-only until a separately gated slice exists.
+
+### T-25 + T-26 aggregation round — started
+
+**Branch:** `chatgpt/t25-t26-reporting-shell-proposal`  
+**Base:** current `main` at branch creation  
+**BOARD claim:** recorded before implementation.
+
+The aggregation contract follows A3/A4: only paid + handed_over orders contribute to collected sales (ADM-1 convention); bucket by `paid_at` in `America/Toronto`; Admin receives all-branch subtotal/discount/HST/collected aggregates and counts; Manager receives only server-scoped assigned-branch counts and collected total; Staff T-26 receives today's collected total and status counts, with no tax breakdown. The next implementation step is to inspect the current schema/role helpers and build the narrow server-side aggregate + disposable SQL/Node tests. No report UI will be inserted into the old stacked admin page.
+
+**Current boundaries:** proposal and claim only are committed so far. No migration authored/applied yet, no SQL run against Supabase, no merge, no deployment, no live data mutation, no outbound send.
