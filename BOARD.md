@@ -459,3 +459,38 @@ T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc6
 ## 2026-11-28 13:04 EST — T-27 v4 review
 
 PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff65cb772a0960b53d6403181110. Review corrections include Manager all-assigned/one-branch report scopes, real T-25 RPC path, paid-only actionable attention, Toronto period defaults, 768px viewport, stable More links, and browser Back/Forward deep-link assertions. Base is 3 commits behind moving T-25 branch; no mergeable/CI-ready claim. Sync only after PR #85 lead gate, then run full tests.
+
+
+## 2026-11-28 13:42 EST — current-state correction (append-only)
+
+**Main:** `91b4e465aa432d3c94f1ba2d9ffa661267564fc8`.
+
+The owner's requested sequence is now reflected by the actual GitHub state:
+- #27 itself is closed unmerged; its dependency was delivered through superseding PR **#42**, merged as `2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce` (exact-head CI 45920912279 SUCCESS). 0001/0002 runbook is historical; never re-execute it.
+- #32 merged `344a7c698e15c3abdce5460e1a68fe4f330189b2`; exact-head CI 45945148747 SUCCESS. Server booking defaults false; both frontend flags remain false; direct RPC refuses while closed. IP-trust code review PASS and Muse's live Cloudflare probe is lead-reported PASS. Last explicit record: 0005 not applied, outbox sender absent, booking/email remain disabled.
+- #33 merged `23490141978451717cca5a578cd43faa5ec6b42d`; CI 45852008344 SUCCESS.
+- #31 merged `a2158d75504a66ed4189edae18133c703e913258`; CI 45952177739 SUCCESS.
+- #30 merged `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b`; CI 45935703028 SUCCESS; real email remains unverified.
+- #29 merged `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483`; CI 45977845768 SUCCESS; payments_mode defaults off and test payment RPC is mode-gated.
+
+**T-27:** PR #93 merged to main `91b4e465`; tested code head `5617d769`, CI run 46176159302 = 5/5 SUCCESS. Manager live Reports view still lacks a staging-account verification.
+
+**T-28:** PR #94 remains Draft/HOLD. Previous exact-head run 46175346221 failed browser-checks due to an escaped template literal in `tests/sign-out.browser.mjs:46`. ChatGPT corrected that single line; new head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba`; CI run 46177578964 is in progress (no green claim). Compared with main `91b4e465`, branch is 26 ahead / 5 behind, diverged. T-24 code-only ticket identity remains blocking; the branch still contains sigil presentation.
+
+**Claude handoff:** no T-24 implementation/evidence newer than his 12:20 proposal was found in `CLAUDE-REPLY.md`. PR #94 comment 7244026769 asks Claude to resume T-24 and record exact SHA/files/commands/tests/CI/blockers, with the owner's explicitly reinstated 30-minute checkpoints. Acknowledgement is pending.
+
+No merge, SQL apply, deployment, live-data mutation, booking/order/payment/email activation or spend was performed in this checkpoint.
+
+## 2026-11-28 13:48 EST — T-28 compare / review addendum
+
+Main advanced to `460d4850e421845d459110ca656bfad0894a9035` through two append-only documentation commits. T-28 head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba` is **26 ahead / 7 behind, diverged** (the newest two main commits are documentation-only). Run **46177578964** has edge/static/reporting/SQL SUCCESS; browser-checks is still in progress. No merge-ready claim.
+
+PR #94 source review also found public cart/checkout/navigation retained in `staff.html`, profile/sign-out inside main content instead of the header, and sigil + guest-name identity still in kitchen queue tickets. These need explicit browser assertions and resolution alongside T-24. Findings are in PR comments 7244050110 / 7244052718. Claude's T-24 request is comment 7244026769; acknowledgement/evidence pending.
+
+
+## 2026-11-28 13:54 EST — T-28 exact-head CI follow-up
+
+- T-28 PR #94 remains Draft/HOLD. Failed run 46177578964: SQL, static, reporting and edge-function jobs passed; browser job failed at `tests/sign-out.browser.mjs:82` because the race test clicked a correctly hidden sign-out button without opening its profile disclosure.
+- Test-only correction committed to `chatgpt/t28-kitchen-shell-v6`: `774185782895fcac7c1bb79f6bad239a7e91e6e1`. The test now opens `.staff-profile summary` before clicking `#staffSignOut`. PR comment 7244150040 records log evidence and the correction. Await exact-head CI; no green claim.
+- Remaining blockers: Claude-owned T-24 code-only ticket identity; remove public shopping/cart/checkout UI from `staff.html`; move profile/sign-out from `#staffRoot` into the header; add browser assertions for these acceptance points. Do not duplicate T-24.
+- No merge, SQL, deployment, live mutation, activation, or spend.
