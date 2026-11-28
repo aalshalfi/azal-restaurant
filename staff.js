@@ -96,7 +96,7 @@
   const money = (c) => { const s = new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100); return lang() === "ar" ? "\u2066" + s.replace(/\u200f/g, "") + "\u2069" : s; };
 
   let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0, branchOptions = [];
-  let today = null, historyRows = [], historyError = "", historyLoading = false, activeView = "queue", stageFilter = "all";
+  let today = null, historyRows = [], historyError = "", historyLoading = false, historyPromise = null, historyBranch = null, activeView = "queue", stageFilter = "all";
   const whoBar = () => '<details class="staff-profile"><summary>' + esc(L("signedAs", { email })) + '</summary><button type="button" class="button staff-signout" id="staffSignOut"' + (signingOut ? " disabled" : "") + '>' + esc(L(signingOut ? "signingOut" : "signOut")) + '</button></details>';
 
   function paint() {
@@ -199,19 +199,27 @@
 
   box.addEventListener("change", async (e) => {
     if (e.target && e.target.id === "staffBranch" && branchOptions.includes(e.target.value)) {
-      try { st.setBranch(e.target.value); rows=[]; today=null; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }
+      try { st.setBranch(e.target.value); rows=[]; today=null; historyRows=[]; historyError=""; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }
     }
   });
   async function loadHistory() {
     if (!st.enabled || signingOut || state !== "ready") return;
+    const requestBranch = st.currentBranch();
+    if (historyPromise && historyBranch === requestBranch) return historyPromise;
     const my = ++gen, stale = () => my !== gen || signingOut;
     historyLoading = true; historyError = ""; paint();
-    const [summaryResult, historyResult] = await Promise.allSettled([st.todaySummary(), st.history()]);
-    if (stale()) return;
-    today = summaryResult.status === "fulfilled" ? summaryResult.value : null;
-    historyRows = historyResult.status === "fulfilled" ? historyResult.value : [];
-    historyError = historyResult.status === "fulfilled" ? "" : "load_failed";
-    historyLoading = false; paint();
+    const request = (async () => {
+      const [summaryResult, historyResult] = await Promise.allSettled([st.todaySummary(), st.history()]);
+      if (stale()) return;
+      today = summaryResult.status === "fulfilled" ? summaryResult.value : null;
+      historyRows = historyResult.status === "fulfilled" ? historyResult.value : [];
+      historyError = historyResult.status === "fulfilled" ? "" : "load_failed";
+      historyLoading = false; paint();
+    })();
+    historyPromise = request; historyBranch = requestBranch;
+    try { await request; } finally {
+      if (historyPromise === request) { historyPromise = null; historyBranch = null; }
+    }
   }
   box.addEventListener("click", async (e) => {
     const nav = e.target.closest && e.target.closest("a[data-staff-view]");
