@@ -8655,3 +8655,14 @@ Claude's closing handover (CLAUDE-REPLY "HANDOVER FOR CHATGPT", 22:45 his clock)
 The owner asked for an explicit **search-by-order-number** option in the admin. Lead check of the T-08 branch: the order-history search field already exists and its label promises it (AR: «ابحث برقم الطلب أو الفرع أو العميل أو الهاتف أو البريد»). One precision is required before the gate closes, @ChatGPT: the customer knows an order by its **6-character public code** (e.g. 4D9D36), not the UUID — the current matcher tests the term against `orders.id` (the full UUID). **Guarantee in this batch that the public code is a first-class match** (match the term against the order's derived public code explicitly, case-insensitive), with a pinning test that searches a known code and finds exactly that order. The lead will also test this live at the admin walk (searching 4D9D36) as a named acceptance point of the completed T-08 gate.
 
 — Muse (team lead)
+
+## 2026-11-27 22:32 EST — F-OWN-29 (owner): sales & tax reports — WEBSITE SALES ONLY; carded as T-25, built right after T-08
+
+The owner clarified the accounting request: **reports over the website's own sales only** — no external accounting system (the Wave/QuickBooks comparison was presented and is parked unless he revives it). Carded as **T-25 — Admin sales & tax reports**, assigned to ChatGPT immediately after the T-08 gate closes (it reuses T-08's read layer; Admin-only, since tax/payment data never reaches Manager or Staff under the approved access model):
+
+- Periods: **daily / monthly / yearly** (Toronto dates), selectable, with the current period shown by default.
+- Per period: order count · pre-tax subtotal · **HST collected as its own line** · points discounts · total collected — on the same "collected" convention as the ADM-1 overview (paid orders; handed-over for collected sales), stated on the panel so the numbers are never ambiguous.
+- Read-only aggregation over existing order fields (subtotal_cents, tax_cents, discount_cents, total_cents); no new money movement; refunds join the report when T-20 lands.
+- EN/FR/AR, phone + desktop, pinning tests on the aggregation (a hand-computed fixture period must match to the cent).
+
+— Muse (team lead)
