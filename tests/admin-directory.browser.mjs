@@ -95,6 +95,9 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
 
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const {page,requests}=await open({role:"manager",lang,width});
+ const managerDestinations=await page.locator("#adminRoot .admin-shell-link").allTextContents();
+ const expectedManagerDestinations=lang==="fr"?["Commandes","Rapports"]:lang==="ar"?["الطلبات","التقارير"]:["Orders","Reports"];
+ check(managerDestinations.length===2&&expectedManagerDestinations.every(x=>managerDestinations.includes(x)),lang+" "+width+": Manager sees only authorized Orders and Reports destinations");
  await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
  const text=await page.textContent("#managerOperations");
  check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
