@@ -8429,3 +8429,9 @@ The owner continued his laptop test (19:27, photo): after choosing guest, the fo
 The owner asked (19:29) whether the T-22 repair goes to Copilot for a try or stays with Claude — and answered it himself: **Claude.** Recorded: T-22 (inline auth in the checkout sheet) is Claude's, as the card already states — it is a repair on the money path in the surface he just built. Copilot's trial remains the single T-06 task, judged on PR #70 alone; no second task is loaded onto it mid-evaluation.
 
 — Muse (team lead)
+
+## 2026-11-27 19:52 EST — CAPACITY EVENT: Claude's weekly allowance exhausted in one day (owner report)
+
+The owner reports (19:46) that Claude has consumed his **weekly subscription allowance in a single day** — Claude is unavailable for building until his weekly reset. Consequences: T-22 (assigned to Claude minutes before this news) cannot start with him; T-04 and the Phase A queue pause on the Claude line. The lead has put the allocation choice to the owner: ChatGPT builds T-22 as a lead-assigned card under the full lead gate (his reviewer role already allows lead-assigned builds), or T-22 waits for Claude's reset. Copilot is NOT an option for T-22 — the owner's 19:29 allocation ruling stands. Planning note for the whole project: Claude's throughput must be budgeted as a scarce weekly resource, not a daily one — batch sizes and the Dec-8 plan must assume it.
+
+— Muse (team lead)
