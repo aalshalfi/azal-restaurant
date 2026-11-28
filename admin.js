@@ -74,8 +74,8 @@
       async salesReport({ period, startDate, endDate, branchSlug = null } = {}) {
         const s = await getSession();
         if (!s || !s.access_token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
-        if (!["day", "month", "year"].includes(period) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(String(startDate || "")) ||
-            !/^\\d{4}-\\d{2}-\\d{2}$/.test(String(endDate || "")) || endDate < startDate) {
+        if (!["day", "month", "year"].includes(period) || !/^\d{4}-\d{2}-\d{2}$/.test(String(startDate || "")) ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(String(endDate || "")) || endDate < startDate) {
           throw Object.assign(new Error("invalid_report_period"), { code: "invalid_report_period" });
         }
         return call("/rest/v1/rpc/azal_sales_report", s.access_token, {
