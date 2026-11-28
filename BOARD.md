@@ -482,3 +482,8 @@ History is a branch-scoped Toronto-day view, not only a summary card:
 - EN/FR/AR loading, empty and error states are included.
 
 **Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
+
+
+## 2026-11-28 13:07 EST — T-28 dependency
+
+T-28 v6 remains Draft/HOLD. The shell constitution requires six-character code-only queue identity; current v6 still inherits pre-T-24 sigil/guest-name ticket rendering. T-24 is Claude's assigned card; do not duplicate it here. Preserve only tap-to-call and guarded order actions, then sync T-24 into T-28 and add code-only browser assertions before READY. Other T-28 pieces: net-only History summary + completed/cancelled list, manual copy, Queue-only polling, conditional Scheduled. No Availability until T-29.
