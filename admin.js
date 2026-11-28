@@ -211,7 +211,7 @@
     if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
     for(const o of orderRows.slice(0,orderVisible)){
       const card=el("article","admin-record");
-      card.dataset.orderCard="1"; card.dataset.orderId=o.id; card.dataset.orderCode=publicCode(o.id); card.dataset.status=o.fulfilment_status; card.dataset.scheduled=String(Boolean(o.scheduled_for && new Date(o.scheduled_for).getTime()>Date.now()));
+      card.dataset.orderCard="1"; card.dataset.orderId=o.id; card.dataset.orderCode=publicCode(o.id); card.dataset.status=o.fulfilment_status; card.dataset.paymentStatus=o.payment_status; card.dataset.scheduled=String(Boolean(o.scheduled_for && new Date(o.scheduled_for).getTime()>Date.now()));
       card.append(el("strong",null,L("order")+" "+publicCode(o.id)),
         el("span","admin-record-meta",o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
         el("span","admin-record-meta",money(o.total_cents)+" · "+new Date(o.placed_at).toLocaleString(loc())));
