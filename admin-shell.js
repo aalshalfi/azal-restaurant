@@ -136,7 +136,7 @@
       const parts=location.hash.slice(1).split("/"),id=parts[0]||destinations[0],sub=parts[1]||"";
       activate(destinations.includes(id)?id:destinations[0],false);
       if(id==="orders"&&["active","scheduled","history"].includes(sub)){
-        const tab=rootEl.querySelector('[data-order-view="'+sub+'"]');if(tab)tab.click();
+        const tab=rootEl.querySelector('[data-order-view="'+sub+'"]');if(tab){root.__AZALAdminRouting=true;tab.click();root.__AZALAdminRouting=false;}
       } else if(id==="orders"&&sub){
         const detail=rootEl.querySelector(".admin-order-detail");
         const card=[...rootEl.querySelectorAll('#adminScreen-orders [data-order-card="1"]')].find(x=>x.dataset.orderCode===sub.toUpperCase());
@@ -144,7 +144,7 @@
       } else if(id==="orders"&&!sub){
         const detail=rootEl.querySelector(".admin-order-detail");const close=detail&&detail.querySelector(":scope > button");
         if(close)close.click();
-        const tab=rootEl.querySelector('[data-order-view="active"]');if(tab&&tab.getAttribute("aria-pressed")!=="true")tab.click();
+        const tab=rootEl.querySelector('[data-order-view="active"]');if(tab&&tab.getAttribute("aria-pressed")!=="true"){root.__AZALAdminRouting=true;tab.click();root.__AZALAdminRouting=false;}
       } else if(id==="customers"&&sub){
         const card=[...rootEl.querySelectorAll('#adminScreen-customers .admin-record[data-user-id]')].find(x=>x.dataset.userId===decodeURIComponent(sub));
         const detail=rootEl.querySelector(".admin-customer-detail");
@@ -159,10 +159,11 @@
     if(root.__AZALAdminShellRouteHandler)root.removeEventListener("popstate",root.__AZALAdminShellRouteHandler);
     root.__AZALAdminShellRouteHandler=routeFromHash;
     root.addEventListener("popstate",routeFromHash);
+    root.addEventListener("hashchange",routeFromHash);
     const initial=location.hash.slice(1).split("/")[0];
     activate(destinations.includes(initial)?initial:destinations[0],false);
     rootEl.dataset.adminShell="1";
-    routeFromHash();
+    requestAnimationFrame(routeFromHash);
   }
   function enhance() {
     const shell=rootEl.querySelector(".admin-shell-layout");
@@ -223,6 +224,12 @@
         home.append(panel);
       }
     }
+    const orderDetail=rootEl.querySelector(".admin-order-detail");
+    const orderClose=orderDetail&&orderDetail.querySelector(":scope > button");
+    if(orderClose&&!orderClose.dataset.hashBound){
+      orderClose.dataset.hashBound="1";
+      orderClose.addEventListener("click",()=>{if(location.hash!=="#orders")history.pushState(null,"","#orders");});
+    }
     if(orderPanel&&!orderPanel.querySelector(".admin-order-tabs")){
       const form=orderPanel.querySelector("form.admin-filter");
       const tabs=make("div","admin-report-tabs admin-order-tabs");
@@ -230,7 +237,7 @@
         const b=make("button","button admin-detail-button",label);b.type="button";b.dataset.orderView=id;
         b.addEventListener("click",()=>{
           for(const x of tabs.querySelectorAll("button"))x.setAttribute("aria-pressed",String(x===b));
-          if(location.hash!=="#orders/"+id)history.pushState(null,"","#orders/"+id);
+          if(!root.__AZALAdminRouting&&location.hash!=="#orders/"+id)history.pushState(null,"","#orders/"+id);
           const cards=[...orderPanel.querySelectorAll(".admin-record")].filter(x=>x.dataset.orderCard==="1");
           for(const card of cards){
             const status=card.dataset.status,scheduled=card.dataset.scheduled==="true";
