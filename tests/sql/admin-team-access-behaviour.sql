@@ -69,7 +69,7 @@ select zz_eq('Manager cannot read Admin team directory',public.zz_try('select pu
 select zz_eq('Manager cannot read Admin audit history',public.zz_try('select public.azal_admin_audit_recent(10)'),'42501');
 select zz_eq('Manager cannot grant team roles',
   public.zz_try('select public.azal_admin_team_assign(''new@example.invalid'',''New User'',''staff'',array[''ottawa''],''no'')'),'42501');
-select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
+select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no','c2@example.invalid')$$),'42501');
 reset role;
 
 \echo ===== Admin: revoke named Manager access
@@ -119,14 +119,29 @@ select zz_eq('Orders identity cannot be removed as an ordinary team member',
 reset role;
 update public.orders set contact_phone='+16135550999' where user_id='00000000-0000-0000-0000-0000000000c2';
 create temporary table t14_order_financial_snapshot as select id,subtotal_cents,tax_cents,total_cents from public.orders where user_id='00000000-0000-0000-0000-0000000000c2';
+insert into public.points_claims(order_id,guest_email,points,expires_at)
+select id,'c2@example.invalid',20,pg_catalog.now()+interval '90 days'
+from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'
+on conflict(order_id) do update set guest_email=excluded.guest_email;
+insert into public.order_outbox(order_id,event_type,to_email,payload,status)
+select id,'NEW_ORDER','c2@example.invalid',
+       pg_catalog.jsonb_build_object('guest_email','c2@example.invalid','customer_email','c2@example.invalid','customer_note','private customer note'),
+       'blocked'
+from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'
+on conflict(order_id,event_type) do update set to_email=excluded.to_email,payload=excluded.payload;
 update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
 insert into auth.identities(user_id,provider_id,identity_data,provider) values('00000000-0000-0000-0000-0000000000c2','c2@example.invalid',pg_catalog.jsonb_build_object('sub','c2@example.invalid','email','c2@example.invalid','full_name','Customer Two','phone','+16135550102'),'email');
 select zz_eq('server anonymization refuses non-admin actor',
-  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
+  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no','c2@example.invalid')$$),'42501');
+insert into public.user_roles(user_id,role) values('00000000-0000-0000-0000-0000000000c2','staff');
+select zz_eq('A2 rejects a non-customer target before identity mutation',
+  public.zz_try($select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','reject staff','c2@example.invalid')$),
+  'not_customer_account');
+delete from public.user_roles where user_id='00000000-0000-0000-0000-0000000000c2' and role='staff';
 select zz_eq('customer anonymization requires a reason',
-  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','')$$),
+  public.zz_try($select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','','c2@example.invalid')$),
   'reason_required');
-select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','Customer requested account removal');
+select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','Customer requested account removal','c2@example.invalid');
 select zz_eq('Auth email is replaced with a reserved non-deliverable address',
   (select email from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'removed+000000000000000000000000000000c2@example.invalid');
 select zz_eq('Auth identity provider id is replaced',
@@ -151,16 +166,31 @@ select zz_eq('order contact phone is scrubbed while the order remains',
   (select coalesce(contact_phone,'∅') from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'∅');
 select zz_eq('order guest name and email are scrubbed',
   (select (guest_name is null and guest_email is null)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'true');
+select zz_eq('order free-text customer note is scrubbed',
+  (select coalesce(customer_note,'∅') from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'∅');
+select zz_eq('pending and claimed guest-claim email is replaced',
+  (select guest_email from public.points_claims where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),
+  'removed+000000000000000000000000000000c2@example.invalid');
+select zz_eq('outbox recipient no longer contains the customer's email',
+  (select coalesce(to_email,'∅') from public.order_outbox where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),'∅');
+select zz_eq('outbox payload contains no customer email or note keys',
+  (select (not (payload ? 'guest_email') and not (payload ? 'customer_email') and not (payload ? 'customer_note'))::text
+   from public.order_outbox where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),'true');
 select zz_eq('order tax and financial snapshots are unchanged',
   (select count(*)::text from public.orders o join t14_order_financial_snapshot x using(id) where o.subtotal_cents=x.subtotal_cents and o.tax_cents=x.tax_cents and o.total_cents=x.total_cents),'1');
 select zz_eq('customer order and its financial snapshot remain',
   (select count(*)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'1');
 select zz_eq('anonymization is audited with actor and reason',
   (select count(*)::text from public.admin_audit_log where action='customer_anonymized' and target_id='00000000-0000-0000-0000-0000000000c2' and reason='Customer requested account removal'),'1');
+select zz_eq('retry after a committed anonymization is idempotent',
+  public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','retry after lost response','removed+000000000000000000000000000000c2@example.invalid')->>'status',
+  'already_anonymized');
+select zz_eq('idempotent retry does not duplicate the audit event',
+  (select count(*)::text from public.admin_audit_log where action='customer_anonymized' and target_id='00000000-0000-0000-0000-0000000000c2'),'1');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
 set role authenticated;
 select zz_eq('authenticated Admin cannot call server-only anonymization RPC',
-  public.zz_try('select public.azal_admin_anonymize_customer_server(''00000000-0000-0000-0000-0000000000a0'',''00000000-0000-0000-0000-0000000000c2'',''retry'')'),'42501');
+  public.zz_try('select public.azal_admin_anonymize_customer_server(''00000000-0000-0000-0000-0000000000a0'',''00000000-0000-0000-0000-0000000000c2'',''retry'',''c2@example.invalid'')'),'42501');
 select zz_eq('T-08 order-linked email lookup retains active customer email',
   (select e.value->>'email' from pg_catalog.jsonb_array_elements(public.azal_admin_order_customer_emails(array['00000000-0000-0000-0000-0000000000c1'::uuid,'00000000-0000-0000-0000-0000000000c2'::uuid])) as e(value) where e.value->>'user_id'='00000000-0000-0000-0000-0000000000c1'),
   'c1@example.invalid');
