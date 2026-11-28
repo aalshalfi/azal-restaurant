@@ -10,7 +10,7 @@
       team:"Team & access", add:"Add team member", edit:"Edit access", name:"Full name", email:"Email", role:"Role", admin:"Admin", manager:"Manager", staff:"Staff",
       branches:"Branch access", save:"Save access", cancel:"Cancel", pending:"Pending account", revokeInvite:"Revoke invitation", pendingNote:"No email was sent. Access will attach after this person creates and verifies an account through the existing sign-up flow.",
       members:"Team members", noMembers:"No named team members yet.", remove:"Remove access", reason:"Reason (required)", confirm:"Confirm removal",
-      orders:"Branch Orders accounts", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
+      orders:"Branch Orders accounts", accessHistory:"Recent access history", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
       assigned:"Access saved.", removed:"Access revoked.", created:"Branch Orders account created.", resetDone:"Branch password reset.", error:"The action could not be completed. Refresh and check the current state before retrying.",
       anonymize:"Anonymize & deactivate customer", anonymizeNote:"This scrubs identifying details, disables sign-in and retires the member number. Financial/order history is retained without customer contact details.",
       confirmAnonymize:"Confirm anonymization", anonymized:"Customer anonymized and deactivated.", managerOrders:"Branch operations", noOrders:"No branch orders to display.", status:"Status", time:"Placed", items:"Items",
@@ -20,7 +20,7 @@
       team:"Équipe et accès", add:"Ajouter un membre", edit:"Modifier l’accès", name:"Nom complet", email:"Courriel", role:"Rôle", admin:"Admin", manager:"Gestionnaire", staff:"Personnel",
       branches:"Accès aux succursales", save:"Enregistrer l’accès", cancel:"Annuler", pending:"Compte en attente", revokeInvite:"Révoquer l’invitation", pendingNote:"Aucun courriel n’a été envoyé. L’accès sera attribué lorsque la personne aura créé et vérifié un compte avec le processus d’inscription existant.",
       members:"Membres de l’équipe", noMembers:"Aucun membre nommé pour le moment.", remove:"Révoquer l’accès", reason:"Motif (obligatoire)", confirm:"Confirmer la révocation",
-      orders:"Comptes Commandes par succursale", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
+      orders:"Comptes Commandes par succursale", accessHistory:"Historique récent des accès", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
       assigned:"Accès enregistré.", removed:"Accès révoqué.", created:"Compte Commandes créé.", resetDone:"Mot de passe de succursale réinitialisé.", error:"L’action n’a pas abouti. Actualisez et vérifiez l’état avant de réessayer.",
       anonymize:"Anonymiser et désactiver le client", anonymizeNote:"Les renseignements identifiants sont effacés, la connexion est désactivée et le numéro de membre est retiré. L’historique financier et des commandes est conservé sans coordonnées client.",
       confirmAnonymize:"Confirmer l’anonymisation", anonymized:"Client anonymisé et désactivé.", managerOrders:"Opérations de la succursale", noOrders:"Aucune commande de succursale à afficher.", status:"État", time:"Créée", items:"Articles",
@@ -30,7 +30,7 @@
       team:"الفريق والصلاحيات", add:"إضافة عضو للفريق", edit:"تعديل الصلاحية", name:"الاسم الكامل", email:"البريد الإلكتروني", role:"الدور", admin:"مدير النظام", manager:"مدير فرع", staff:"موظف",
       branches:"الفروع المصرّح بها", save:"حفظ الصلاحية", cancel:"إلغاء", pending:"حساب بانتظار التفعيل", revokeInvite:"إلغاء الدعوة", pendingNote:"لم يُرسل أي بريد. ستُربط الصلاحية بعد أن ينشئ الشخص حساباً ويتحقق من بريده عبر مسار التسجيل الحالي.",
       members:"أعضاء الفريق", noMembers:"لا يوجد أعضاء فريق مسجلون بعد.", remove:"إلغاء الصلاحية", reason:"السبب (مطلوب)", confirm:"تأكيد الإلغاء",
-      orders:"حسابات الطلبات للفروع", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
+      orders:"حسابات الطلبات للفروع", accessHistory:"سجل الصلاحيات الأخير", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
       assigned:"تم حفظ الصلاحية.", removed:"تم إلغاء الصلاحية.", created:"تم إنشاء حساب الطلبات.", resetDone:"تم تغيير كلمة مرور الفرع.", error:"تعذّر إتمام الإجراء. حدّث الصفحة وتحقق من الحالة قبل إعادة المحاولة.",
       anonymize:"إخفاء هوية العميل وتعطيل حسابه", anonymizeNote:"سيتم مسح بيانات التعريف وتعطيل الدخول وإحالة رقم العضوية للتقاعد. سيبقى السجل المالي وسجل الطلبات دون بيانات تواصل شخصية.",
       confirmAnonymize:"تأكيد إخفاء الهوية", anonymized:"تم إخفاء هوية العميل وتعطيل حسابه.", managerOrders:"عمليات الفرع", noOrders:"لا توجد طلبات للفرع لعرضها.", status:"الحالة", time:"وقت الطلب", items:"الأصناف",
@@ -173,7 +173,7 @@
   }
   async function refreshTeam(panel) {
     if(!panel||!panel.isConnected)return;
-    const data=await request("/rest/v1/rpc/azal_admin_team_list",{});
+    const [data,auditRows]=await Promise.all([request("/rest/v1/rpc/azal_admin_team_list",{}),request("/rest/v1/rpc/azal_admin_audit_recent",{p_limit:50})]);
     const members=panel.querySelector("#adminTeamMembers");members.replaceChildren();
     if(!(data.members||[]).length)members.append(el("p","admin-note",L("noMembers")));
     for(const m of data.members||[])members.append(memberCard(m));
@@ -193,6 +193,8 @@
     const orders=panel.querySelector("#adminOrdersAccounts");orders.replaceChildren();
     const byBranch=new Map((data.orders_accounts||[]).map(x=>[x.branch_slug,x]));
     for(const b of data.branches||[])orders.append(orderAccountCard(b,byBranch.get(b.slug)||null));
+    const audit=panel.querySelector("#adminTeamAudit");audit.replaceChildren();
+    for(const a of auditRows||[]){const row=el("article","admin-record admin-audit-row");row.append(el("strong",null,a.action),el("span","admin-record-meta",(a.actor_name||"")+" · "+(a.target_type||"")+" · "+(a.target_id||"")),el("span","admin-record-meta",(a.branch_slug||"")+" · "+(a.reason||"")),el("span","admin-record-meta",new Date(a.created_at).toLocaleString(lang())));audit.append(row);}
     const form=panel.querySelector(".admin-team-form");
     const old=panel.querySelector(".admin-team-branches");
     if(old){const next=branchChecks(data.branches||[]);next.hidden=panel.querySelector("[name=role]").value==="admin";old.replaceWith(next);}
