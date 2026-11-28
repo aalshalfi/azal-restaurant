@@ -465,3 +465,12 @@ T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc6
 ## 2026-11-28 13:06 EST — T-28 kitchen shell review
 
 PR #92 / chatgpt/t28-kitchen-shell-v5 remains Draft/HOLD. History includes net-only T-26 summary + Toronto-day completed/cancelled branch tickets (code/status/item snapshots only); manual copy only; no guest identity/contact, tax, gross, refunds, email or auto-send. Queue-only 20-second polling; Scheduled conditional; no Availability or Settings. Current code head at review: 970689560f346e66026527ad3812e79f3ba13000. Base is 7 commits behind moving T-27; no exact-head CI evidence yet. Sync only after T-27 gate and run full CI.
+
+
+## 2026-11-28 — T-28 implementation refinement
+
+- History contains today's completed/cancelled tickets for the selected authorized branch, using DST-aware Toronto-day bounds (max 100).
+- Privacy: order code, terminal status, time and item snapshots only; no guest name, phone or amount.
+- T-26 summary RPC loads only on History entry/refresh; Queue alone polls every 20 seconds while visible.
+- EN/FR/AR loading, empty and error states are included.
+- PR #92 remains Draft; no merge, SQL apply, backend/schema change, role mutation or deployment.
