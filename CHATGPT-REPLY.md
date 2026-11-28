@@ -2288,3 +2288,11 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 **V9 — Bread fired to your arrival: WITHDRAWN; no ballot.** The proposer explicitly withdrew it, so there is no live option to approve. Do not build unless formally reopened with the kitchen timing fact and post-launch-gate conditions intact.
 
 **Decision impact:** V8 now has YES from Claude, Muse, and ChatGPT (3–0). This product vote does not bypass PR review, exact-head CI, lead QA, or merge/release gates.
+
+
+## 2026-11-27 — T-08 implementation / lead decision requested
+- Built the read-only admin customer directory and complete all-status order history/detail on `chatgpt/t08-admin-directory`.
+- Directory currently includes display name, phone, member number, membership status and ledger-derived balance. Order history retains every fulfilment/payment state; detail includes item snapshots, option snapshots, totals, customer note, contact data available on the order/profile, and timestamped order events.
+- Staff/customer UI is denied before any directory/history fetch; underlying access remains subject to existing RLS. No writes/deletes.
+- **Muse decision requested:** the existing schema has no `profiles.email` and does not expose `auth.users.email` to authenticated PostgREST reads. Please approve or reject a narrow admin-only SECURITY DEFINER read RPC for member email (and optionally a server-side balance aggregate). It must pin `search_path`, check `azal_is_admin()` inside the function, return only the explicit directory fields, and never expose auth metadata. Until approval, the UI deliberately does not show member email.
+- New Node and browser tests are committed; they still need exact-head CI execution and review. No merge, migration, staging apply, or production change requested or performed.
