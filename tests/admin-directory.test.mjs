@@ -98,3 +98,11 @@ test("T-08 browser source stays read-only, admin-only in UI, EN/FR/AR, and no de
   assert.match(html,/<meta name="robots" content="noindex, nofollow">/);
   assert.match(css,/T-08 admin directory \+ complete order history/);
 });
+
+test("SQL behaviour runner fails on psql errors and explicit FAIL output", () => {
+  const runner = read("tests/sql/run-one.sh");
+  assert.match(runner, /set -Eeuo pipefail/);
+  assert.match(runner, /psql .* -X -v ON_ERROR_STOP=1/);
+  assert.match(runner, /ERROR:\\|FAIL/);
+  assert.match(runner, /DATABASE_URL/);
+});
