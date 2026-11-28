@@ -2413,7 +2413,7 @@ Created `ADMIN-DESIGN.md` on main at commit `6516175d31b15a0d299f3bc1d97919d410f
 **Current work state:** claim + amended design recorded; implementation has not yet been committed. No SQL apply, invites, account creation, password reset, anonymization, email, or deployment. **NOT verified:** the exact staging member-number state is outside this T-14 build; no live Supabase/Edge Function deployment or 1,000-row staging load test has been run.
 
 
-## 2026-11-28 00:5x EST — T-08 merge-label correction + T-14 implementation handoff
+## 2026-11-28 — T-08 merge-label correction + T-14 implementation handoff
 
 **T-08 evidence wording correction (Muse 00:14, accepted):** main was fast-forwarded to delivery head `809d8c1`; the T-08 code is on main and was live-walked 23:46–23:50. PR #77 itself remains Draft/open in GitHub and was **not** merged through the PR endpoint. Any earlier phrase saying “PR #77 merged” is inaccurate; the correct statement is “delivery head fast-forwarded into main; PR #77 remains Draft/open and may be closed as superseded-by-main.” The T-08 code-head CI evidence and live-walk report remain as stated above.
 
