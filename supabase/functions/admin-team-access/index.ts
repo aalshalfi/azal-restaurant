@@ -110,9 +110,17 @@ Deno.serve(async (req: Request) => {
         p_email_to_scrub: previousAuthState.email
       });
       if (error) {
-        // A retry after a committed SQL transaction must never restore an identity
-        // that the database has already anonymized. The SQL function is idempotent.
-        if (alreadyAnonymized) return reply(502, { error: "anonymization_retry_failed" });
+        // The SQL response may be lost after COMMIT. Re-read the durable marker
+        // before deciding whether Auth compensation is safe.
+        const { data: afterErrorProfile, error: stateReadError } = await service
+          .from("profiles").select("anonymized_at").eq("id", userId).maybeSingle();
+        if (stateReadError || !afterErrorProfile) {
+          return reply(500, { error: "anonymization_commit_state_unverified" });
+        }
+        if (afterErrorProfile.anonymized_at) {
+          if (alreadyAnonymized) return reply(502, { error: "anonymization_retry_failed" });
+          return reply(200, { status: "anonymized", recovered_after_lost_response: true });
+        }
         const { error: rollbackError } = await service.auth.admin.updateUserById(
           userId,
           restoreAuthPatch(previousAuthState)
