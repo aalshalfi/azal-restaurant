@@ -2632,3 +2632,78 @@ Two proposals, each buildable on the current structure (`auth.state()` already r
   - truncation: the amount is kept on one line;
   - dead controls: none added.
 - **Release:** the BOARD T-23B claim is released on merge.
+
+## 2026-11-27 22:45 EST — HANDOVER FOR CHATGPT (owner, 21:34): everything Claude did, where it stands, and how to continue until Sunday
+
+> Read this section first when you need information about Claude's work. It is self-contained. Claude returns Sunday 2026-11-29 after 03:59 EST.
+
+### 1. Status of every Claude item (as of 22:45)
+| Item | Branch / PR | Head | CI | State |
+|---|---|---|---|---|
+| T-02 guest mobile + join (0010) | #68 | merged `b7260a2` | ✓ | **CLOSED** (0010 applied, live PASS) |
+| F-OWN-20 identity choice | in #68 | — | ✓ | superseded by T-22 |
+| T-22 inline sign-in/join in the checkout sheet | #71 | merged | ✓ | **CLOSED** (lead acceptance all-pass) |
+| T-23 member number (0013) + card + barcode | #72 | merged `bdee01e` | ✓ | **CLOSED** (0013 applied, live) |
+| T-23B V-1 points on card + V-2 self-refresh | #73 | merged `47306de` | ✓ | **CLOSED** (live PASS, lead 21:35) |
+| **Account redesign: F-OWN-26 + F-OWN-25 + lead 21:35 residual + F-OWN-24** | **#74** `claude/account-redesign` | **`52294f8`** | **46099600672 ✓** | **READY for the lead's gate** |
+| T-24 stage times + numbers-only identity | not started | — | — | **next** (card in WORKPLAN) |
+| T-04 member page remainder | not started | — | — | after T-24 |
+
+### 2. What PR #74 contains (commits in order)
+1. `3238956` **F-OWN-26 founding mark.** `isFounder` = member_number 10001–10100. A gold "Founding member" pill on the card (`#authFounderMark`), and a plain line under the card (`#authFounderNote`): "+30% for life; starts when Majlis points open in full at launch". EN/FR/AR.
+2. `6c376e8` **F-OWN-25 profile panel.**
+   - `auth.js` builds `#profilePanel`, opened by `.majlis-quick` (the header person icon) **only when signed in**: details, edit, sign out, and a link to the member page when not already on it.
+   - Escape or a tap outside closes it (not while editing).
+   - The icon is now also visible on desktop (CSS block "F-OWN-25…"). The member card no longer contains details or sign-out.
+   - **§6 neighbouring fixes:**
+     - the "Membership: Member" stats box is hidden when the card shows;
+     - narrow-desktop (801–1100 px) bag shows as icon + count, fixing a French overflow that already existed at 801 px on main.
+3. `14f6bb5` **Lead 21:35 residual.** `quietRefresh` sends `azal:points-changed` when the balance changes; `member-history.js` re-reads its section on it.
+4. `52294f8` **F-OWN-24.** The ledger drops its own "Balance: N points" line when `#authCardPoints` exists (points once per page; the entries stay).
+
+- **Tests:**
+  - `tests/profile-panel.browser.mjs` (new; fails on main);
+  - founder, residual and F-OWN-24 checks in `tests/member-card-refresh.browser.mjs`;
+  - updated expectations: `account`, `sign-out`, `header`, `desktop-header` (these pinned the old header and the old details block), and `member-history.test.mjs` line 43.
+  - **node 203/203; browser 29 files / 628 checks; CI 46099600672 ✓ at `52294f8`.**
+- **NOT verified:** live on the published site; real touch devices (tap-outside); the founders' +30% does not post yet, by design (P4 earn work).
+
+### 3. Next: T-24 (if the lead activates you on it)
+The card is in WORKPLAN. Notes from Claude's reading of the code:
+- **Stage times:** read `order_events` (member-history.js already selects `order_events(event_type,created_…` in the detail query, around line 57). Show a time only for events that exist; never estimate.
+- **Numbers only:** the sigil appears in:
+  - `checkout.js`, the success message, around line 373 (`root.AzalSigil.label` plus the `.co-sigil` large span);
+  - `pulse.js`;
+  - `member-history.js`;
+  - `staff.js` (collision flag);
+  - `sigil.js`, the library.
+
+  Remove the presentation and keep the 6-character code (`String(order_id).slice(0,6).toUpperCase()`). Grep `AzalSigil` and `co-sigil` across *.js and tests; the tests that assert sigil words must change to code-only.
+- Then T-04's remainder per WORKPLAN: password-first copy, password reset, plain-words economics, dead `items` strings.
+
+### 4. How Claude works here (conventions that keep the gate green)
+- **Branches:** `claude/<task>` from main, merging main in (never a rebase, never a force-push, never an amend of pushed commits). Docs-only changes go straight to main.
+- **Every JS/CSS change bumps `?v=`** on all 8 pages: `sed -i 's/v=OLD/v=NEW/g' *.html`, then check one value × 66 with `grep -rho 'v=2026[0-9a-z-]*' *.html | sort | uniq -c`.
+- **Script tags:** after any merge, compare `grep -o '<script src="[a-z0-9-]*\.js'` per page against main. Earlier syncs dropped `sigil.js`, `bread.js`, `role-door.js` and `pulse.js`.
+- **Strings:**
+  - script.js keeps EN/FR/AR auth strings on one long line per language. New keys are inserted just before each `authNotSet:"` (3 occurrences, order en, fr, ar).
+  - checkout.js has its own `S = {en, fr, ar}`. Run a key diff after edits; it must be zero.
+  - `tests/arabic.test.mjs` rejects known calques (e.g. «انضم بالبريد»).
+- **Arabic prices:** an LTR isolate `⁦…⁩`; use a non-breaking space before an amount so it does not wrap.
+- **Tests:**
+  - `node --test tests/*.test.mjs` (203);
+  - browser: `for f in tests/*.browser.mjs; do node "$f"; done`. Each must use `nullConfig(await chromium.launch())` or route `supabase-config.js`, which is guarded by `tests/browser-isolation.test.mjs`.
+  - Open checkout in tests with `p.evaluate(() => document.getElementById("checkoutButton").click())`. A real click waits 30 s on the hidden drawer button.
+  - Fake points-ledger rows need `id, entry_type, created_at`, or member-history's paint throws.
+- **Pinning proof:** run the new test against main in a worktree: `git worktree add /tmp/wt origin/main && cp tests/X /tmp/wt/tests/ && (cd /tmp/wt && node tests/X)`, then `git worktree remove --force /tmp/wt`.
+- **SQL suites:** local PG16. Chain `tests/sql/supabase-stub.sql`, `docs/schema-reference/0001_azal_staging_baseline.sql` and `supabase/migrations/0002…0010` (plus 0013 for the number), then `psql -t -A -f tests/sql/<suite>.sql` and count `^PASS` / `^FAIL` / `ERROR`. **An ERROR line is a failure**: `points-redeem-behaviour.sql:53` (`$select`) is still the known one, yours to fix per the lead's 19:20 note. `member-number-behaviour.sql` needs two users inserted before 0013 (see its header). Never apply SQL to live; Muse is the only operator.
+- **Delivery:** PR body plus a CLAUDE-REPLY section with head, CI id, the BUILD-METHOD §4 checklist (states · async guard · key diff + script tags · 320/390/1280 · pinning tests + suite lines + CI · NOT verified), the defect ledger, and the §6 study's findings. BOARD: a claim row before editing code files, released on merge.
+- **Key mechanisms you will touch:**
+  - `auth.js`: `refresh()` and `quietRefresh()` share `rSeq` (late answers are dropped); `renderCard()` calls `renderProfile()` first; `memberCard()`, `withNext()` (uses `window.AZALRedeemView` from checkout.js) and `code39()`/`code39Svg()` (pinned against ReportLab).
+  - Events: `azal:auth`, `azal:signed-in` (checkout → header), `azal:order-collected` (pulse → card), `azal:points-changed` (card → ledger).
+  - `checkout.js` T-22: `#coAuth` panel; `openAuth(mode, from, email, known)`; `authGen` guard; no navigation anywhere in the sheet.
+- **Design and identity:** official palette (#42220E, #CD8E2D, #914820, #F8F1E7) and `assets/azal-symbol.svg` only. Claude's design verdicts are binding; execute the fixed spec, do not redesign (lead 20:52).
+
+### 5. Open questions Claude leaves (none block the build)
+- A physical scan of the card barcode on a phone screen has not been done. If it fails, the bar widths in `code39Svg` (N=2, W=5) can be raised; the encoding itself is proven.
+- The owner's 22:20 message gave the membership start as 0001; the card spec says 10001, and 10001 was built and is live. Not reopened.
