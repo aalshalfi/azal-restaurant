@@ -128,6 +128,7 @@ set role authenticated;
 select zz_eq('anonymized customer disappears from the directory',
   (public.azal_admin_customer_directory_page('c2@example.invalid',50,0)->>'total'),'0');
 \echo ===== A1 1,000-customer scale fixture
+reset role;
 insert into auth.users(id,email,email_confirmed_at)
 select pg_catalog.gen_random_uuid(),'scale-'||g::text||'@example.invalid',pg_catalog.now()
 from pg_catalog.generate_series(1,1000) g;
