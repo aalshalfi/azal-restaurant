@@ -140,10 +140,7 @@ begin
 
   with filtered as (
     select p.id as user_id, p.display_name, p.phone, u.email::text as email,
-           p.member_number, p.created_at,
-           coalesce((select pg_catalog.sum(l.delta_points)::bigint
-                     from public.points_ledger l where l.user_id = p.id), 0) as balance,
-           m.status as membership_status, m.joined_at
+           p.member_number, p.created_at, m.status as membership_status, m.joined_at
     from public.profiles p
     join auth.users u on u.id = p.id
     left join public.memberships m on m.user_id = p.id
@@ -165,9 +162,15 @@ begin
     select * from filtered
     order by created_at desc, user_id desc
     limit v_limit offset v_offset
+  ),
+  enriched as (
+    select page.*,
+      coalesce((select pg_catalog.sum(l.delta_points)::bigint
+                from public.points_ledger l where l.user_id = page.user_id), 0) as balance
+    from page
   )
   select (select count(*) from filtered),
-         coalesce((select pg_catalog.jsonb_agg(pg_catalog.to_jsonb(page)) from page), '[]'::jsonb)
+         coalesce((select pg_catalog.jsonb_agg(pg_catalog.to_jsonb(enriched)) from enriched), '[]'::jsonb)
     into v_total, v_rows;
 
   return pg_catalog.jsonb_build_object('total', v_total, 'rows', v_rows, 'limit', v_limit, 'offset', v_offset);
@@ -245,7 +248,7 @@ begin
   if auth.uid() is null or not public.azal_is_admin() then raise exception 'not_admin' using errcode='42501'; end if;
   if v_email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' or pg_catalog.char_length(v_email)>254 then raise exception 'invalid_email'; end if;
   if v_name='' or pg_catalog.char_length(v_name)>80 then raise exception 'invalid_name'; end if;
-  if p_role not in ('admin','manager','staff') then raise exception 'invalid_role'; end if;
+  if p_role is null or p_role not in ('admin','manager','staff') then raise exception 'invalid_role'; end if;
   if p_role='admin' and cardinality(v_branches)<>0 then raise exception 'admin_has_no_branch_scope'; end if;
   if p_role in ('manager','staff') and cardinality(v_branches)=0 then raise exception 'branch_required'; end if;
   foreach v_branch in array v_branches loop
@@ -280,7 +283,7 @@ begin
   insert into public.user_roles(user_id,role) values(v_uid,p_role) on conflict do nothing;
   if p_role in ('manager','staff') then
     insert into public.staff_branch_access(user_id,branch_slug)
-    select v_uid,x from pg_catalog.unnest(v_branches) x on conflict do nothing;
+    select v_uid,branch_slug from pg_catalog.unnest(v_branches) as branches(branch_slug) on conflict do nothing;
   end if;
   update public.profiles set display_name=v_name where id=v_uid and (display_name is null or display_name='');
   insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
