@@ -11,7 +11,10 @@ create or replace function auth.uid() returns uuid language sql stable as $$ sel
 create or replace function auth.email() returns text language sql stable as $$ select nullif(current_setting('request.jwt.claim.email', true),'') $$;
 grant usage on schema auth to anon, authenticated, service_role;
 grant usage on schema public to anon, authenticated, service_role;
--- Supabase default privileges: new public tables/functions are granted to client roles.
-alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+-- Supabase default privileges: client roles receive baseline table grants, while
+-- service_role gets direct table access only from narrow, task-specific migrations.
+-- This mirrors the live T-14 schema: service_role calls SECURITY DEFINER RPCs by
+-- explicit EXECUTE grant and has no blanket SELECT/INSERT/UPDATE/DELETE on tables.
+alter default privileges in schema public grant all on tables to anon, authenticated;
 alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 alter default privileges in schema public grant execute on functions to anon, authenticated, service_role;
