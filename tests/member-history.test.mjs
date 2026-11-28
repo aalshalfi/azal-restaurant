@@ -40,7 +40,7 @@ test("V3 cups = collected paid orders (earn rows minus reversals), never negativ
   assert.equal(H.cupsFrom([{ entry_type: "earn" }, { entry_type: "earn_reversal" }]), 0);
   assert.equal(H.cupsFrom([{ entry_type: "earn_reversal" }]), 0);
   const src = readFileSync(new URL("../member-history.js", import.meta.url), "utf8");
-  assert.match(src, /"mh-balance", L\("total"/, "the exact balance line is still rendered");
+  assert.match(src, /if \(!document\.querySelector\("#authCardPoints"\)\) p\.append\(el\("p", "mh-balance", L\("total"/, "the exact balance line still renders when no card shows the balance (F-OWN-24: once per page)");
 });
 
 

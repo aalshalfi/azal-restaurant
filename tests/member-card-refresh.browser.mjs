@@ -29,7 +29,8 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
 { const { p, srvState } = await open();
   ok(/Points\s*2,824/.test(await p.textContent("#authCardPoints")), "V-1: the balance is on the card");
   ok(await p.textContent("#authCardNext") === "7,176 more points to $10.00 off", "V-1: the next reward by the redeemView rule (10,000 = $10)");
-  ok(await p.locator(".member-stat-points").count() === 0 && (await p.innerText(".member-card")).match(/2,824/g).length === 1, "V-1: points presented once (the stats line folds into the card)");
+  await p.waitForSelector(".mh-ledger");
+  ok(await p.locator(".member-stat-points, .mh-balance").count() === 0 && !/Balance/.test(await p.innerText("main")) && /2,824/.test(await p.textContent("#authCardPoints")), "V-1 / F-OWN-24: the balance is presented once on the page (card only; ledger entries kept)");
   srvState.points = 12824; await back(p); await p.waitForTimeout(500);
   ok(/12,824/.test(await p.textContent("#authCardPoints")) && await p.textContent("#authCardNext") === "7,176 more points to $20.00 off", "V-2: back on the tab, the balance and the next reward refresh themselves");
   const n = srvState.ledgerCalls; await back(p); await p.evaluate(() => window.dispatchEvent(new Event("focus"))); await p.waitForTimeout(400);
@@ -37,7 +38,7 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
   srvState.points = 20824; await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(500);
   ok(/20,824/.test(await p.textContent("#authCardPoints")) && /9,176 more points to \$30\.00 off/.test(await p.textContent("#authCardNext")), "V-2: an order collected refreshes it at once");
   await p.waitForTimeout(300);
-  ok(/20,824/.test(await p.textContent(".mh-balance")), "lead 21:35: the points ledger section below says the same balance (no contradiction, no reload)");
+  ok(/20,824/.test(await p.textContent(".mh-ledger")) && await p.locator(".mh-balance").count() === 0, "lead 21:35 + F-OWN-24: the ledger below re-reads (new entry shown, no reload) and carries no second balance line");
   await p.click(".majlis-quick"); await p.click("#authEditDetails"); await p.fill("#pfName", "Aziz typing");
   srvState.points = 21000; await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(500);
   ok(await p.inputValue("#pfName") === "Aziz typing" && /21,000/.test(await p.textContent("#authCardPoints")), "V-2: only the numbers are patched; an open details form keeps what was typed");
