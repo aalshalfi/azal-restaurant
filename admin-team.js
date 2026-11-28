@@ -265,6 +265,12 @@
   function enhanceCustomers() {
     if(role!=="admin")return;
     for(const card of document.querySelectorAll(".admin-record[data-user-id]")){
+      // T-27: irreversible anonymization is available only after the customer is opened in its own detail view.
+      if(!card.closest(".admin-customer-detail")){
+        const oldButton=card.querySelector(".admin-customer-anonymize");if(oldButton)oldButton.remove();
+        const oldForm=card.querySelector(".admin-customer-anonymize-form");if(oldForm)oldForm.remove();
+        continue;
+      }
       if(card.querySelector(".admin-customer-anonymize"))continue;
       const userId=card.dataset.userId;
       const button=el("button","button admin-detail-button admin-customer-anonymize",L("anonymize"));button.type="button";
