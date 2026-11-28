@@ -8649,3 +8649,59 @@ Claude's closing handover (CLAUDE-REPLY "HANDOVER FOR CHATGPT", 22:45 his clock)
 3. **Remainders in this batch, named so they are not lost:** (a) **T-23C** (founding badge below the name) is not in this PR — no auth.js change; it lands in this batch as agreed. (b) The SQL repair's second half — the runner failing loudly on psql errors — is not evidenced in the PR (the one-line quoting fix is verified correct); deliver it or state plainly where it lives. Neither blocks the 0014 completion; both close before the lead opens T-14.
 
 — Muse (team lead)
+
+## 2026-11-27 22:30 EST — F-OWN-28 (owner): search by order number — already in the build; one guarantee required
+
+The owner asked for an explicit **search-by-order-number** option in the admin. Lead check of the T-08 branch: the order-history search field already exists and its label promises it (AR: «ابحث برقم الطلب أو الفرع أو العميل أو الهاتف أو البريد»). One precision is required before the gate closes, @ChatGPT: the customer knows an order by its **6-character public code** (e.g. 4D9D36), not the UUID — the current matcher tests the term against `orders.id` (the full UUID). **Guarantee in this batch that the public code is a first-class match** (match the term against the order's derived public code explicitly, case-insensitive), with a pinning test that searches a known code and finds exactly that order. The lead will also test this live at the admin walk (searching 4D9D36) as a named acceptance point of the completed T-08 gate.
+
+— Muse (team lead)
+
+## 2026-11-27 22:32 EST — F-OWN-29 (owner): sales & tax reports — WEBSITE SALES ONLY; carded as T-25, built right after T-08
+
+The owner clarified the accounting request: **reports over the website's own sales only** — no external accounting system (the Wave/QuickBooks comparison was presented and is parked unless he revives it). Carded as **T-25 — Admin sales & tax reports**, assigned to ChatGPT immediately after the T-08 gate closes (it reuses T-08's read layer; Admin-only, since tax/payment data never reaches Manager or Staff under the approved access model):
+
+- Periods: **daily / monthly / yearly** (Toronto dates), selectable, with the current period shown by default.
+- Per period: order count · pre-tax subtotal · **HST collected as its own line** · points discounts · total collected — on the same "collected" convention as the ADM-1 overview (paid orders; handed-over for collected sales), stated on the panel so the numbers are never ambiguous.
+- Read-only aggregation over existing order fields (subtotal_cents, tax_cents, discount_cents, total_cents); no new money movement; refunds join the report when T-20 lands.
+- EN/FR/AR, phone + desktop, pinning tests on the aggregation (a hand-computed fixture period must match to the cent).
+
+— Muse (team lead)
+
+## 2026-11-27 22:34 EST — Lead instruction to ChatGPT: consolidate to ONE delivery branch before the completed gate
+
+@ChatGPT — your work is flowing, but it now lives on THREE branches (`chatgpt/t08-admin-directory`, `-sync`, `-final`), and the fixes are split: the `-final` branch carries migration 0014, the email wiring, T-23C and the SQL runner, while the staff/admin exclusion from the customer directory exists only on `-sync`. The professional standard is one record and one delivery. Before you post READY FOR LEAD GATE:
+
+1. Consolidate everything for this batch into ONE branch — T-08 complete, 0014, email search/detail, the F-OWN-28 public-code guarantee, T-23C, the loud SQL runner, AND the staff/admin directory exclusion — and say in CHATGPT-REPLY which branch it is.
+2. Point PR #76 at that branch (or close #76 and open its successor, saying so in the same note). The lead gates only the named branch's exact head: suite at head, source review, 0014 applied by the lead, merge, live admin walk (including the 4D9D36 code search).
+
+Nothing is lost — every commit exists; this is about one clean delivery the lead can certify.
+
+— Muse (team lead)
+
+## 2026-11-27 22:36 EST — F-OWN-30 (owner): end-of-day daily sales report, sent by the branch — "like Uber's idea"; carded as T-26 on top of T-25
+
+The owner directs: at the end of the day, the employee sends a **daily sales report** — modelled on Uber Eats' daily reporting. Carded as **T-26**, built directly on T-25's aggregation (same numbers, one source), in the same admin-phase run:
+
+- **The act:** one "Send today's report" action in the branch Orders/staff view at close of day. The report is stamped with the branch and the time (U1: the Orders account acts as the branch).
+- **Content (Toronto day):** orders by status (placed/collected/cancelled/unpaid) · collected sales · pre-tax subtotal · **HST as its own line** · points discounts · total collected — identical figures to T-25's daily period.
+- **Visibility by role:** staff see and send the operational report; the tax/payment lines render in the Admin's copy (access model: tax data is Admin-only). The Admin sees every sent report and its send record.
+- **Honesty rail (F-OWN-14):** the report is generated and recorded in-system immediately and visible to the Admin at once; the email copy to info@azalrestaurant.com rides the existing outbox and is labelled **queued** until the real sender exists (custom SMTP, owner's Dec 10 item) — the UI never claims "sent" for a queued email. When SMTP lands, the same report emails automatically with no rebuild.
+
+— Muse (team lead)
+
+## 2026-11-27 22:38 EST — F-OWN-30 AMENDED by the owner: the employee sends the daily report MANUALLY — v1 is the summary panel, no send machinery
+
+The owner simplified T-26 on the spot: it is enough that the employee **has the day's sales in front of him and sends them manually, for now**. T-26 v1 is therefore reduced to its useful core:
+
+- A **"Today's summary" panel in the branch Orders/staff view**: the day's orders by status and the collected sales total — the same T-25 daily figures, one source.
+- **No outbox row, no email state, no send button in v1.** The employee reads the panel and sends the report by hand (message/screenshot) — the human is the channel until further notice.
+- The tax-separated full report stays in the Admin's T-25 view (the access model is unchanged: tax/payment lines are Admin-only; if the owner later wants the staff panel to carry the tax line, that is his explicit amendment to make).
+- If he later asks for in-system sending, it returns as a v2 on top of the SMTP sender — not before.
+
+— Muse (team lead)
+
+## 2026-11-27 22:40 EST — F-OWN-30, owner's one-word precision: the TOTAL is the headline
+
+The owner's follow-up to the manual daily report: **"اجمالي" — the total.** The staff "Today's summary" panel leads with the day's **total collected sales** as its headline figure — that is the number the employee sends. Status counts stay as the supporting detail beneath it; nothing else changes in T-26 v1.
+
+— Muse (team lead)
