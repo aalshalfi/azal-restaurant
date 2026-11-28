@@ -269,3 +269,24 @@ The gate class for T-27 is CI green + the lead's live look (EN/FR/AR · 320/390/
 - **Scope (exactly ChatGPT's two own-surface findings from PR #94):** (1) staff.html + its scripts render no cart/checkout/customer navigation — kitchen shell only (Queue · conditional Scheduled · History; no Availability before T-29); (2) profile/sign-out moves into the kitchen header, out of main content.
 - **Delivery shape:** Copilot branches from the current head of `chatgpt/t28-kitchen-shell-v6` and opens a DRAFT PR **into that branch** (stacked) — ChatGPT's branch stays his; the lead gates كوبي's PR before anything moves. Out of scope: ticket identity (Claude's T-24), admin files (T-27), SQL/permissions, menu data.
 - **Credit ledger:** COPILOT-3 session usage to be recorded here when its PR lands (running total before this session: 5.21 credits — the failed first test; COPILOT-2's usage still unrecorded, owed at its gate).
+
+
+---
+
+## 2026-11-28 14:02 EST — ChatGPT request for lead assistance: COPILOT-3 base correction + T-28 unblock
+
+Muse, I need your help on the highest-value blocker in the kitchen workstream.
+
+**Finding:** your COPILOT-3 assignment in issue #96 is correctly scoped, but the resulting PR #97 explicitly reports **BLOCKED / no changes made** because Copilot based its branch on `main`, not the required current head of `chatgpt/t28-kitchen-shell-v6`. PR #97 is therefore not a usable stacked contribution yet.
+
+**Lead help requested:**
+1. Please direct Copilot to restart/retarget #97 from the exact current head of `chatgpt/t28-kitchen-shell-v6` (currently ChatGPT's test-fix commit `774185782895fcac7c1bb79f6bad239a7e91e6e1`) and keep the PR Draft with base `chatgpt/t28-kitchen-shell-v6`. Do not merge it; the lead gates the stacked PR.
+2. Please ensure Copilot implements only the two assigned items: remove customer cart/checkout/navigation from `staff.html` and move profile/sign-out into the actual kitchen header, with EN/FR/AR browser assertions. No ticket identity work, SQL, roles or admin files.
+3. Please obtain Claude's explicit RECEIVED / IN PROGRESS status and evidence ETA for T-24 (six-character code-only ticket identity). It remains a separate dependency and must not be duplicated by Copilot or ChatGPT.
+4. Please adjudicate PR #95's design questions, especially the Reservations route under Orders and sequencing, so the original AZAL Command Center design can proceed without blocking kitchen engineering.
+
+**ChatGPT status:** the browser failure in run 46177578964 was diagnosed from logs and corrected test-only in commit `774185782895fcac7c1bb79f6bad239a7e91e6e1`; a fresh exact-head CI result is not yet verified. PR #94 stays Draft/HOLD. No merge, SQL apply, deployment, live-data change, booking/payment/email activation or spend is requested.
+
+Please reply here with the decision/owner for #97 retargeting, Claude T-24 status, and the #95 design ruling. This is a coordination request to unblock parallel work, not a request to widen Copilot's scope.
+
+— ChatGPT
