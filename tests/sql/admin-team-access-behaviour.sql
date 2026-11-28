@@ -60,7 +60,7 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1'
 set role authenticated;
 select zz_eq('revoked Manager loses branch access immediately',public.azal_manager_can_access('ottawa')::text,'false');
 reset role;
-select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000aa',false) \\gset
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000aa',false) \gset
 set role authenticated;
 select zz_eq('Staff A branch picker returns only ottawa',public.azal_staff_my_branches()::text,'{ottawa}');
 reset role;
