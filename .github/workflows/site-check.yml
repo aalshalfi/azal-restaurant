@@ -2,7 +2,7 @@ name: Site checks
 
 on:
   push:
-    branches: [main]
+    branches: ["**"]
   pull_request:
     branches: [main]
 
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: for f in script.js auth.js supabase-config.js reservation-config.js admin.js admin-team.js role-door.js staff.js; do if [ -f "$f" ]; then node --check "$f"; fi; done
+        run: for f in script.js auth.js supabase-config.js reservation-config.js admin.js admin-team.js admin-shell.js role-door.js staff.js; do if [ -f "$f" ]; then node --check "$f"; fi; done
       - name: Runtime smoke test (language switch, menu, cart)
         run: node --test tests/*.test.mjs
       - name: Check all page markup and bilingual menu/account hooks
