@@ -10,7 +10,7 @@ The current `orders` schema has no `paid_at` column. The authoritative payment t
 - Collected sales follow ADM-1: only handed-over orders count as collected; the original payment event supplies the reporting period.
 - Refunds for handed-over orders are separately shown and deducted once in net collected. The report uses stored subtotal, discount and HST snapshots; it never recalculates historical tax.
 - Admin may view all active branches or one branch and receives subtotal/discount/HST/refund/net fields.
-- Manager receives only paid/status counts and collected total, across assigned branches or one selected assigned branch. The server verifies role and branch scope; the response omits the Admin financial breakdown.
+- Manager receives only paid/status counts and net collected total, across assigned branches or one selected assigned branch. The server verifies role and branch scope; the response omits the Admin financial breakdown and does not expose refund amounts separately.
 
 ## T-26 — Staff Today's summary
 
