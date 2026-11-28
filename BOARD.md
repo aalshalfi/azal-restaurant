@@ -459,3 +459,24 @@ T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc6
 ## 2026-11-28 13:04 EST — T-27 v4 review
 
 PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff65cb772a0960b53d6403181110. Review corrections include Manager all-assigned/one-branch report scopes, real T-25 RPC path, paid-only actionable attention, Toronto period defaults, 768px viewport, stable More links, and browser Back/Forward deep-link assertions. Base is 3 commits behind moving T-25 branch; no mergeable/CI-ready claim. Sync only after PR #85 lead gate, then run full tests.
+
+
+## 2026-11-28 13:42 EST — current-state correction (append-only)
+
+**Main:** `91b4e465aa432d3c94f1ba2d9ffa661267564fc8`.
+
+The owner's requested sequence is now reflected by the actual GitHub state:
+- #27 itself is closed unmerged; its dependency was delivered through superseding PR **#42**, merged as `2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce` (exact-head CI 45920912279 SUCCESS). 0001/0002 runbook is historical; never re-execute it.
+- #32 merged `344a7c698e15c3abdce5460e1a68fe4f330189b2`; exact-head CI 45945148747 SUCCESS. Server booking defaults false; both frontend flags remain false; direct RPC refuses while closed. IP-trust code review PASS and Muse's live Cloudflare probe is lead-reported PASS. Last explicit record: 0005 not applied, outbox sender absent, booking/email remain disabled.
+- #33 merged `23490141978451717cca5a578cd43faa5ec6b42d`; CI 45852008344 SUCCESS.
+- #31 merged `a2158d75504a66ed4189edae18133c703e913258`; CI 45952177739 SUCCESS.
+- #30 merged `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b`; CI 45935703028 SUCCESS; real email remains unverified.
+- #29 merged `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483`; CI 45977845768 SUCCESS; payments_mode defaults off and test payment RPC is mode-gated.
+
+**T-27:** PR #93 merged to main `91b4e465`; tested code head `5617d769`, CI run 46176159302 = 5/5 SUCCESS. Manager live Reports view still lacks a staging-account verification.
+
+**T-28:** PR #94 remains Draft/HOLD. Previous exact-head run 46175346221 failed browser-checks due to an escaped template literal in `tests/sign-out.browser.mjs:46`. ChatGPT corrected that single line; new head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba`; CI run 46177578964 is in progress (no green claim). Compared with main `91b4e465`, branch is 26 ahead / 5 behind, diverged. T-24 code-only ticket identity remains blocking; the branch still contains sigil presentation.
+
+**Claude handoff:** no T-24 implementation/evidence newer than his 12:20 proposal was found in `CLAUDE-REPLY.md`. PR #94 comment 7244026769 asks Claude to resume T-24 and record exact SHA/files/commands/tests/CI/blockers, with the owner's explicitly reinstated 30-minute checkpoints. Acknowledgement is pending.
+
+No merge, SQL apply, deployment, live-data mutation, booking/order/payment/email activation or spend was performed in this checkpoint.
