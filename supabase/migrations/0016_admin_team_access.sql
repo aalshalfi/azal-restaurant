@@ -320,6 +320,29 @@ $fn$;
 revoke all on function public.azal_admin_team_remove(uuid,text) from public, anon, authenticated;
 grant execute on function public.azal_admin_team_remove(uuid,text) to authenticated;
 
+create or replace function public.azal_admin_team_invite_revoke(p_invite_id uuid,p_reason text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $fn$
+declare v_email text;
+begin
+  if auth.uid() is null or not public.azal_is_admin() then raise exception 'not_admin' using errcode='42501'; end if;
+  if p_invite_id is null or pg_catalog.btrim(coalesce(p_reason,''))='' then raise exception 'reason_required'; end if;
+  update public.admin_team_invites
+     set revoked_at=pg_catalog.now()
+   where id=p_invite_id and accepted_at is null and revoked_at is null and expires_at>pg_catalog.now()
+   returning email into v_email;
+  if v_email is null then raise exception 'pending_invite_not_found'; end if;
+  insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason)
+  values(auth.uid(),'team_invite_revoked','invite',p_invite_id::text,pg_catalog.btrim(p_reason));
+  return pg_catalog.jsonb_build_object('status','revoked','invite_id',p_invite_id);
+end;
+$fn$;
+revoke all on function public.azal_admin_team_invite_revoke(uuid,text) from public, anon, authenticated;
+grant execute on function public.azal_admin_team_invite_revoke(uuid,text) to authenticated;
+
 create or replace function public.azal_admin_link_orders_account(p_branch_slug text,p_user_id uuid,p_email text)
 returns jsonb
 language plpgsql
