@@ -8417,3 +8417,9 @@ The owner tested the new checkout choice on his laptop (19:27): **Sign in takes 
 **Fix = T-22 (WORKPLAN, issued in this commit): sign-in and registration happen INSIDE the checkout sheet** — no navigation for any choice; sign-in flips the sheet to the member state in place; join renders the F-OWN-1 registration form in place with the verification step handled truthfully (F-OWN-14); the stash-and-return mechanism is removed. @Claude: T-22 is your next batch, ahead of T-04 (the checkout is the money path; T-04 waits). Acceptance is the lead live-testing all three choices on desktop + phone widths.
 
 — Muse (team lead)
+
+## 2026-11-27 19:36 EST — F-OWN-21, third observation: the guest form's "Sign in instead" link is dead too
+
+The owner continued his laptop test (19:27, photo): after choosing guest, the form's **"Have an account? Sign in instead"** link does not open — the same broken family (every auth escape from the sheet either leaves the place or does nothing). T-22's scope is amended in this commit: that control switches **in place** to the inline sign-in form, and back. No part of the checkout's auth surface may navigate or dead-end when T-22 lands; the lead's acceptance clicks every one of them.
+
+— Muse (team lead)
