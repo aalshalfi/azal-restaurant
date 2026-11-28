@@ -10,7 +10,7 @@ const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 function fixture() {
   const calls = [];
   const data = {
-    "/rest/v1/rpc/azal_admin_customer_directory": [
+    "/rest/v1/rpc/azal_admin_customer_directory_page": { rows: [\n      { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z", balance: 100, membership_status: "active", joined_at: "2026-11-01T00:00:00Z" },\n      { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z", balance: 55, membership_status: "suspended", joined_at: "2026-11-02T00:00:00Z" }\n    ], total: 2, limit: 50, offset: 0 },\n    "/rest/v1/rpc/azal_admin_customer_directory": [
       { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },
       { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z" }
     ],
@@ -39,6 +39,13 @@ function fixture() {
     const path = new URL(url).pathname;
     const key = Object.keys(data).find(k => path === k || path.startsWith(k + "/"));
     let body = data[key] || [];
+    if (path === "/rest/v1/rpc/azal_admin_customer_directory_page") {
+      const args = JSON.parse(init.body || "{}");
+      const all = data[key].rows;
+      const term = String(args.p_search || "").toLowerCase();
+      const filtered = all.filter(p => !term || [p.display_name,p.phone,p.email,String(p.member_number)].some(v => String(v || "").toLowerCase().includes(term)));
+      body = { rows: filtered.slice(args.p_offset || 0, (args.p_offset || 0) + (args.p_limit || 50)), total: filtered.length, limit: args.p_limit || 50, offset: args.p_offset || 0 };
+    }
     if (path === "/rest/v1/orders" && url.includes("order_items(")) body = [{
       ...data["/rest/v1/orders"][0], subtotal_cents: 2499, discount_cents: 0, redeemed_points: 0, tax_rate_bps: 1300, tax_cents: 325,
       customer_note: "No onions",
@@ -55,20 +62,24 @@ function fixture() {
 
 test("customer directory joins membership state and derives the exact ledger balance", async () => {
   const { api, calls } = fixture();
-  const rows = await api.customers();
+  const page = await api.customers();
+  const rows = page.rows;
   assert.equal(rows.length, 2);
+  assert.equal(page.total, 2);
   assert.deepEqual(rows.map(x => x.user_id).sort(), ["u1","u2"], "staff and admin profiles are not customer-directory entries");
   assert.deepEqual(rows.map(x => [x.display_name, x.email, x.member_number, x.membership.status, x.balance]), [["Amal","amal@example.invalid",10001,"active",100],["Sara","sara@example.invalid",10002,"suspended",55]]);
-  assert.ok(calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory") && x.init.method === "POST"));
-  assert.ok(calls.some(x => x.url.includes("/rest/v1/points_ledger?select=user_id,delta_points") && x.url.includes("order=created_at.asc,id.asc")));
+  assert.ok(calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory_page") && x.init.method === "POST"));
+  assert.ok(!calls.some(x => x.url.includes("/rest/v1/points_ledger") || x.url.includes("/rest/v1/memberships")), "directory page must not download the full ledger or memberships");
 });
 
 test("customer directory search matches name, phone and membership number", async () => {
   const { api } = fixture();
-  assert.deepEqual((await api.customers({ search: "amal" })).map(x => x.user_id), ["u1"]);
-  assert.deepEqual((await api.customers({ search: "6135550102" })).map(x => x.user_id), ["u2"]);
-  assert.deepEqual((await api.customers({ search: "10001" })).map(x => x.user_id), ["u1"]);
-  assert.deepEqual((await api.customers({ search: "sara@example.invalid" })).map(x => x.user_id), ["u2"]);
+  assert.deepEqual((await api.customers({ search: "amal" })).rows.map(x => x.user_id), ["u1"]);
+  assert.deepEqual((await api.customers({ search: "6135550102" })).rows.map(x => x.user_id), ["u2"]);
+  assert.deepEqual((await api.customers({ search: "10001" })).rows.map(x => x.user_id), ["u1"]);
+  assert.deepEqual((await api.customers({ search: "sara@example.invalid" })).rows.map(x => x.user_id), ["u2"]);
+  const { calls } = fixture();
+  await calls;
 });
 
 test("order history has no date/status exclusion and preserves handed_over, cancelled and unpaid rows", async () => {
