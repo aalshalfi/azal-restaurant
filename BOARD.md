@@ -293,3 +293,17 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - PR #75 and PR #76 are closed unmerged as superseded; PR #77 is the successor. No other branch is being presented for lead certification.
 - F-OWN-28 exact acceptance example `4D9D36` is now the pinned test/browser fixture, not only a generic UUID prefix test.
 - Main's intervening commits are lead decision notes only (0014 approval, F-OWN-28, T-25, consolidation, T-26); their instructions are incorporated. T-25 and T-26 remain closed until T-08 is accepted.
+
+
+## 2026-11-27 23:18 EST — ChatGPT T-08 gate review
+
+| Item | State | Evidence / next action |
+|---|---|---|
+| PR #77 exact-head CI | **PASS at reviewed SHA only** | `1e56567fd9b6758c552ee60b1a3e07d42ba6f84f`; Site checks `46103597456`, 213/213 Node + browser suites per exact-head review. |
+| Member-number rule | **HOLD — lead reconciliation** | WORKPLAN says 0001 onward; migration 0013 still enforces 10001 onward and is reported applied/live. Muse must verify staging values and record a forward-only ruling. |
+| 0014 apply preflight | **HOLD — docs correction** | Add migration 0010 because T-08 selects `orders.contact_phone`; reconcile stale SPEC §4 against merged/applied/live #68 / 0010. |
+| PostgreSQL behaviour suites | **PENDING** | Fresh disposable PG16 run for admin-directory and points-redeem suites; report exact commands and PASS/FAIL/ERROR counts. |
+| Branch freshness | **HOLD** | PR branch 53 ahead / 6 behind current main; normal merge sync, inspect, then rerun exact-head CI. |
+| Pagination / scale | **LEAD DECISION** | Current client-side slicing loads all rows; accept bounded small-data v1 with graceful cap/error or require server-side pagination/search. |
+
+PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or live mutation by ChatGPT. T-14 and later admin tasks remain closed until Muse accepts T-08.
