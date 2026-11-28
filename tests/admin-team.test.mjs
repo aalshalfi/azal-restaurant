@@ -20,7 +20,7 @@ test("A1 all-orders list is contact-blind until one order detail is opened", () 
   const admin=read("admin.js");
   const list=admin.slice(admin.indexOf("async orders("),admin.indexOf("async orderDetail("));
   const detail=admin.slice(admin.indexOf("async orderDetail("),admin.indexOf("const api ="));
-  assert.doesNotMatch(list,/guest_name|guest_email|contact_phone|azal_admin_order_customer_emails|rest\/v1\/profiles/);
+  assert.doesNotMatch(list,/user_id|guest_name|guest_email|contact_phone|azal_admin_order_customer_emails|rest\/v1\/profiles/);
   assert.match(detail,/azal_admin_customer_contact/);
   assert.doesNotMatch(read("supabase/migrations/0015_admin_team_access.sql"),/create or replace function public\.azal_admin_order_customer_emails/);
   assert.match(admin,/Search order code or branch/);
