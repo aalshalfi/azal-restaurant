@@ -149,6 +149,8 @@ select zz_eq('anonymization is audited with actor and reason',
   (select count(*)::text from public.admin_audit_log where action='customer_anonymized' and target_id='00000000-0000-0000-0000-0000000000c2' and reason='Customer requested account removal'),'1');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
 set role authenticated;
+select zz_eq('authenticated Admin cannot call server-only anonymization RPC',
+  public.zz_try('select public.azal_admin_anonymize_customer_server(''00000000-0000-0000-0000-0000000000a0'',''00000000-0000-0000-0000-0000000000c2'',''retry'')'),'42501');
 select zz_eq('T-08 order-linked email lookup retains active customer email',
   (select e.value->>'email' from pg_catalog.jsonb_array_elements(public.azal_admin_order_customer_emails(array['00000000-0000-0000-0000-0000000000c1'::uuid,'00000000-0000-0000-0000-0000000000c2'::uuid])) as e(value) where e.value->>'user_id'='00000000-0000-0000-0000-0000000000c1'),
   'c1@example.invalid');
