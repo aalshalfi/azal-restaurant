@@ -76,7 +76,10 @@ Deno.serve(async (req: Request) => {
       const { data: targetData, error: targetError } = await service.auth.admin.getUserById(userId);
       if (targetError || !targetData.user?.email) return reply(404, { error: "customer_not_found" });
       const oldEmail = targetData.user.email;
-      const replacement = `removed+${userId.replaceAll("-", "")}@example.invalid`;\n      const bannedUntil = targetData.user.banned_until ? Date.parse(targetData.user.banned_until) : 0;\n      const wasBanned = Number.isFinite(bannedUntil) && bannedUntil > Date.now();\n      const previousBanDuration = wasBanned ? `${Math.max(1, Math.ceil((bannedUntil - Date.now()) / 3600000))}h` : "none";
+      const replacement = `removed+${userId.replaceAll("-", "")}@example.invalid`;
+      const bannedUntil = targetData.user.banned_until ? Date.parse(targetData.user.banned_until) : 0;
+      const wasBanned = Number.isFinite(bannedUntil) && bannedUntil > Date.now();
+      const previousBanDuration = wasBanned ? `${Math.max(1, Math.ceil((bannedUntil - Date.now()) / 3600000))}h` : "none";
       const { error: banError } = await service.auth.admin.updateUserById(userId, {
         email: replacement,
         email_confirm: true,
