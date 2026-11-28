@@ -526,10 +526,9 @@ begin
      set email=v_replacement, phone=null, raw_user_meta_data='{}'::jsonb
    where id=p_user_id;
   update auth.identities
-     set identity_data=pg_catalog.jsonb_build_object(
-       'sub',coalesce(identity_data->>'sub',p_user_id::text),'email',v_replacement
-     ),
-     updated_at=pg_catalog.now()
+     set provider_id='removed-'||pg_catalog.replace(p_user_id::text,'-',''),
+         identity_data=pg_catalog.jsonb_build_object('sub',p_user_id::text,'email',v_replacement),
+         updated_at=pg_catalog.now()
    where user_id=p_user_id;
 
   update public.profiles
