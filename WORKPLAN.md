@@ -255,3 +255,11 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 - T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
 - Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
 - Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
+
+
+## 2026-11-28 13:02 EST — T-27 implementation checkpoint
+
+- PR #88 remains Draft/HOLD; no merge or deployment.
+- Implemented review corrections: actual T-25 RPC path in browser mocks; paid-only attention queue; Manager all-assigned and per-branch report scope; Toronto daily/monthly/yearly defaults; 768px responsive viewport; stable More deep links; customer/order detail Back/Forward checks.
+- Exact code head at checkpoint: 513af6eb2caac2f67d113b54252424b088d174eb.
+- Base has moved since branch creation. Wait for T-25 lead/staging acceptance, sync non-destructively to accepted base, and run full CI before T-27 READY.
