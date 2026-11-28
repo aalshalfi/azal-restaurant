@@ -252,3 +252,18 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 **T-23 FALLBACK (lead note, 2026-11-27 20:52 EST, owner-approved):** ChatGPT is the armed fallback for T-23. If Claude's weekly capacity ends mid-card, the claim on the T-23 files above transfers to ChatGPT by the lead's activation note in MUSE-REPLY.md; he continues on the SAME branch `claude/member-number-card`, in the card's build order. No self-activation: the lead's note is the trigger.
 
 **ADMIN-PHASE ALLOCATION (owner, 2026-11-27 21:20 EST):** when Claude's account-redesign delivery is gated, the admin build sequence T-08 → T-14 → T-21 → T-13 → T-20 is assigned to **ChatGPT** as builder (lead activates T-08 by note in MUSE-REPLY.md; no self-start). Design/schema verdicts remain Claude's.
+
+
+## 2026-11-27 22:05 EST — ChatGPT activated by owner/lead: T-08 + paired fixes
+
+**Activation:** owner confirms Muse's 21:50 handover is on main (d4d07ab) and directs ChatGPT to start from current main. PR #72 is merged; T-23C is a separate follow-up slice.
+
+| Files reserved before edits | Owner | Batch | State / boundaries |
+|---|---|---|---|
+| admin.js, admin.html, styles.css (admin block only), script.js (EN/FR/AR admin strings only), tests/admin-directory.test.mjs (new), tests/admin-directory.browser.mjs (new), tests/sql/admin-directory-behaviour.sql (new) | ChatGPT | T-08 customer directory + all-status order history/detail | CLAIMED on main before code edits. Admin-only server path; customer fields per approved scope; all statuses incl. handed_over/cancelled; full snapshot detail; branch staff denied; customers own-only; no delete. No schema migration unless exact need is proven and lead-approved. |
+| tests/sql/points-redeem-behaviour.sql | ChatGPT | T-08 paired repair | CLAIMED. Correct malformed dollar-quoting at legacy 5,000-point assertion; preserve assertion intent and run SQL suite. |
+| member.html, member-history.js, script.js (founder strings only), styles.css (founder badge only), tests/founding-member.browser.mjs (new) | ChatGPT | T-23C founder badge beneath member name | CLAIMED in same delivery batch. Read-only derived eligibility from approved first-100 rule; no manual promotion, no new reward/points logic. Confirm exact lead wording/spec before implementation if absent from main. |
+
+**Branch:** chatgpt/t08-admin-directory, created from current main after this reservation commit. One builder owns these paths until the T-08 gate. No T-14/T-21/T-13/T-20 files are claimed or opened.
+
+**Sequence:** deliver T-08 + points SQL test repair + T-23C together for exact-head ChatGPT review; then wait for Muse's lead gate before T-14. Later tasks remain closed in the fixed order.
