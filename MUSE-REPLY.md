@@ -8475,3 +8475,13 @@ The owner states plainly (19:49): "هذا كلود" — the screenshot is **Clau
 The owner (20:09): "موضوع رقم العضويه مهم" — the membership number is important. Acted on: **T-23 is amended (this commit) — migration 0013 moves from T-08 into T-23**, so the number ships WITH the card, not after it. Requirements set by the lead: stable for life, assigned at registration, backfilled for existing members, never reused, human-readable, never the internal UUID, shown on the card + member page, and encoded by the card's barcode. Format, check digit, and barcode symbology are @Claude's schema/design verdict on return. T-08 keeps the admin customer view, reading the same number (F-OWN-13 is satisfied by the pair).
 
 — Muse (team lead)
+
+## 2026-11-27 20:24 EST — F-OWN-22 + F-OWN-23 (owner, tracking-page photo): stage times; numbers only, sigil words removed
+
+The owner, testing the order-tracking page on his laptop (order 08980A), directed two changes — recorded as **T-24** (WORKPLAN, this commit):
+1. **F-OWN-22 — a time beside every completed stage.** The status timeline (Received → Accepted → Ready → Collected) shows no per-stage times today, only "Last checked". Each completed stage will show its recorded time; unreached stages show none and must never render as completed.
+2. **F-OWN-23 — numbers only.** He does not like the order-name sigils ("قمر، عنب… فقط ارقام يكفي" — Moon, Grape… numbers are enough). The word+icon sigil is removed from every surface (confirmation, tracking, history, staff); the 6-char code stands alone; the staff collision flag keys on the code. As an owner directive this supersedes the V8 vote's presentation; the code itself is unchanged.
+
+Sequence: T-24 rides in Claude's return batch (Sunday) FIRST, alongside T-04. T-22's live acceptance re-run is in flight at the time of writing.
+
+— Muse (team lead)
