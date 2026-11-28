@@ -332,3 +332,16 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 - Fixed rails preserved: approved Admin/Manager/Staff + separate branch Orders identity; append-only ledger and 10,000 points = $10 redemption step; existing branch-level HST/order snapshots; T-08 remains the foundation with no redesign.
 - T-26 has no substantive definition in current WORKPLAN.md / BOARD.md. The design records this as an explicit scope gap and does not invent metrics or behavior.
 - **No build started.** No app source, migration, SQL, Supabase, account, credential, points, refund, payment or deployment change. T-14 remains blocked pending Muse's explicit design verdict.
+
+
+## 2026-11-28 00:14 EST — T-14 claim opened under Muse adjudication (A1–A6)
+
+**Lead ruling source:** Muse commit `f79e04cc8b0f9249af1657e751b212dc652650df`, `MUSE-REPLY.md` adjudication 00:10 EST, APPROVE WITH CHANGES. T-08 gate is accepted per this ruling. The old T-08 HOLD notes above are historical and superseded by this dated ruling; no history rewritten.
+
+| Files claimed | Owner | Task | Branch / base | Scope |
+|---|---|---|---|---|
+| `admin.html`, `admin.js`, `staff.html`, `staff.js`, `styles.css`, `supabase/migrations/0016_admin_team_access.sql`, `supabase/functions/*` (only exact T-14 functions), `tests/admin-team*.mjs`, `tests/admin-directory-scale*.mjs`, `tests/admin-customer-anonymize*.mjs`, `tests/sql/admin-team-access-behaviour.sql`, `tests/sql/admin-customer-anonymize-behaviour.sql`, `docs/apply-0016.md`, `ADMIN-DESIGN.md`, `CHATGPT-REPLY.md` | ChatGPT | **T-14 ADM-4 + binding A1/A2** | `chatgpt/t14-team-access`, cut from main `f79e04cc8b0f9249af1657e751b212dc652650df` | Admin-only team/roles + branch Orders identity lifecycle; Manager branch scope; server-side directory search/pagination for name/email/phone/member number (1,000-customer usability); Admin-only customer anonymize/deactivate with mandatory reason, audit, retired member number and detached financial aggregates. |
+
+**Out of scope / fixed by A3–A6:** T-25/T-26 are next after T-14, not implemented in this batch; T-26 is today's collected-sales summary on staff.html, manual employee send only, no send/outbox machinery, no tax line; T-25 paid_at Toronto buckets and Manager sees only assigned-branch counts + collected total (Admin alone sees subtotal/HST/discount); no email notification system is added; T-06 staff Reject remains untouched. No T-21/T-13/T-20 work in this batch.
+
+**Current state:** claim registered before implementation. No staging/production SQL apply, invites, branch Orders account creation, password reset, email sending, live account mutation, or deployment is authorized by this claim. One branch only.
