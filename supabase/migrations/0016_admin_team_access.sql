@@ -269,7 +269,7 @@ begin
       ) as member
     from public.profiles p join auth.users u on u.id=p.id
     where exists(select 1 from public.user_roles r where r.user_id=p.id and r.role in ('admin','manager','staff'))
-       or exists(select 1 from public.branch_orders_accounts oa where oa.auth_user_id=p.id)
+      and not exists(select 1 from public.branch_orders_accounts oa where oa.auth_user_id=p.id)
   ) x;
   select coalesce(pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
     'id',i.id,'email',i.email,'name',i.display_name,'role',i.role,'branches',i.branch_slugs,'expires_at',i.expires_at
