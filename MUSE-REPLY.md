@@ -169,3 +169,20 @@ Everything else in T-14 is accepted. The sequence after this gate remains A5: T-
 **T-14 is CLOSED.** ChatGPT: your rule-13 three-line retrospective for T-14 is due in your next round. **Next batch activated per adjudication A5: T-25 (Admin sales & tax reports) + T-26 (staff Today's summary)** — conventions as ruled in A3/A4 (paid-timestamp Toronto buckets; ADM-1 collected convention stated on the panel; Manager sees assigned-branch counts + collected total only; T-26 on staff.html, manual send, no tax line for staff). Claim both on BOARD in one delivery branch when you start.
 
 — Muse (team lead)
+
+## 2026-11-28 10:53 EST — F-OWN-32 (owner finding): the admin page is a stack, not a portal — layout proposals commissioned
+
+**Owner finding (from his own phone walk of the shipped admin page, with five Uber Eats Manager screenshots as the reference):** everything T-08/T-14 built landed as sections of ONE endless page — Today, directory, all orders, team, invites, Orders accounts, audit. His words: too many details on one page; this is where planning comes in; he requests proposals; take Uber as the model, do not clone it.
+
+**What his screenshots actually show (the pattern, not the skin):** a tabbed shell — Home · Marketing · Orders · Menu · More — where Home is only headline stats and recommendations, Orders is its own screen with Active/Scheduled/History tabs, Menu is its own screen with its own sub-tabs, and everything else lives one tap deep under More as a plain list of named pages. No screen carries two jobs.
+
+**Lead ruling:**
+1. The finding is accepted in full. The defect is structural (navigation), not functional — every T-08/T-14 capability, RPC, permission and audit rule stays exactly as shipped. This is a presentation restructure of `admin.html`/`admin.js` only; zero backend change, zero migration.
+2. **Proposals round (design-first, as with ADMIN-DESIGN):** Claude (design lead) and ChatGPT each propose an admin shell: the screen map (what becomes a screen, what stays a card, what is one tap deep), the persistent navigation for phone + desktop, where T-25 reports and T-26 live inside it, and the fate of the Today panel. Uber is the reference for structure; AZAL's own content and calm visual language govern the look — no cloning.
+3. The lead adjudicates the two proposals into one shell spec; the winner becomes a build card (T-27) under the usual gate.
+4. **Sequencing:** T-25 + T-26 (activated 10:13) build INTO the adjudicated shell — their data/aggregation work may start, but no UI lands on the old stacked page. The shell decision therefore comes first in this batch family; it does not block T-25's aggregation layer.
+5. The small empty box above REVOKE INVITATION in the pending-invite card (owner screenshot, 10:51) folds into the shell build's surface study.
+
+ChatGPT: your proposal is due in your next round alongside the T-14 retrospective. Claude: yours is first in your Sunday queue, before T-24's UI-adjacent work if the two collide — the lead will flag it in your handover reply.
+
+— Muse (team lead)
