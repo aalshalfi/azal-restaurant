@@ -36,7 +36,7 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
   ok(srvState.ledgerCalls === n, "V-2: no request storm (one re-read per 15 s from focus/visibility)");
   srvState.points = 20824; await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(500);
   ok(/20,824/.test(await p.textContent("#authCardPoints")) && /9,176 more points to \$30\.00 off/.test(await p.textContent("#authCardNext")), "V-2: an order collected refreshes it at once");
-  await p.click("#authEditDetails"); await p.fill("#pfName", "Aziz typing");
+  await p.click(".majlis-quick"); await p.click("#authEditDetails"); await p.fill("#pfName", "Aziz typing");
   srvState.points = 21000; await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(500);
   ok(await p.inputValue("#pfName") === "Aziz typing" && /21,000/.test(await p.textContent("#authCardPoints")), "V-2: only the numbers are patched; an open details form keeps what was typed");
   await p.close(); }
@@ -44,7 +44,7 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
   const { p, srvState } = await open();
   let release; srvState.hold = new Promise((r) => (release = r)); srvState.points = 99999;
   await p.evaluate(() => document.dispatchEvent(new CustomEvent("azal:order-collected"))); await p.waitForTimeout(150);
-  await p.click("#authSignOut"); await p.waitForTimeout(300); release(); srvState.hold = null; await p.waitForTimeout(500);
+  await p.click(".majlis-quick"); await p.click("#authSignOut"); await p.waitForTimeout(300); release(); srvState.hold = null; await p.waitForTimeout(500);
   ok(await p.locator("#authForm").count() === 1 && await p.locator(".mcard").count() === 0 && !/99,999/.test(await p.textContent("main")), "a late answer after sign-out never repaints the account");
   await p.close(); }
 { const { p } = await open({ options: false });

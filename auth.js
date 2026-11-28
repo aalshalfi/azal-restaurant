@@ -308,7 +308,53 @@
     return st;
   }
 
+  // F-OWN-25 (owner): "Your details" and Sign out live behind the header's profile icon, on every page. For a signed-in
+  // member the icon opens this panel in place (no navigation, per F-OWN-21); for a visitor it stays the Majlis link.
+  const signedIn = (st) => Boolean(st && (st.status === "signed_in" || st.status === "no_profile" || st.status === "error"));
+  const icons = () => [...document.querySelectorAll(".majlis-quick")];
+  const panel = document.createElement("div");
+  panel.className = "profile-panel"; panel.id = "profilePanel"; panel.hidden = true; panel.tabIndex = -1;
+  panel.setAttribute("role", "dialog");
+  document.body.append(panel);
+  let panelFrom = null;
+  function renderProfile(st) {
+    const on = signedIn(st);
+    icons().forEach((a) => { if (on) { a.setAttribute("aria-haspopup", "dialog"); a.setAttribute("aria-controls", "profilePanel"); a.setAttribute("aria-expanded", String(!panel.hidden)); } else { a.removeAttribute("aria-haspopup"); a.removeAttribute("aria-controls"); a.removeAttribute("aria-expanded"); } });
+    if (!on) { closeProfile(false); panel.replaceChildren(); return; }
+    panel.setAttribute("aria-label", tr("authDetails"));
+    const onMember = Boolean(document.querySelector(".member-card"));
+    panel.innerHTML = `<button class="profile-close" type="button" id="profileClose" aria-label="${esc(tr("ariaClose"))}">×</button>` +
+      (st.status === "signed_in" ? detailsBlock(st) : `<p class="auth-hello">${esc(st.email || "")}</p>`) +
+      (onMember ? "" : `<a class="text-link dark-link profile-majlis" href="member.html">${esc(tr("navMajlisMine"))}</a>`) +
+      `<div class="member-actions"><button class="button member-join" type="button" id="authSignOut">${esc(tr("authSignOut"))}</button></div>`;
+    if (editing && !panel.hidden) document.getElementById("pfName")?.focus();
+  }
+  function placePanel(from) {
+    const r = from && from.getBoundingClientRect();
+    panel.style.top = Math.round(r ? r.bottom + 8 : 64) + "px";
+  }
+  function openProfile(from) {
+    panelFrom = from || null; placePanel(from); panel.hidden = false; renderProfile(last);
+    (document.getElementById("pfName") && editing ? document.getElementById("pfName") : panel).focus();
+  }
+  function closeProfile(restore) {
+    if (panel.hidden) return;
+    panel.hidden = true; editing = false; detailMsg = "";
+    icons().forEach((a) => a.setAttribute("aria-expanded", "false"));
+    if (restore !== false && panelFrom) panelFrom.focus();
+  }
+  document.addEventListener("click", (e) => {
+    const icon = e.target && e.target.closest && e.target.closest(".majlis-quick");
+    if (icon && signedIn(last)) { e.preventDefault(); panel.hidden ? openProfile(icon) : closeProfile(); return; }
+    if (e.target && e.target.id === "profileClose") { closeProfile(); return; }
+    // a tap outside closes it, unless the member is in the middle of editing
+    if (!panel.hidden && !editing && !panel.contains(e.target) && !icon) closeProfile(false);
+  }, true);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) { e.preventDefault(); closeProfile(); } });
+  root.addEventListener("resize", () => { if (!panel.hidden) placePanel(panelFrom); });
+
   function renderCard(st) {
+    renderProfile(st);
     try { document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: st && st.status } })); } catch {} // member-history.js listens
     const card = document.querySelector(".member-card");
     if (!card) return;
@@ -322,15 +368,12 @@
         `<p class="auth-hello">${esc(tr("authHello").replace("{name}", st.name || st.email || ""))}</p>` +
         // T-23: the membership number (plain digits, left-to-right even in Arabic). Shown only when the server has it.
         (st.memberNumber ? memberCard(st) : "") +
-        `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
+        (st.memberNumber && !pending && st.membership === "active" ? "" : `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
         // Owner 21:31: no placeholder where personal data would go; the points card renders only with real points behind it.
-        (pending || st.memberNumber ? "" : `<div class="member-stat member-stat-points"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +
+        (pending || st.memberNumber ? "" : `<div class="member-stat member-stat-points"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>`) +
         (st.claimed ? `<p class="auth-claimed" role="status">${esc(tr("authClaimed").replace("{points}", fmtPoints(st.claimed)))}</p>` : "") +
         (st.claimFailed ? `<p class="auth-claimed auth-claim-failed" role="alert">${esc(tr("authClaimFailed"))} <button type="button" class="text-link dark-link" id="authClaimRetry">${esc(tr("authClaimRetry"))}</button></p>` : "") +
-        (pending ? "" : detailsBlock(st)) +
-        `<p class="auth-note">${tr("authPreviewNote")}</p>` +
-        `<div class="member-actions"><button class="button member-join" type="button" id="authSignOut">${tr("authSignOut")}</button></div>`;
-      if (editing) document.getElementById("pfName")?.focus();
+        `<p class="auth-note">${tr("authPreviewNote")}</p>`;
       return;
     }
     if (mode === "code") {

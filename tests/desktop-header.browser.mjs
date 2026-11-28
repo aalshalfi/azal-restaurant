@@ -16,13 +16,15 @@ for (const lang of ["en", "ar"]) for (const pg of ["index", "menu", "member", "r
     const R = (s) => { const e = document.querySelector(s); if (!e || getComputedStyle(e).display === "none") return null; const r = e.getBoundingClientRect(); return { l: r.left, r: r.right, h: r.height, t: r.top }; };
     const hdr = document.querySelector(".site-header"), cs = getComputedStyle(hdr), pad = parseFloat(cs.paddingLeft);
     const links = [...document.querySelectorAll(".nav a")].map((a) => a.getBoundingClientRect());
-    return { brand: R(".brand"), nav: R(".nav"), lang: R("#languageToggle"), cart: R(".cart-open"), pad, rtl: document.documentElement.dir === "rtl", vw: innerWidth, ovf: document.documentElement.scrollWidth - innerWidth,
+    return { brand: R(".brand"), nav: R(".nav"), lang: R("#languageToggle"), cart: R(".cart-open"), icon: R(".header-quick .majlis-quick"), pad, rtl: document.documentElement.dir === "rtl", vw: innerWidth, ovf: document.documentElement.scrollWidth - innerWidth,
       gaps: links.slice(1).map((r, i) => Math.abs(document.documentElement.dir === "rtl" ? links[i].left - r.right : r.left - links[i].right)) };
   });
   const cart = m.cart, lang_ = m.lang, brand = m.brand;
   const langCartGap = cart ? (m.rtl ? lang_.l - cart.r : cart.l - lang_.r) : 0; // reserve has no order button
   const brandAtStart = m.rtl ? Math.abs(m.vw - m.pad - brand.r) < 2 : Math.abs(brand.l - m.pad) < 2;
-  const groupAtEnd = m.rtl ? Math.abs((cart || lang_).l - m.pad) < 2 : Math.abs((cart || lang_).r - (m.vw - m.pad)) < 2;
+  // F-OWN-25: the profile icon now ends the group (after the order button)
+  const endEl = m.icon || cart || lang_;
+  const groupAtEnd = m.rtl ? Math.abs(endEl.l - m.pad) < 2 : Math.abs(endEl.r - (m.vw - m.pad)) < 2;
   const evenNav = m.gaps.length ? Math.max(...m.gaps) - Math.min(...m.gaps) < 2 : true;
   const oneHeight = !cart || Math.abs(cart.h - lang_.h) < 1;
   ok(brandAtStart && groupAtEnd && (!cart || (langCartGap >= 12 && langCartGap <= 32)) && evenNav && oneHeight && m.ovf <= 0,

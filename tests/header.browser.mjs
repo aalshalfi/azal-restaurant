@@ -27,8 +27,8 @@ for (const lang of ["en", "ar"]) for (const page_ of ["index", "menu", "member",
 {
   const page = await b.newPage({ viewport: { width: 1280, height: 400 } });
   await page.goto(`${base}/index.html`);
-  const d = await page.evaluate(() => ({ quick: getComputedStyle(document.querySelector(".header-quick")).display, icon: getComputedStyle(document.querySelector(".cart-open .cart-icon")).display, nav: getComputedStyle(document.querySelector(".nav")).display, label: getComputedStyle(document.querySelector(".cart-open .cart-label")).position }));
-  ok(d.quick === "none" && d.icon === "none" && d.nav === "flex" && d.label !== "absolute", "1280: desktop unchanged (nav visible, text cart, no quick controls)");
+  const d = await page.evaluate(() => ({ quick: getComputedStyle(document.querySelector(".header-quick")).display, lq: getComputedStyle(document.querySelector(".language-quick")).display, icon: getComputedStyle(document.querySelector(".cart-open .cart-icon")).display, nav: getComputedStyle(document.querySelector(".nav")).display, label: getComputedStyle(document.querySelector(".cart-open .cart-label")).position }));
+  ok(d.quick === "flex" && d.icon === "none" && d.nav === "flex" && d.label !== "absolute" && d.lq === "none", "1280: nav visible, text cart; of the quick controls only the profile icon (F-OWN-25)");
   await page.close();
 }
 await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);

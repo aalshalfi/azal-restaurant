@@ -972,3 +972,26 @@ html[lang="ar"] .mcard-meta span{letter-spacing:0;font-size:.85rem}
 .mcard-founder{display:inline-block;margin-top:8px;padding:3px 10px;border:1px solid #CD8E2D;border-radius:999px;color:#CD8E2D;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
 .auth-founder-note{margin:-6px 0 18px;max-width:440px;padding:10px 14px;border-inline-start:3px solid #CD8E2D;background:rgba(205,142,45,.08);color:#42220E;font-size:.92rem;line-height:1.55}
+/* F-OWN-25: the profile panel behind the header icon */
+.profile-panel{position:fixed;z-index:60;inset-inline-end:12px;width:min(360px,calc(100vw - 24px));max-height:calc(100dvh - 90px);overflow:auto;padding:18px 18px 16px;background:#F8F1E7;color:#42220E;border:1px solid rgba(66,34,14,.18);border-radius:16px;box-shadow:0 18px 40px rgba(66,34,14,.22)}
+.profile-panel[hidden]{display:none}
+.profile-panel:focus{outline:none}
+.profile-close{position:absolute;top:8px;inset-inline-end:10px;width:40px;height:40px;border:0;background:none;color:#42220E;font-size:26px;line-height:1;cursor:pointer}
+.profile-panel .auth-details{margin:0}
+.profile-panel .auth-details-title{margin-top:0;padding-inline-end:40px}
+.profile-panel .member-actions{margin-top:14px}
+.profile-majlis{display:inline-block;margin-top:12px}
+/* F-OWN-25: the profile icon also on desktop (the language toggle stays in the nav there) */
+@media(min-width:801px){.header-quick{display:flex;align-items:center;order:3}.header-quick .language-quick{display:none}.header-quick .majlis-quick{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--brown);border-radius:22px}.header-quick .majlis-quick:focus-visible{outline:3px solid var(--gold);outline-offset:1px}}
+.profile-panel .auth-dl>div{display:grid;grid-template-columns:1fr;gap:1px;margin-bottom:10px}
+.profile-panel .auth-dl dt{font-size:.82rem;color:#914820}
+.profile-panel .auth-dl dd{margin:0;font-size:1rem;overflow-wrap:anywhere}
+.profile-panel .auth-dl dd[dir="ltr"]{text-align:start;unicode-bidi:isolate}
+/* §6 sibling fix (narrow desktop 801-1100px; French already overflowed at 801 on main): the bag becomes the icon + count,
+   as on mobile; its words stay for screen readers. */
+@media(min-width:801px) and (max-width:1100px){
+ .cart-open{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0!important;border:0;background:transparent;color:var(--brown)}
+ .cart-open .cart-icon{display:block}
+ .cart-open .cart-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+ .cart-open #cartCount{position:absolute;top:3px;right:1px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--gold);color:var(--brown);font-size:11px!important;font-weight:800;line-height:18px;text-align:center}
+}

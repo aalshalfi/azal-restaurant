@@ -27,7 +27,7 @@ async function open({ lang = "en", signedIn = false, profile = { id: "u1", displ
     return r.fulfill({ status: 404, json: {} });
   });
   await p.addInitScript(([l, s]) => { localStorage.setItem("azal-language", l); if (s) localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T", refresh_token: "R", expires_at: 4e12, user: { id: "u1", email: "m@example.com" } })); }, [lang, signedIn]);
-  await p.goto(base + "/member.html"); await p.waitForTimeout(400);
+  await p.goto(base + "/member.html"); await p.waitForTimeout(400); if (signedIn) await p.click(".majlis-quick").catch(() => {}); // F-OWN-25: details and sign-out live in the header profile panel
   return { p, sent };
 }
 const msg = (p) => p.evaluate(() => (document.getElementById("authMessage") || document.getElementById("pfMessage") || {}).textContent || "");

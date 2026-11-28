@@ -50,7 +50,8 @@ for (const [pg, role, btn, data] of [["admin", "admin", "#adminSignOut", /Collec
 }
 { // the member page's own sign-out, same pass
   const { ctx, sent } = await ctxFor("customer"); const p = await ctx.newPage();
-  await p.goto(`${base}/member.html`); await p.waitForSelector("#authSignOut", { timeout: 5000 }).catch(() => {});
+  await p.goto(`${base}/member.html`); await p.waitForTimeout(600);
+  await p.click(".majlis-quick"); await p.waitForSelector("#authSignOut", { timeout: 5000 }).catch(() => {}); // F-OWN-25: behind the profile icon
   await p.click("#authSignOut"); await p.waitForTimeout(500);
   ok(sent.some((u) => u.includes("/auth/v1/logout")) && await p.evaluate((k) => localStorage.getItem(k) === null, KEY) && await p.locator("#authForm").count() === 1, "member: sign-out ends the session, clears the key, shows the sign-in form");
   await ctx.close();
