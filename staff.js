@@ -19,7 +19,7 @@
   function createStaff({ config, fetch: fetchFn, getToken, branch }) {
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
-    branch = branch || "ottawa";
+    branch = branch || "ottawa";\n    let allowedBranches = [];
     async function call(path, { method = "GET", body } = {}) {
       const token = getToken && (await getToken());
       if (!token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
@@ -62,19 +62,19 @@
       accept: "Accept", ready: "Ready", hand_over: "Hand over", asap: "As soon as possible", member: "Member",
       clash: "Same sigil as another order: check the code", s_placed: "New", s_accepted: "Accepted", s_preparing: "Preparing", s_ready: "Ready for pickup",
       updated: "Updated {time}", refresh: "Refresh", working: "One moment…", e_network: "Connection problem. The list will retry.", e_error: "That did not work. Refresh and try again.",
-      e_bad_transition: "That order already moved on. Refreshed.", e_order_closed: "That order is already closed. Refreshed.", e_not_staff: "This account is not staff for this branch.", signedAs: "Signed in as {email}", call: "Call", signOut: "Sign out", signingOut: "Signing out…" },
+      e_bad_transition: "That order already moved on. Refreshed.", e_order_closed: "That order is already closed. Refreshed.", e_not_staff: "This account is not staff for this branch.", signedAs: "Signed in as {email}", call: "Call", branch: "Branch", signOut: "Sign out", signingOut: "Signing out…" },
     fr: { title: "Commandes cuisine", inert: "L’écran des commandes s’active quand le site est relié au système AZAL.", signIn: "Connectez-vous d’abord avec votre courriel du personnel sur la page Majlis.", signInLink: "Aller à la connexion",
       notStaff: "Ce compte n’est pas configuré comme personnel de cette succursale.", empty: "Aucune commande payée en attente. Les nouvelles apparaissent ici d’elles-mêmes.",
       accept: "Accepter", ready: "Prête", hand_over: "Remettre", asap: "Dès que possible", member: "Membre",
       clash: "Même signe qu’une autre commande : vérifiez le code", s_placed: "Nouvelle", s_accepted: "Acceptée", s_preparing: "En préparation", s_ready: "Prête à emporter",
       updated: "Mis à jour à {time}", refresh: "Actualiser", working: "Un instant…", e_network: "Problème de connexion. La liste va réessayer.", e_error: "Ça n’a pas marché. Actualisez et réessayez.",
-      e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale.", signedAs: "Connecté : {email}", call: "Appeler", signOut: "Se déconnecter", signingOut: "Déconnexion…" },
+      e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale.", signedAs: "Connecté : {email}", call: "Appeler", branch: "Succursale", signOut: "Se déconnecter", signingOut: "Déconnexion…" },
     ar: { title: "طلبات المطبخ", inert: "تعمل شاشة الطلبات حين يُربط الموقع بنظام أزال.", signIn: "سجّل الدخول أولاً ببريد الموظف من صفحة المجلس.", signInLink: "اذهب لتسجيل الدخول",
       notStaff: "هذا الحساب ليس حساب موظف في هذا الفرع.", empty: "لا طلبات مدفوعة تنتظر. تظهر الطلبات الجديدة هنا وحدها.",
       accept: "قبول", ready: "جاهز", hand_over: "تسليم", asap: "في أقرب وقت", member: "عضو",
       clash: "الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته", s_placed: "جديد", s_accepted: "مقبول", s_preparing: "قيد التحضير", s_ready: "جاهز للاستلام",
       updated: "حُدّث {time}", refresh: "تحديث", working: "لحظة…", e_network: "مشكلة في الاتصال. ستُعاد المحاولة.", e_error: "لم تنجح العملية. حدّث الصفحة وحاول مرة أخرى.",
-      e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع.", signedAs: "مسجّل باسم {email}", call: "اتصل بـ", signOut: "تسجيل الخروج", signingOut: "جارٍ تسجيل الخروج…" },
+      e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع.", signedAs: "مسجّل باسم {email}", call: "اتصل بـ", branch: "الفرع", signOut: "تسجيل الخروج", signingOut: "جارٍ تسجيل الخروج…" },
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const locOf = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
@@ -84,7 +84,7 @@
   // Same bidi rule as script.js (F-WALK-3): in Arabic every price is a left-to-right isolate.
   const money = (c) => { const s = new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100); return lang() === "ar" ? "\u2066" + s.replace(/\u200f/g, "") + "\u2069" : s; };
 
-  let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0;
+  let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0, branchOptions = [];
   // T-01 / F-OWN-19: identity + sign-out on every signed-in state of the kitchen screen.
   const whoBar = () => `<div class="staff-who-bar"><p class="staff-who-line">${esc(L("signedAs", { email }))}</p><button type="button" class="button staff-signout" id="staffSignOut"${signingOut ? " disabled" : ""}>${esc(L(signingOut ? "signingOut" : "signOut"))}</button></div>`;
 
@@ -94,7 +94,7 @@
     if (state === "inert") { box.innerHTML = h + `<p class="staff-note">${esc(L("inert"))}</p>`; return; }
     if (state === "signed_out") { box.innerHTML = h + `<p class="staff-note">${esc(L("signIn"))}</p><p><a class="button button-gold" href="member.html">${esc(L("signInLink"))}</a></p>`; return; }
     if (state === "not_staff") { box.innerHTML = h + whoBar() + `<p class="staff-note">${esc(L("notStaff"))}</p>`; return; }
-    const head = h + whoBar() + `<div class="staff-bar"><span class="staff-updated" aria-live="polite">${lastAt ? esc(L("updated", { time: tf(lastAt, { second: "2-digit" }) })) : ""}</span><button type="button" class="text-link dark-link" id="staffRefresh">${esc(L("refresh"))}</button></div>` +
+    const branchPicker = branchOptions.length > 1 ? `<label class="staff-branch-picker"><span>${esc(L("branch"))}</span><select id="staffBranch">${branchOptions.map(b => `<option value="${esc(b)}"${b === branchOptions[0] ? "" : ""}>${esc(b)}</option>`).join("")}</select></label>` : "";\n    const head = h + whoBar() + branchPicker + `<div class="staff-bar"><span class="staff-updated" aria-live="polite">${lastAt ? esc(L("updated", { time: tf(lastAt, { second: "2-digit" }) })) : ""}</span><button type="button" class="text-link dark-link" id="staffRefresh">${esc(L("refresh"))}</button></div>` +
       `<p class="staff-flash" role="status">${esc(flash)}</p>`;
     if (!rows.length) { box.innerHTML = head + `<p class="staff-note">${esc(L("empty"))}</p>`; return; }
     const groups = new Map();
@@ -135,13 +135,13 @@
     paint();
   }
 
-  box.addEventListener("click", async (e) => {
+  box.addEventListener("change", async (e) => {\n    if (e.target && e.target.id === "staffBranch" && branchOptions.includes(e.target.value)) {\n      try { st.setBranch(e.target.value); rows=[]; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }\n    }\n  });\n  box.addEventListener("click", async (e) => {
     const b = e.target.closest && e.target.closest("button");
     if (!b) return;
     if (b.id === "staffRefresh") { flash = ""; return load(); }
     if (b.id === "staffSignOut") {
       if (signingOut) return;
-      signingOut = true; gen++; clearInterval(timer); timer = null; rows = []; paint(); // the queue disappears at once; in-flight loads are void
+      signingOut = true; gen++; clearInterval(timer); timer = null; rows = []; branchOptions = []; paint(); // the queue disappears at once; in-flight loads are void
       try { if (auth) await auth.signOut(); } catch {}
       state = "signed_out"; paint();
       try { root.location.replace("member.html"); } catch {}
