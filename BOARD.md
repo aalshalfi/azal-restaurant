@@ -428,6 +428,15 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 - Claude's latest proposal is in CLAUDE-REPLY.md 12:20. His Sunday queue remains T-24 → T-03; keep the separate 30-minute progress note cadence in CLAUDE-REPLY.md with exact SHA/files/tests/results/blockers.
 
 
+## 2026-11-28 13:00 EST — T-25/T-26 READY FOR LEAD GATE
+
+| Card | Owner | PR | Exact head | CI | State |
+|---|---|---|---|---|---|
+| T-25 + T-26 | ChatGPT | #85 | 262015f734c6f8e59434c1bfc43942e6981f6095 | Run 46172964009 — 5/5 SUCCESS; Node 235/235; reporting PG16 72 PASS | READY FOR LEAD GATE; no merge/apply/deploy |
+
+Migration 0017 remains unapplied. Lead gate must review migration, confirm isolated staging identity, backup/restore and rollback evidence, then perform the staging apply and aggregate walk. T-27 is PR #88 Draft/HOLD on the earlier 977da6d base; branch corrections have been committed but it must sync after the #85 gate and pass its own CI. T-28 is PR #90 Draft/HOLD stacked on #88. T-29 remains the separate full-review availability/RPC card.
+
+
 ## 2026-11-28 12:26 EST — T-27 claim (Muse adjudication)
 
 | Files reserved | Owner | Batch | Branch / base | Scope |
@@ -447,20 +456,7 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
 
 
-## 2026-11-28 12:26 EST — T-27 progress / T-28 claim
-
-**T-27 implementation:** PR #91 opened from chatgpt/t27-admin-shell-v4, stacked on PR #85's delivery branch. The Admin shell code, responsive navigation, report screen, role-shaped destinations, customer detail entry and tests are committed. Current branch head at PR creation: e47e9261885c0b7f00a690986cdef19a3a398b40. CI is being run on delivery branch pushes; no merge or deployment.
-
-| Files reserved | Owner | Batch | Branch / base | Scope |
-|---|---|---|---|---|
-| staff.js, staff.html, styles.css, tests/staff.browser.mjs, tests/staff.test.mjs, WORKPLAN.md, BOARD.md, CHATGPT-REPLY.md | ChatGPT | **T-28 Kitchen shell** | chatgpt/t28-kitchen-shell-v5, based on T-27 branch | Queue / conditional Scheduled / History; T-26 today's summary and manual copy; Queue-only polling; no Availability before T-29; no Settings destination. |
-
-**T-28 status:** claimed before implementation. Branch is stacked on T-27; PR will target chatgpt/t27-admin-shell-v4 until the lead establishes the canonical merge sequence. No Availability control, schema change, SQL apply, merge or deployment.
-
-
-## 2026-11-28 12:26 EST — T-28 PR checkpoint
-| Card | PR | Branch | Base | Exact head | State |
-|---|---|---|---|---|---|
-| T-28 | PR #89 | chatgpt/t28-kitchen-shell-v5 | chatgpt/t27-admin-shell-v4 | 35491f4383b5b485a0d4cdd9f400d15aa085bff0 | Draft; own CI pending; lead gate required |
-
-T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
+## 2026-11-28 12:26 EST — T-28 claim
+- PR #92, branch `chatgpt/t28-kitchen-shell-v5`, stacked directly on the latest T-27 v4 branch.
+- Queue / Scheduled / History, conditional Scheduled, net-only staff summary with manual copy, and Queue-only polling are implemented.
+- CI pending; no merge, SQL apply, automatic send, or deployment.
