@@ -9,8 +9,8 @@ grant execute on function public.zz_try(text), public.zz_eq(text,text,text) to a
 
 -- Fixtures: branch open all day, mandi $24.99, bread $5.99; member m1 with 25,000 pts, m2 with 249 pts (the owner's case), staff.
 insert into public.branches(slug,name_en,name_fr,city,timezone,tax_rate_bps) values ('test','Test','Test','Toronto','America/Toronto',1300);
--- Near-24h overnight window keeps ASAP fixtures valid regardless of CI clock time, including the final 15 minutes of a civil day.
-insert into public.branch_hours(branch_slug,weekday,opens_local,closes_local,closed) select 'test', d, '00:01','00:00', false from generate_series(0,6) d;
+-- Near-24h overnight window (00:31 to 00:30 next day) keeps ASAP fixtures valid regardless of CI clock time, including the final 15 minutes of a civil day.
+insert into public.branch_hours(branch_slug,weekday,opens_local,closes_local,closed) select 'test', d, '00:31','00:30', false from generate_series(0,6) d;
 insert into public.menu_items(id,slug,name_en,name_fr,active) values
  ('00000000-0000-0000-0000-00000000a001','mandi','Lamb Mandi','Mandi d’agneau',true),
  ('00000000-0000-0000-0000-00000000a002','bread','Bread','Pain',true);
