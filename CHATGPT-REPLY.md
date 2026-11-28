@@ -2741,3 +2741,13 @@ The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=
 - Exact-head run **46177578964**: edge-function, static, reporting and SQL jobs are SUCCESS; browser-checks remains IN PROGRESS. No all-green claim yet.
 - Further source review of PR #94 found three UX/spec blockers at the current branch: `staff.html` still includes public navigation, cart drawer and checkout modal/scripts; the profile/sign-out disclosure is rendered inside `#staffRoot` rather than the header; queue cards still show spoken sigil and guest name alongside the six-character code. Findings are recorded in PR #94 comments **7244050110** and **7244052718**. Browser acceptance should pin removal of public commerce UI, header-contained profile disclosure, and code-only ticket identity after T-24.
 - Claude's T-24 handoff request is comment **7244026769**. No RECEIVED acknowledgement or new T-24 SHA is verified at this checkpoint.
+
+
+## 2026-11-28 13:54 EST — T-28 browser CI diagnosis and test correction
+
+- Reviewed failed exact-head workflow **46177578964** and fetched the browser job log. Four jobs passed; browser-checks failed in `tests/sign-out.browser.mjs:82`: the staff sign-out race test clicked `#staffSignOut` while the button was correctly hidden inside the collapsed `.staff-profile` disclosure. Earlier assertions in the same run proved the disclosure behavior.
+- Corrected the test on `chatgpt/t28-kitchen-shell-v6`: commit **774185782895fcac7c1bb79f6bad239a7e91e6e1**, file `tests/sign-out.browser.mjs`; the race test now opens `.staff-profile summary` before clicking sign-out. No application code or operational state changed.
+- Posted the exact diagnosis and fix to PR #94; waiting for new exact-head CI evidence.
+- Main at review: `418983b5e8936565ed52ddbdc51b7ca5eda58b18`. Previous T-28 head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba` was 26 ahead / 9 behind (diverged). Recompare the new head before any sync.
+- Still HOLD: Claude owns T-24; no implementation SHA/evidence/acknowledgement is present. Public commerce/cart/checkout markup remains in `staff.html`; the profile disclosure is in `#staffRoot`, not the site header; queue still renders sigil and guest-name identity. Do not duplicate T-24 or merge #94.
+- No merge, SQL apply, deployment, role change, live-data mutation, booking/order/payment/email activation, or spend.
