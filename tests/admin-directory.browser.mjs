@@ -131,6 +131,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
   check(reportCalls.length===1&&reportCalls[0].p_branch_slug==null,lang+" "+width+": Manager default query covers all assigned branches");
   await branchSelect.selectOption("ottawa");
   await page.locator('#adminScreen-reports button[type="submit"]').click();
+  await page.waitForFunction(()=>document.querySelector("#adminScreen-reports .admin-report-results")?.hidden===false);
   check(reportCalls.length===2&&reportCalls[1].p_branch_slug==="ottawa",lang+" "+width+": Manager can filter to an assigned branch");
  const financial=/Payment|Subtotal|Discount|Tax|Total|taxe|Sous-total|الضريبة|الإجمالي|الدفع/.test(text);
  const raw=requests.filter(x=>{
