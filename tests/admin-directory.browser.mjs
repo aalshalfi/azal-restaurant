@@ -42,7 +42,7 @@ async function open({role="admin",lang="en",width=390}={}){
   return r.fulfill({status:404,json:{}});
  });
  await page.addInitScript(l=>{localStorage.setItem("azal-language",l);localStorage.setItem("azal-auth-v1",JSON.stringify({access_token:"T",refresh_token:"R",expires_at:4e12,user:{id:"admin",email:"admin@example.invalid"}}));},lang);
- await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin")await page.waitForSelector("#adminTeamSearch");
+ await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
  return {page,requests};
 }
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
