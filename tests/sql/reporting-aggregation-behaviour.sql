@@ -11,10 +11,13 @@ select public.staff_update_order((:'o2'::jsonb->>'order_id')::uuid,'ready');
 select public.staff_update_order((:'o2'::jsonb->>'order_id')::uuid,'hand_over');
 select zz_eq('payment transition stamped both paid_at values',
   (select count(*)::text from public.orders where id in ((:'o1'::jsonb->>'order_id')::uuid,(:'o2'::jsonb->>'order_id')::uuid) and paid_at is not null),'2');
-select zz_eq('paid_at is not exposed as client-controlled update',
-  public.zz_try($$update public.orders set paid_at=paid_at - interval '1 day' where id='$$ || (:'o1'::jsonb->>'order_id') || $$'$$),'paid_at_is_immutable');
-select zz_eq('Admin report contains all two branches',
-  (public.azal_sales_report('day',(pg_catalog.now() at time zone 'America/Toronto')::date,(pg_catalog.now() at time zone 'America/Toronto')::date,null)->'rows'->0->>'branch_slug') is not null::text,'true');
+reset role;
+select zz_eq('paid_at is immutable after payment',
+  public.zz_try($update public.orders set paid_at=paid_at - interval '1 day' where id='$ || (:'o1'::jsonb->>'order_id') || $'$),'paid_at_is_immutable');
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
+set role authenticated;
+select zz_eq('Admin report contains both branches',
+  (pg_catalog.jsonb_array_length(public.azal_sales_report('day',(pg_catalog.now() at time zone 'America/Toronto')::date,(pg_catalog.now() at time zone 'America/Toronto')::date,null)->'rows'))::text,'2');
 select zz_eq('Admin all-branch report includes both collected orders',
   (public.azal_sales_report('day',(pg_catalog.now() at time zone 'America/Toronto')::date,(pg_catalog.now() at time zone 'America/Toronto')::date,null)->'totals'->>'collected_count'),'2');
 select zz_eq('Admin report exposes authoritative subtotal, discount and tax snapshots',
@@ -28,6 +31,7 @@ reset role;
 \echo ===== Manager receives only assigned-branch operational aggregates
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
 set role authenticated;
+update auth.users set email_confirmed_at=pg_catalog.now() where id='00000000-0000-0000-0000-0000000000c1';
 select public.azal_admin_team_assign('c1@example.invalid','Manager C1','manager',array['ottawa'],'T-25 test assignment');
 reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
