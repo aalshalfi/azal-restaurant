@@ -159,6 +159,7 @@
   const auth = root.AZALAuth;
   const co = createCheckout({ config: cfg, fetch: root.fetch && root.fetch.bind(root), getToken: async () => { try { const s = auth && (await auth.session()); return s && s.access_token; } catch { return null; } } });
   root.AZALCheckout = co;
+  root.AZALRedeemView = redeemView; // T-23B: the member card states the next reward by the same rule
   if (!co.enabled) return; // inert: preview checkout unchanged
 
   const S = {

@@ -113,7 +113,7 @@
       if (my !== seq) return;
       order = o; failed = false; lastAt = new Date();
       const key = o ? (isClosedPayment(o) ? "inactive" : o.fulfilment_status) : null;
-      if (o && key !== lastStatus) { if (lastStatus !== null) live.textContent = L(key) || ""; lastStatus = key; }
+      if (o && key !== lastStatus) { if (lastStatus !== null) { live.textContent = L(key) || ""; if (key === "handed_over") { try { document.dispatchEvent(new CustomEvent("azal:order-collected")); } catch {} } } lastStatus = key; } // T-23B: the card re-reads the balance
     } catch (e) { if (my !== seq) return; if (e.code === "signed_out") { order = null; failed = false; } else failed = true; }
     paint();
     if (!order || TERMINAL.includes(order.fulfilment_status) || isClosedPayment(order)) stop(); else if (!timer) start();
