@@ -106,3 +106,13 @@ test("Admin UI uses safe DOM APIs, mandatory reasons and server mutation paths",
   assert.match(html,/admin-team\.js\?v=/);
   assert.match(html,/<meta name="robots" content="noindex, nofollow">/);
 });
+
+
+test("sole Admin identity is fixed to the owner's verified email; Team UI cannot grant another Admin", () => {
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
+  assert.match(sql,/lower\(u\.email\) = 'info@azalrestaurant\.com'/);
+  assert.match(sql,/admin_role_reserved/);
+  assert.match(sql,/root_admin_protected/);
+  assert.match(read("docs/apply-0015.md"),/owner identity.*info@azalrestaurant\.com/i);
+  assert.match(read("docs/apply-0015.md"),/Supabase dashboard.*recovery/i);
+});
