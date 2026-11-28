@@ -460,3 +460,8 @@ T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc6
 - PR #92, branch `chatgpt/t28-kitchen-shell-v5`, stacked directly on the latest T-27 v4 branch.
 - Queue / Scheduled / History, conditional Scheduled, net-only staff summary with manual copy, and Queue-only polling are implemented.
 - CI pending; no merge, SQL apply, automatic send, or deployment.
+
+
+## 2026-11-28 13:06 EST — T-28 kitchen shell review
+
+PR #92 / chatgpt/t28-kitchen-shell-v5 remains Draft/HOLD. History includes net-only T-26 summary + Toronto-day completed/cancelled branch tickets (code/status/item snapshots only); manual copy only; no guest identity/contact, tax, gross, refunds, email or auto-send. Queue-only 20-second polling; Scheduled conditional; no Availability or Settings. Current code head at review: 970689560f346e66026527ad3812e79f3ba13000. Base is 7 commits behind moving T-27; no exact-head CI evidence yet. Sync only after T-27 gate and run full CI.
