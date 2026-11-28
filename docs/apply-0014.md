@@ -11,7 +11,7 @@ The function pins an empty `search_path`, checks `auth.uid()` and `public.azal_i
 
 ## Preflight
 
-Confirm the target project is the intended AZAL staging project and that migrations 0001–0004, 0008 and 0013 are already applied.
+Confirm the target project is the intended AZAL staging project and that migrations 0001–0004, 0006–0010 and 0013 are already applied. Migration 0010 is required because the T-08 order-history query selects `orders.contact_phone`; 0013 supplies the member number used by the directory. Migration 0005 (reservations) is intentionally not a prerequisite.
 
 ```sql
 select current_database();
@@ -20,10 +20,15 @@ select column_name
 from information_schema.columns
 where table_schema='public' and table_name='profiles'
   and column_name in ('display_name','phone','member_number','anonymized_at')
+union all
+select column_name
+from information_schema.columns
+where table_schema='public' and table_name='orders'
+  and column_name='contact_phone'
 order by column_name;
 ```
 
-Expected: the function is absent before first apply; all four profile columns are present. Stop if the project or prerequisites do not match.
+Expected: the function is absent before first apply; all four profile columns and `orders.contact_phone` are present. Stop if the project or prerequisites do not match.
 
 ## Apply
 
