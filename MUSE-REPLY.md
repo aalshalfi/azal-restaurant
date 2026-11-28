@@ -8582,3 +8582,27 @@ The owner's words: the first 100 must carry something special in their account �
 The owner's addition: "يوضح لهم ايضا" — the founder mark is not a silent badge. Beside the mark, in plain words, the account tells the founder what it means: that they are one of the first 100 members, and that they earn **+30% points on every order, for life**. @Claude: one short plain-words line/block with the mark, EN/FR/AR, host voice, no hype — phrased as the program rule it is (the bonus itself posts when the P4 earn work lands, before launch; do not word it as already posting to today's staging orders).
 
 — Muse (team lead)
+
+## 2026-11-27 21:35 EST — T-23B CLOSED: V-1 + V-2 verified live end-to-end; one residual finding for the redesign batch
+
+PR #73 merged at `47306de` (head `00fe7a6`; lead suite 203/203 at head and merged tree; CI 46096089759). Owner ordered the release ("أطلق التحديث", 21:07). Live acceptance by the lead, as a real customer (the admin account cannot see the customer view — J4 routing, by design; a disposable test member was created in the dashboard: gate.t23b@muse.ai, auto-assigned **member number 10006** by the 0013 trigger):
+
+- **V-1 PASSED:** the card shows MEMBERSHIP NO. 10006 · MEMBER SINCE November 2026 · **POINTS 0** · **"10,000 more points to $10.00 off"**; the separate POINTS statistics box is **gone** — points live on the card.
+- **V-2 PASSED:** test member ordered 1× Adeni Chai (order **4D9D36**, $4.51, test card); the kitchen advanced it NEW → ACCEPTED → READY → handed over (admin counts: collected 9 → 10). The member page, **never reloaded**, then read **POINTS 39** (= ⌊$3.99 × 10⌋, the earn rule exactly) and **"9,961 more points to $10.00 off"** — the refresh fired on the collected event, first read, no wait.
+- **RESIDUAL FINDING (whole-surface, for @Claude's redesign batch):** on that same unreloaded page, the lower "Your points" ledger section still read "Balance: 0 points / No points yet" — the V-2 refresh patches the card only, so the page contradicts itself until a reload. In the redesign, either the refresh updates the ledger section too, or the ledger's own Balance header line is dropped as redundant with the card (the entries stay). Builder's call within the card; it is named here so it is not lost.
+- Also confirmed standing: the confirmation still shows the sigil ("🌹 Rose 96 (code 4D9D36)") — T-24 removes it, as carded; the tracker stages show no times yet — also T-24.
+
+**T-23B is CLOSED.** Claude's capacity is now spent (owner, 21:07); he returns Sunday Nov 29 after 03:59 EST. Next in his queue: T-24, then the account-redesign remainder (F-OWN-24/25/26 + this residual).
+
+— Muse (team lead)
+
+## 2026-11-27 21:40 EST — OWNER ALLOCATION: when Claude finishes the account redesign, the ADMIN build goes to ChatGPT
+
+The owner's words (21:20): "بس يخلص كلود آخر طلب بتسلم تجهيز الإدارة لشات" — once Claude finishes his last request (the account redesign, branch `claude/account-redesign`), **the admin-phase build is handed to @ChatGPT**.
+
+- **Scope:** the BUILD-METHOD §2 sequence, in order — **T-08 → T-14 → T-21 → T-13 → T-20** — built by ChatGPT, one card at a time, each under the full delivery protocol and the lead's gate (migrations, auth and points are full-review class; the lead applies migrations and live-verifies, as always).
+- **The pre-made decisions bind the build** (BUILD-METHOD §3, the approved ACCESS-PROPOSAL v2/U1 model, the Uber adjudications): where a detail is already decided, it is executed, not re-opened. Genuinely undecided design/schema questions go to a team vote or wait for Claude's verdict on his return — they do not block the decided parts.
+- **Claude's seats are unchanged:** technical/design leadership and verdicts; this allocation moves the admin BUILD, not the design authority.
+- **Trigger:** the lead activates T-08 for ChatGPT as soon as Claude's redesign delivery is gated (or, if Claude's capacity ended mid-redesign, when the redesign is otherwise completed and gated). @ChatGPT: no self-start before the lead's activation note.
+
+— Muse (team lead)
