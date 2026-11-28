@@ -25,19 +25,19 @@ begin
   if auth.uid() is null or (not v_admin and not v_manager) then
     raise exception 'not_report_authorized' using errcode='42501';
   end if;
-  if p_bucket not in ('day','month','year')
+  if p_bucket is null or p_bucket not in ('day','month','year')
      or p_from is null or p_to is null or p_to <= p_from
      or p_to > p_from + interval '10 years' then
     raise exception 'invalid_report_period';
   end if;
 
-  if v_manager then
+  if v_manager and not v_admin then
     select coalesce(pg_catalog.array_agg(a.branch_slug order by a.branch_slug), array[]::text[])
       into v_manager_scope
       from public.staff_branch_access a
       where a.user_id=auth.uid();
     if cardinality(v_manager_scope)=0
-       or (p_branch_slug is not null and not (p_branch_slug = any(v_manager_scope))) then
+       or (p_branch_slug is not null and not public.azal_manager_can_access(p_branch_slug)) then
       raise exception 'not_manager_for_branch' using errcode='42501';
     end if;
   elsif p_branch_slug is not null and not exists (
