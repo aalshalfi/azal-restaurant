@@ -1032,3 +1032,9 @@ html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
 .admin-manager-orders{display:grid;gap:10px;margin-top:12px}
 .admin-customer-anonymize{border-color:#8b3b2e;color:#8b3b2e}
 @media(max-width:520px){.admin-team-branches{display:grid;grid-template-columns:1fr}.admin-team-branch{width:100%;box-sizing:border-box}.admin-pager{display:grid;grid-template-columns:1fr 1fr}.admin-pager .admin-note{grid-column:1/-1;grid-row:1}}
+
+
+/* T-14: branch selector for named staff assigned to more than one branch */
+.staff-branch-picker{display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px 12px;border:1px solid #d8c8b8;border-radius:3px}
+.staff-branch-picker span{font-weight:600}
+.staff-branch-picker select{min-height:42px;min-width:150px;padding:7px 10px;border:1px solid #b9a99a;border-radius:3px;background:#fff;color:#42220E;font:inherit}
