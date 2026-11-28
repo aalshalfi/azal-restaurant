@@ -2612,3 +2612,6 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 
 
 **CI update — run #1226 (corrected implementation head `ea563b7`):** reporting-checks **PASS** on fresh PostgreSQL 16; existing sql-checks **PASS** (points, T-08 directory, T-14 A1/A2); static-checks **PASS** (JS syntax, Node smoke tests, page markup); edge-function-checks **PASS**. Browser-checks are still running at this note. The only code-test correction was the disposable Manager fixture's verification context; no production authorization was loosened. Current proposal/board documentation also records the owner's 11:07 kitchen-only decision. PR #85 remains draft and unmerged; no Supabase apply or deployment.
+
+
+**Latest-head CI — run #1231 (`42f873a`, PR #85 merge ref includes current main):** static-checks **PASS** and Edge Function type-check **PASS**; SQL regression, dedicated reporting PostgreSQL 16 gate, and browser suites are still running. Earlier corrected implementation run #1226 already recorded reporting-checks **PASS**, sql-checks **PASS**, static-checks **PASS**, and edge-function-checks **PASS**; its browser suite was still in progress at the last poll. No merge or SQL apply is authorized before the lead gate.
