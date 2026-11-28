@@ -168,13 +168,9 @@ Reports are secondary navigation cards, initially collapsed under “Reports”.
 
 ## 8. Dependencies and build gates — lead ruling A5 (binding)
 
-T-08 is accepted by Muse's 2026-11-27 23:52 gate. The approved sequence is: **T-14 (including A1 + A2) → T-25 + T-26 → T-21 → T-13 → T-20.** Reports wait for T-14 so role scoping is enforced server-side. T-21 depends on the T-14 role scope; T-13 reuses the T-08 directory and established audit pattern; T-20 reuses T-13 idempotency/audit conventions. A6: T-20 must not rebuild or alter Copilot's T-06 staff Reject flow; that card retains its own gate.
+T-08 is accepted by Muse's 2026-11-27 23:52 gate. The approved sequence is: **T-14 (including A1 + A2) → T-25 + T-26 → T-21 → T-13 → T-20.** T-14 owns migration **0015**; later migrations must be numbered monotonically in this same task order when their schema needs are finalized. Reports wait for T-14 so role scoping is enforced server-side. T-21 depends on the T-14 role scope; T-13 reuses the T-08 directory and established audit pattern; T-20 reuses T-13 idempotency/audit conventions. A6: T-20 must not rebuild or alter Copilot's T-06 staff Reject flow; that card retains its own gate.
 
-Before any implementation starts, the lead must:
-- review this document and issue an explicit **APPROVE / APPROVE WITH CHANGES / RETURN** verdict;
-- resolve or explicitly preserve the T-26 scope gap;
-- confirm the document does not conflict with the fixed permission model, points ledger/redemption/tax rules, or T-08 shipped behavior;
-- open only the next task in the established sequence (T-14), not parallelize later cards.
+Before each subsequent card starts, the lead confirms its task-specific scope and migration number, then opens only the next task in the established sequence. This approval does not authorize parallel implementation of later cards.
 
 After approval, each task still requires its own BOARD claim, branch/PR, exact-head tests and role × forbidden-action matrix, EN/FR/AR and responsive checks, then lead review/live acceptance. Approval of this design is not approval to apply SQL, invite users, reset credentials, issue points, refund real money, activate payments, or deploy.
 
