@@ -2529,3 +2529,20 @@ Commits:
 
 
 **07:47 verification addendum:** ran the newly added regression file in isolation with Node v22.16.0: **2/2 PASS**. This is not the full repository Node suite. Deno is not installed in this execution environment; exact-head GitHub Actions has not started/reported yet. No live deploy/retest has occurred.
+
+
+## 2026-11-28 08:40 EST — F-T14-1 root-cause fix: migration 0016 (Muse assignment)
+
+**Lead handoff re-read:** Muse's 08:26 ruling is present on main commit `44daef1f6f309cc68d4d369043c281772fc537fe`. The live `service_role` has no SELECT/INSERT/UPDATE/DELETE on `profiles`, `user_roles`, `branch_orders_accounts`, `admin_team_invites`, or `admin_audit_log` (only REFERENCES/TRIGGER/TRUNCATE on the observed tables). This explains the live `customer_preflight_failed` 500: the SQL behavior suite previously ran as postgres and did not exercise the Edge Function's table privileges.
+
+**Implementation branch:** `chatgpt/t14-f-t14-1-service-role-grants-0016`, created directly from exact main SHA `44daef1f6f309cc68d4d369043c281772fc537fe`. Current branch HEAD at this memo: `2a130844dcf50ea7e2d9b74f121157f9427d68fb`.
+
+**Changes:**
+1. Added `supabase/migrations/0016_t14_service_role_grants.sql` (blob `73f13a6738f7858856fb4c49822ae34032d42b95`). It grants SELECT only on `profiles`, `user_roles`, `branch_orders_accounts`, `admin_team_invites`; DELETE only on `profiles` and `memberships`. It grants nothing on `admin_audit_log`, `orders`, or other tables.
+2. Extended `tests/sql/admin-team-access-behaviour.sql` (blob `894d62c6b4e31788b098597ee1ada3acf95cd84a`) to run the five exact Edge Function SELECT shapes and the two cleanup DELETE statements under `SET LOCAL ROLE service_role` in a rolled-back transaction. It also asserts no direct audit-log/orders SELECT, profiles INSERT/UPDATE, or memberships SELECT.
+3. Corrected `tests/sql/supabase-stub.sql` (blob `4ef440fe0c58782bd996cdc075994d64cb731ba6`) so newly created public tables do not receive blanket direct table grants to `service_role`; narrow server-role access must come from explicit task migrations. This matches Muse's observed live privilege state and prevents a false-green SQL test.
+4. Updated `.github/workflows/site-check.yml` (blob `1e10cb88fa8ea35f7f6d17df546bd339a93b4d32`) to prove the five exact reads are denied before 0016, apply 0016 in the disposable PG16 job, prove `admin_audit_log` and `orders` remain unreadable directly, then run the role-scoped behavior suite.
+
+**Verification status:** source/branch comparison is clean: 6 commits ahead, 0 behind main at the last comparison; only the four intended files differ. GitHub Actions has not yet been observed for this branch, and no local PostgreSQL execution is claimed. The expected pre-0016 permission-denied and post-0016 success outcomes are CI acceptance criteria, not results claimed in advance.
+
+**Operational boundary:** no SQL was applied to staging or production; no Edge Function redeployed; no customer (including test member #10006) anonymized; no account, password, invite, email, payment, or booking changed. Muse must review this branch, owner-paste/apply 0016 once to staging, verify the exact grants, and re-walk only the failed #10006 step. Do not reapply 0015.
