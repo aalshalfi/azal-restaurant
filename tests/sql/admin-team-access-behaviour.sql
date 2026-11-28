@@ -139,4 +139,9 @@ select zz_eq('search narrows 1,000-customer directory server-side',
   (public.azal_admin_customer_directory_page('scale-500@example.invalid',50,0)->>'total'),'1');
 select zz_eq('authenticated cannot write the audit log directly',
   public.zz_try($$insert into public.admin_audit_log(actor_user_id,action,target_type,reason) values ('00000000-0000-0000-0000-0000000000a0','x','x','x')$$),'42501');
+
+select zz_eq('authenticated cannot update the audit log',
+  public.zz_try($$update public.admin_audit_log set reason='rewritten' where action='customer_anonymized'$$),'42501');
+select zz_eq('authenticated cannot delete the audit log',
+  public.zz_try($$delete from public.admin_audit_log where action='customer_anonymized'$$),'42501');
 reset role;
