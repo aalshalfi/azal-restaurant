@@ -126,7 +126,7 @@
       }catch{status(formStatus,L("error"),true);}
       finally{busy=false;save.disabled=false;}
     });
-    panel.append(form,el("h3",null,L("members")));
+    panel.append(form);const membersTitle=el("h3",null,L("members"));membersTitle.id="adminTeamMembersTitle";panel.append(membersTitle);
     const filters=el("div","admin-team-filters");
     const search=document.createElement("input");search.type="search";search.id="adminTeamSearch";search.placeholder=L("teamSearch");
     const roleFilter=document.createElement("select");roleFilter.id="adminTeamRole";
@@ -137,7 +137,7 @@
     filters.append(label(L("teamSearch"),search),label(L("teamRole"),roleFilter),label(L("teamBranch"),branchFilter),label(L("teamStatus"),statusFilter));panel.append(filters);
     for(const control of [search,roleFilter,branchFilter,statusFilter])control.addEventListener(control===search?"input":"change",()=>applyTeamFilters(panel));
     const members=el("div","admin-team-members"); members.id="adminTeamMembers"; panel.append(members);
-    panel.append(el("h3",null,L("teamPending")));
+    const invitesTitle=el("h3",null,L("teamPending"));invitesTitle.id="adminTeamInvitesTitle";panel.append(invitesTitle);
     const invites=el("div","admin-team-invites"); invites.id="adminTeamInvites"; panel.append(invites);
     panel.append(el("h3",null,L("orders")));
     const orders=el("div","admin-orders-accounts"); orders.id="adminOrdersAccounts"; panel.append(orders);
