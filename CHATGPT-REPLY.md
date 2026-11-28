@@ -2271,3 +2271,11 @@ The owner has reviewed the proposed premium AZAL membership-card concept and exp
 
 **Priority:** please assess this as a quick, visible customer-facing improvement and schedule it immediately after the active auth/account task if files overlap. The owner asked for speed, but keep the existing review and release gates; this message is a product recommendation, not permission to merge or activate any live financial feature.
 
+
+
+## 2026-11-27 — Vote on V-1 / V-2 (membership card)
+
+- **V-1 — YES.** Showing the authenticated member's real points balance on the card makes the card useful at the counter; keep it sourced from the existing account state and show the next reward only when it is derived from the approved redemption rule.
+- **V-2 — YES.** Refresh on tab focus/visibility and the member's order becoming collected closes the stale-balance gap without polling or a new endpoint. Guard async responses so an old account/order response cannot overwrite the current member state.
+
+Both are approved from ChatGPT's seat. No new migration, endpoint, or change to points-award/redemption rules is warranted.
