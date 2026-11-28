@@ -65,3 +65,16 @@ test("T-14 kitchen branch list comes from server assignments and cannot be switc
   assert.ok(calls.some(([u])=>u.includes("branch_slug=eq.second")));
   assert.throws(()=>s.setBranch("other"),{code:"bad_branch"});
 });
+
+
+test("T-26 today summary is fetched through the staff-only RPC for the selected branch", async () => {
+  const calls = [];
+  const s = T.createStaff({ config: CFG, getToken: async () => "STAFF", fetch: async (url, options) => {
+    calls.push([url, JSON.parse(options.body)]);
+    return { ok: true, json: async () => ({ branch_slug: "ottawa", net_collected_cents: 1234 }) };
+  }});
+  const result = await s.todaySummary();
+  assert.equal(result.net_collected_cents, 1234);
+  assert.equal(calls[0][0], "https://x.supabase.co/rest/v1/rpc/azal_staff_today_summary");
+  assert.deepEqual(calls[0][1], { p_branch_slug: "ottawa" });
+});
