@@ -58,11 +58,11 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   await p.evaluate(() => document.documentElement.classList.add("role-leaving"));
   ok(await p.evaluate(() => getComputedStyle(document.querySelector(".member-card")).visibility) === "hidden", "while a staff/admin sign-in is leaving (role-leaving), the customer card is not visible");
   await p.close(); }
-{ const { p, sent } = await open("admin");
+{ const { p, sent, reportCalls } = await open("admin");
   const t = (await p.textContent("#adminRoot")).replace(/\s+/g, " ");
   ok(/Signed in as info@example\.invalid · Administrator/.test(t), "admin page: who and which role");
   ok(/New, paid ?1/.test(t) && /Collected ?1/.test(t) && /Unpaid \(never reach the kitchen\) ?1/.test(t) && /Gross collected today: \$22\.59/.test(t) && /Active Majlis members: 42/.test(t), "overview: today's counts, collected sales, member count from the server");
-  ok(/ottawa: 3 orders today, 1 collected/.test(t), "per-branch line");
+  ok(/ottawa: 3 orders today, 1 handed over/.test(t), "per-branch line");
   const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
   ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
   ok(!/Menu|Availability/.test(destinations.join(" ")), "no dead Menu or Availability destination before T-21/T-29");
@@ -87,7 +87,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   const reportText=await p.textContent("#adminScreen-reports");
   ok(/Gross collected/.test(reportText)&&/Refunds/.test(reportText)&&/Net collected/.test(reportText), "Admin report shows gross, refunds and net separately");
   ok(reportCalls.length===1 && reportCalls[0].p_branch_slug==null, "Admin report requests all branches through the server RPC");
-  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact"];
+  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact", "/rpc/azal_sales_report"];
   ok(sent.every((s) => s.m === "GET" || (s.m === "POST" && postReads.some((path) => s.u.includes(path)))), "Admin page boot only calls read-only RPCs; no mutation endpoint runs automatically");
   ok(!sent.some((s) => s.u.includes("/rpc/azal_admin_customer_contact") || s.u.includes("/rpc/azal_admin_order_customer_emails")), "Admin boot does not fetch customer contact; lookup stays detail-only");
   const ord = sent.find((s) => s.u.includes("/rest/v1/orders")); ok(ord && /placed_at=gte\.\d{4}-\d\d-\d\dT0[45]:00:00\.000Z/.test(ord.u), "today = since Toronto midnight");
