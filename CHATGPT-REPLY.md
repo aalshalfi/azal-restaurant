@@ -2685,3 +2685,10 @@ Continued the existing T-27 branch rather than creating a duplicate. Fixed the b
 - Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
 - Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
 - CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 13:04 EST — T-27 review pass on v4 branch
+
+Current T-27 code head at review: `cc0bd0c1447cff65cb772a0960b53d6403181110` (PR #91, Draft). Inherited the corrected report RPC mocks, paid-only Home attention list, Manager all-assigned/single-branch report selector, daily/monthly/yearly Toronto date controls, 768px tablet viewport, and stable More route slugs. Added the missing browser assertions for `#more/team` and customer/order detail Back/Forward behavior.
+
+The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=false. The exact T-27 browser suite is not yet verified green. Keep Draft; after PR #85 lead/staging gate, sync branch to the accepted base and run the full Node/browser matrix. No merge, SQL, permission, live-data or deployment changes.
