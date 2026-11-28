@@ -43,7 +43,10 @@ test("A2 anonymization is server-only, reason-required, and preserves append-onl
   assert.ok(fn.includes("contact_phone=null, guest_name=null, guest_email=null"));
   assert.ok(!/delete from public\.(orders|points_ledger|order_items)/.test(fn));
   assert.ok(fn.includes("customer_anonymized"));
-  assert.ok(sql.includes("grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text) to service_role"));
+  assert.ok(fn.includes("update public.points_claims"));
+  assert.ok(fn.includes("update public.order_outbox"));
+  assert.ok(fn.includes("already_anonymized"));
+  assert.ok(sql.includes("grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text,text) to service_role"));
 });
 test("Team invitations are in-portal only and activate only after verified email", () => {
   const sql=read("supabase/migrations/0015_admin_team_access.sql");
@@ -65,7 +68,7 @@ test("branch Orders credentials are branch-owned, Admin-gated, and use server-on
   const edge=read("supabase/functions/admin-team-access/index.ts");
   assert.match(edge,/SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(edge,/azal_admin_anonymize_customer_server/);
-  assert.match(edge,/ban_duration: "876000h"/);
+  assert.match(read("supabase/functions/admin-team-access/auth-state.mjs"),/ban_duration: "876000h"/);
   assert.match(edge,/auth\.admin\.createUser/);
   assert.match(edge,/auth\.admin\.updateUserById/);
   assert.doesNotMatch(edge,/console\.(log|info|debug)\(/);
@@ -120,8 +123,25 @@ test("sole Admin identity is fixed to the owner's verified email; Team UI cannot
 });
 
 
-test("A2 Edge rollback preserves an existing Auth ban if the database anonymization transaction fails", () => {
+test("A2 preflights customer identity and restores the complete Auth snapshot on SQL failure", () => {
   const edge=read("supabase/functions/admin-team-access/index.ts");
-  assert.match(edge,/const previousBanDuration = wasBanned \?/);
-  assert.match(edge,/ban_duration: previousBanDuration/);
+  const auth=read("supabase/functions/admin-team-access/auth-state.mjs");
+  assert.ok(edge.indexOf('service.from("profiles")') < edge.indexOf("updateUserById("),"profile and role preflight precedes Auth mutation");
+  assert.match(edge,/service\.from\("user_roles"\)/);
+  assert.match(edge,/service\.from\("branch_orders_accounts"\)/);
+  assert.match(edge,/captureAuthState\(targetUser\)/);
+  assert.match(edge,/restoreAuthPatch\(previousAuthState\)/);
+  assert.match(edge,/p_email_to_scrub: previousAuthState\.email/);
+  assert.match(edge,/anonymization_compensation_failed/);
+  assert.match(auth,/email_confirm: snapshot\.email_confirm/);
+  assert.match(auth,/user_metadata: cloneJson\(snapshot\.user_metadata\)/);
+  assert.match(auth,/ban_duration: snapshot\.ban_duration/);
+});
+test("A2 SQL retry is idempotent and scrubs guest claims and durable outbox payloads", () => {
+  const sql=read("supabase/migrations/0015_admin_team_access.sql");
+  const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_anonymize_customer_server"),sql.indexOf("-- Apply pending in-portal invitations"));
+  assert.match(fn,/update public\.points_claims[\s\S]*guest_email=v_replacement/);
+  assert.match(fn,/update public\.order_outbox[\s\S]*payload=.*array\[/);
+  assert.match(fn,/already_anonymized/);
+  assert.match(fn,/if v_anonymized_at is null then[\s\S]*insert into public\.admin_audit_log/);
 });
