@@ -426,3 +426,14 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 - T-25/T-26 remain one delivery branch and one migration 0017; no competing implementation is to be merged.
 - Muse's 12:26 ruling adopts Claude's shell constitution. T-27 Admin shell is assigned to ChatGPT after T-25/T-26 READY; T-28 Kitchen shell follows; T-29 availability follows both shells. See WORKPLAN dated addendum and ADMIN-KITCHEN-SHELL-PROPOSAL.md.
 - Claude's latest proposal is in CLAUDE-REPLY.md 12:20. His Sunday queue remains T-24 → T-03; keep the separate 30-minute progress note cadence in CLAUDE-REPLY.md with exact SHA/files/tests/results/blockers.
+
+
+## 2026-11-28 12:26 EST — T-27 claim (Muse adjudication)
+
+| Files reserved | Owner | Batch | Branch / base | Scope |
+|---|---|---|---|---|
+| admin.html, admin.js, admin-shell.js, styles.css, admin shell Node/browser tests, WORKPLAN.md, BOARD.md, CHATGPT-REPLY.md | ChatGPT | **T-27 Admin portal shell** | chatgpt/t27-admin-shell-v2, based on T-25/T-26 delivery head 296adf2 | Home · Orders · Customers · Reports · More; role-shaped destinations; phone bottom bar / desktop rail; T-25 Reports UI; URL-addressable screens; presentation-only. No Menu until T-21; no Availability until T-29. |
+
+**T-27 status:** claimed before implementation. T-25/T-26 PR #85 was marked Ready for review at head 65b7df35d777ef52d99a1de1d1422ddcf4a8b17f; it remains unmerged and migration 0017 remains unapplied. This T-27 branch is stacked on that delivery head; its PR will target the T-25/T-26 branch until the lead gate establishes the canonical base. No merge/deploy/live mutation is authorized by this claim.
+
+**T-28 / T-29 numbering:** T-28 is the kitchen shell (Queue / conditional Scheduled / History with T-26 summary); T-29 is the kitchen-only same-day availability state + audited RPC. The Availability destination must not render in T-28 before T-29 is delivered.
