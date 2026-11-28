@@ -53,7 +53,8 @@ async function open(pageName,role="admin",width=390){
   await page.waitForSelector(".report-table");
   const text=await page.textContent("#reportsRoot");
   ok(/Sales & HST reports/.test(text)&&/Collected sales/.test(text),"Manager receives an assigned-branch report");
-  ok(!/Subtotal|Discount|HST|Refunds|Net collected/.test(text),"Manager payload and UI omit Admin financial breakdown");
+  const managerHeads=await page.locator(".report-table th").allTextContents();
+  ok(!managerHeads.some(h=>/Subtotal|Discount|HST|Refunds|Net collected/.test(h)),"Manager payload and table omit Admin financial breakdown");
   const options=await page.locator('#salesReportForm select[name="branch"] option').allTextContents();
   ok(options.some(x=>/All assigned branches/.test(x))&&options.some(x=>/Ottawa/.test(x))&&!options.some(x=>/Second/.test(x)),"Manager selector offers only all assigned or assigned Ottawa");
   ok(requests.some(x=>x.url.includes("azal_admin_sales_report")&&x.body.p_branch_slug===null),"Manager all-assigned scope is sent as null and enforced server-side");
