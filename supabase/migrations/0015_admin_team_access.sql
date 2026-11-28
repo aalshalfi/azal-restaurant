@@ -544,6 +544,7 @@ begin
     select 1 from public.user_roles r where r.user_id=p_actor_id and r.role='admin'
   ) then raise exception 'not_admin' using errcode='42501'; end if;
   if p_user_id is null or pg_catalog.btrim(coalesce(p_reason,''))='' then raise exception 'reason_required'; end if;
+  if p_email_to_scrub is null or pg_catalog.btrim(p_email_to_scrub)='' then raise exception 'email_required'; end if;
 
   v_replacement := 'removed+'||pg_catalog.replace(p_user_id::text,'-','')||'@example.invalid';
   select p.member_number,p.anonymized_at into v_member,v_anonymized_at
@@ -574,36 +575,41 @@ begin
          member_number_retired=true
    where id=p_user_id;
   update public.memberships set status='suspended' where user_id=p_user_id;
-  -- Retain order/ledger identity and financial snapshots; remove customer-entered contact/note data.
-  update public.orders
-     set contact_phone=null, guest_name=null, guest_email=null, customer_note=null
-   where user_id=p_user_id;
 
-  -- A pending guest claim is keyed by email; a claimed row is keyed by user_id.
-  -- Replace the email in both cases without reopening or deleting the points claim.
+  -- Preserve the points claim and ledger, but remove the original guest email
+  -- whether the claim is still pending, already claimed, or linked to this user.
   update public.points_claims
      set guest_email=v_replacement
    where claimed_by=p_user_id
       or order_id in (select o.id from public.orders o where o.user_id=p_user_id)
-      or (p_email_to_scrub is not null and pg_catalog.lower(guest_email)=pg_catalog.lower(p_email_to_scrub));
+      or pg_catalog.lower(guest_email)=pg_catalog.lower(p_email_to_scrub);
   get diagnostics v_claims_scrubbed = row_count;
 
-  -- Outbox is sender-disabled, but durable payloads still require privacy scrubbing.
-  -- Keep restaurant routing addresses unless one is the customer's own email.
+  -- Scrub outbox rows BEFORE clearing order.guest_email so guest orders (user_id IS NULL)
+  -- are still found by the original email. Keep unrelated restaurant routing addresses.
   update public.order_outbox ob
      set to_email=case
-           when p_email_to_scrub is not null and pg_catalog.lower(coalesce(ob.to_email,''))=pg_catalog.lower(p_email_to_scrub)
+           when pg_catalog.lower(coalesce(ob.to_email,''))=pg_catalog.lower(p_email_to_scrub)
              then null else ob.to_email end,
          payload=coalesce(ob.payload,'{}'::jsonb) -
-           array['customer_note','customer_name','guest_name','guest_email','customer_email',
+           array['customer','contact','customer_note','customer_name','guest_name','guest_email','customer_email',
                  'customer_phone','contact_phone','phone','email']::text[]
-   where ob.order_id in (select o.id from public.orders o where o.user_id=p_user_id)
-      or (p_email_to_scrub is not null and (
-           pg_catalog.lower(coalesce(ob.to_email,''))=pg_catalog.lower(p_email_to_scrub)
-           or pg_catalog.lower(coalesce(ob.payload->>'guest_email',''))=pg_catalog.lower(p_email_to_scrub)
-           or pg_catalog.lower(coalesce(ob.payload->>'customer_email',''))=pg_catalog.lower(p_email_to_scrub)
-         ));
+   where ob.order_id in (
+           select o.id from public.orders o
+            where o.user_id=p_user_id
+               or pg_catalog.lower(coalesce(o.guest_email,''))=pg_catalog.lower(p_email_to_scrub)
+         )
+      or pg_catalog.lower(coalesce(ob.to_email,''))=pg_catalog.lower(p_email_to_scrub)
+      or pg_catalog.lower(coalesce(ob.payload->>'guest_email',''))=pg_catalog.lower(p_email_to_scrub)
+      or pg_catalog.lower(coalesce(ob.payload->>'customer_email',''))=pg_catalog.lower(p_email_to_scrub);
   get diagnostics v_outbox_scrubbed = row_count;
+
+  -- Include both member orders and guest orders created with the same Auth email.
+  -- Keep order IDs, item snapshots and financial/tax fields intact.
+  update public.orders
+     set contact_phone=null, guest_name=null, guest_email=null, customer_note=null
+   where user_id=p_user_id
+      or pg_catalog.lower(coalesce(guest_email,''))=pg_catalog.lower(p_email_to_scrub);
 
   if v_anonymized_at is null then
     insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
