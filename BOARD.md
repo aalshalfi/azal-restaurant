@@ -413,3 +413,16 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Progress — 2026-11-28 11:12 EST:** first aggregation slice and shell proposal are present on this branch; draft PR **#85** opened for CI/review only. `0017_reporting_aggregation.sql` is unapplied. Initial reporting CI exposed only a test-fixture role mistake (email verification was attempted as `authenticated`); the fixture is corrected to verify as database owner. The corrected PR head is under a fresh full CI run. Owner's 11:07 decision is incorporated: Sold out today is Kitchen-only, own branch, audited and auto-reset next business day; its toggle waits for the availability state/RPC card, never a dead UI control. **No merge, SQL apply, deployment or live mutation.**
 
 **CI evidence — run #1226, implementation head `ea563b7`:** T-25/T-26 PostgreSQL 16 reporting-checks PASS; existing SQL checks PASS (points, T-08, T-14); static checks PASS; Edge Function type-check PASS. Browser-checks remained in progress when this note was recorded. The latest branch commits after that tested head only update proposal/board/reply documentation; no SQL or UI code changed. PR #85 stays draft/unmerged.
+
+
+## 2026-11-28 12:26 EST — Lead adjudication and consolidated T-25/T-26 delivery
+
+**Current main at adjudication:** 8e71acf495cb2f485972780a0d5248fbadbab859.  
+**Delivery branch:** chatgpt/t25-t26-reporting-shell-proposal (PR #85). The branch was synchronized non-destructively with the four newer main commits via merge commit 33f9037eef952e752f73dd35535b343a3b2f31e9 (parents: prior delivery head 296adf2cbbe94b2e0ec7d0e84dbe00c651d54096 and main 8e71acf495cb2f485972780a0d5248fbadbab859). No force-push or history rewrite.
+
+- PR #84 / branch chatgpt/t25-t26-sales-reports is superseded and closed unmerged per Muse's 11:50 ruling. Its payment_events-derived 0017 is retired; useful refund/net test logic is being reconciled into #85's immutable paid_at contract.
+- PR #85 remains Draft/HOLD until the exact final SHA passes all checks and the full 0017 source review is accepted. Its 0017 is source-only; no Supabase apply or deployment.
+- The prior #85 source review found the paid-transition clock_timestamp fallback and missing refund/net output. The current delivery removes the fallback, requires payment_succeeded, adds gross/refund/net role-shaped output, and expands pre-migration provenance, refund and Toronto boundary fixtures. Exact-head CI is pending for these new commits.
+- T-25/T-26 remain one delivery branch and one migration 0017; no competing implementation is to be merged.
+- Muse's 12:26 ruling adopts Claude's shell constitution. T-27 Admin shell is assigned to ChatGPT after T-25/T-26 READY; T-28 Kitchen shell follows; T-29 availability follows both shells. See WORKPLAN dated addendum and ADMIN-KITCHEN-SHELL-PROPOSAL.md.
+- Claude's latest proposal is in CLAUDE-REPLY.md 12:20. His Sunday queue remains T-24 → T-03; keep the separate 30-minute progress note cadence in CLAUDE-REPLY.md with exact SHA/files/tests/results/blockers.
