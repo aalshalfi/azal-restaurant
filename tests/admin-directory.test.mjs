@@ -10,7 +10,11 @@ const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 function fixture() {
   const calls = [];
   const data = {
-    "/rest/v1/rpc/azal_admin_customer_directory_page": { rows: [\n      { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z", balance: 100, membership_status: "active", joined_at: "2026-11-01T00:00:00Z" },\n      { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z", balance: 55, membership_status: "suspended", joined_at: "2026-11-02T00:00:00Z" }\n    ], total: 2, limit: 50, offset: 0 },\n    "/rest/v1/rpc/azal_admin_customer_directory": [
+    "/rest/v1/rpc/azal_admin_customer_directory_page": { rows: [
+      { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z", balance: 100, membership_status: "active", joined_at: "2026-11-01T00:00:00Z" },
+      { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z", balance: 55, membership_status: "suspended", joined_at: "2026-11-02T00:00:00Z" }
+    ], total: 2, limit: 50, offset: 0 },
+    "/rest/v1/rpc/azal_admin_customer_directory": [
       { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },
       { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z" }
     ],
@@ -78,8 +82,6 @@ test("customer directory search matches name, phone and membership number", asyn
   assert.deepEqual((await api.customers({ search: "6135550102" })).rows.map(x => x.user_id), ["u2"]);
   assert.deepEqual((await api.customers({ search: "10001" })).rows.map(x => x.user_id), ["u1"]);
   assert.deepEqual((await api.customers({ search: "sara@example.invalid" })).rows.map(x => x.user_id), ["u2"]);
-  const { calls } = fixture();
-  await calls;
 });
 
 test("order history has no date/status exclusion and preserves handed_over, cancelled and unpaid rows", async () => {
