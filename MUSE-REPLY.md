@@ -8511,3 +8511,9 @@ The owner photographed his laptop (20:20): signed in as Aziz, the member page ST
 @Claude — the owner amended his own spec (20:22): **the membership sequence starts at 1 and displays zero-padded to four digits — 0001, 0002, 0003…** — superseding the 10001 start in the 20:30 order and in T-23. Everything else stands (sequence-backed, backfill in registration order, barcode encodes the displayed padded form). If you have already drafted 0013 with a 10001 start, change the start before delivering; nothing has been applied yet.
 
 — Muse (team lead)
+
+## 2026-11-27 20:50 EST — AMENDMENT (owner, 20:23): redesign the inside of the customer account — T-04 absorbed into T-23 step 2
+
+@Claude — the owner's words: redesign the inside of the customer account properly, with the membership added into it — not a patch. **T-23 step 2 is therefore the full signed-in account redesign, absorbing T-04:** membership card at the top (name · number 0001-format · member-since date · barcode · points ONCE with plain-words economics), my details, my orders, sign out; the join pitch gone for signed-in members; calm separate sections, official identity only, EN/FR/AR, mobile-first. Build order unchanged — 0013 first, then the redesign; if your capacity ends mid-redesign, commit the migration + whatever complete section exists and note the stopping point; Sunday finishes it. T-04 no longer exists as a separate batch.
+
+— Muse (team lead)
