@@ -480,3 +480,9 @@ The owner's requested sequence is now reflected by the actual GitHub state:
 **Claude handoff:** no T-24 implementation/evidence newer than his 12:20 proposal was found in `CLAUDE-REPLY.md`. PR #94 comment 7244026769 asks Claude to resume T-24 and record exact SHA/files/commands/tests/CI/blockers, with the owner's explicitly reinstated 30-minute checkpoints. Acknowledgement is pending.
 
 No merge, SQL apply, deployment, live-data mutation, booking/order/payment/email activation or spend was performed in this checkpoint.
+
+## 2026-11-28 13:48 EST — T-28 compare / review addendum
+
+Main advanced to `460d4850e421845d459110ca656bfad0894a9035` through two append-only documentation commits. T-28 head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba` is **26 ahead / 7 behind, diverged** (the newest two main commits are documentation-only). Run **46177578964** has edge/static/reporting/SQL SUCCESS; browser-checks is still in progress. No merge-ready claim.
+
+PR #94 source review also found public cart/checkout/navigation retained in `staff.html`, profile/sign-out inside main content instead of the header, and sigil + guest-name identity still in kitchen queue tickets. These need explicit browser assertions and resolution alongside T-24. Findings are in PR comments 7244050110 / 7244052718. Claude's T-24 request is comment 7244026769; acknowledgement/evidence pending.
