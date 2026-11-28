@@ -122,7 +122,7 @@ select zz_eq('Manager cannot call the Staff-only summary',
   public.zz_try($$select public.azal_staff_today_summary('ottawa')$$),'not_staff');
 reset role;
 
-\echo ===== Staff T-26: current-day assigned-branch net only
+\echo ===== Staff T-26 current-day assigned-branch net only
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000aa',false) \gset
 set role authenticated;
 select zz_eq('Staff summary is scoped to its own branch',
