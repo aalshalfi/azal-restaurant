@@ -91,7 +91,7 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   const rows = await api.orders();
   assert.deepEqual(rows.map(x => x.fulfilment_status), ["handed_over","cancelled","placed"]);
   assert.deepEqual(rows.map(x => x.payment_status), ["paid","refunded","unpaid"]);
-  const q = calls.find(x => x.url.includes("/rest/v1/orders?select=id,user_id"));
+  const q = calls.find(x => x.url.includes("/rest/v1/orders?select=id,branch_slug"));
   assert.ok(q);
   assert.ok(!calls.some(x => x.url.includes("/rest/v1/profiles?") || x.url.includes("/rest/v1/rpc/azal_admin_order_customer_emails")), "order list must not fetch customer profiles or emails");
   assert.ok(!calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory")), "order list must not download the whole customer directory");
