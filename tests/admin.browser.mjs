@@ -36,8 +36,8 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
 }
 
 { const { p } = await open("member");
-  await p.waitForURL(/admin\.html$/, { timeout: 5000 }).catch(() => {});
-  ok(/admin\.html$/.test(p.url()), "member page, admin: sent straight to the management area (owner: never the customer account)");
+  await p.waitForURL(/admin\.html(?:#.*)?$/, { timeout: 5000 }).catch(() => {});
+  ok(/admin\.html(?:#.*)?$/.test(p.url()), "member page, admin: sent straight to the management area (owner: never the customer account)");
   await p.waitForTimeout(400);
   ok(/Collected sales today/.test(await p.textContent("#adminRoot")) && await p.locator(".member-card, #memberHistory").count() === 0, "admin lands on management only: no customer card, history or points");
   await p.close(); }
@@ -59,7 +59,11 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
   ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
   ok(!/Menu|Availability/.test(destinations.join(" ")), "no dead Menu or Availability destination before T-21/T-29");
-  ok(await p.locator("#adminScreen-home").isVisible() && await p.locator("#adminScreen-orders").isHidden(), "Admin shell opens Home first and keeps other screens out of the active view");
+  const homeHidden = await p.locator("#adminScreen-home").getAttribute("hidden");
+  const ordersHidden = await p.locator("#adminScreen-orders").getAttribute("hidden");
+  const homeCurrent = await p.locator('.admin-shell-link[href="#home"]').getAttribute("aria-current");
+  console.log("T27 route diagnostic", { homeHidden, ordersHidden, homeCurrent });
+  ok(homeHidden === null && ordersHidden !== null && homeCurrent === "page", "Admin shell opens Home first and keeps other screens out of the active view");
   await p.locator('.admin-shell-nav a[href="#reports"]').click();
   ok(await p.locator("#adminScreen-reports").isVisible(), "Reports destination opens as its own screen");
   const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact"];
