@@ -85,11 +85,11 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.equal(rows[0].customer.display_name, "Amal");
   assert.equal(rows[0].customerEmail, "amal@example.invalid");
   assert.equal((await api.orders({ search: "Sara" })).length, 1);
-  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1);
+  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1);\n  assert.equal((await api.orders({ search: "111111" })).length, 1, "public six-character order code is searchable");\n  assert.equal((await api.orders({ search: "111111" }))[0].id, "11111111-1111-4111-8111-111111111111");
   assert.equal((await api.orders({ status: "cancelled" })).length, 1);
 });
 
-test("order detail includes immutable item snapshots, options, events, totals and member contact profile", async () => {
+test("public order code is the first six characters, uppercased", () => {\n  assert.equal(A.publicCode("4d9d36ab-1111-4111-8111-111111111111"), "4D9D36");\n});\n\ntest("order detail includes immutable item snapshots, options, events, totals and member contact profile", async () => {
   const { api, calls } = fixture();
   const d = await api.orderDetail("11111111-1111-4111-8111-111111111111");
   assert.equal(d.customer.display_name, "Amal");
