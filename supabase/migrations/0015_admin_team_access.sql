@@ -26,6 +26,8 @@ begin
      or not exists(select 1 from information_schema.columns where table_schema='auth' and table_name='users' and column_name='phone')
      or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='profiles' and column_name='anonymized_at')
      or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='orders' and column_name='contact_phone')
+     or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='orders' and column_name='guest_name')
+     or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='orders' and column_name='guest_email')
      or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='order_items' and column_name='item_name_en_snapshot')
      or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='order_items' and column_name='item_name_fr_snapshot') then
     raise exception '0015 requires Auth identity metadata, T-08 order contact and localized item snapshots';
@@ -70,6 +72,17 @@ grant execute on function public.azal_is_admin() to authenticated;
 
 alter table public.profiles
   add column if not exists member_number_retired boolean not null default false;
+
+-- An anonymized guest order must remain in financial history without retaining
+-- guest_name/email. This explicit marker keeps the guest/member identity check valid.
+alter table public.orders
+  add column if not exists guest_identity_scrubbed boolean not null default false;
+alter table public.orders drop constraint if exists order_owner_present;
+alter table public.orders add constraint order_owner_present check (
+  (user_id is not null and guest_email is null and guest_name is null and not guest_identity_scrubbed)
+  or (user_id is null and guest_email is not null and guest_name is not null and not guest_identity_scrubbed)
+  or (user_id is null and guest_email is null and guest_name is null and guest_identity_scrubbed)
+);
 
 create index if not exists profiles_directory_name_idx on public.profiles (lower(display_name));
 create index if not exists profiles_directory_phone_idx on public.profiles (lower(phone));
@@ -607,7 +620,8 @@ begin
   -- Include both member orders and guest orders created with the same Auth email.
   -- Keep order IDs, item snapshots and financial/tax fields intact.
   update public.orders
-     set contact_phone=null, guest_name=null, guest_email=null, customer_note=null
+     set contact_phone=null, guest_name=null, guest_email=null, customer_note=null,
+         guest_identity_scrubbed=(user_id is null)
    where user_id=p_user_id
       or pg_catalog.lower(coalesce(guest_email,''))=pg_catalog.lower(p_email_to_scrub);
 
