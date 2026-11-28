@@ -2397,3 +2397,17 @@ Created `ADMIN-DESIGN.md` on main at commit `6516175d31b15a0d299f3bc1d97919d410f
 **Lead decision requested:** review `ADMIN-DESIGN.md` and record APPROVE / APPROVE WITH CHANGES / RETURN in the lead channel. T-26 is explicitly marked as an unresolved scope gap because the current authoritative WORKPLAN.md and BOARD.md contain no substantive T-26 card; no report metrics or behaviors were invented. The fixed sequence remains T-08 acceptance → T-14 → T-21 → T-13 → T-20; T-25/T-26 stay closed until their gates.
 
 **STOP:** no T-14 or later implementation has started. This commit changes documentation only. No application source, migrations, SQL execution, Supabase settings/data, users/invites, Orders credentials, points, refunds, payments, email or deployment were touched. Do not begin T-14 until the lead has adjudicated this document and records the next-task authorization.
+
+
+## 2026-11-28 00:16 EST — T-08 three-line retrospective + T-14 opening
+
+**T-08 retrospective (three lines, per CHATGPT-WORK-RULES §13):**
+1. **What the gate caught that I missed:** the shipped directory's client-side search/paging was not a true 1,000-customer design, and the customer-removal/anonymization lifecycle was absent; the owner found both in the whole-surface review (F-OWN-31).
+2. **What I will check first next time:** walk the complete admin lifecycle before declaring a gate — server-side query plan and 1,000-row usability, role × forbidden-action boundaries, and customer removal with preserved detached financial records.
+3. **One rule I would amend and why:** require every admin-directory acceptance checklist to include a 1,000-record server-side search/page test plus an anonymize/deactivate retention test; scale and privacy lifecycle are correctness/security, not post-launch polish.
+
+**T-08 evidence basis:** Muse's 2026-11-28 00:10 adjudication says the T-08 gate was accepted at 2026-11-27 23:52. The merged main line includes the T-08 code candidate; verified code head `68045fd2a576c74cfe79fde814047afe37855bdd`, exact-head CI `46107953208`: 213/213 Node, 30 browser suites, PostgreSQL 16.16 points 45 + admin 40 assertions, zero SQL FAIL/ERROR. Live staging admin walk and 0014 apply remain lead-operated, not claimed by this review.
+
+**T-14 opened:** single branch `chatgpt/t14-team-access`, based on main `f79e04cc8b0f9249af1657e751b212dc652650df`; BOARD claim committed at `b86eea9c712c95cd26cbc5b1bf511a854a93d344`. Muse's A1–A6 ruling is recorded in `ADMIN-DESIGN.md` on this branch (commit `5e67347a22aad4aff505ab7a9b3d6b88f16178cd`). T-14 includes A1 server-side directory search/pagination and A2 Admin-only customer anonymize/deactivate; later sequence follows A5.
+
+**Current work state:** claim + amended design recorded; implementation has not yet been committed. No SQL apply, invites, account creation, password reset, anonymization, email, or deployment. **NOT verified:** the exact staging member-number state is outside this T-14 build; no live Supabase/Edge Function deployment or 1,000-row staging load test has been run.
