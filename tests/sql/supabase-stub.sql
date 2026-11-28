@@ -6,7 +6,7 @@ do $$ begin
 end $$;
 create schema if not exists auth;
 create table if not exists auth.users (instance_id uuid, id uuid primary key default gen_random_uuid(), aud varchar(255), role varchar(255), email varchar(255), encrypted_password varchar(255), email_confirmed_at timestamptz, raw_app_meta_data jsonb default '{}'::jsonb, raw_user_meta_data jsonb default '{}'::jsonb, phone text, banned_until timestamptz, last_sign_in_at timestamptz, created_at timestamptz default now(), updated_at timestamptz default now());
-create table if not exists auth.identities (id uuid primary key default gen_random_uuid(), user_id uuid not null, identity_data jsonb default '{}'::jsonb, provider text not null default 'email', created_at timestamptz default now(), updated_at timestamptz default now());
+create table if not exists auth.identities (id uuid primary key default gen_random_uuid(), user_id uuid not null, provider_id text not null default 'stub', identity_data jsonb default '{}'::jsonb, provider text not null default 'email', last_sign_in_at timestamptz, created_at timestamptz default now(), updated_at timestamptz default now());
 create or replace function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true),'')::uuid $$;
 create or replace function auth.email() returns text language sql stable as $$ select nullif(current_setting('request.jwt.claim.email', true),'') $$;
 grant usage on schema auth to anon, authenticated, service_role;
