@@ -52,7 +52,7 @@ test("customer directory joins membership state and derives the exact ledger bal
   assert.equal(rows.length, 2);
   assert.deepEqual(rows.map(x => [x.display_name, x.member_number, x.membership.status, x.balance]), [["Amal",10001,"active",100],["Sara",10002,"suspended",55]]);
   assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at")));
-  assert.ok(calls.some(x => x.url.includes("/rest/v1/points_ledger?select=user_id,delta_points")));
+  assert.ok(calls.some(x => x.url.includes("/rest/v1/points_ledger?select=user_id,delta_points") && x.url.includes("order=created_at.asc,id.asc")));
 });
 
 test("customer directory search matches name, phone and membership number", async () => {
@@ -69,6 +69,7 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.deepEqual(rows.map(x => x.payment_status), ["paid","refunded","unpaid"]);
   const q = calls.find(x => x.url.includes("/rest/v1/orders?select=id,user_id"));
   assert.ok(q);
+  assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number") && x.url.includes("order=created_at.desc,id.desc")));
   assert.ok(!q.url.includes("placed_at=gte"));
   assert.ok(!q.url.includes("fulfilment_status=neq"));
   assert.ok(!q.url.includes("payment_status=eq.paid"));
