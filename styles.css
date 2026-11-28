@@ -968,3 +968,7 @@ html[lang="ar"] .mcard-meta span{letter-spacing:0;font-size:.85rem}
 .mcard-meta #authCardPoints strong{color:#CD8E2D;font-size:1.18rem;font-variant-numeric:tabular-nums}
 .mcard-next{margin:-4px 0 14px;color:#F8F1E7;opacity:.85;font-size:.9rem}
 .mcard-next[hidden]{display:none}
+/* F-OWN-26: the founding-member mark (official gold on the card) and its plain-words line */
+.mcard-founder{display:inline-block;margin-top:8px;padding:3px 10px;border:1px solid #CD8E2D;border-radius:999px;color:#CD8E2D;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
+.auth-founder-note{margin:-6px 0 18px;max-width:440px;padding:10px 14px;border-inline-start:3px solid #CD8E2D;background:rgba(205,142,45,.08);color:#42220E;font-size:.92rem;line-height:1.55}

@@ -9,11 +9,11 @@ const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = nullConfig(await chromium.launch()); const base = `http://localhost:${srv.address().port}`;
-async function open({ lang = "en", w = 390, options = true } = {}) {
+async function open({ lang = "en", w = 390, options = true, num = 10001 } = {}) {
   const p = await b.newPage({ viewport: { width: w, height: 900 } }); const srvState = { points: 2824, hold: null, ledgerCalls: 0 };
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await p.route("https://fake.supabase.co/**", async (r) => { const u = decodeURIComponent(r.request().url());
-    if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Aziz", phone: "+16135550180", member_number: 10001, created_at: "2026-11-20T15:00:00Z" }] });
+    if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Aziz", phone: "+16135550180", member_number: num, created_at: "2026-11-20T15:00:00Z" }] });
     if (u.includes("/rest/v1/points_ledger")) { srvState.ledgerCalls++; if (srvState.hold) await srvState.hold; return r.fulfill({ json: [{ delta_points: srvState.points }] }); }
     if (u.endsWith("/rpc/redeem_options")) return options ? r.fulfill({ json: { balance: srvState.points, step_points: 10000, cents_per_step: 1000, max_steps: 20 } }) : r.fulfill({ status: 404, json: {} });
     if (u.includes("/auth/v1/logout")) return r.fulfill({ status: 204, body: "" });
@@ -50,6 +50,16 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
 { const { p } = await open({ options: false });
   ok(/2,824/.test(await p.textContent("#authCardPoints")) && await p.locator("#authCardNext").isHidden(), "no rewards info from the server: the balance shows, no next line (nothing invented)");
   await p.close(); }
+{ // F-OWN-26: founders (numbers 10001-10100) carry the mark and are told what it means; others see nothing extra
+  const { p } = await open({ num: 10100 });
+  ok(await p.textContent("#authFounderMark") === "Founding member" && /first 100 members.*30% extra points on every order, for life.*starts when Majlis points open in full at launch/.test(await p.textContent("#authFounderNote")), "founder (10100): the mark on the card and the plain-words line (rule, not a claim it already posts)");
+  await p.close();
+  const o = await open({ num: 10101 });
+  ok(await o.p.locator("#authFounderMark, #authFounderNote").count() === 0, "member 10101: no mark, nothing extra");
+  await o.p.close();
+  const a = await open({ num: 10001, lang: "ar", w: 320 });
+  ok(await a.p.textContent("#authFounderMark") === "عضو مؤسس" && /أول 100 عضو/.test(await a.p.textContent("#authFounderNote")) && await a.p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "Arabic @320: the mark and its line, no sideways scroll");
+  await a.p.close(); }
 for (const [lang, w, re] of [["ar", 320, /باقي 7,176 نقطة على خصم\u00a0\u2066/], ["fr", 390, /Encore 7\s176 points pour 10,00\s\$ de rabais/]]) {
   const { p } = await open({ lang, w });
   ok(re.test(await p.textContent("#authCardNext")) && await p.evaluate(() => { const r = document.querySelector(".mcard").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth && document.documentElement.scrollWidth <= innerWidth; }), `${lang} @${w}: the next-reward line in ${lang} (amount isolated in Arabic), the card fits`);

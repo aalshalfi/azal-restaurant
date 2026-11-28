@@ -277,6 +277,8 @@
       `<img class="mcard-mark" src="assets/azal-symbol.svg" alt="" aria-hidden="true">` +
       `<img class="mcard-watermark" src="assets/azal-symbol.svg" alt="" aria-hidden="true">` +
       `<div class="mcard-kicker">${esc(tr("memberCardKicker"))}</div>` +
+      // F-OWN-26: founders are exactly the first 100 numbers (10001-10100); derived, no new flag. Others see nothing extra.
+      (isFounder(st) ? `<div class="mcard-founder" id="authFounderMark">${esc(tr("authFounder"))}</div>` : "") +
       `<div class="mcard-name">${esc(st.name || st.email || "")}</div>` +
       `<div class="mcard-meta"><div id="authMemberNo"><span>${esc(tr("authMemberNo"))}</span> <strong><bdi dir="ltr">${st.memberNumber}</bdi></strong></div>` +
       (since ? `<div id="authMemberSince"><span>${esc(tr("authMemberSince"))}</span> <strong>${esc(since)}</strong></div>` : "") +
@@ -284,8 +286,10 @@
       `<div id="authCardPoints"><span>${esc(tr("memberPointsLabel"))}</span> <strong aria-live="polite">${fmtPoints(st.points || 0)}</strong></div></div>` +
       `<p class="mcard-next" id="authCardNext"${nextText(st) ? "" : " hidden"}>${esc(nextText(st))}</p>` +
       `<div class="mcard-code">${code39Svg(st.memberNumber, tr("authBarcode").replace("{number}", st.memberNumber))}<div class="mcard-digits" dir="ltr">${st.memberNumber}</div></div>` +
-      `</figure>`;
+      `</figure>` +
+      (isFounder(st) ? `<p class="auth-founder-note" id="authFounderNote">${esc(tr("authFounderNote"))}</p>` : "");
   }
+  const isFounder = (st) => Number.isSafeInteger(st && st.memberNumber) && st.memberNumber >= 10001 && st.memberNumber <= 10100;
 
   // V-1: the next reward, from checkout's own redeemView rule applied to THIS balance (st.points, the one source).
   // Stored as numbers, formatted at paint time, so a language switch re-words it.
