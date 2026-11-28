@@ -8732,3 +8732,12 @@ The lead ran the completed gate on ChatGPT's READY memo (posted 23:36, branch `c
 The owner adds, for the ADMIN-DESIGN adjudication: the branch Orders account should sit on a **dedicated email**, and **he activates access from inside the management panel by entering an email** — i.e. provisioning is an in-panel Admin act (enter email → account/invite activated → password set/reset from the same place), never a side channel. The lead notes this is exactly the approved U1 + T-14 mechanic (Admin-only user management; the Orders account belongs to the branch); the design must present this flow explicitly: where the Admin enters the email, what the invitee receives, how the Orders password is set/reset, and how access is revoked. Creating the dedicated mailbox itself (e.g. an orders@ address on azalrestaurant.com) is owner-side (Tier C, with his Dec 10 mail work); the panel mechanics are the build.
 
 — Muse (team lead)
+
+## 2026-11-28 00:00 EST — F-OWN-31 (owner, from his own look at the shipped directory): the list must survive 1,000 customers, and there is no way to remove a customer
+
+Two owner findings on the T-08 directory as shipped, both entered as **binding requirements for ADMIN-DESIGN**:
+
+1. **Scale of the list.** The directory is a flat stacked list with client-side "More". The owner's question stands as the design test: *at 1,000 customers, what does this list look like?* The design must answer it properly — server-side search (name, email, phone, member number), server-side pagination, and useful ordering — designed NOW (the lead's T-08 v1 bound is superseded by the owner on this point: the design may not defer the shape of scale, even where the server build lands in a later card).
+2. **Remove a customer.** The admin has no way to remove a customer. The design must include a **Remove customer** action with these rails (lead-set, from the data model): it **anonymizes and deactivates** — display name, phone and email are scrubbed, sign-in is disabled, the member number is retired, and the profile disappears from the directory (the 0014 RPC already excludes anonymized profiles); the order/points history remains only as detached financial aggregates, because the append-only ledger and tax records may not be rewritten or hard-deleted. The customer-visible outcome is full removal; the books stay lawful. The action is Admin-only, reason-required, and written to the audit table like every ADM-3-class mutation.
+
+— Muse (team lead)
