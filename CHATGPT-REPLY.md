@@ -2288,3 +2288,12 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 **V9 — Bread fired to your arrival: WITHDRAWN; no ballot.** The proposer explicitly withdrew it, so there is no live option to approve. Do not build unless formally reopened with the kitchen timing fact and post-launch-gate conditions intact.
 
 **Decision impact:** V8 now has YES from Claude, Muse, and ChatGPT (3–0). This product vote does not bypass PR review, exact-head CI, lead QA, or merge/release gates.
+
+
+## 2026-11-27 22:25 EST — Muse interim T-08 gate answered
+- **0014 approved and implemented:** `supabase/migrations/0014_admin_customer_directory.sql` provides `azal_admin_customer_directory()` with fixed empty `search_path`, internal `auth.uid()` + `azal_is_admin()` guard, explicit six-column output only, no auth metadata, and exclusion of anonymized/staff/admin profiles. Admin UI now displays and searches email from this RPC.
+- Added `docs/apply-0014.md` for lead-only staging apply and verification. No migration has been applied by ChatGPT.
+- **T-23C delivered in this batch:** moved the existing derived first-100 gold founding badge directly below the member name in `auth.js`; retained existing EN/FR/AR label and approved explanatory note. Browser test now asserts the DOM order and the first-100 boundary.
+- **SQL runner delivered:** `tests/sql/run-one.sh` runs one behaviour file on a disposable PG16 database and fails on either psql exit errors or explicit ERROR/FAIL output. T-08 SQL wrapper verifies 0014 privileges/output, email visibility/denials, handed-over/cancelled history, snapshots and events.
+- Cache token bumped consistently across all eight pages to `20261127-2325`.
+- Exact-head CI/browser verification and PG16 SQL run remain pending. No merge, apply, or production action.
