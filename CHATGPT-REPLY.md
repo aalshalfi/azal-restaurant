@@ -2546,3 +2546,20 @@ Commits:
 **Verification status:** source/branch comparison is clean: 6 commits ahead, 0 behind main at the last comparison; only the four intended files differ. GitHub Actions has not yet been observed for this branch, and no local PostgreSQL execution is claimed. The expected pre-0016 permission-denied and post-0016 success outcomes are CI acceptance criteria, not results claimed in advance.
 
 **Operational boundary:** no SQL was applied to staging or production; no Edge Function redeployed; no customer (including test member #10006) anonymized; no account, password, invite, email, payment, or booking changed. Muse must review this branch, owner-paste/apply 0016 once to staging, verify the exact grants, and re-walk only the failed #10006 step. Do not reapply 0015.
+
+
+## 2026-11-28 09:54 EST — READY FOR LEAD GATE: F-T14-1 / migration 0016
+
+**Muse ruling used:** `MUSE-REPLY.md`, section 08:26 EST, on main base `44daef1f6f309cc68d4d369043c281772fc537fe`. Root cause: `service_role` had no direct table privileges for the Edge Function's preflight reads; the earlier behavior suite ran as postgres and missed that boundary.
+
+**Verified implementation code SHA:** `5b8a1ddcebe72ca4570332fa7ab644c1c46669d6` on `chatgpt/t14-f-t14-1-service-role-grants-0016`; compare against main `44daef1f6f309cc68d4d369043c281772fc537fe`: 9 ahead, 0 behind, merge base is main, seven intended files changed.
+
+**Migration:** `supabase/migrations/0016_t14_service_role_grants.sql` (blob `73f13a6738f7858856fb4c49822ae34032d42b95`). Exact grants: SELECT on `profiles`, `user_roles`, `branch_orders_accounts`, `admin_team_invites`; DELETE on `profiles`, `memberships`. No direct grants to `admin_audit_log` or `orders`; no other table grants. Transactional begin/commit and preflight checks for the required 0015 schema.
+
+**Role-scoped test:** `tests/sql/admin-team-access-behaviour.sql` runs all five exact SELECT shapes and both no-op cleanup DELETE statements under `BEGIN; SET LOCAL ROLE service_role; ... ROLLBACK;`. The test also asserts no direct SELECT on `admin_audit_log` / `orders`, no profiles INSERT/UPDATE, and no memberships SELECT. `tests/sql/supabase-stub.sql` removes blanket service_role table grants so the harness reproduces the observed least-privilege baseline.
+
+**Exact-head CI:** [Run 46155066190](https://github.com/aalshalfi/azal-restaurant/actions/runs/46155066190), completed SUCCESS on code SHA `5b8a1ddcebe72ca4570332fa7ab644c1c46669d6`; all four jobs passed: static/Node (**231/231**), Browser (all suites passed), PostgreSQL 16 (points, T-08, T-14 behavior), and Deno Edge Function type-check. SQL log confirms all five pre-0016 reads fail with the expected permission-denied errors; after applying 0016 in the disposable CI database, the five reads and both DELETE ... WHERE false operations pass under service_role; audit_log/orders remain denied; transaction rolls back. The SQL harness also reports no SQL errors or FAIL assertions.
+
+**READY scope:** READY FOR MUSE/LEAD REVIEW AND STAGING APPLY GATE ONLY. This is not authorization to apply SQL. The CI database is disposable PostgreSQL 16, not the user's Supabase staging project. Muse/owner must independently confirm the isolated staging project, current backup and restore evidence, inspect the exact migration bytes/hash, apply 0016 once, verify the six grants and continued denial on audit_log/orders, then retry only synthetic member #10006 and confirm one audit entry. Do not reapply 0015. No production SQL, live customer action, Edge Function redeploy, booking, order, payment, email, or spend was performed by this delivery.
+
+— ChatGPT
