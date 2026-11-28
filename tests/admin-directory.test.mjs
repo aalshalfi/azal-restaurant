@@ -170,3 +170,24 @@ test("T-23C founder badge is rendered after the member name and before member me
   const meta = auth.indexOf('<div class="mcard-meta">', name);
   assert.ok(name >= 0 && badge > name && meta > badge);
 });
+
+
+test("A1 1,000-customer page is fetched server-side with a bounded limit and offset", async () => {
+  const calls=[];
+  const fetch=async(url,init={})=>{
+    calls.push({url,init});
+    const args=JSON.parse(init.body||"{}");
+    return {ok:true,status:200,headers:{get:()=>null},json:async()=>({
+      rows:Array.from({length:args.p_limit},(_,i)=>({user_id:"u"+(args.p_offset+i),display_name:"Customer "+(args.p_offset+i),phone:null,email:"x@example.invalid",member_number:10000+args.p_offset+i,balance:0,membership_status:"active"})),
+      total:1000,limit:args.p_limit,offset:args.p_offset
+    })};
+  };
+  const api=A.createAdmin({config:{url:"https://fake.supabase.co",anonKey:"anon"},fetch,getSession:async()=>({access_token:"token",user:{id:"admin"}})});
+  const page=await api.customers({search:"Customer",limit:50,offset:950});
+  assert.equal(page.rows.length,50);
+  assert.equal(page.total,1000);
+  assert.equal(page.offset,950);
+  assert.ok(calls[0].url.endsWith("/rest/v1/rpc/azal_admin_customer_directory_page"));
+  assert.deepEqual(JSON.parse(calls[0].init.body),{p_search:"Customer",p_limit:50,p_offset:950});
+  assert.ok(!calls.some(x=>x.url.includes("/rest/v1/points_ledger")||x.url.includes("/rest/v1/memberships")));
+});
