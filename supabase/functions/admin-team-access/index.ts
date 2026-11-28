@@ -60,6 +60,15 @@ Deno.serve(async (req: Request) => {
       return reply(200, data || { status: "ok" });
     }
 
+    if (action === "team_invite_revoke") {
+      const { data, error } = await caller.rpc("azal_admin_team_invite_revoke", {
+        p_invite_id: clean(body.invite_id, 64),
+        p_reason: clean(body.reason, 500)
+      });
+      if (error) return reply(400, { error: error.message });
+      return reply(200, data || { status: "revoked" });
+    }
+
     if (action === "customer_anonymize") {
       const userId = clean(body.user_id, 64);
       const reason = clean(body.reason, 500);
