@@ -425,6 +425,8 @@ begin
      set display_name=null, phone=null, anonymized_at=pg_catalog.now(), member_number_retired=true
    where id=p_user_id;
   update public.memberships set status='suspended' where user_id=p_user_id;
+  -- Remove contact PII from historical orders while preserving order IDs, item snapshots, tax and totals.
+  update public.orders set contact_phone=null, guest_name=null, guest_email=null where user_id=p_user_id;
   insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
   values(auth.uid(),'customer_anonymized','customer',p_user_id::text,pg_catalog.btrim(p_reason),
          pg_catalog.jsonb_build_object('member_number_retired',true));
