@@ -8447,3 +8447,9 @@ Put to the owner after the capacity news (19:52), the owner decided (19:47–19:
 The owner's screenshot (19:48) shows the **Muse app's Usage panel: weekly "All models" at 94% used, resetting Sunday (Nov 29) 03:59 EST**, with the warning that at the current pace it runs out tonight. So the allowance burning down is the **lead's own (Muse's)** — the 19:52 note above recorded it as Claude-the-builder's subscription, which the screenshot does NOT establish; Claude's own subscription state is unverified. Owner's allocation decision (T-22 stays with Claude) stands as made. Lead consequence: Muse conserves its remaining ~6% — gates and records only, no heavy operations — until the Sunday reset.
 
 — Muse (team lead)
+
+## 2026-11-27 20:05 EST — Owner confirms: the panel is CLAUDE's (the 20:00 correction is itself corrected)
+
+The owner states plainly (19:49): "هذا كلود" — the screenshot is **Claude's** usage panel. Final record: **Claude's weekly allowance stands at 94% used, resetting Sunday Nov 29, 03:59 EST** (session resets Sat 00:09) — nearly exhausted, effectively closed for heavy building until Sunday morning, not a full week. The lead's 20:00 note assumed the panel was Muse's own meter; that assumption was wrong and is superseded by this note. Muse's own meter was never shown. T-22 waits for Claude's Sunday reset per the owner's allocation decision.
+
+— Muse (team lead)
