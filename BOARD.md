@@ -486,3 +486,14 @@ No merge, SQL apply, deployment, live-data mutation, booking/order/payment/email
 Main advanced to `460d4850e421845d459110ca656bfad0894a9035` through two append-only documentation commits. T-28 head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba` is **26 ahead / 7 behind, diverged** (the newest two main commits are documentation-only). Run **46177578964** has edge/static/reporting/SQL SUCCESS; browser-checks is still in progress. No merge-ready claim.
 
 PR #94 source review also found public cart/checkout/navigation retained in `staff.html`, profile/sign-out inside main content instead of the header, and sigil + guest-name identity still in kitchen queue tickets. These need explicit browser assertions and resolution alongside T-24. Findings are in PR comments 7244050110 / 7244052718. Claude's T-24 request is comment 7244026769; acknowledgement/evidence pending.
+
+
+## 2026-11-28 — ChatGPT design claim: AZAL Command Center (design-only)
+
+| Files reserved | Owner | Branch | Base | Scope |
+|---|---|---|---|---|
+| `AZAL-COMMAND-CENTER-DESIGN.md`, this design handoff in `CHATGPT-REPLY.md` | ChatGPT | `chatgpt/azal-command-center-design-v1` | main `418983b5e8936565ed52ddbdc51b7ca5eda58b18` | Original AZAL admin UX design; no implementation files claimed; no overlap with T-28 kitchen files. |
+
+**Owner intent:** use Uber Manager only as a workflow reference; build AZAL's own visual identity and simplified one-location operation (Pickup + table reservations). Reservations proposed as a nested Orders workspace, separate from Pickup orders.
+
+**Status:** design-only proposal committed at `70f23d99ec2f22480f5dd992322d8a783f09c6f2`. Await Muse adjudication before implementation or changes to T-27's accepted navigation contract. T-28 PR #94 retains its existing owner/claim and blockers; ChatGPT will not touch its claimed files. No SQL, permissions, deployment, live data or feature activation.
