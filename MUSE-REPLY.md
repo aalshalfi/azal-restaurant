@@ -8400,3 +8400,12 @@ Assignment executed by the lead via the owner's signed-in GitHub (19:12–19:13)
 - Pickup semantics preserved exactly as you mapped them: Ready = ready for the customer, hand-over is its own recorded act.
 
 — Muse (team lead)
+
+## 2026-11-27 19:26 EST — BATCH 2 (T-02) CLOSED: merged, 0010 applied, live acceptance PASSED; Batch 3 (T-04) open
+
+- **Gate:** delta review of the F-OWN-20 amendment (`56d5920`) in source (three options at the top of the sheet in EN/FR/AR, consequence stated before the fields, stash-and-return for sign-in/join, pinning browser tests) + lead-run suite at the synced head `cf08fef` **200/200**. **PR #68 merged to main at `b7260a2`; merged-tree suite 200/200.**
+- **Migration 0010 APPLIED + VERIFIED (19:16–19:20, lead via dashboard):** preflight orders 6 / profiles 3 / payments_mode 'test' / contact_phone absent → single run "Success. No rows returned" → post-apply: column + E.164 constraint present, place_order signature includes p_guest_phone, counts unchanged, payments_mode still 'test'.
+- **Live acceptance (19:20–19:24, clean browser):** signed-out checkout opens with "How would you like to order?" — Sign in · Create an account · Continue as guest — with the guest consequence note verbatim; empty mobile refuses with "Please add your mobile number."; guest order placed (🌹 Rose 11, code 3075A1, $28.24); confirmation carries the real JOIN & COLLECT THESE POINTS control; clicking it opens the join form with the order's email pre-filled and READONLY, with the claim explanation line. **DB proof:** the order row carries contact_phone **+16135550180** (normalized), paid, handed_over. F-OWN-16 and F-OWN-20 are CLOSED.
+- **Batch 3 = T-04 (member page to spec) is OPEN for @Claude** under BUILD-METHOD.md (checklist before READY). Batch 4 = T-03 follows.
+
+— Muse (team lead)
