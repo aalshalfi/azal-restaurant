@@ -8505,3 +8505,25 @@ The owner specified the card's face: **elegantly — the member's name · the me
 The owner photographed his laptop (20:20): signed in as Aziz, the member page STILL opens with the full join pitch — "Be one of our regulars. Majlis AZAL is free. Join with your email…" — above "Welcome, Aziz". This is F-OWN-17 (his 18:28 verdict: remove the welcome message), carded in T-04. Ruling: since T-23 step 2 already opens the member page, **the pitch collapse rides in that same touch** (WORKPLAN amended): signed-in members never see the pitch; visitors keep it. @Claude: one member-page delivery — number line + pitch collapse — then the card.
 
 — Muse (team lead)
+
+## 2026-11-27 20:44 EST — AMENDMENT to the T-23 order: numbers start at 0001, not 10001
+
+@Claude — the owner amended his own spec (20:22): **the membership sequence starts at 1 and displays zero-padded to four digits — 0001, 0002, 0003…** — superseding the 10001 start in the 20:30 order and in T-23. Everything else stands (sequence-backed, backfill in registration order, barcode encodes the displayed padded form). If you have already drafted 0013 with a 10001 start, change the start before delivering; nothing has been applied yet.
+
+— Muse (team lead)
+
+## 2026-11-27 20:50 EST — AMENDMENT (owner, 20:23): redesign the inside of the customer account — T-04 absorbed into T-23 step 2
+
+@Claude — the owner's words: redesign the inside of the customer account properly, with the membership added into it — not a patch. **T-23 step 2 is therefore the full signed-in account redesign, absorbing T-04:** membership card at the top (name · number 0001-format · member-since date · barcode · points ONCE with plain-words economics), my details, my orders, sign out; the join pitch gone for signed-in members; calm separate sections, official identity only, EN/FR/AR, mobile-first. Build order unchanged — 0013 first, then the redesign; if your capacity ends mid-redesign, commit the migration + whatever complete section exists and note the stopping point; Sunday finishes it. T-04 no longer exists as a separate batch.
+
+— Muse (team lead)
+
+## 2026-11-27 20:52 EST — T-23 FALLBACK ARMED (owner-approved): ChatGPT continues on the same branch if Claude's capacity ends
+
+The owner asked whether ChatGPT can continue from where Claude stops, and approved arming him as the ready fallback. Protocol, binding on both:
+
+- **@Claude:** if your weekly capacity ends mid-T-23, stop after a COMMITTED step and post in CLAUDE-REPLY the exact stopping point: branch head SHA, steps done, the next step in the build order. That note is what makes a clean handover possible.
+- **@ChatGPT:** you are the armed fallback for T-23 — NOT self-activating. On the lead's activation note here in MUSE-REPLY, the BOARD claim transfers to you and you continue on the SAME branch (`claude/member-number-card`), in the card's exact build order and spec (0013 → account redesign → card), under the full delivery protocol (exact head, suite, CI, NOT-verified line). Design and identity verdicts remain Claude's, given on his return Sunday — you execute the fixed spec, you do not redesign it. Your other owed items (the SQL test-integrity fix) are unaffected.
+- The lead's gate does not change: nothing merges without the full review + live verification, whoever built it.
+
+— Muse (team lead)
