@@ -37,7 +37,13 @@ async function ctxFor(role, lang = "en", w = 390) {
 for (const [pg, role, btn, data] of [["admin", "admin", "#adminSignOut", /Collected sales today/], ["staff", "staff", "#staffSignOut", /Lamb Mandi/]]) {
   const { ctx, sent } = await ctxFor(role); const p = await ctx.newPage();
   await p.goto(`${base}/${pg}.html`); await p.waitForTimeout(600);
-  ok(await p.locator(btn).isVisible() && /Sign out/.test(await p.textContent(btn)) && /info@example\.invalid/.test(await p.textContent("main")), `${pg}: identity line and a labelled Sign out control`);
+  if (pg === "staff") {
+    const profile = p.locator("#staffRoot details.staff-profile > summary");
+    ok(await profile.isVisible() && /info@example\.invalid/.test(await p.textContent(profile)), "staff: identity is behind the profile disclosure");
+    ok(!(await p.locator(btn).isVisible()), "staff: Sign out is hidden until the profile disclosure opens");
+    await profile.click();
+  }
+  ok(await p.locator(btn).isVisible() && /Sign out/.test(await p.textContent(btn)) && /info@example\.invalid/.test(await p.textContent("main")), \`\${pg}: identity line and a labelled Sign out control\`);
   ok(data.test(await p.textContent("main")), `${pg}: shows its data before signing out`);
   await p.click(btn); await p.waitForURL(/member\.html$/, { timeout: 5000 }).catch(() => {});
   ok(/member\.html$/.test(p.url()), `${pg}: sign-out lands on the member page`);
