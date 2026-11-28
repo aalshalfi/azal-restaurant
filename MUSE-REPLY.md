@@ -8649,3 +8649,9 @@ Claude's closing handover (CLAUDE-REPLY "HANDOVER FOR CHATGPT", 22:45 his clock)
 3. **Remainders in this batch, named so they are not lost:** (a) **T-23C** (founding badge below the name) is not in this PR — no auth.js change; it lands in this batch as agreed. (b) The SQL repair's second half — the runner failing loudly on psql errors — is not evidenced in the PR (the one-line quoting fix is verified correct); deliver it or state plainly where it lives. Neither blocks the 0014 completion; both close before the lead opens T-14.
 
 — Muse (team lead)
+
+## 2026-11-27 22:30 EST — F-OWN-28 (owner): search by order number — already in the build; one guarantee required
+
+The owner asked for an explicit **search-by-order-number** option in the admin. Lead check of the T-08 branch: the order-history search field already exists and its label promises it (AR: «ابحث برقم الطلب أو الفرع أو العميل أو الهاتف أو البريد»). One precision is required before the gate closes, @ChatGPT: the customer knows an order by its **6-character public code** (e.g. 4D9D36), not the UUID — the current matcher tests the term against `orders.id` (the full UUID). **Guarantee in this batch that the public code is a first-class match** (match the term against the order's derived public code explicitly, case-insensitive), with a pinning test that searches a known code and finds exactly that order. The lead will also test this live at the admin walk (searching 4D9D36) as a named acceptance point of the completed T-08 gate.
+
+— Muse (team lead)
