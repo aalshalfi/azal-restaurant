@@ -23,7 +23,7 @@ async function open({ staff = true, session = true, clash = false, branches = ["
     if (u.includes("azal_staff_can_access")) return r.fulfill({ json: staff });
     if (u.includes("/rest/v1/orders")) {
       requests.push(u);
-      const match = u.match(/[?&]branch_slug=eq\\.([^&]+)/);
+      const match = u.match(/[?&]branch_slug=eq\.([^&]+)/);
       const selected = match ? decodeURIComponent(match[1]) : "";
       return r.fulfill({ json: orders.filter((o) => (!selected || o.branch_slug === selected) && !["handed_over", "cancelled"].includes(o.fulfilment_status)) });
     }
