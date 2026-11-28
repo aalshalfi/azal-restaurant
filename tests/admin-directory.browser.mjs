@@ -28,6 +28,7 @@ async function open({role="admin",lang="en",width=390}={}){
   if(path.endsWith("/rpc/azal_admin_team_list"))return r.fulfill({json:{members:[],invites:[],branches:[{slug:"ottawa",name:"Ottawa"}],orders_accounts:[]}});
   if(path.endsWith("/rpc/azal_admin_audit_recent"))return r.fulfill({json:[]});
   if(path.endsWith("/rpc/azal_admin_customer_contact"))return r.fulfill({json:{user_id:"u1",display_name:"Amal",phone:"+16135550101",member_number:10001,email:"amal@example.invalid"}});
+  if(path.endsWith("/rpc/azal_admin_order_customer_emails"))return r.fulfill({json:[{user_id:"u1",email:"amal@example.invalid"},{user_id:"u2",email:"sara@example.invalid"}]});
   if(path.endsWith("/rpc/azal_manager_branch_orders"))return r.fulfill({json:[{id:"4d9d36ab-1111-4111-8111-111111111111",branch_slug:"ottawa",fulfilment_status:"placed",placed_at:"2026-11-20T10:00:00Z",items:[{quantity:1,name_en:"Lamb Mandi",name_fr:"Mandi"}]}]});
   if(path.endsWith("/rpc/azal_admin_customer_directory"))return r.fulfill({json:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z"}]});
   if(path.endsWith("/user_roles"))return r.fulfill({json:role==="admin"?[{role:"admin"}]:role==="manager"?[{role:"manager"}]:role==="staff"?[{role:"staff"}]:[]});
@@ -58,7 +59,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_directory_page")),lang+" "+width+": directory uses the server-side page RPC");
-  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_customer_directory")),lang+" "+width+": workspace is read-only");
+  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_order_customer_emails")||x.url.includes("/rpc/azal_admin_customer_directory")),lang+" "+width+": workspace is read-only");
  const button=page.locator(".admin-workspace > .admin-panel:nth-child(2) .admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
  check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
@@ -83,7 +84,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
   if(p.endsWith("/orders"))return true;
   if(p.endsWith("/profiles"))return u.searchParams.get("id")!=="eq.admin";
   if(p.endsWith("/points_ledger")||p.endsWith("/memberships"))return u.searchParams.get("user_id")!=="eq.admin";
-  return p.endsWith("/rpc/azal_admin_customer_directory_page")||p.endsWith("/rpc/azal_admin_customer_contact");
+  return p.endsWith("/rpc/azal_admin_customer_directory_page")||p.endsWith("/rpc/azal_admin_customer_contact")||p.endsWith("/rpc/azal_admin_order_customer_emails");
  });
  if(financial||raw.length)console.log("MANAGER_DIAGNOSTIC",lang,width,JSON.stringify({text,raw:raw.map(x=>x.url)}));
  check(!financial,lang+" "+width+": Manager view omits payment and financial fields");
