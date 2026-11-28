@@ -29,7 +29,7 @@ async function run({ lang = "en", card, second }) {
   if (lang === "fr") { const fr = page.locator("[data-lang='fr'], #langToggle, .lang-toggle").first(); if (await page.evaluate(() => document.documentElement.lang) !== "fr" && await fr.count()) await fr.click(); }
   await page.evaluate(() => { document.getElementById("cartButton")?.click(); });
   await page.evaluate(() => document.getElementById("checkoutButton").click());
-  await page.waitForSelector("#placeOrder");
+  await page.waitForSelector("#placeOrder", { state: "attached" }); await page.waitForTimeout(300); if (typeof choose === "undefined" || choose) { if (await page.locator("#coWhoGuest").isVisible()) await page.click("#coWhoGuest"); } // F-OWN-20 chooser
   return { page, sent };
 }
 

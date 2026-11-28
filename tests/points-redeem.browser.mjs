@@ -25,7 +25,7 @@ async function open({ lang = "en", signedIn = true, balance = 12000, has0006 = t
   await p.addInitScript(([l, s, c]) => { localStorage.setItem("azal-language", l); localStorage.setItem("azal-demo-cart-v1", JSON.stringify(c)); if (s) localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T", refresh_token: "R", expires_at: 4e12, user: { id: "u1", email: "m@example.com" } })); }, [lang, signedIn, cart]);
   await p.goto(base + "/menu.html");
   await p.evaluate(() => document.getElementById("checkoutButton").click());
-  await p.waitForSelector("#placeOrder"); await p.waitForTimeout(250);
+  await p.waitForSelector("#placeOrder", { state: "attached" }); await p.waitForTimeout(300); if (typeof choose === "undefined" || choose) { if (await p.locator("#coWhoGuest").isVisible()) await p.click("#coWhoGuest"); } // F-OWN-20 chooser await p.waitForTimeout(250);
   return { p, sent };
 }
 const totals = (p) => p.evaluate(() => [...document.querySelectorAll("#checkoutTotals .total-line")].map((l) => l.textContent.replace(/\s+/g, " ").trim()));

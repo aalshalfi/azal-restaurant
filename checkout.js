@@ -163,7 +163,7 @@
 
   const S = {
     en: { kicker: "TEST MODE", title: "Your order", text: "Payment is in test mode: use a test card below. No real money moves.",
-      guestName: "Your name", guestEmail: "Email for your receipt and points", phone: "Mobile number (so the kitchen can call you)", phoneMember: "Mobile for this order (so the kitchen can call you)", joinBtn: "Join & collect these points", e_phone: "Please check your mobile number (10 digits, or + and country code).", e_phone_required: "Please add your mobile number.", e_invalid_phone: "Please check your mobile number (10 digits, or + and country code).", signedAs: "Ordering as {email}",
+      guestName: "Your name", guestEmail: "Email for your receipt and points", phone: "Mobile number (so the kitchen can call you)", phoneMember: "Mobile for this order (so the kitchen can call you)", whoTitle: "How would you like to order?", whoSignIn: "Sign in", whoJoin: "Create an account", whoGuest: "Continue as guest", whoBack: "Have an account? Sign in instead", whoGuestNote: "As a guest you pay the same and get the same pickup. Points are for members: to collect this order’s points later, join with the same email.", joinBtn: "Join & collect these points", e_phone: "Please check your mobile number (10 digits, or + and country code).", e_phone_required: "Please add your mobile number.", e_invalid_phone: "Please check your mobile number (10 digits, or + and country code).", signedAs: "Ordering as {email}",
       note: "Note for the kitchen (optional)", notePh: "Allergies, less spice, extra bread…",
       card: "Card number (test cards only)", cardHelp: "Test cards: 4242 4242 4242 4242 pays · 4000 0000 0000 0002 is declined · 4000 0000 0000 9995 has insufficient funds.",
       pay: "Pay {total}", payPlain: "Place order and pay", working: "One moment…",
@@ -179,7 +179,7 @@
       ptsNext: "Your first reward, {amount} off, comes at {points} points.", ptsNextMore: "Your next reward, {amount} off, comes at {points} points.", ptsMinOrder: "Your points can take {amount} off an order of {amount} or more.",
       e_points_insufficient: "Your points balance changed. Choose again.", e_invalid_redeem: "That reward is not available. Choose again.", e_redeem_exceeds_order: "That reward is larger than this order. Choose a smaller one.", e_redeem_members_only: "Sign in to use your points." },
     fr: { kicker: "MODE TEST", title: "Votre commande", text: "Le paiement est en mode test : utilisez une carte test ci-dessous. Aucun paiement réel n’est effectué.",
-      guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", phone: "Numéro de cellulaire (pour que la cuisine puisse vous appeler)", phoneMember: "Cellulaire pour cette commande (pour que la cuisine puisse vous appeler)", joinBtn: "S’inscrire et recevoir ces points", e_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", e_phone_required: "Veuillez indiquer votre numéro de cellulaire.", e_invalid_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", signedAs: "Commande au nom de {email}",
+      guestName: "Votre nom", guestEmail: "Courriel pour le reçu et les points", phone: "Numéro de cellulaire (pour que la cuisine puisse vous appeler)", phoneMember: "Cellulaire pour cette commande (pour que la cuisine puisse vous appeler)", whoTitle: "Comment souhaitez-vous commander\u00a0?", whoSignIn: "Se connecter", whoJoin: "Créer un compte", whoGuest: "Continuer en invité", whoBack: "Vous avez un compte\u00a0? Connectez-vous plutôt", whoGuestNote: "En invité, vous payez le même prix et le retrait est le même. Les points sont réservés aux membres\u00a0: pour récupérer ceux de cette commande plus tard, inscrivez-vous avec le même courriel.", joinBtn: "S’inscrire et recevoir ces points", e_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", e_phone_required: "Veuillez indiquer votre numéro de cellulaire.", e_invalid_phone: "Vérifiez votre numéro de cellulaire (10 chiffres, ou + et l’indicatif du pays).", signedAs: "Commande au nom de {email}",
       note: "Note pour la cuisine (facultatif)", notePh: "Allergies, moins épicé, plus de pain…",
       card: "Numéro de carte (cartes test seulement)", cardHelp: "Cartes test : 4242 4242 4242 4242 paie · 4000 0000 0000 0002 est refusée · 4000 0000 0000 9995 a des fonds insuffisants.",
       pay: "Payer {total}", payPlain: "Commander et payer", working: "Un instant…",
@@ -195,7 +195,7 @@
       ptsNext: "Votre première récompense, {amount} de rabais, arrive à {points} points.", ptsNextMore: "Votre prochaine récompense, {amount} de rabais, arrive à {points} points.", ptsMinOrder: "Vos points donnent {amount} de rabais sur une commande de {amount} ou plus.",
       e_points_insufficient: "Votre solde de points a changé. Choisissez de nouveau.", e_invalid_redeem: "Cette récompense n’est pas disponible. Choisissez de nouveau.", e_redeem_exceeds_order: "Cette récompense dépasse le montant de la commande. Choisissez-en une plus petite.", e_redeem_members_only: "Connectez-vous pour utiliser vos points." },
     ar: { kicker: "وضع التجربة", title: "طلبك", text: "الدفع هنا تجريبي: استخدم إحدى البطاقات التجريبية أدناه، ولن تُنقل أي أموال حقيقية.",
-      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", phone: "رقم الجوال (ليتصل بك المطبخ عند الحاجة)", phoneMember: "رقم الجوال لهذا الطلب (ليتصل بك المطبخ عند الحاجة)", joinBtn: "انضم واجمع نقاط هذا الطلب", e_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", e_phone_required: "اكتب رقم جوالك.", e_invalid_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", signedAs: "تطلب بحسابك {email}",
+      guestName: "اسمك", guestEmail: "البريد لإيصالك ونقاطك", phone: "رقم الجوال (ليتصل بك المطبخ عند الحاجة)", phoneMember: "رقم الجوال لهذا الطلب (ليتصل بك المطبخ عند الحاجة)", whoTitle: "كيف تحب أن تطلب؟", whoSignIn: "تسجيل الدخول", whoJoin: "إنشاء حساب", whoGuest: "المتابعة كضيف", whoBack: "لديك حساب؟ سجّل الدخول بدلاً من ذلك", whoGuestNote: "كضيف تدفع السعر نفسه ويصلك الطلب بالطريقة نفسها. النقاط للأعضاء فقط، ولتحصل على نقاط هذا الطلب لاحقاً سجّل عضويتك بالبريد الإلكتروني نفسه.", joinBtn: "انضم واجمع نقاط هذا الطلب", e_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", e_phone_required: "اكتب رقم جوالك.", e_invalid_phone: "تحقّق من رقم جوالك (10 أرقام، أو + ورمز الدولة).", signedAs: "تطلب بحسابك {email}",
       note: "ملاحظة للمطبخ (اختياري)", notePh: "حساسية، حار أقل، خبز إضافي…",
       card: "رقم البطاقة (بطاقات تجريبية فقط)", cardHelp: "بطاقات تجريبية: 4242 4242 4242 4242 تدفع · 4000 0000 0000 0002 تُرفض · 4000 0000 0000 9995 رصيدها غير كافٍ.",
       pay: "ادفع {total}", payPlain: "اطلب وادفع", working: "لحظة…",
@@ -233,17 +233,32 @@
 
   const box = document.createElement("div");
   box.className = "checkout-live";
-  box.innerHTML = '<div class="co-guest" id="coGuest" hidden><label for="coName"></label><input id="coName" autocomplete="name" maxlength="80"><label for="coEmail"></label><input id="coEmail" type="email" autocomplete="email" maxlength="254"></div>' +
+  // F-OWN-20 (owner 18:58): a signed-out customer is first TOLD the options: sign in, create an account, or continue
+  // as a guest (with the guest's points consequence stated before the fields). Signed-in customers never see it.
+  box.innerHTML = '<div class="co-who" id="coWho" hidden><p class="co-who-title" id="coWhoTitle"></p><div class="co-who-actions">' +
+    '<a class="button button-gold" id="coWhoSignIn" href="member.html#return=checkout&mode=signin"></a>' +
+    '<a class="button co-who-join" id="coWhoJoin" href="member.html#return=checkout&mode=join"></a>' +
+    '<button type="button" class="button co-who-guest" id="coWhoGuest"></button></div>' +
+    '<p class="co-help" id="coWhoGuestNote"></p></div>' +
+    '<div id="coFields"><div class="co-guest" id="coGuest" hidden><a class="co-who-back" id="coWhoBack" href="member.html#return=checkout&mode=signin"></a><label for="coName"></label><input id="coName" autocomplete="name" maxlength="80"><label for="coEmail"></label><input id="coEmail" type="email" autocomplete="email" maxlength="254"></div>' +
     '<label for="coPhone"></label><input id="coPhone" type="tel" dir="ltr" autocomplete="tel" maxlength="24">' +
     '<p class="co-signed" id="coSigned" hidden></p>' +
     '<fieldset class="co-points" id="coPoints" hidden><legend id="coPtsTitle"></legend><p class="co-help" id="coPtsBalance"></p><div id="coPtsChoices"></div><p class="co-help" id="coPtsNext" hidden></p></fieldset>' +
     '<label for="coNote"></label><textarea id="coNote" maxlength="500" rows="2"></textarea>' +
-    '<label for="coCard"></label><input id="coCard" inputmode="numeric" autocomplete="off" maxlength="23" spellcheck="false"><p class="co-help" id="coCardHelp"></p>' +
+    '<label for="coCard"></label><input id="coCard" inputmode="numeric" autocomplete="off" maxlength="23" spellcheck="false"><p class="co-help" id="coCardHelp"></p></div>' +
     '<p class="co-error" id="coError" role="alert"></p>';
   btn.before(box);
+  // F-OWN-20: the choice sits at the top of the sheet, above the pickup time, so it is the first thing read.
+  { const pk = document.getElementById("pickup"); if (pk) pk.before(document.getElementById("coWho")); }
   const $ = (id) => document.getElementById(id);
   const msg = $("checkoutMessage");
-  let guestMode = true, busy = false, ptsOpts = null, redeem = 0;
+  let guestMode = true, busy = false, ptsOpts = null, redeem = 0, guestChosen = false;
+  // Leaving to sign in / join keeps the order: the cart is already saved; the note and the pickup choice ride along in
+  // this tab's sessionStorage for 30 minutes and are restored when the customer comes back (#checkout).
+  const STASH = "azal-checkout-return";
+  function stash() {
+    try { sessionStorage.setItem(STASH, JSON.stringify({ from: root.location.pathname.split("/").pop() || "menu.html", note: $("coNote").value, choice: (typeof pickupState !== "undefined" && pickupState.choice) || null, at: Date.now() })); } catch {}
+  }
   const nf = () => new Intl.NumberFormat(locOf());
   const subtotalNow = () => { try { return cartTotals([...cart.entries()]).sub; } catch { return 0; } };
   const setRedeem = (pts, cents) => { redeem = pts; root.AZAL_REDEEM_CENTS = cents; try { if (typeof renderCart === "function") renderCart(); } catch {} };
@@ -285,6 +300,13 @@
   const kicker = panel.querySelector("[data-i18n='demoOnly']"), title = $("checkoutTitle");
   const intro = panel.querySelector("[data-i18n='checkoutText']"), demoNote = panel.querySelector("[data-i18n='demoPickupOnly']");
 
+  function paintWho() {
+    if (box.hidden) { $("coWho").hidden = true; return; } // the success state owns the sheet until it is reopened
+    const ask = guestMode && !guestChosen;
+    $("coWho").hidden = !ask; $("coFields").hidden = ask; btn.hidden = ask;
+    $("coWhoTitle").textContent = L("whoTitle"); $("coWhoSignIn").textContent = L("whoSignIn"); $("coWhoJoin").textContent = L("whoJoin");
+    $("coWhoGuest").textContent = L("whoGuest"); $("coWhoGuestNote").textContent = L("whoGuestNote"); $("coWhoBack").textContent = L("whoBack");
+  }
   function paint() {
     if (kicker) kicker.textContent = L("kicker");
     if (title) title.textContent = L("title");
@@ -300,6 +322,7 @@
     $("coCardHelp").textContent = L("cardHelp");
     btn.textContent = busy ? L("working") : co.order ? L("pay", { total: money(co.order.total_cents) }) : L("payPlain");
     paintPoints();
+    paintWho();
   }
   async function prepare() {
     let s = null; try { s = auth && (await auth.session()); } catch {}
@@ -366,6 +389,19 @@
       showError(code);
     } finally { busy = false; paint(); }
   });
+  $("coWhoGuest").addEventListener("click", () => { guestChosen = true; paint(); $("coName").focus(); });
+  for (const id of ["coWhoSignIn", "coWhoJoin", "coWhoBack"]) $(id).addEventListener("click", stash);
+  // Back from sign-in/join (#checkout): reopen the sheet with the cart, the pickup choice and the note as they were.
+  try {
+    const back = root.location.hash === "#checkout" && JSON.parse(sessionStorage.getItem(STASH) || "null");
+    if (root.location.hash === "#checkout") { try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch {} }
+    if (back && Date.now() - back.at < 30 * 60e3) {
+      sessionStorage.removeItem(STASH);
+      // The checkout button copies the CURRENT choice into `keep`, so the carried choice must be the current one.
+      if (back.choice && typeof pickupState !== "undefined") pickupState.choice = back.choice;
+      setTimeout(() => { document.getElementById("checkoutButton")?.click(); setTimeout(() => { if (back.note) $("coNote").value = back.note; }, 0); }, 0);
+    }
+  } catch {}
   // Reopening after success shows the form again.
   document.getElementById("checkoutButton")?.addEventListener("click", () => { box.hidden = false; btn.hidden = false; const pk = $("pickup"); if (pk) pk.hidden = false; });
   prepare();
