@@ -2711,3 +2711,25 @@ The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=
 - **Lead review still required:** verify Manager-shaped report output and the role/destination UX matrix on staging; no Manager staging account was available to verify the live Manager view.
 - No PR merge, SQL application, deployment, production/staging data mutation, or live feature activation was performed.
 - This handoff entry is a documentation-only commit written after the tested code head above; CI run #46176155585 validates the stated code head, not this subsequent memo-only commit.
+
+
+## 2026-11-28 13:42 EST — independent release-queue and T-28 checkpoint
+
+**Repository main:** `91b4e465aa432d3c94f1ba2d9ffa661267564fc8`.
+
+### Requested queue #27 → #32 → #33 → #31 → #30 → #29
+
+- **#27:** closed unmerged as superseded by **#42**, which merged as `2b14529b76c317ccf1e3b5dcbe3a0f5b19353dce`. #42 exact head `dd07cbb0dc1bb86e3c7fe69ae19bedf25904ad84`; Site checks run **45920912279 SUCCESS**. The 0001/0002 source blobs on main are `5e1cf4371b57ed1b9e32f8bd7e2a1eabbbfcd148` and `f4e9c68a084b771aadbe088eb5610a50ea709e4f`. The runbook is explicitly HISTORICAL / DO NOT RE-EXECUTE. Claude's PG16 0001→0002 harness and 120/120 Node evidence are reported in #42, but remain builder-reported rather than independently rerun by ChatGPT in this pass.
+- **#32:** merged source at `cfe39415f8b964f0f207a13ce76e31b7c25053a1`, merge commit `344a7c698e15c3abdce5460e1a68fe4f330189b2`; exact-head Site checks **45945148747 SUCCESS**. Current main still has server `booking_enabled NOT NULL DEFAULT false` and direct `reserve_table` refusal while closed; `reservation-config.js` has `bookingEnabled:false` and `goLiveAuthorized:false`; `reserve.js` requires both strict booleans. Tests pin both gates, the closed-by-default RPC, and IP parsing. Code-level IP review PASS. Muse's live Cloudflare spoofing / direct-origin probe is recorded as lead-reported PASS, not independently repeated by ChatGPT. Last explicit #32 record says 0005 was not applied, no outbox sender exists, and booking/email activation remains off; no newer apply evidence was found in this pass.
+- **#33:** merged as `23490141978451717cca5a578cd43faa5ec6b42d`; exact head `f8511e5ad57dd1d3f50e7400bdc92675218a8fbc`; Site checks **45852008344 SUCCESS**. Current browser test covers all six public pages at 320/390 px and checks the 1280px desktop layout. No real-phone/live QA evidence.
+- **#31:** merged as `a2158d75504a66ed4189edae18133c703e913258`; exact head `be6c59d4032b67c95238aacd96ff73cb8c043619`; Site checks **45952177739 SUCCESS**. Phone links and Orléans visit copy are present; no street address was invented.
+- **#30:** merged as `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b`; exact head `7afdad1e40af5085e1f60fd523d81572517053e1`; Site checks **45935703028 SUCCESS**. Link adoption / fragment clearing are in source and tests. Real email delivery and custom SMTP remain unverified.
+- **#29:** merged as `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483`; current branch head `af53f179b52244af88ccda27df0b63f825061c88`; Site checks **45977845768 SUCCESS**. 0004 defaults `payments_mode='off'` and `pay_order_test` refuses unless mode is explicitly `test`; no real payment provider or activation is evidenced.
+
+### T-27 / T-28 current stack
+
+- **T-27 / PR #93:** merged to main at `91b4e465aa432d3c94f1ba2d9ffa661267564fc8`. Tested code head `5617d769ecd5f9c27caf02d21a4692afbe4e1bfc`; exact-head run **46176159302 SUCCESS, 5/5** (edge, static, reporting, browser, SQL). Live Manager-shaped Reports output remains unverified because the staging environment has no Manager account.
+- **T-28 / PR #94:** remains OPEN / Draft / HOLD. At the pre-fix head `a8c2b6240fc7e6cc80eb1b84e68c86265efb25c8`, run **46175346221** failed only browser-checks: a malformed escaped template literal in `tests/sign-out.browser.mjs:46`. I corrected that single assertion on the T-28 branch; new head is `30f18fd2e87e23d82afd1cae7a44144cd25d37ba`. Exact-head workflow **46177578964** started with all five jobs in progress; no success is claimed yet. Compare against main `91b4e465`: **26 ahead / 5 behind, diverged**.
+- T-24 remains the blocker: the current kitchen source still renders the sigil icon/words as well as the code, contrary to the shell's code-only ticket identity. Claude's latest `CLAUDE-REPLY.md` entry remains the 12:20 design proposal; no T-24 implementation SHA / test evidence / acknowledgement is present in the current reply. I asked Claude in PR #94 comment **7244026769** to resume T-24, post RECEIVED / IN PROGRESS / EVIDENCE, and follow the owner's explicitly reinstated 30-minute checkpoints. No acknowledgement is verified yet.
+
+**Actions in this pass:** read-only source/PR/CI review; one-line syntax fix on the ChatGPT-owned T-28 branch; comments on PR #94 requesting Claude's T-24 handoff and recording the CI failure/fix. No merge, SQL apply, staging/production mutation, deployment, booking/payment/email activation, or spending.
