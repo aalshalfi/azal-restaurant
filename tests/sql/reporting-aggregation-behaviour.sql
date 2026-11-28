@@ -29,9 +29,10 @@ select zz_eq('Admin can filter to one branch',
 reset role;
 
 \echo ===== Manager receives only assigned-branch operational aggregates
+reset role;
+update auth.users set email_confirmed_at=pg_catalog.now() where id='00000000-0000-0000-0000-0000000000c1';
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
 set role authenticated;
-update auth.users set email_confirmed_at=pg_catalog.now() where id='00000000-0000-0000-0000-0000000000c1';
 select public.azal_admin_team_assign('c1@example.invalid','Manager C1','manager',array['ottawa'],'T-25 test assignment');
 reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
