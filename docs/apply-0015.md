@@ -35,9 +35,9 @@ Confirm this is the intended staging project and the following are present:
            to_regclass('public.order_items') as order_items,
            to_regclass('public.branches') as branches,
            to_regclass('auth.users') as auth_users,
-       to_regclass('auth.identities') as auth_identities;
+           to_regclass('auth.identities') as auth_identities;
 
-Expected: every object exists. Confirm profiles.display_name, phone, member_number, anonymized_at; orders.contact_phone, guest_name, guest_email, guest_identity_scrubbed, placed_at, fulfilment_status; and order_items.item_name_en_snapshot / item_name_fr_snapshot exist. Stop if the schema differs.
+Expected before apply: every object exists. Confirm profiles.display_name, phone, member_number, anonymized_at; orders.contact_phone, guest_name, guest_email, placed_at, fulfilment_status; and order_items.item_name_en_snapshot / item_name_fr_snapshot exist. Stop if the schema differs. After apply, verify orders.guest_identity_scrubbed exists and order_owner_present permits only member, active-guest, or explicitly scrubbed-guest rows.
 
 The migration itself preflights T-08's directory RPC and the required tables. It is transaction-wrapped. Do not infer that a successful local PG16 test means staging is ready.
 
