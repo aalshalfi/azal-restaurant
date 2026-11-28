@@ -20,7 +20,7 @@
 
 ## 2. Portal map and navigation
 
-The manager portal keeps one persistent shell: AZAL mark, current branch selector (Admin only may switch across branches; Manager sees only assigned branch), page title, signed-in identity/role, notification/error region, and sign-out. Navigation is role-derived and never grants access by itself.
+The manager portal keeps one persistent shell: AZAL mark, current branch selector (Admin only may switch across branches; Manager sees only assigned branch), page title, signed-in identity/role, in-portal status/error region, and sign-out. A6: this region is in-portal only; this design authorizes no email notifications or new email-sending path. Navigation is role-derived and never grants access by itself.
 
 | Navigation area | Admin | Manager | Staff / Orders |
 |---|---:|---:|---:|
@@ -48,15 +48,21 @@ The manager portal keeps one persistent shell: AZAL mark, current branch selecto
 ### 3.2 T-14 — Team & Access (Admin only)
 **Team list:** name, email, role, assigned branch(es), invitation/account state, last known access state, row actions. Search and filter by role/branch/status. No password is ever displayed.
 
-**Add user flow:** Add person → enter name + email → choose Admin/Manager/Staff → choose branch scope (Admin may grant cross-branch Admin; Manager cannot access this screen) → review exact grant → send verified invitation → pending state. The invitee sets their own password through the verified auth flow. If the email already has an account, attach the role to that same identity; never create a duplicate identity.
+**Add user flow:** Add person → enter name + email → choose Manager/Staff → choose branch scope → review exact grant → record an in-portal pending invite (no email is sent). The sole Admin identity is info@azalrestaurant.com and cannot be granted through this form. The invitee sets their own password through the verified auth flow. If the email already has an account, attach the role to that same identity; never create a duplicate identity.
 
 **Edit flow:** Admin opens user → change role/branch scope or resend invite → show before/after → confirm → server rechecks caller authority → audit event. A caller cannot grant a role at or above their own authority; Manager cannot grant any role because Team is Admin-only.
 
-**Remove flow:** Admin selects Remove → impact summary → confirm → revoke access on the next server request/session validation → record actor, target, branch, timestamp and reason. Protect the owner/Admin root account from self-removal/demotion. Do not silently delete the auth identity or historical audit trail.
+**Remove flow:** Admin selects Remove → impact summary → confirm → revoke access on the next server request/session validation → record actor, target, branch, timestamp and reason. Protect the owner/Admin root account (info@azalrestaurant.com) from self-removal/demotion. If the owner loses access, owner + lead recover through the Supabase dashboard; no second login path. Do not silently delete the auth identity or historical audit trail.
 
 **Branch Orders credential panel:** one identity per branch, provisioned with the branch and retained through staff turnover. Admin sees the branch Orders username and can set/reset its password. Reset flow: choose branch → reset password → server-side Edge Function verifies current Admin → set new secret → return one-time success only (never read back current password) → audit actor/branch/time. Keep Manager and Orders usernames distinct. Staff actions through this credential are stamped as the branch Orders account.
 
 **Critical states:** no team members; pending invite; invite expired/resend; email already registered; removed/revoked; branch unavailable; Edge Function failure; signed-out; unauthorized deep link. Never imply an invite or reset succeeded until server confirmation.
+
+### 3.2.1 A1/A2 — T-08 customer directory and lifecycle (delivered inside T-14)
+
+**A1 — directory interaction:** the existing T-08 directory remains in place, with a 50-row server-paged result, server-side search over name/email/phone/member number, total count, and Previous/Next controls. The database computes balances only for the returned page. The order-history list must not bulk-fetch the entire customer directory to enrich orders; customer email/contact is fetched only when Admin opens one order detail. Acceptance includes 1,000 synthetic customers, deep-page navigation, and each search field.
+
+**A2 — remove customer:** each Admin customer record has an “Anonymize & deactivate” action. The Admin must enter a reason and review the impact before confirming. A server-only Edge Function verifies the Admin, replaces the Auth email with a reserved example.invalid address, clears Auth user metadata, and bans sign-in; a service-role-only database function then scrubs Auth identity metadata, profile name/phone, and order contact fields, suspends membership, retires the member number, excludes the profile from the directory, and writes an immutable audit event. The member-number value remains reserved and is never reused. No hard delete is permitted. Keep order IDs, item/option snapshots, tax and financial columns, and append-only points-ledger rows unchanged; the remaining profile UUID is a non-identifying reconciliation key, not a customer-facing identity. No customer email is sent.
 
 ### 3.3 T-21 — Menu Manager (Admin + assigned-branch Manager)
 **Menu list:** categories and products with photo, localized names, category, base price, availability, and status. Manager sees only assigned branch. Admin can select any branch.
@@ -99,19 +105,27 @@ Entry point: T-08 all-status order history → order detail. Display public six-
 
 Reports are secondary navigation cards, initially collapsed under “Reports”. They do not create a separate application or change the primary workflow.
 
-### T-25 — Sales & HST reports (Admin; F-OWN-29)
-**Known scope from the lead's recorded card:** website-only daily / monthly / yearly sales and HST reports. Keep this task closed until T-08 is accepted.
+### T-25 — Sales & HST reports (Admin + assigned-branch Manager)
 
-Proposed screen when opened:
-- Period selector: Today / date range / month / year; branch selector for Admin; Manager only sees assigned branch.
-- Summary: order count, gross sales, subtotal, HST collected, total, refunds and net sales, with clear labels distinguishing paid/test/refunded records.
-- Daily table and monthly/yearly roll-ups; drill down to the underlying orders using T-08's order detail.
-- HST values are read from authoritative stored order tax amounts/snapshots; do not recompute using a new rate or expose tax detail to Managers. Admin-only financial/tax columns; Manager receives operational sales totals only if the lead confirms that scope.
-- Exclude unpaid/failed orders from collected sales; show refunds separately and avoid double counting. Define date boundary using the branch timezone (Toronto for current branch) and document whether report dates use paid_at or created_at before implementation.
-- Export is not included in this design; no CSV/PDF download until explicitly carded.
+**Period basis:** use order paid_at and Toronto calendar boundaries. Daily, monthly and yearly periods are derived from paid transactions, not order-created timestamps. Admin can select all branches or one branch; Manager is fixed to assigned branch(es).
 
-### T-26 — Report card intentionally reserved; source scope not present
-The current authoritative `WORKPLAN.md` and `BOARD.md` identify T-25 as daily/monthly/yearly sales + HST, but do not contain a substantive T-26 definition. Therefore this design includes a collapsed T-26 placeholder only; it does **not** invent report metrics, audience, calculations or export behavior. The lead must attach the authoritative T-26 task card/scope before it can be designed or built. Until then: hidden from navigation or shown as “Planned” without data, never a fake/empty live report.
+**Admin view:**
+- Paid order count, subtotal, discount, HST collected and collected total; refunds are shown separately and deducted only in the clearly labelled net figure.
+- Daily/monthly/yearly roll-ups and drill-through to T-08 order detail.
+- HST and discount breakdowns are Admin-only. Use stored authoritative order tax/discount values; do not recalculate historical tax or introduce new rates.
+- Unpaid/failed orders are excluded from collected sales; test-mode and refunded records are labelled and not counted as new collected revenue.
+
+**Manager view:**
+- Assigned-branch order count, status counts and collected total only.
+- No subtotal, discount, HST, payment details, customer directory, or cross-branch totals.
+- Every value is computed server-side from paid_at and the assigned branch; no raw financial table access.
+
+### T-26 — Today's staff summary (collapsed report section; A3)
+
+- A compact “Today” summary on staff.html: collected-sales total and order counts by fulfilment status for the signed-in branch.
+- Employees may manually share/read the summary; no email, push, outbox, SMTP, scheduled notification or automatic sending.
+- No HST/tax line and no payment credentials. The endpoint returns only the branch's operational summary and collected-sales total.
+- Server derives the branch from the authenticated Staff/Orders identity; callers cannot supply another branch. Manager/Admin access does not expand the Staff endpoint.
 
 ## 5. Permission matrix — decisive summary
 
@@ -152,19 +166,20 @@ The current authoritative `WORKPLAN.md` and `BOARD.md` identify T-25 as daily/mo
 - Every screen defines loading, empty, error, forbidden, signed-out, success and stale/conflict states.
 - No report exports, bulk user import, menu scheduling, item-level hours, per-item tax, photo approval workflow, partial refunds, or customer-initiated administrative actions are included.
 
-## 8. Dependencies and build gates (not an execution order override)
+## 8. Dependencies and build gates — lead ruling A5 (binding)
 
-The already-fixed build order remains: **T-08 accepted → T-14 → T-21 → T-13 → T-20**. T-25 and T-26 remain closed until T-08 is accepted and their task cards are approved. T-21 depends on T-14 role scope; T-13 reuses the T-08 directory and established audit pattern; T-20 reuses T-13 idempotency/audit conventions.
+T-08 is accepted by Muse's 2026-11-27 23:52 gate. The approved sequence is: **T-14 (including A1 + A2) → T-25 + T-26 → T-21 → T-13 → T-20.** T-14 owns migration **0015**; later migrations must be numbered monotonically in this same task order when their schema needs are finalized. Reports wait for T-14 so role scoping is enforced server-side. T-21 depends on the T-14 role scope; T-13 reuses the T-08 directory and established audit pattern; T-20 reuses T-13 idempotency/audit conventions. A6: T-20 must not rebuild or alter Copilot's T-06 staff Reject flow; that card retains its own gate.
 
-Before any implementation starts, the lead must:
-- review this document and issue an explicit **APPROVE / APPROVE WITH CHANGES / RETURN** verdict;
-- resolve or explicitly preserve the T-26 scope gap;
-- confirm the document does not conflict with the fixed permission model, points ledger/redemption/tax rules, or T-08 shipped behavior;
-- open only the next task in the established sequence (T-14), not parallelize later cards.
+Before each subsequent card starts, the lead confirms its task-specific scope and migration number, then opens only the next task in the established sequence. This approval does not authorize parallel implementation of later cards.
 
 After approval, each task still requires its own BOARD claim, branch/PR, exact-head tests and role × forbidden-action matrix, EN/FR/AR and responsive checks, then lead review/live acceptance. Approval of this design is not approval to apply SQL, invite users, reset credentials, issue points, refund real money, activate payments, or deploy.
 
-## 9. Lead decision log
-- **Pending:** Muse's review of this complete design.
-- **Explicit gap:** authoritative T-26 scope not found in current `WORKPLAN.md` / `BOARD.md`; no assumptions have been promoted to requirements.
-- **Current state:** design artifact only; no T-14/T-21/T-13/T-20/T-25/T-26 implementation started.
+## 9. Lead decision log — adjudicated
+- **2026-11-28 00:10 EST — Muse: APPROVE WITH CHANGES (A1–A6)**, source commit `f79e04cc8b0f9249af1657e751b212dc652650df`.
+- **A1:** T-08 directory receives server-side search by name/email/phone/member number and server-side pagination; the 1,000-customer usability test is binding; delivered inside T-14.
+- **A2:** Admin-only customer removal means anonymize + deactivate; scrub Auth email/metadata/identities, profile name/phone and order contact fields; disable sign-in, retire member number, exclude from directory, require reason and write immutable audit; preserve order IDs, tax/financial snapshots and append-only points ledger without customer-facing identity.
+- **A3:** T-26 is Today's summary on staff.html, total collected sales + status counts, manually shared by employee; no email/send/outbox and no tax line; not in Manager Reports accordion.
+- **A4:** T-25 uses paid_at and Toronto dates; Manager sees assigned-branch counts + collected total only; Admin alone sees subtotal/HST/discount.
+- **A5:** order is T-14 (A1/A2) → T-25 + T-26 → T-21 → T-13 → T-20; T-08 accepted.
+- **A6:** in-portal status only, no new email sending; Copilot T-06 staff Reject remains separate and is not rebuilt by T-20.
+- **Current state:** approved design being implemented on the single T-14 delivery branch. No staging/production SQL, invites, password reset, customer anonymization, or deployment is authorized in this build.

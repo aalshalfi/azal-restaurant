@@ -25,6 +25,7 @@ test("role comes from the server: azal_is_admin() first, then the caller's own u
   const base = { config: { url: "https://x.supabase.co", anonKey: "a" }, session: { access_token: "T", user: { id: "u1" } } };
   assert.equal(await R.roleOf({ ...base, fetch: fake(true, []) }), "admin");
   assert.equal(await R.roleOf({ ...base, fetch: fake(false, [{ role: "staff" }]) }), "staff");
+  assert.equal(await R.roleOf({ ...base, fetch: fake(false, [{ role: "manager" }]) }), "manager");
   assert.equal(await R.roleOf({ ...base, fetch: fake(false, [{ role: "customer" }]) }), "customer");
   assert.equal(await R.roleOf({ ...base, fetch: async () => ({ ok: false, json: async () => null }) }), "customer", "a failed check never grants anything");
   assert.equal(await R.roleOf({ ...base, session: null, fetch: fake(true, []) }), "none");
@@ -43,7 +44,7 @@ test("admin page: noindex, not linked from the public nav, renders with textCont
 
 test("#62 review: staff/admin are sent to their own area; the customer view is hidden first; no way back to it", () => {
   const rd = read("role-door.js");
-  assert.match(rd, /classList\.add\("role-leaving"\);\s*try \{ root\.location\.replace\(r === "admin" \? "admin\.html" : "staff\.html"\)/);
+  assert.match(rd, /classList\.add\("role-leaving"\);\s*try \{ root\.location\.replace\(r === "admin" \|\| r === "manager" \? "admin\.html" : "staff\.html"\)/);
   // The only way back to member.html is the user's own Sign out (T-01): never an automatic redirect (no loop).
   for (const f of ["admin.js", "staff.js"]) { const src = read(f); for (const m of src.matchAll(/location\.(replace|assign|href\s*=)[^;]*member\.html/g)) assert.match(src.slice(Math.max(0, m.index - 400), m.index), /auth\.signOut\(\)/, f + ": a redirect to member.html outside sign-out"); }
 });

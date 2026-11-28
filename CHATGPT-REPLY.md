@@ -2397,3 +2397,114 @@ Created `ADMIN-DESIGN.md` on main at commit `6516175d31b15a0d299f3bc1d97919d410f
 **Lead decision requested:** review `ADMIN-DESIGN.md` and record APPROVE / APPROVE WITH CHANGES / RETURN in the lead channel. T-26 is explicitly marked as an unresolved scope gap because the current authoritative WORKPLAN.md and BOARD.md contain no substantive T-26 card; no report metrics or behaviors were invented. The fixed sequence remains T-08 acceptance → T-14 → T-21 → T-13 → T-20; T-25/T-26 stay closed until their gates.
 
 **STOP:** no T-14 or later implementation has started. This commit changes documentation only. No application source, migrations, SQL execution, Supabase settings/data, users/invites, Orders credentials, points, refunds, payments, email or deployment were touched. Do not begin T-14 until the lead has adjudicated this document and records the next-task authorization.
+
+
+## 2026-11-28 00:16 EST — T-08 three-line retrospective + T-14 opening
+
+**T-08 retrospective (three lines, per CHATGPT-WORK-RULES §13):**
+1. **What the gate caught that I missed:** the shipped directory's client-side search/paging was not a true 1,000-customer design, and the customer-removal/anonymization lifecycle was absent; the owner found both in the whole-surface review (F-OWN-31).
+2. **What I will check first next time:** walk the complete admin lifecycle before declaring a gate — server-side query plan and 1,000-row usability, role × forbidden-action boundaries, and customer removal with preserved detached financial records.
+3. **One rule I would amend and why:** require every admin-directory acceptance checklist to include a 1,000-record server-side search/page test plus an anonymize/deactivate retention test; scale and privacy lifecycle are correctness/security, not post-launch polish.
+
+**T-08 evidence basis:** Muse's 2026-11-28 00:10 adjudication says the T-08 gate was accepted at 2026-11-27 23:52. The merged main line includes the T-08 code candidate; verified code head `68045fd2a576c74cfe79fde814047afe37855bdd`, exact-head CI `46107953208`: 213/213 Node, 30 browser suites, PostgreSQL 16.16 points 45 + admin 40 assertions, zero SQL FAIL/ERROR. Live staging admin walk and 0014 apply remain lead-operated, not claimed by this review.
+
+**T-14 opened:** single branch `chatgpt/t14-team-access`, based on main `f79e04cc8b0f9249af1657e751b212dc652650df`; BOARD claim committed at `b86eea9c712c95cd26cbc5b1bf511a854a93d344`. Muse's A1–A6 ruling is recorded in `ADMIN-DESIGN.md` on this branch (commit `5e67347a22aad4aff505ab7a9b3d6b88f16178cd`). T-14 includes A1 server-side directory search/pagination and A2 Admin-only customer anonymize/deactivate; later sequence follows A5.
+
+**Current work state:** claim + amended design recorded; implementation has not yet been committed. No SQL apply, invites, account creation, password reset, anonymization, email, or deployment. **NOT verified:** the exact staging member-number state is outside this T-14 build; no live Supabase/Edge Function deployment or 1,000-row staging load test has been run.
+
+
+## 2026-11-28 — T-08 merge-label correction + T-14 implementation handoff
+
+**T-08 evidence wording correction (Muse 00:14, accepted):** main was fast-forwarded to delivery head `809d8c1`; the T-08 code is on main and was live-walked 23:46–23:50. PR #77 itself remains Draft/open in GitHub and was **not** merged through the PR endpoint. Any earlier phrase saying “PR #77 merged” is inaccurate; the correct statement is “delivery head fast-forwarded into main; PR #77 remains Draft/open and may be closed as superseded-by-main.” The T-08 code-head CI evidence and live-walk report remain as stated above.
+
+**T-14 implementation is now in progress** on `chatgpt/t14-team-access`. A1/A2 backend, UI, branch routing, Edge Function, runbook and behavior tests are committed to this branch. Exact changed-file list is in BOARD.md. The current main tip advanced from the branch base only by Muse's documentation-only correction commit `94ae345ef16107ff22c766708393b4a6816b474c`; branch compare is 74 ahead / 1 behind. No source conflict is identified, but exact sync and PR CI remain pending.
+
+**A6 boundary:** no outbound email is sent. Named team invites are stored in-portal and attach after the matching Auth account is created and email verified through the existing flow. Branch Orders credentials are set/reset server-side; passwords are not returned or logged.
+
+**Verification status:** implementation is not ready for lead gate yet. Node, browser and PG16 behavior suites have not been run in this environment; CI and staging acceptance are pending. No migration applied, Edge Function deployed, customer anonymized, user/invite created, Orders password changed, email sent, or production action performed. T-25/T-26, T-21, T-13 and T-20 remain unimplemented per A5.
+
+
+## 2026-11-28 04:12 EST — Muse sole-Admin ruling adopted in-round
+
+Muse's 04:12 lead note on main adopts the owner-only Admin identity in principle, consistent with F-OWN-6. I am implementing the constraint in migration 0015 now: `azal_is_admin()` requires the `admin` role **and** Auth email `info@azalrestaurant.com`; Team assignment cannot grant Admin; root Admin cannot be demoted or removed. The runbook now records recovery by the owner + lead through the Supabase dashboard if that identity is lost. No second Admin door is being built. This design deviation is being flagged in the round, not deferred to the gate.
+
+
+## 2026-11-28 — T-08 three-lens retrospective (recorded in the same T-14 round)
+
+1. **Security / authorization — PASS at source-review level.** The customer directory email path is an Admin-only SECURITY DEFINER RPC with a fixed empty search_path, an internal authenticated-identity + azal_is_admin() check, explicit six-field output, and exclusion of anonymized customers and staff/admin identities. Auth metadata/secrets are not returned. Staff authorization remains branch-scoped and does not receive customer-directory or points-ledger access. This is the correct boundary: UI hiding is not the security control.
+2. **Product / data correctness — PASS with a scale improvement required and now delivered under A1.** T-08 provides the management workspace, customer directory, all-status order history and order detail without changing the member's append-only points ledger or historical order/tax snapshots. The initial full-directory client load was the known 1,000-customer usability weakness; T-14 A1 replaces it with server-side name/email/phone/member-number search, bounded 50-row pages, total count and page-only ledger aggregation. Order history no longer bulk-loads the entire customer directory for email enrichment.
+3. **Verification / release — CONDITIONAL, not a live-production sign-off.** The source review and automated checks are useful evidence; the current T-14 CI replays the 0014 + 0015 chain on disposable PostgreSQL 16. The 0014 staging apply and live admin acceptance remain Muse/lead-controlled gates. PR #77 is still Draft/open; the accurate release history is that its delivery head was fast-forwarded into main, not merged through the PR endpoint. No claim is made that ChatGPT applied 0014 or changed live Supabase state.
+
+**T-08 verdict:** accepted as the foundation for T-14, with A1's server-side pagination/search closing the scale gap and A2 adding the customer privacy lifecycle. No redesign of T-08's security boundary or points/order history invariants.
+
+
+---
+
+## 2026-11-28 — T-14 READY FOR LEAD GATE (exact-head evidence)
+
+**Lead instructions re-read:** `MUSE-REPLY.md` at current `main` head `d3b677d7013778fd8b291a5e11a9bf3793f63e85`. Confirmed the 05:34 ruling: PR #80 remains HOLD; the three binding gate conditions are (1) customer privacy, (2) anonymization integrity, and (3) a recovery plan. The 05:52 rotation note and Node verification were also read. The archived 2026-11-25→27 material is not being treated as a substitute for the current lead channel.
+
+**Delivery head:** `b29e176aad825bcc2a7b59ea8e3f7b30e31f38ae`  
+**Branch:** `chatgpt/t14-team-access`  
+**PR:** #80 — Draft / Open / Not merged  
+**CI run:** [46136780016](https://github.com/aalshalfi/azal-restaurant/actions/runs/46136780016) — completed SUCCESS on this exact SHA.
+
+### Exact-head verification
+
+- Node: **229/229 PASS** (lead independently verified; CI static/runtime checks also SUCCESS).
+- PostgreSQL 16: **SUCCESS** — fresh-database points, T-08 directory, and T-14 team/A1/A2 behavior suites all completed successfully.
+- Edge Function / Deno type-check: **SUCCESS**.
+- Browser: **SUCCESS** — the workflow step “Run every browser suite” completed successfully.
+- All four CI jobs (static, SQL, Edge Function, browser): **SUCCESS**; workflow conclusion: **SUCCESS**.
+
+### Three binding gate conditions
+
+1. **Customer privacy — addressed in code and tests.** The order list is contact-blind and does not bulk-enrich customer identity/contact fields. The Manager operational RPC is branch-scoped and excludes customer PII, payment state, totals, discounts and tax. Contact lookup is limited to an explicitly opened Admin order detail. Exact-head Node, SQL and browser checks are green.
+2. **Anonymization integrity — addressed in code and disposable-database behavior tests.** A2 is Admin-authorized and service-role executed, requires a reason, preflights protected team/Orders identities, uses the durable anonymization marker for idempotency, and avoids compensation after a committed/lost-response result. The SQL transaction scrubs Auth/profile identity and contact data, member/guest order contact and free-text PII, pending/claimed claim emails and outbox recipient/payload PII; it suspends membership and retires the member number while retaining order identifiers/snapshots, tax/financial history and the append-only points ledger. The Edge Function returns early for an already-anonymized identity. The fresh PostgreSQL 16 A2 behavior suite and Edge type-check passed.
+3. **Recovery plan — documented; operational rehearsal remains a lead-operated precondition.** `docs/apply-0015.md` now requires a full pre-change backup including `auth.users` and `auth.identities`, checksum and TOC, restore into a separate disposable recovery target, baseline/count comparison, lead approval, and a second pre-apply snapshot if staging changed. It explicitly blocks migration 0015 and A2 staging acceptance until this evidence exists. This memo does **not** claim that a real staging backup or restore rehearsal has been performed.
+
+### Gate boundary / requested lead action
+
+**READY FOR LEAD GATE** means the implementation and exact-head automated evidence are ready for the lead's review; it is not merge approval, staging acceptance, or production readiness. Please review the three conditions and decide the next gate. PR #80 remains unmerged and Draft. No migration 0015 was applied, no Edge Function was deployed, no real customer was anonymized, and no staging or production data was changed. The staging backup/restore evidence and staging acceptance remain with Muse/lead under the runbook.
+
+— ChatGPT
+
+
+---
+
+## 2026-11-28 — READY FOR LEAD GATE: T-14 privacy, anonymization integrity, recovery
+
+**Decision: READY FOR LEAD GATE. This is not merge or staging-apply approval.**
+
+### Main / lead instructions re-read
+
+I re-read the current MUSE-REPLY.md at main head d3b677d7013778fd8b291a5e11a9bf3793f63e85. The 05:34 ruling is present and unchanged: #80 remains on merge HOLD; the three gate conditions are customer privacy, true anonymization integrity (profiles, order contact fields, claims, outbox payloads), and a safe recovery plan. The 05:52 rotation note confirms the former >1 MB read failure and independently records 229/229 Node tests at b29e176. The earlier “empty file” report is corrected: the contents API could not return the oversized body; it was not an empty lead channel.
+
+### Exact tested implementation head and evidence
+
+- **Implementation head:** b29e176aad825bcc2a7b59ea8e3f7b30e31f38ae
+- **GitHub Actions run:** 46136780016 — overall SUCCESS; all four jobs SUCCESS.
+- **Static / Node:** 229 tests, 229 passed, 0 failed.
+- **Browser:** 823 assertions passed, 0 failures; the full browser suite includes the Admin directory/order-detail privacy boundary across EN/FR/AR and 320/390/1280 widths.
+- **Edge Function:** deno check supabase/functions/admin-team-access/index.ts passed.
+- **PostgreSQL 16:** migration chain and SQL behavior suite passed. The A2 fixture returned claims_scrubbed: 2 and outbox_scrubbed: 2; guest-order contact/note PII was scrubbed by original email, the guest identity marker satisfied the order constraint, financial snapshots remained unchanged, and a committed retry did not duplicate the audit event.
+
+### Gate conditions closed in code
+
+**A1 — customer privacy:** the all-orders list no longer selects user_id, guest name/email, or phone; it does not fetch customer profiles or bulk email data. The bulk order-email RPC was removed. Customer contact is fetched only for the single order whose detail the Admin opens. Order-list search is limited to order code and branch; the customer directory retains its separate server-side search and pagination.
+
+**A2 — anonymization integrity:** the Edge Function checks the target profile, protected team roles, and branch Orders identity before changing Auth. It snapshots the prior email, verification state, user metadata, and ban state. On RPC error it re-reads the durable anonymization marker before deciding whether Auth rollback is safe; it does not restore an old identity after a committed-but-lost response. The SQL operation is idempotent, reason-required, service-role-only, rejects team/Orders identities, and scrubs Auth/profile data, member and guest-order contact/free-text fields, pending and claimed points-claim emails, and related outbox recipients/payloads. Guest orders are matched by the original email and marked guest_identity_scrubbed. Order IDs, financial/tax snapshots, and append-only points history remain; retry does not duplicate the audit record.
+
+**Recovery:** docs/apply-0015.md now makes a verified full backup, SHA-256 record, isolated restore rehearsal, evidence record, and explicit rollback/recovery decision tree hard preconditions to staging apply. It includes Auth, claims, and outbox verification. The sole-Admin recovery path is explicit: owner + lead use the Supabase dashboard to restore the existing owner identity/role; no second Admin login or alternate back door is built.
+
+### Approved-design deviation disclosed in this round
+
+The Team form cannot grant or create an Admin; the owner identity remains the only Admin, per the lead’s 04:12 adoption of F-OWN-6. The recovery path above is documented. This is the intentional sole-Admin tightening against the generic ADMIN-DESIGN §3.2 flow, flagged here in the round as required.
+
+### Operational boundary and PR state
+
+No migration was applied to staging or production. No Edge Function was deployed. No live customer was anonymized; SQL fixtures use synthetic identities and example.invalid addresses. The backup/restore rehearsal itself remains a lead-operated precondition before staging apply.
+
+PR #80 remains **Draft/open and unmerged**. Main has since advanced one documentation-only commit (d3b677d) to rotate the oversized MUSE reply into MUSE-REPLY-ARCHIVE-2026-11.md; the tested branch is one commit behind that rotation, with no application-code divergence. The merge HOLD remains in force.
+
+**READY FOR LEAD GATE — exact tested head b29e176, full evidence green.**

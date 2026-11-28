@@ -1,0 +1,2 @@
+[functions.admin-team-access]
+verify_jwt = true

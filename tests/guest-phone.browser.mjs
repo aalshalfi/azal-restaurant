@@ -79,6 +79,7 @@ const po = (sent) => sent.filter((s) => s.u.endsWith("/rpc/place_order"));
   const p = await b.newPage({ viewport: { width: 390, height: 900 } });
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await p.route("https://fake.supabase.co/**", (r) => { const u = decodeURIComponent(r.request().url());
+    if (u.includes("azal_staff_my_branches")) return r.fulfill({ json: ["ottawa"] });
     if (u.includes("azal_staff_can_access")) return r.fulfill({ json: true });
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [{ id: "abc12300-0000-4000-8000-000000000001", fulfilment_status: "placed", total_cents: 2824, guest_name: "Amal", contact_phone: "+13439990002", order_items: [{ quantity: 1, item_name_en_snapshot: "Lamb Mandi" }] }] });
     return r.fulfill({ status: 404, json: {} }); });

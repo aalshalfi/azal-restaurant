@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: for f in script.js auth.js supabase-config.js reservation-config.js; do if [ -f "$f" ]; then node --check "$f"; fi; done
+        run: for f in script.js auth.js supabase-config.js reservation-config.js admin.js admin-team.js role-door.js staff.js; do if [ -f "$f" ]; then node --check "$f"; fi; done
       - name: Runtime smoke test (language switch, menu, cart)
         run: node --test tests/*.test.mjs
       - name: Check all page markup and bilingual menu/account hooks
@@ -161,3 +161,32 @@ jobs:
             psql "$DB" -X -v ON_ERROR_STOP=1 -f "supabase/migrations/$migration"
           done
           DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/admin-directory-behaviour.sql
+      - name: Run T-14 team access and A1/A2 behavior on a fresh PostgreSQL 16 database
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -Eeuo pipefail
+          createdb -h 127.0.0.1 -U postgres azal_admin_team_review
+          DB='postgresql://postgres:postgres@127.0.0.1:5432/azal_admin_team_review'
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f tests/sql/supabase-stub.sql
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f docs/schema-reference/0001_azal_staging_baseline.sql
+          for migration in 0002_p2_fixes.sql 0003_membership_provisioning.sql 0004_ordering_functions.sql 0006_points_redeem.sql 0007_points_increments.sql 0008_profile_contact.sql 0009_order_notifications.sql 0010_order_contact_phone.sql 0013_member_number.sql 0014_admin_customer_directory.sql; do
+            psql "$DB" -X -v ON_ERROR_STOP=1 -f "supabase/migrations/$migration"
+          done
+          # Seed the one owner identity required by 0015's fail-closed sole-Admin preflight.
+          psql "$DB" -X -v ON_ERROR_STOP=1 -c "insert into auth.users(id,email,email_confirmed_at) values ('00000000-0000-0000-0000-0000000000a0','info@azalrestaurant.com',now()) on conflict (id) do update set email=excluded.email,email_confirmed_at=coalesce(auth.users.email_confirmed_at,excluded.email_confirmed_at)"
+          psql "$DB" -X -v ON_ERROR_STOP=1 -c "insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000a0','admin') on conflict do nothing"
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0015_admin_team_access.sql
+          DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/admin-team-access-behaviour.sql
+
+  edge-function-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check T-14 Admin Edge Function
+        run: deno check supabase/functions/admin-team-access/index.ts

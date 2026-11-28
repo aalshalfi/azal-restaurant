@@ -1011,3 +1011,35 @@ html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
 .admin-order-detail h3{margin:8px 0 0;font-size:17px}
 .admin-order-detail .admin-line{overflow-wrap:anywhere}
 @media(max-width:520px){.admin-filter{display:grid;grid-template-columns:1fr}.admin-search,.admin-status{width:100%;box-sizing:border-box}.admin-record{padding:10px}}
+
+
+/* T-14 Team & Access, A1/A2 server-paged directory actions */
+.admin-team-panel{display:grid;gap:14px;margin-top:18px}
+.admin-team-form{display:grid;gap:10px;max-width:620px}
+.admin-team-label{display:grid;gap:5px;color:var(--brown);font-weight:600}
+.admin-team-label input,.admin-team-label select,.admin-team-revoke input,.admin-customer-anonymize-form input{box-sizing:border-box;width:100%;min-height:44px;padding:10px 12px;border:1px solid #b9a99a;border-radius:3px;background:#fff;color:#42220E;font:inherit}
+.admin-team-branches{display:flex;flex-wrap:wrap;gap:8px;border:1px solid #e5d8ca;padding:10px}
+.admin-team-branches legend{padding:0 6px;font-weight:600}
+.admin-team-branch{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:5px 9px;border:1px solid #e5d8ca;border-radius:3px}
+.admin-team-branch input{width:18px;height:18px}
+.admin-team-members,.admin-orders-accounts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px}
+.admin-team-member,.admin-orders-account{min-width:0}
+.admin-team-member button,.admin-orders-account button{margin-inline-end:6px}
+.admin-team-revoke,.admin-customer-anonymize-form{display:grid;gap:8px;margin-top:10px}
+.admin-pager{align-items:center;justify-content:space-between}
+.admin-pager .admin-note{margin:0}
+.manager-operations{margin-top:18px}
+.admin-manager-orders{display:grid;gap:10px;margin-top:12px}
+.admin-customer-anonymize{border-color:#8b3b2e;color:#8b3b2e}
+@media(max-width:520px){.admin-team-branches{display:grid;grid-template-columns:1fr}.admin-team-branch{width:100%;box-sizing:border-box}.admin-pager{display:grid;grid-template-columns:1fr 1fr}.admin-pager .admin-note{grid-column:1/-1;grid-row:1}}
+
+
+/* T-14: branch selector for named staff assigned to more than one branch */
+.staff-branch-picker{display:flex;align-items:center;gap:10px;margin:10px 0;padding:10px 12px;border:1px solid #d8c8b8;border-radius:3px}
+.staff-branch-picker span{font-weight:600}
+.staff-branch-picker select{min-height:42px;min-width:150px;padding:7px 10px;border:1px solid #b9a99a;border-radius:3px;background:#fff;color:#42220E;font:inherit}
+
+.admin-team-audit{display:grid;gap:8px;max-height:420px;overflow:auto}
+.admin-audit-row{border-inline-start:3px solid #b08a58}
+
+.admin-team-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0 14px}.admin-team-filters label{display:grid;gap:5px;font-size:.9rem}.admin-team-filters input,.admin-team-filters select{width:100%;min-width:0;min-height:42px;padding:8px;border:1px solid #b9a99a;border-radius:3px;background:#fff;color:#42220E;font:inherit}.admin-team-filterable[hidden]{display:none!important}

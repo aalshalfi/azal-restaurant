@@ -67,7 +67,7 @@
           call("/rest/v1/staff_branch_access?select=branch_slug&user_id=eq." + encodeURIComponent(uid), s.access_token)
         ]);
         const roleSet = new Set((roles || []).map((r) => r.role));
-        const role = isAdmin === true ? "admin" : roleSet.has("staff") ? "staff" : "customer";
+        const role = isAdmin === true ? "admin" : roleSet.has("manager") ? "manager" : roleSet.has("staff") ? "staff" : "customer";
         return { status: "signed_in", role, email: s.user && s.user.email, branches: (branches || []).map((b) => b.branch_slug) };
       },
       // Read-only overview for an admin: today's orders across ALL branches (admin RLS), and the member count.
@@ -80,56 +80,36 @@
         ]);
         return Object.assign(summarise(orders), { members, since, truncated: (orders || []).length >= 1000 });
       },
-      // T-08: paged reads only. RLS is the enforcement boundary; the UI also requires the server admin verdict.
-      async customers({ search = "" } = {}) {
+      // A1: the server filters and pages the directory; only one bounded page and its balances cross the wire.
+      async customers({ search = "", limit = 50, offset = 0 } = {}) {
         const s = await getSession();
         if (!s || !s.access_token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
-        async function pages(path) {
-          const rows = [];
-          for (let offset = 0; ; offset += 500) {
-            const page = await call(path + (path.includes("?") ? "&" : "?") + "limit=500&offset=" + offset, s.access_token);
-            rows.push(...(page || []));
-            if (!page || page.length < 500) return rows;
-            if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
-          }
-        }
-        const [directory, memberships, ledger] = await Promise.all([
-          call("/rest/v1/rpc/azal_admin_customer_directory", s.access_token, { method: "POST", body: {} }),
-          pages("/rest/v1/memberships?select=user_id,status,joined_at&order=user_id.asc"),
-          pages("/rest/v1/points_ledger?select=user_id,delta_points&order=created_at.asc,id.asc")
-        ]);
-        const memberById = new Map((memberships || []).map(x => [x.user_id, x]));
-        const balances = new Map();
-        for (const row of ledger || []) balances.set(row.user_id, (balances.get(row.user_id) || 0) + Number(row.delta_points || 0));
-        const term = String(search || "").trim().toLocaleLowerCase();
-        return (directory || []).map(p => Object.assign({}, p, {
-          membership: memberById.get(p.user_id) || null, balance: balances.get(p.user_id) || 0
-        })).filter(p => !term || [p.display_name, p.phone, p.email, p.member_number == null ? "" : String(p.member_number)].some(v => String(v || "").toLocaleLowerCase().includes(term)));
+        const page = await call("/rest/v1/rpc/azal_admin_customer_directory_page", s.access_token, {
+          method: "POST", body: { p_search: String(search || ""), p_limit: limit, p_offset: offset }
+        });
+        return {
+          rows: Array.isArray(page && page.rows) ? page.rows.map(p => Object.assign({}, p, {
+            membership: p.membership_status ? { status: p.membership_status, joined_at: p.joined_at } : null
+          })) : [],
+          total: Number(page && page.total || 0),
+          limit: Number(page && page.limit || limit),
+          offset: Number(page && page.offset || offset)
+        };
       },
       async orders({ search = "", status = "all" } = {}) {
         const s = await getSession();
         if (!s || !s.access_token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
         const rows = [];
         for (let offset = 0; ; offset += 500) {
-          const page = await call("/rest/v1/orders?select=id,user_id,branch_slug,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,placed_at,scheduled_for,pickup_slot,guest_name,guest_email,contact_phone&order=placed_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
+          // Order-list reads deliberately exclude every customer contact field.
+          const page = await call("/rest/v1/orders?select=id,branch_slug,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,placed_at,scheduled_for,pickup_slot&order=placed_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
           rows.push(...(page || []));
           if (!page || page.length < 500) break;
           if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
         }
-        const profiles = [];
-        for (let offset = 0; ; offset += 500) {
-          const page = await call("/rest/v1/profiles?select=id,display_name,phone,member_number&order=created_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
-          profiles.push(...(page || []));
-          if (!page || page.length < 500) break;
-          if (profiles.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
-        }
-        const directory = await call("/rest/v1/rpc/azal_admin_customer_directory", s.access_token, { method: "POST", body: {} });
-        const profileById = new Map(profiles.map(p => [p.id, p]));
-        const directoryById = new Map((directory || []).map(p => [p.user_id, p]));
-        const enriched = rows.map(o => Object.assign({}, o, { customer: profileById.get(o.user_id) || null, customerEmail: (directoryById.get(o.user_id) || {}).email || null }));
         const term = String(search || "").trim().toLocaleLowerCase();
-        return enriched.filter(o => (status === "all" || o.fulfilment_status === status) &&
-          (!term || [o.id, publicCode(o.id), o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id, o.customer && o.customer.display_name, o.customer && o.customer.phone, o.customer && o.customer.member_number, o.customerEmail].some(v => String(v || "").toLocaleLowerCase().includes(term))));
+        return rows.filter(o => (status === "all" || o.fulfilment_status === status) &&
+          (!term || [o.id, publicCode(o.id), o.branch_slug].some(v => String(v || "").toLocaleLowerCase().includes(term))));
       },
       async orderDetail(orderId) {
         const s = await getSession();
@@ -138,13 +118,10 @@
         const rows = await call("/rest/v1/orders?select=id,user_id,branch_slug,fulfilment_type,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,guest_name,guest_email,contact_phone,placed_at,updated_at,handed_over_at,order_items(id,quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot,order_item_options(id,option_name_en_snapshot,option_name_fr_snapshot,quantity,unit_delta_cents,line_delta_cents)),order_events(id,actor_user_id,event_type,from_status,to_status,details,created_at)&id=eq." + encodeURIComponent(orderId) + "&order_events.order=created_at.asc,id.asc&limit=1", s.access_token);
         if (!rows || !rows.length) throw Object.assign(new Error("not_found"), { code: "not_found" });
         const order = rows[0];
-        const [profiles, directory] = order.user_id ? await Promise.all([
-          call("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&id=eq." + encodeURIComponent(order.user_id) + "&limit=1", s.access_token),
-          call("/rest/v1/rpc/azal_admin_customer_directory", s.access_token, { method: "POST", body: {} })
-        ]) : [[], []];
-        const customer = profiles && profiles[0] || null;
-        if (customer) customer.email = ((directory || []).find(p => p.user_id === order.user_id) || {}).email || null;
-        return Object.assign({}, order, { customer });
+        const customer = order.user_id ? await call("/rest/v1/rpc/azal_admin_customer_contact", s.access_token, {
+          method: "POST", body: { p_user_id: order.user_id }
+        }) : null;
+        return Object.assign({}, order, { customer: customer || null });
       }
     };
   }
@@ -158,7 +135,7 @@
   const auth = root.AZALAuth;
   const adm = createAdmin({ config: root.AZAL_SUPABASE || {}, fetch: root.fetch && root.fetch.bind(root), getSession: async () => { try { return auth && (await auth.session()); } catch { return null; } } });
 
-  const S = {"en":{"title":"Management","inert":"The management area turns on when the site is connected.","signedOut":"Sign in first on the Majlis page with your management account.","signIn":"Go to sign in","notAdmin":"This area is for AZAL management. Your account doesn’t have access.","staffGo":"Open the kitchen orders screen","signedAs":"Signed in as {email} · {role}","r_admin":"Administrator","r_staff":"Branch staff","r_customer":"Member","overview":"Today","since":"Since midnight, all branches","k_new":"New, paid","k_kitchen":"In the kitchen","k_ready":"Ready for pickup","k_collected":"Collected","k_cancelled":"Cancelled","k_unpaid":"Unpaid (never reach the kitchen)","sales":"Collected sales today: {amount}","members":"Active Majlis members: {n}","kitchen":"Kitchen orders screen","next":"","branch":"{branch}: {orders} orders today, {collected} collected","signOut":"Sign out","signingOut":"Signing out…","error":"We couldn’t load the overview. Refresh to try again.","truncated":"Showing the first 1,000 orders of today.","directory":"Customer directory","customerSearch":"Search name, phone, email or member number","search":"Search","noCustomers":"No matching customers.","memberNo":"Member #","balance":"Points balance","membership":"Membership","active":"Active","suspended":"Suspended","noMembership":"No membership row","ordersTitle":"All orders","orderSearch":"Search order, branch, customer, phone or email","allStatuses":"All statuses","placed":"Received","accepted":"Accepted","preparing":"Preparing","ready":"Ready","handed_over":"Handed over","cancelled":"Cancelled","unpaid":"Unpaid","paid":"Paid","refunded":"Refunded","voided":"Voided","noOrders":"No matching orders.","view":"View details","order":"Order","customer":"Customer","branchLabel":"Branch","payment":"Payment","fulfilment":"Fulfilment","subtotal":"Subtotal","discount":"Discount","tax":"Tax","total":"Total","items":"Items","events":"Order timeline","note":"Customer note","guest":"Guest","back":"Close details","dataError":"Could not load the directory or order history.","showing":"Showing {n} of {total}"},"fr":{"title":"Gestion","inert":"L’espace de gestion s’active quand le site est connecté.","signedOut":"Connectez-vous d’abord sur la page Majlis avec votre compte de gestion.","signIn":"Aller à la connexion","notAdmin":"Cet espace est réservé à la gestion d’AZAL. Votre compte n’y a pas accès.","staffGo":"Ouvrir l’écran des commandes de cuisine","signedAs":"Connecté : {email} · {role}","r_admin":"Administrateur","r_staff":"Personnel de succursale","r_customer":"Membre","overview":"Aujourd’hui","since":"Depuis minuit, toutes les succursales","k_new":"Nouvelles, payées","k_kitchen":"En cuisine","k_ready":"Prêtes à emporter","k_collected":"Récupérées","k_cancelled":"Annulées","k_unpaid":"Non payées (n’arrivent jamais en cuisine)","sales":"Ventes récupérées aujourd’hui : {amount}","members":"Membres Majlis actifs : {n}","kitchen":"Écran des commandes de cuisine","next":"","branch":"{branch} : {orders} commandes aujourd’hui, {collected} récupérées","signOut":"Se déconnecter","signingOut":"Déconnexion…","error":"Impossible de charger l’aperçu. Actualisez pour réessayer.","truncated":"Les 1 000 premières commandes d’aujourd’hui sont affichées.","directory":"Répertoire des clients","customerSearch":"Rechercher par nom, téléphone, courriel ou numéro de membre","search":"Rechercher","noCustomers":"Aucun client correspondant.","memberNo":"Membre nº","balance":"Solde de points","membership":"Adhésion","active":"Active","suspended":"Suspendue","noMembership":"Aucune adhésion","ordersTitle":"Toutes les commandes","orderSearch":"Rechercher commande, succursale, client, téléphone ou courriel","allStatuses":"Tous les statuts","placed":"Reçue","accepted":"Acceptée","preparing":"En préparation","ready":"Prête","handed_over":"Remise","cancelled":"Annulée","unpaid":"Non payée","paid":"Payée","refunded":"Remboursée","voided":"Annulée","noOrders":"Aucune commande correspondante.","view":"Voir les détails","order":"Commande","customer":"Client","branchLabel":"Succursale","payment":"Paiement","fulfilment":"État","subtotal":"Sous-total","discount":"Rabais","tax":"Taxes","total":"Total","items":"Articles","events":"Historique","note":"Note du client","guest":"Invité","back":"Fermer les détails","dataError":"Impossible de charger le répertoire ou l’historique.","showing":"Affichage de {n} sur {total}"},"ar":{"title":"الإدارة","inert":"تعمل صفحة الإدارة عند ربط الموقع.","signedOut":"سجّل دخولك أولاً من صفحة المجلس بحساب الإدارة.","signIn":"اذهب لتسجيل الدخول","notAdmin":"هذه الصفحة لإدارة أزال فقط، وحسابك لا يملك صلاحية الدخول إليها.","staffGo":"افتح شاشة طلبات المطبخ","signedAs":"مسجّل باسم {email} · {role}","r_admin":"مدير","r_staff":"موظف فرع","r_customer":"عضو","overview":"اليوم","since":"منذ منتصف الليل، كل الفروع","k_new":"جديدة ومدفوعة","k_kitchen":"في المطبخ","k_ready":"جاهزة للاستلام","k_collected":"استُلمت","k_cancelled":"أُلغيت","k_unpaid":"غير مدفوعة (لا تصل إلى المطبخ)","sales":"مبيعات الطلبات المستلمة اليوم: {amount}","members":"أعضاء المجلس النشطون: {n}","kitchen":"شاشة طلبات المطبخ","next":"","branch":"{branch}: {orders} طلبات اليوم، استُلم منها {collected}","signOut":"تسجيل الخروج","signingOut":"جارٍ تسجيل الخروج…","error":"تعذّر تحميل الملخص. حدّث الصفحة وحاول مرة أخرى.","truncated":"نعرض أول 1,000 طلب من طلبات اليوم.","directory":"دليل العملاء","customerSearch":"ابحث بالاسم أو الهاتف أو البريد أو رقم العضوية","search":"بحث","noCustomers":"لا يوجد عملاء مطابقون.","memberNo":"رقم العضوية","balance":"رصيد النقاط","membership":"العضوية","active":"نشطة","suspended":"موقوفة","noMembership":"لا توجد عضوية","ordersTitle":"جميع الطلبات","orderSearch":"ابحث برقم الطلب أو الفرع أو العميل أو الهاتف أو البريد","allStatuses":"كل الحالات","placed":"وصل الطلب","accepted":"تم القبول","preparing":"قيد التحضير","ready":"جاهز للاستلام","handed_over":"تم التسليم","cancelled":"ملغي","unpaid":"غير مدفوع","paid":"مدفوع","refunded":"مسترد","voided":"ملغي الدفع","noOrders":"لا توجد طلبات مطابقة.","view":"عرض التفاصيل","order":"الطلب","customer":"العميل","branchLabel":"الفرع","payment":"الدفع","fulfilment":"حالة التنفيذ","subtotal":"المجموع الفرعي","discount":"الخصم","tax":"الضريبة","total":"الإجمالي","items":"الأصناف","events":"سجل الأحداث","note":"ملاحظة العميل","guest":"ضيف","back":"إغلاق التفاصيل","dataError":"تعذّر تحميل دليل العملاء أو سجل الطلبات.","showing":"نعرض {n} من {total}"}};
+  const S = {"en":{"title":"Management","inert":"The management area turns on when the site is connected.","signedOut":"Sign in first on the Majlis page with your management account.","signIn":"Go to sign in","notAdmin":"This area is for AZAL management. Your account doesn’t have access.","staffGo":"Open the kitchen orders screen","signedAs":"Signed in as {email} · {role}","r_admin":"Administrator","r_manager":"Manager","r_staff":"Branch staff","r_customer":"Member","previous":"Previous","next":"Next","page":"Page {current} of {total}","managerOperations":"Branch operations","managerScope":"Only your assigned branch is available here.","overview":"Today","since":"Since midnight, all branches","k_new":"New, paid","k_kitchen":"In the kitchen","k_ready":"Ready for pickup","k_collected":"Collected","k_cancelled":"Cancelled","k_unpaid":"Unpaid (never reach the kitchen)","sales":"Collected sales today: {amount}","members":"Active Majlis members: {n}","kitchen":"Kitchen orders screen","next":"","branch":"{branch}: {orders} orders today, {collected} collected","signOut":"Sign out","signingOut":"Signing out…","error":"We couldn’t load the overview. Refresh to try again.","truncated":"Showing the first 1,000 orders of today.","directory":"Customer directory","customerSearch":"Search name, phone, email or member number","search":"Search","noCustomers":"No matching customers.","memberNo":"Member #","balance":"Points balance","membership":"Membership","active":"Active","suspended":"Suspended","noMembership":"No membership row","ordersTitle":"All orders","orderSearch":"Search order code or branch","allStatuses":"All statuses","placed":"Received","accepted":"Accepted","preparing":"Preparing","ready":"Ready","handed_over":"Handed over","cancelled":"Cancelled","unpaid":"Unpaid","paid":"Paid","refunded":"Refunded","voided":"Voided","noOrders":"No matching orders.","view":"View details","order":"Order","customer":"Customer","branchLabel":"Branch","payment":"Payment","fulfilment":"Fulfilment","subtotal":"Subtotal","discount":"Discount","tax":"Tax","total":"Total","items":"Items","events":"Order timeline","note":"Customer note","guest":"Guest","back":"Close details","dataError":"Could not load the directory or order history.","showing":"Showing {n} of {total}"},"fr":{"title":"Gestion","inert":"L’espace de gestion s’active quand le site est connecté.","signedOut":"Connectez-vous d’abord sur la page Majlis avec votre compte de gestion.","signIn":"Aller à la connexion","notAdmin":"Cet espace est réservé à la gestion d’AZAL. Votre compte n’y a pas accès.","staffGo":"Ouvrir l’écran des commandes de cuisine","signedAs":"Connecté : {email} · {role}","r_admin":"Administrateur","r_manager":"Gestionnaire","r_staff":"Personnel de succursale","r_customer":"Membre","previous":"Précédent","next":"Suivant","page":"Page {current} sur {total}","managerOperations":"Opérations de la succursale","managerScope":"Seule votre succursale attribuée est accessible.","overview":"Aujourd’hui","since":"Depuis minuit, toutes les succursales","k_new":"Nouvelles, payées","k_kitchen":"En cuisine","k_ready":"Prêtes à emporter","k_collected":"Récupérées","k_cancelled":"Annulées","k_unpaid":"Non payées (n’arrivent jamais en cuisine)","sales":"Ventes récupérées aujourd’hui : {amount}","members":"Membres Majlis actifs : {n}","kitchen":"Écran des commandes de cuisine","next":"","branch":"{branch} : {orders} commandes aujourd’hui, {collected} récupérées","signOut":"Se déconnecter","signingOut":"Déconnexion…","error":"Impossible de charger l’aperçu. Actualisez pour réessayer.","truncated":"Les 1 000 premières commandes d’aujourd’hui sont affichées.","directory":"Répertoire des clients","customerSearch":"Rechercher par nom, téléphone, courriel ou numéro de membre","search":"Rechercher","noCustomers":"Aucun client correspondant.","memberNo":"Membre nº","balance":"Solde de points","membership":"Adhésion","active":"Active","suspended":"Suspendue","noMembership":"Aucune adhésion","ordersTitle":"Toutes les commandes","orderSearch":"Rechercher le code de commande ou la succursale","allStatuses":"Tous les statuts","placed":"Reçue","accepted":"Acceptée","preparing":"En préparation","ready":"Prête","handed_over":"Remise","cancelled":"Annulée","unpaid":"Non payée","paid":"Payée","refunded":"Remboursée","voided":"Annulée","noOrders":"Aucune commande correspondante.","view":"Voir les détails","order":"Commande","customer":"Client","branchLabel":"Succursale","payment":"Paiement","fulfilment":"État","subtotal":"Sous-total","discount":"Rabais","tax":"Taxes","total":"Total","items":"Articles","events":"Historique","note":"Note du client","guest":"Invité","back":"Fermer les détails","dataError":"Impossible de charger le répertoire ou l’historique.","showing":"Affichage de {n} sur {total}"},"ar":{"title":"الإدارة","inert":"تعمل صفحة الإدارة عند ربط الموقع.","signedOut":"سجّل دخولك أولاً من صفحة المجلس بحساب الإدارة.","signIn":"اذهب لتسجيل الدخول","notAdmin":"هذه الصفحة لإدارة أزال فقط، وحسابك لا يملك صلاحية الدخول إليها.","staffGo":"افتح شاشة طلبات المطبخ","signedAs":"مسجّل باسم {email} · {role}","r_admin":"مدير","r_manager":"مدير فرع","r_staff":"موظف فرع","r_customer":"عضو","previous":"السابق","next":"التالي","page":"الصفحة {current} من {total}","managerOperations":"عمليات الفرع","managerScope":"يمكنك الوصول إلى فرعك المعيّن فقط.","overview":"اليوم","since":"منذ منتصف الليل، كل الفروع","k_new":"جديدة ومدفوعة","k_kitchen":"في المطبخ","k_ready":"جاهزة للاستلام","k_collected":"استُلمت","k_cancelled":"أُلغيت","k_unpaid":"غير مدفوعة (لا تصل إلى المطبخ)","sales":"مبيعات الطلبات المستلمة اليوم: {amount}","members":"أعضاء المجلس النشطون: {n}","kitchen":"شاشة طلبات المطبخ","next":"","branch":"{branch}: {orders} طلبات اليوم، استُلم منها {collected}","signOut":"تسجيل الخروج","signingOut":"جارٍ تسجيل الخروج…","error":"تعذّر تحميل الملخص. حدّث الصفحة وحاول مرة أخرى.","truncated":"نعرض أول 1,000 طلب من طلبات اليوم.","directory":"دليل العملاء","customerSearch":"ابحث بالاسم أو الهاتف أو البريد أو رقم العضوية","search":"بحث","noCustomers":"لا يوجد عملاء مطابقون.","memberNo":"رقم العضوية","balance":"رصيد النقاط","membership":"العضوية","active":"نشطة","suspended":"موقوفة","noMembership":"لا توجد عضوية","ordersTitle":"جميع الطلبات","orderSearch":"ابحث برقم الطلب أو الفرع","allStatuses":"كل الحالات","placed":"وصل الطلب","accepted":"تم القبول","preparing":"قيد التحضير","ready":"جاهز للاستلام","handed_over":"تم التسليم","cancelled":"ملغي","unpaid":"غير مدفوع","paid":"مدفوع","refunded":"مسترد","voided":"ملغي الدفع","noOrders":"لا توجد طلبات مطابقة.","view":"عرض التفاصيل","order":"الطلب","customer":"العميل","branchLabel":"الفرع","payment":"الدفع","fulfilment":"حالة التنفيذ","subtotal":"المجموع الفرعي","discount":"الخصم","tax":"الضريبة","total":"الإجمالي","items":"الأصناف","events":"سجل الأحداث","note":"ملاحظة العميل","guest":"ضيف","back":"إغلاق التفاصيل","dataError":"تعذّر تحميل دليل العملاء أو سجل الطلبات.","showing":"نعرض {n} من {total}"}};
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k] || k; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
   const loc = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
@@ -168,12 +145,12 @@
   const link = (href, text, cls) => { const a = el("a", cls || "text-link dark-link", text); a.href = href; return a; };
 
   let acc = null, ov = null, failed = false, seq = 0, signingOut = false;
-  let directoryRows = [], orderRows = [], detailRow = null, workspaceError = false, customerVisible = 100, orderVisible = 100;
+  let directoryRows = [], directoryTotal = 0, directoryPage = 0, directorySearch = "", orderRows = [], detailRow = null, workspaceError = false, orderVisible = 100;
   // Sign-out ends the session (server logout + the local session key) and drops every number on this page at once,
   // then lands on the member page, signed out. A later visit here finds no session and shows the signed-out state.
   async function signOut() {
     if (signingOut) return;
-    signingOut = true; seq++; ov = null; directoryRows = []; orderRows = []; detailRow = null; paint();
+    signingOut = true; seq++; ov = null; directoryRows = []; directoryTotal = 0; directoryPage = 0; orderRows = []; detailRow = null; paint();
     try { if (auth) await auth.signOut(); } catch {}
     acc = { status: "signed_out" }; directoryRows = []; orderRows = []; detailRow = null; paint();
     try { root.location.replace("member.html"); } catch {}
@@ -183,20 +160,33 @@
     if (workspaceError) wrap.append(el("p", "member-history-error", L("dataError")));
     const customers = el("section", "admin-panel"); customers.append(el("h2", null, L("directory")));
     const cform = el("form", "admin-filter");
-    const ci = el("input", "admin-search"); ci.type = "search"; ci.placeholder = L("customerSearch"); ci.setAttribute("aria-label", L("customerSearch"));
+    const ci = el("input", "admin-search"); ci.type = "search"; ci.value = directorySearch; ci.placeholder = L("customerSearch"); ci.setAttribute("aria-label", L("customerSearch"));
     const cb = el("button", "button button-gold", L("search")); cb.type = "submit"; cform.append(ci,cb);
-    cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; const requestSeq=seq; try { const rows=await adm.customers({search:ci.value}); if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return; directoryRows=rows; customerVisible=100; workspaceError=false; } catch { if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return; workspaceError=true; } paint(); });
-    customers.append(cform,el("p","admin-note",L("showing",{n:num(Math.min(customerVisible,directoryRows.length)),total:num(directoryRows.length)})));
+    cform.addEventListener("submit", async e => {
+      e.preventDefault(); cb.disabled=true; const requestSeq=seq; directorySearch=ci.value.trim(); directoryPage=0;
+      try { const page=await adm.customers({search:directorySearch,limit:50,offset:0}); if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return; directoryRows=page.rows; directoryTotal=page.total; workspaceError=false; }
+      catch { if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return; workspaceError=true; }
+      paint();
+    });
+    const shownStart = directoryTotal ? directoryPage*50+1 : 0;
+    const shownEnd = directoryPage*50+directoryRows.length;
+    customers.append(cform,el("p","admin-note",L("showing",{n:num(shownEnd),total:num(directoryTotal)})));
     if(!directoryRows.length) customers.append(el("p","admin-note",L("noCustomers")));
-    for(const p of directoryRows.slice(0,customerVisible)){
-      const card=el("article","admin-record");
+    for(const p of directoryRows){
+      const card=el("article","admin-record"); card.dataset.userId=p.user_id;
       card.append(el("strong",null,p.display_name||"—"),el("span","admin-record-meta",L("memberNo")+": "+(p.member_number==null?"—":num(p.member_number))),
         el("span","admin-record-meta",(p.phone||"—")+" · "+L("balance")+": "+num(p.balance||0)),
         el("span","admin-record-meta",p.email||"—"),
         el("span","admin-record-meta",L("membership")+": "+(p.membership?L(p.membership.status):L("noMembership"))));
       customers.append(card);
     }
-    if(directoryRows.length>customerVisible){const more=el("button","button admin-detail-button",L("more"));more.type="button";more.addEventListener("click",()=>{customerVisible+=100;paint();});customers.append(more);}
+    const pager=el("div","admin-filter admin-pager");
+    const prev=el("button","button admin-detail-button",L("previous")); prev.type="button"; prev.disabled=directoryPage===0;
+    prev.addEventListener("click",async()=>{if(directoryPage===0)return;const nextPage=directoryPage-1,requestSeq=seq;try{const page=await adm.customers({search:directorySearch,limit:50,offset:nextPage*50});if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;directoryPage=nextPage;directoryRows=page.rows;directoryTotal=page.total;workspaceError=false;}catch{if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;workspaceError=true;}paint();});
+    const next=el("button","button admin-detail-button",L("next")); next.type="button"; next.disabled=(directoryPage+1)*50>=directoryTotal;
+    next.addEventListener("click",async()=>{if((directoryPage+1)*50>=directoryTotal)return;const nextPage=directoryPage+1,requestSeq=seq;try{const page=await adm.customers({search:directorySearch,limit:50,offset:nextPage*50});if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;directoryPage=nextPage;directoryRows=page.rows;directoryTotal=page.total;workspaceError=false;}catch{if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;workspaceError=true;}paint();});
+    pager.append(prev,el("span","admin-note",L("page",{current:num(directoryPage+1),total:num(Math.max(1,Math.ceil(directoryTotal/50)))})),next);
+    customers.append(pager);
     const orders=el("section","admin-panel"); orders.append(el("h2",null,L("ordersTitle")));
     const oform=el("form","admin-filter");
     const oi=el("input","admin-search"); oi.type="search"; oi.placeholder=L("orderSearch"); oi.setAttribute("aria-label",L("orderSearch"));
@@ -208,9 +198,8 @@
     if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
     for(const o of orderRows.slice(0,orderVisible)){
       const card=el("article","admin-record");
-      const who=o.guest_name||(o.customer&&o.customer.display_name)||o.user_id||L("guest");
       card.append(el("strong",null,L("order")+" "+publicCode(o.id)),
-        el("span","admin-record-meta",who+" · "+(o.contact_phone||(o.customer&&o.customer.phone)||o.customerEmail||o.guest_email||"")+" · "+o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
+        el("span","admin-record-meta",o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
         el("span","admin-record-meta",money(o.total_cents)+" · "+new Date(o.placed_at).toLocaleString(loc())));
       const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;const requestSeq=seq;try{const row=await adm.orderDetail(o.id);if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return;detailRow=row;workspaceError=false;}catch{if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;workspaceError=true;}paint();});
       card.append(view);orders.append(card);
@@ -239,6 +228,10 @@
     const out = el("button", "button admin-signout", L(signingOut ? "signingOut" : "signOut")); out.type = "button"; out.id = "adminSignOut"; out.disabled = signingOut;
     out.addEventListener("click", signOut);
     who.append(el("p", "admin-who", L("signedAs", { email: acc.email || "", role: L("r_" + acc.role) })), out);
+    if (acc.role === "manager") {
+      const manager = el("section", "admin-panel manager-operations"); manager.id = "managerOperations"; manager.append(el("h2", null, L("managerOperations")), el("p", "admin-note", L("managerScope")));
+      return rootEl.replaceChildren(h, who, manager);
+    }
     if (acc.role !== "admin") {
       const parts = [h, who, el("p", "admin-note", L("notAdmin"))];
       if (acc.role === "staff") parts.push(link("staff.html", L("staffGo"), "button button-gold"));
@@ -274,14 +267,14 @@
       try { o = await adm.overview(); } catch { bad = true; }
       if (my !== seq) return; // invalidated while waiting: discard
       ov = o; failed = bad;
-      if (!bad) { try { const data = await Promise.all([adm.customers(), adm.orders()]); if (my !== seq) return; directoryRows=data[0]; orderRows=data[1]; workspaceError=false; } catch { if (my !== seq) return; workspaceError=true; } }
+      if (!bad) { try { const data = await Promise.all([adm.customers({search:directorySearch,limit:50,offset:0}), adm.orders()]); if (my !== seq) return; directoryRows=data[0].rows; directoryTotal=data[0].total; directoryPage=0; orderRows=data[1]; workspaceError=false; } catch { if (my !== seq) return; workspaceError=true; } }
       paint();
     }
   }
   // ChatGPT #62 review: management data never outlives the session that fetched it. On a sign-out here, a sign-out or
   // account switch in another tab (storage event on the session key), or when the page comes back into view, the
   // counts are dropped at once, in-flight answers are discarded (seq), and the role is checked again.
-  function invalidate() { seq++; acc = null; ov = null; directoryRows = []; orderRows = []; detailRow = null; failed = false; workspaceError = false; paint(); if (adm.enabled) load(); }
+  function invalidate() { seq++; acc = null; ov = null; directoryRows = []; directoryTotal = 0; directoryPage = 0; orderRows = []; detailRow = null; failed = false; workspaceError = false; paint(); if (adm.enabled) load(); }
   const AUTH_KEY = "azal-auth-v1";
   root.addEventListener("storage", (e) => { if (e.key === AUTH_KEY || e.key === null) invalidate(); });
   document.addEventListener("azal:auth", (e) => { if (!e.detail || e.detail.status !== "signed_in") invalidate(); });
