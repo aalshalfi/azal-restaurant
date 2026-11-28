@@ -48,12 +48,13 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(text.includes(directory)&&text.includes(orders),lang+" "+width+": directory and order history localized");
  check(text.includes("100")&&text.includes("+1")&&text.includes("Amal")&&text.includes("Sara")&&text.includes("amal@example.invalid"),lang+" "+width+": customer profiles, phone and member numbers visible");
  check(text.includes("Handed over")||text.includes("Remise")||text.includes("تم التسليم"),lang+" "+width+": handed-over order remains visible");
+ check(text.includes("111111"),lang+" "+width+": public six-character order code is shown");
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")),lang+" "+width+": workspace is read-only");
  const button=page.locator(".admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
- check(detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
+ check(detail.includes("111111")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
  await page.close();
 }
 {
