@@ -208,6 +208,49 @@ jobs:
           expect_service_role_denied "after 0016 least-privilege check" orders "select id from public.orders limit 0"
           DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/admin-team-access-behaviour.sql
 
+  reporting-checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          psql --version
+      - name: Run T-25/T-26 aggregate behavior on fresh PostgreSQL 16
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -Eeuo pipefail
+          createdb -h 127.0.0.1 -U postgres azal_reporting_review
+          DB='postgresql://postgres:postgres@127.0.0.1:5432/azal_reporting_review'
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f tests/sql/supabase-stub.sql
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f docs/schema-reference/0001_azal_staging_baseline.sql
+          for migration in 0002_p2_fixes.sql 0003_membership_provisioning.sql 0004_ordering_functions.sql 0006_points_redeem.sql 0007_points_increments.sql 0008_profile_contact.sql 0009_order_notifications.sql 0010_order_contact_phone.sql 0013_member_number.sql 0014_admin_customer_directory.sql; do
+            psql "$DB" -X -v ON_ERROR_STOP=1 -f "supabase/migrations/$migration"
+          done
+          psql "$DB" -X -v ON_ERROR_STOP=1 -c "insert into auth.users(id,email,email_confirmed_at) values ('00000000-0000-0000-0000-0000000000a0','info@azalrestaurant.com',now()) on conflict (id) do update set email=excluded.email,email_confirmed_at=coalesce(auth.users.email_confirmed_at,excluded.email_confirmed_at)"
+          psql "$DB" -X -v ON_ERROR_STOP=1 -c "insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000a0','admin') on conflict do nothing"
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0015_admin_team_access.sql
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0016_t14_service_role_grants.sql
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0017_reporting_aggregation.sql
+          DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/reporting-aggregation-behaviour.sql
+
   edge-function-checks:
     runs-on: ubuntu-latest
     steps:
