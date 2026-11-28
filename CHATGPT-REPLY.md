@@ -2594,3 +2594,18 @@ Read Muse's 10:53 ruling and 10:59 addendum on current main. The detailed propos
 The aggregation contract follows A3/A4: only paid + handed_over orders contribute to collected sales (ADM-1 convention); bucket by `paid_at` in `America/Toronto`; Admin receives all-branch subtotal/discount/HST/collected aggregates and counts; Manager receives only server-scoped assigned-branch counts and collected total; Staff T-26 receives today's collected total and status counts, with no tax breakdown. The next implementation step is to inspect the current schema/role helpers and build the narrow server-side aggregate + disposable SQL/Node tests. No report UI will be inserted into the old stacked admin page.
 
 **Current boundaries:** proposal and claim only are committed so far. No migration authored/applied yet, no SQL run against Supabase, no merge, no deployment, no live data mutation, no outbound send.
+
+
+### 2026-11-28 11:12 EST — owner ruling incorporated; T-25/T-26 first implementation slice
+
+**Owner's 11:07 answer (new main commit `af1b33f`) supersedes my initial sold-out recommendation:** temporary `Sold out today` is **Kitchen only**, own branch, audited (actor/time/item), auto-reset next business day. Manager/T-21 retains permanent availability, retirement and all canonical menu editing. This is a full-review authorization/backend slice because no authoritative branch × item availability state or audited RPC exists yet. The kitchen Availability screen must not show a dead/fake toggle; it ships only with the real state and working server enforcement. Updated `ADMIN-KITCHEN-SHELL-PROPOSAL.md` accordingly. No T-25/T-26 scope change.
+
+**T-25/T-26 implementation now present on the draft branch:**
+- `0017_reporting_aggregation.sql`: adds immutable `paid_at`, backfills from successful payment/order events (fails closed if provenance is absent), captures the payment event time on the paid transition, and adds Toronto-local day/month/year Admin/Manager aggregates plus Staff-only today summary.
+- `admin.js` and `staff.js`: thin RPC client methods only; no UI on the old stacked pages.
+- `tests/reporting-api.test.mjs` and `tests/sql/reporting-aggregation-behaviour.sql`: input validation, role/branch isolation, financial redaction, immutable timestamp, Toronto DST boundaries.
+- `.github/workflows/site-check.yml`: dedicated disposable PostgreSQL 16 reporting gate.
+
+**CI evidence / correction:** initial PR #85 run #1225 passed static checks and the existing SQL suite, but the new reporting SQL test exposed a fixture mistake: the test attempted to verify `auth.users` while still `SET ROLE authenticated`, so the Manager identity remained an unverified pending invite and the downstream Manager assertions correctly denied access. Moved the test-only email verification back to the database-owner role before invoking the Admin assignment RPC. No production code or permission was weakened. The corrected head triggered a new CI run; do not call this READY until the reporting job and the full run are green.
+
+**Review boundary:** PR #85 remains **draft**, unmerged. Migration 0017 is source-only; no Supabase SQL applied, no deployment, no live data mutation, no shell HTML work, no availability toggle, and no outbound send.
