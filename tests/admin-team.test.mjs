@@ -141,6 +141,8 @@ test("A2 preflights customer identity and restores the complete Auth snapshot on
   assert.match(edge,/restoreAuthPatch\(previousAuthState\)/);
   assert.match(edge,/p_email_to_scrub: previousAuthState\.email/);
   assert.match(edge,/anonymization_compensation_failed/);
+  assert.match(edge,/afterErrorProfile\.anonymized_at/);
+  assert.match(edge,/anonymization_commit_state_unverified/);
   assert.match(auth,/email_confirm: snapshot\.email_confirm/);
   assert.match(auth,/user_metadata: cloneJson\(snapshot\.user_metadata\)/);
   assert.match(auth,/ban_duration: snapshot\.ban_duration/);
