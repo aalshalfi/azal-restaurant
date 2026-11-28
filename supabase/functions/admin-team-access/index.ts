@@ -84,7 +84,6 @@ Deno.serve(async (req: Request) => {
         email: replacement,
         email_confirm: true,
         user_metadata: {},
-        phone: null,
         ban_duration: "876000h"
       });
       if (banError) return reply(502, { error: "account_deactivation_failed" });
