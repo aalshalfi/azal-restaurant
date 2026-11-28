@@ -14,7 +14,8 @@ async function open({ staff = true, session = true, clash = false, branches = ["
   ];
   // V8: same first 8 hex as Sara's order -> same pickup sigil
   if (clash) orders.push({ id: "aaaaaa11-9999-4000-8000-000000000003", pickup_slot: "2026-11-26T17:30:00Z", guest_name: "Omar", customer_note: null, fulfilment_status: "placed", total_cents: 999, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] });
-  if (branches.includes("second")) orders.push({ id:"cccccc33-0000-4000-8000-000000000003", pickup_slot:"2026-11-26T18:00:00Z", guest_name:"Second branch", customer_note:null, fulfilment_status:"placed", branch_slug:"second", total_cents:700, order_items:[{quantity:1,item_name_en_snapshot:"Second Branch Dish",item_name_fr_snapshot:"Plat deuxième succursale"}] });\n  const acts = [], requests = [];
+  if (branches.includes("second")) orders.push({ id:"cccccc33-0000-4000-8000-000000000003", pickup_slot:"2026-11-26T18:00:00Z", guest_name:"Second branch", customer_note:null, fulfilment_status:"placed", branch_slug:"second", total_cents:700, order_items:[{quantity:1,item_name_en_snapshot:"Second Branch Dish",item_name_fr_snapshot:"Plat deuxième succursale"}] });
+  const acts = [], requests = [];
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await page.route("https://fake.supabase.co/**", async (r) => {
     const u = r.request().url();
@@ -65,4 +66,5 @@ async function open({ staff = true, session = true, clash = false, branches = ["
   ok(!(await page.textContent("#staffRoot")).includes("Lamb Mandi"), "orders from the previous branch disappear after switching");
   await page.close();
 }
-\nawait b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
+
+await b.close(); srv.close(); console.log(fails ? `${fails} failed` : "all passed"); process.exit(fails ? 1 : 0);
