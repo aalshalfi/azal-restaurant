@@ -156,7 +156,10 @@
           [profile, membership, rows] = await Promise.all([
             // select=* so the 0008 phone column comes along once it exists, and nothing breaks before.
             // B4: explicit columns; one fallback for a server without 0008 (no phone column -> 400).
-            q("/rest/v1/profiles?select=id,display_name,phone&id=eq." + encodeURIComponent(uid)).catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name&id=eq." + encodeURIComponent(uid)); throw e; }).then((r) => r[0] || null),
+            // T-23: member_number (0013) first; each 400 steps down one migration, so the page works before the apply.
+            q("/rest/v1/profiles?select=id,display_name,phone,member_number&id=eq." + encodeURIComponent(uid))
+              .catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name,phone&id=eq." + encodeURIComponent(uid)); throw e; })
+              .catch((e) => { if (e.status === 400) return q("/rest/v1/profiles?select=id,display_name&id=eq." + encodeURIComponent(uid)); throw e; }).then((r) => r[0] || null),
             q("/rest/v1/memberships?select=status,joined_at&user_id=eq." + encodeURIComponent(uid)).then((r) => r[0] || null),
             q("/rest/v1/points_ledger?select=delta_points&user_id=eq." + encodeURIComponent(uid))
           ]);
@@ -166,7 +169,7 @@
         }
         if (!profile) return { status: "no_profile", email: s.user && s.user.email };
         const points = (rows || []).reduce((a, r) => a + Number(r.delta_points || 0), 0);
-        return { status: "signed_in", email: s.user && s.user.email, name: profile.display_name || null, phone: profile.phone || null, hasPhoneField: "phone" in profile, membership: membership ? membership.status : null, points };
+        return { status: "signed_in", email: s.user && s.user.email, name: profile.display_name || null, phone: profile.phone || null, hasPhoneField: "phone" in profile, memberNumber: Number.isSafeInteger(Number(profile.member_number)) && Number(profile.member_number) >= 10001 ? Number(profile.member_number) : null, membership: membership ? membership.status : null, points };
       }
     };
   }
@@ -247,11 +250,16 @@
     try { document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: st && st.status } })); } catch {} // member-history.js listens
     const card = document.querySelector(".member-card");
     if (!card) return;
+    // T-23 step 2 / F-OWN-17 (owner, twice): a signed-in member never sees the join pitch; visitors keep it.
+    const banner = document.querySelector(".member-banner");
+    if (banner) banner.hidden = st.status === "signed_in" || st.status === "no_profile" || st.status === "error";
     if (st.status === "signed_in" || st.status === "no_profile" || st.status === "error") {
       const pending = st.status !== "signed_in";
       card.innerHTML =
         `<div class="section-kicker">${tr("memberCardKicker")}</div>` +
         `<p class="auth-hello">${esc(tr("authHello").replace("{name}", st.name || st.email || ""))}</p>` +
+        // T-23: the membership number (plain digits, left-to-right even in Arabic). Shown only when the server has it.
+        (st.memberNumber ? `<p class="auth-member-no" id="authMemberNo">${esc(tr("authMemberNo"))} <strong><bdi dir="ltr">${st.memberNumber}</bdi></strong></p>` : "") +
         `<div class="member-stats"><div class="member-stat"><span>${tr("memberStatusLabel")}</span><strong>${pending ? tr("authSettingUp") : st.membership === "active" ? tr("authMemberActive") : tr("authMemberNone")}</strong></div>` +
         // Owner 21:31: no placeholder where personal data would go; the points card renders only with real points behind it.
         (pending ? "" : `<div class="member-stat"><span>${tr("memberPointsLabel")}</span><strong>${fmtPoints(st.points)}</strong></div>`) + `</div>` +

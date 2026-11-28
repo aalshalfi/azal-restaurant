@@ -40,7 +40,8 @@ test("sign in stores the session; requests carry apikey and bearer", async () =>
   await a.signIn("a@example.invalid", "secret123");
   assert.ok(JSON.parse(st.getItem(KEY)).access_token === "A1");
   const state = await a.state();
-  assert.deepEqual(state, { status: "signed_in", email: "a@example.invalid", name: "Amal", phone: null, hasPhoneField: false, membership: "active", points: 279 });
+  assert.deepEqual(state, { status: "signed_in", email: "a@example.invalid", name: "Amal", phone: null, hasPhoneField: false, memberNumber: null, membership: "active", points: 279 });
+  assert.match(s.calls.find((c) => /profiles/.test(c.url)).url, /select=id,display_name,phone,member_number&/, "T-23: the number is asked for first");
   const q = s.calls.find((c) => /points_ledger/.test(c.url));
   assert.equal(q.init.headers.apikey, "anon-test");
   assert.equal(q.init.headers.Authorization, "Bearer A1");
