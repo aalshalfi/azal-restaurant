@@ -68,7 +68,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(contactBeforeDetail.length===0,lang+" "+width+": order list does not fetch other customer profile or contact data");
  const listRead=requests.find(x=>x.url.includes("/rest/v1/orders?")&&!x.url.includes("order_items("));
  const listSelect=listRead?new URL(listRead.url).searchParams.get("select")||"":"";
- check(!!listRead&&!/guest_name|guest_email|contact_phone/.test(listSelect),lang+" "+width+": order-list SELECT excludes guest name, email and phone");
+ check(!!listRead&&!/user_id|guest_name|guest_email|contact_phone/.test(listSelect),lang+" "+width+": order-list SELECT excludes guest name, email and phone");
  const button=page.locator(".admin-workspace > .admin-panel:nth-child(2) .admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
  check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
