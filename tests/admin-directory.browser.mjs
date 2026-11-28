@@ -11,7 +11,7 @@ const types={".html":"text/html",".js":"text/javascript",".css":"text/css",".svg
 const server=http.createServer((q,r)=>{const p=join(root,decodeURIComponent(q.url.split("?")[0]));if(!existsSync(p)){r.writeHead(404);return r.end();}r.writeHead(200,{"Content-Type":types[extname(p)]||"application/octet-stream"});r.end(readFileSync(p));}).listen(0);
 const browser=nullConfig(await chromium.launch()),base="http://localhost:"+server.address().port;
 let failures=0;const check=(ok,msg)=>{console.log((ok?"ok   ":"FAIL ")+msg);if(!ok)failures++;};
-const U1="11111111-1111-4111-8111-111111111111",U2="22222222-2222-4222-8222-222222222222";
+const U1="4d9d36ab-1111-4111-8111-111111111111",U2="22222222-2222-4222-8222-222222222222";
 const profiles=[{id:"u1",display_name:"Amal",phone:"+16135550101",member_number:10001,created_at:"2026-11-01T00:00:00Z"},{id:"u2",display_name:"Sara",phone:"+16135550102",member_number:10002,created_at:"2026-11-02T00:00:00Z"}];
 const allOrders=[
 {id:U1,user_id:"u1",branch_slug:"ottawa",fulfilment_status:"handed_over",payment_status:"paid",subtotal_cents:2499,discount_cents:0,redeemed_points:0,tax_rate_bps:1300,tax_cents:325,total_cents:2824,placed_at:"2026-11-20T10:00:00Z",contact_phone:null},
@@ -48,13 +48,13 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(text.includes(directory)&&text.includes(orders),lang+" "+width+": directory and order history localized");
  check(text.includes("100")&&text.includes("+1")&&text.includes("Amal")&&text.includes("Sara")&&text.includes("amal@example.invalid"),lang+" "+width+": customer profiles, phone and member numbers visible");
  check(text.includes("Handed over")||text.includes("Remise")||text.includes("تم التسليم"),lang+" "+width+": handed-over order remains visible");
- check(text.includes("111111"),lang+" "+width+": public six-character order code is shown");
+ check(text.includes("4D9D36"),lang+" "+width+": public six-character order code 4D9D36 is shown");
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_customer_directory")),lang+" "+width+": workspace is read-only");
  const button=page.locator(".admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
- check(detail.includes("111111")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
+ check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
  await page.close();
 }
 {
