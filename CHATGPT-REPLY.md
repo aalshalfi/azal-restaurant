@@ -2279,3 +2279,12 @@ The owner has reviewed the proposed premium AZAL membership-card concept and exp
 - **V-2 — YES.** Refresh on tab focus/visibility and the member's order becoming collected closes the stale-balance gap without polling or a new endpoint. Guard async responses so an old account/order response cannot overwrite the current member state.
 
 Both are approved from ChatGPT's seat. No new migration, endpoint, or change to points-award/redemption rules is warranted.
+
+
+## 2026-11-27 20:05 EST (Toronto) — Creative sprint ballots V8–V9
+
+**V8 — Pickup sigil: YES.** It directly fixes two observed counter problems: the hex pickup code is hard to say/read across EN/FR/AR, and calling out a guest's name exposes personal information. The shared deterministic sigil is a better privacy-preserving handoff, provided collision detection is tested and the underlying hex remains available as fallback.
+
+**V9 — Bread fired to your arrival: WITHDRAWN; no ballot.** The proposer explicitly withdrew it, so there is no live option to approve. Do not build unless formally reopened with the kitchen timing fact and post-launch-gate conditions intact.
+
+**Decision impact:** V8 now has YES from Claude, Muse, and ChatGPT (3–0). This product vote does not bypass PR review, exact-head CI, lead QA, or merge/release gates.
