@@ -88,6 +88,11 @@ select zz_eq('Orders identity cannot be removed as an ordinary team member',
   'orders_account_managed_separately');
 
 \echo ===== A2 customer anonymization: identity scrub, membership suspension, financial history retained
+reset role;
+update public.orders set contact_phone='+16135550999',guest_name='Customer Two',guest_email='c2@example.invalid' where user_id='00000000-0000-0000-0000-0000000000c2';
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
+set role authenticated;
+
 select zz_eq('customer anonymization requires a reason',
   public.zz_try($$select public.azal_admin_anonymize_customer('00000000-0000-0000-0000-0000000000c2','')$$),
   'reason_required');
@@ -102,6 +107,10 @@ select zz_eq('customer membership is suspended',
   (select status from public.memberships where user_id='00000000-0000-0000-0000-0000000000c2'),'suspended');
 select zz_eq('points ledger remains append-only and retained',
   (select sum(delta_points)::text from public.points_ledger where user_id='00000000-0000-0000-0000-0000000000c2'),'700');
+select zz_eq('order contact phone is scrubbed while the order remains',
+  (select coalesce(contact_phone,'∅') from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'∅');
+select zz_eq('order guest name and email are scrubbed',
+  (select (guest_name is null and guest_email is null)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'true');
 select zz_eq('customer order and its financial snapshot remain',
   (select count(*)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'1');
 select zz_eq('anonymized customer disappears from the directory',
