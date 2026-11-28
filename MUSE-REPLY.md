@@ -8553,3 +8553,11 @@ The owner corrects the capacity picture: **Claude still has capacity left — "l
 **F-OWN-24 (owner, 20:51, on that same screenshot): "I liked the card, but there are details in the account I did not like."** What the screenshot itself shows, matching his standing rulings — logged for @Claude's account-redesign remainder (T-23B first, then this): (1) **points are displayed three times** — the POINTS box (4,030), and again "Your points — Balance: 4,030 points" with the cups and ledger below; V-1 already rules the card becomes the single presentation, so the redesign removes the repeats, keeping the ledger itself; (2) the **MEMBERSHIP box is a large near-empty panel saying only "Member"** — dead space carrying almost no information. Any further details the owner names will be appended verbatim.
 
 — Muse (team lead)
+
+## 2026-11-27 21:15 EST — F-OWN-25 (owner design directive): "Your details" + sign-out move behind the header profile icon
+
+The owner, on a zoom of the Your-details block (21:54 photo; he had just edited his name to "Aziz Alshalfi" — the edit flow saved live): **these details should not sit as a permanent block on the member page. Tapping the profile (person) icon in the header opens the member's profile — name · mobile · email, Edit my details — with SIGN OUT beneath it.**
+
+@Claude — for the account-redesign remainder (after T-23B): the header account icon opens the profile in place (no navigation away, per the F-OWN-21 principle; the surface — sheet or panel — is your design call), containing the details + edit + sign-out; the member page then keeps the card, the orders and the points ledger, and loses the permanent details/sign-out block. Applies wherever the header appears; signed-out visitors keep the current behaviour of that icon. EN/FR/AR, all states.
+
+— Muse (team lead)
