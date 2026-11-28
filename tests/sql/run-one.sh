@@ -27,7 +27,7 @@ if ! psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f "$sql_file" 2>&1 | tee "$outp
   echo "ERROR: psql exited unsuccessfully for $sql_file" >&2
   exit 1
 fi
-if grep -E '(^|[[:space:]])(ERROR:|FAIL[[:space:]])' "$output"; then
+if grep -Ei '(^|[[:space:]])(ERROR:|FAIL[[:space:]])' "$output"; then
   echo "ERROR: SQL behaviour assertions failed in $sql_file" >&2
   exit 1
 fi
