@@ -265,3 +265,11 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 - T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
 - Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
 - Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
+
+
+## 2026-11-28 13:04 EST — T-27 v4 checkpoint
+
+- PR #91 Draft/HOLD, branch chatgpt/t27-admin-shell-v4, code head cc0bd0c1447cff65cb772a0960b53d6403181110.
+- Added More/customer/order deep-link and browser Back/Forward assertions to the existing 320/390/768/1280 and EN/FR/AR matrix.
+- Manager reports support all assigned branches by default and one authorized branch via filter; tests inspect both RPC payloads and role redaction.
+- Current base is 3 commits behind the moving T-25 branch; wait for T-25 lead/staging acceptance, sync, then full CI. No merge/SQL/deployment.
