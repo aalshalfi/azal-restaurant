@@ -57,7 +57,7 @@ test("customer directory joins membership state and derives the exact ledger bal
   const { api, calls } = fixture();
   const rows = await api.customers();
   assert.equal(rows.length, 2);
-  assert.deepEqual(rows.map(x => x.id).sort(), ["u1","u2"], "staff and admin profiles are not customer-directory entries");
+  assert.deepEqual(rows.map(x => x.user_id).sort(), ["u1","u2"], "staff and admin profiles are not customer-directory entries");
   assert.deepEqual(rows.map(x => [x.display_name, x.email, x.member_number, x.membership.status, x.balance]), [["Amal","amal@example.invalid",10001,"active",100],["Sara","sara@example.invalid",10002,"suspended",55]]);
   assert.ok(calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory") && x.init.method === "POST"));
   assert.ok(calls.some(x => x.url.includes("/rest/v1/points_ledger?select=user_id,delta_points") && x.url.includes("order=created_at.asc,id.asc")));
@@ -65,9 +65,9 @@ test("customer directory joins membership state and derives the exact ledger bal
 
 test("customer directory search matches name, phone and membership number", async () => {
   const { api } = fixture();
-  assert.deepEqual((await api.customers({ search: "amal" })).map(x => x.id), ["u1"]);
-  assert.deepEqual((await api.customers({ search: "6135550102" })).map(x => x.id), ["u2"]);
-  assert.deepEqual((await api.customers({ search: "10001" })).map(x => x.id), ["u1"]);
+  assert.deepEqual((await api.customers({ search: "amal" })).map(x => x.user_id), ["u1"]);
+  assert.deepEqual((await api.customers({ search: "6135550102" })).map(x => x.user_id), ["u2"]);
+  assert.deepEqual((await api.customers({ search: "10001" })).map(x => x.user_id), ["u1"]);
 });
 
 test("order history has no date/status exclusion and preserves handed_over, cancelled and unpaid rows", async () => {
