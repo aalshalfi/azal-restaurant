@@ -287,6 +287,34 @@ $fn$;
 revoke all on function public.azal_admin_team_list() from public, anon, authenticated;
 grant execute on function public.azal_admin_team_list() to authenticated;
 
+-- Admin-only read path for the immutable access/action audit trail.
+create or replace function public.azal_admin_audit_recent(p_limit integer default 50)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $fn$
+declare v_rows jsonb;
+begin
+  if auth.uid() is null or not public.azal_is_admin() then raise exception 'not_admin' using errcode='42501'; end if;
+  select coalesce(pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
+    'id',x.id,'action',x.action,'target_type',x.target_type,'target_id',x.target_id,
+    'branch_slug',x.branch_slug,'reason',x.reason,'created_at',x.created_at,
+    'actor_name',coalesce(p.display_name,'Admin')
+  ) order by x.id desc),'[]'::jsonb)
+  into v_rows
+  from (
+    select * from public.admin_audit_log order by id desc
+    limit greatest(1,least(coalesce(p_limit,50),100))
+  ) x
+  left join public.profiles p on p.id=x.actor_user_id;
+  return v_rows;
+end;
+$fn$;
+revoke all on function public.azal_admin_audit_recent(integer) from public, anon, authenticated;
+grant execute on function public.azal_admin_audit_recent(integer) to authenticated;
+
 -- Assign an existing, email-verified account, or record a pending in-portal invite.
 -- A6: this function sends no email. A pending invite is applied only after that email signs up
 -- and becomes verified through the existing Auth flow.
