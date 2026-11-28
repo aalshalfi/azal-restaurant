@@ -96,7 +96,7 @@
   const money = (c) => { const s = new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100); return lang() === "ar" ? "\u2066" + s.replace(/\u200f/g, "") + "\u2069" : s; };
 
   let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0, branchOptions = [];
-  let today = null, historyRows = [], historyError = "", historyLoading = false, activeView = "queue", stageFilter = "all";
+  let today = null, historyRows = [], historyError = "", historyLoading = false, historyPromise = null, activeView = "queue", stageFilter = "all";
   const whoBar = () => '<details class="staff-profile"><summary>' + esc(L("signedAs", { email })) + '</summary><button type="button" class="button staff-signout" id="staffSignOut"' + (signingOut ? " disabled" : "") + '>' + esc(L(signingOut ? "signingOut" : "signOut")) + '</button></details>';
 
   function paint() {
@@ -204,14 +204,18 @@
   });
   async function loadHistory() {
     if (!st.enabled || signingOut || state !== "ready") return;
+    if (historyPromise) return historyPromise;
     const my = ++gen, stale = () => my !== gen || signingOut;
     historyLoading = true; historyError = ""; paint();
-    const [summaryResult, historyResult] = await Promise.allSettled([st.todaySummary(), st.history()]);
-    if (stale()) return;
-    today = summaryResult.status === "fulfilled" ? summaryResult.value : null;
-    historyRows = historyResult.status === "fulfilled" ? historyResult.value : [];
-    historyError = historyResult.status === "fulfilled" ? "" : "load_failed";
-    historyLoading = false; paint();
+    historyPromise = (async () => {
+      const [summaryResult, historyResult] = await Promise.allSettled([st.todaySummary(), st.history()]);
+      if (stale()) return;
+      today = summaryResult.status === "fulfilled" ? summaryResult.value : null;
+      historyRows = historyResult.status === "fulfilled" ? historyResult.value : [];
+      historyError = historyResult.status === "fulfilled" ? "" : "load_failed";
+      historyLoading = false; paint();
+    })();
+    try { await historyPromise; } finally { historyPromise = null; }
   }
   box.addEventListener("click", async (e) => {
     const nav = e.target.closest && e.target.closest("a[data-staff-view]");
