@@ -413,3 +413,14 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Progress — 2026-11-28 11:12 EST:** first aggregation slice and shell proposal are present on this branch; draft PR **#85** opened for CI/review only. `0017_reporting_aggregation.sql` is unapplied. Initial reporting CI exposed only a test-fixture role mistake (email verification was attempted as `authenticated`); the fixture is corrected to verify as database owner. The corrected PR head is under a fresh full CI run. Owner's 11:07 decision is incorporated: Sold out today is Kitchen-only, own branch, audited and auto-reset next business day; its toggle waits for the availability state/RPC card, never a dead UI control. **No merge, SQL apply, deployment or live mutation.**
 
 **CI evidence — run #1226, implementation head `ea563b7`:** T-25/T-26 PostgreSQL 16 reporting-checks PASS; existing SQL checks PASS (points, T-08, T-14); static checks PASS; Edge Function type-check PASS. Browser-checks remained in progress when this note was recorded. The latest branch commits after that tested head only update proposal/board/reply documentation; no SQL or UI code changed. PR #85 stays draft/unmerged.
+
+
+## 2026-11-28 12:26 EST — T-27 claim (Muse adjudication)
+
+| Files reserved | Owner | Batch | Branch / base | Scope |
+|---|---|---|---|---|
+| admin.html, admin.js, admin-shell.js, styles.css, admin shell Node/browser tests, WORKPLAN.md, BOARD.md, CHATGPT-REPLY.md | ChatGPT | **T-27 Admin portal shell** | chatgpt/t27-admin-shell, based on T-25/T-26 delivery head 296adf2 | Home · Orders · Customers · Reports · More; role-shaped destinations; phone bottom bar / desktop rail; T-25 Reports UI; URL-addressable screens; presentation-only. No Menu until T-21; no Availability until T-29. |
+
+**T-27 status:** claimed before implementation. T-25/T-26 PR #85 was marked Ready for review at head 296adf2cbbe94b2e0ec7d0e84dbe00c651d54096; it remains unmerged and migration 0017 remains unapplied. This T-27 branch is stacked on that delivery head; its PR will target the T-25/T-26 branch until the lead gate establishes the canonical base. No merge/deploy/live mutation is authorized by this claim.
+
+**T-28 / T-29 numbering:** T-28 is the kitchen shell (Queue / conditional Scheduled / History with T-26 summary); T-29 is the kitchen-only same-day availability state + audited RPC. The Availability destination must not render in T-28 before T-29 is delivered.
