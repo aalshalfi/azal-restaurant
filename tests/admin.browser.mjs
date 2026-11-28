@@ -15,13 +15,20 @@ const ORDERS = [
   { id: "3", branch_slug: "ottawa", fulfilment_status: "placed", payment_status: "unpaid", total_cents: 677 }];
 
 async function open(pageName, { role = "admin", signedIn = true, lang = "en", w = 390 } = {}) {
-  const p = await b.newPage({ viewport: { width: w, height: 900 } }); const sent = [];
+  const p = await b.newPage({ viewport: { width: w, height: 900 } }); const sent = [], reportCalls = [];
   await p.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await p.route("https://fake.supabase.co/**", (r) => {
     const req = r.request(), u = decodeURIComponent(req.url()); sent.push({ u, m: req.method() });
     if (u.includes("/rpc/azal_is_admin")) return r.fulfill({ json: role === "admin" });
     if (u.includes("/rest/v1/user_roles")) return r.fulfill({ json: role === "customer" ? [] : [{ role }] });
-    if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: role === "staff" ? [{ branch_slug: "ottawa" }] : [] });
+    if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: role === "staff" ? [{ branch_slug: "ottawa" }] : role === "manager" ? [{ branch_slug: "ottawa" }, { branch_slug: "second" }] : [] });
+    if (u.includes("/rpc/azal_sales_report")) {
+      reportCalls.push(JSON.parse(req.postData() || "{}"));
+      const totals = role === "admin"
+        ? { order_count: 2, placed_count: 1, accepted_count: 0, preparing_count: 0, ready_count: 0, collected_count: 1, cancelled_count: 0, collected_cents: 10000, refunds_cents: 1000, net_collected_cents: 9000, subtotal_cents: 9000, discount_cents: 0, tax_cents: 1000 }
+        : { order_count: 2, placed_count: 1, accepted_count: 0, preparing_count: 0, ready_count: 0, collected_count: 1, cancelled_count: 0, net_collected_cents: 9000 };
+      return r.fulfill({ json: { role, period: "day", start_date: "2026-11-28", end_date: "2026-11-28", rows: [{ period_start: "2026-11-28", branch_slug: "ottawa", ...totals }], totals } });
+    }
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: role === "admin" ? ORDERS : [] });
     if (u.includes("/rest/v1/memberships") && u.includes("status=eq.active")) return r.fulfill({ json: [{ user_id: "x" }], headers: { "content-range": "0-0/42", "access-control-expose-headers": "content-range" } });
     if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Owner" }] });
@@ -32,14 +39,14 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   });
   await p.addInitScript(([l, s]) => { localStorage.setItem("azal-language", l); if (s) localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T", refresh_token: "R", expires_at: 4e12, user: { id: "u1", email: "info@example.invalid" } })); }, [lang, signedIn]);
   await p.goto(`${base}/${pageName}.html`); await p.waitForTimeout(500);
-  return { p, sent };
+  return { p, sent, reportCalls };
 }
 
 { const { p } = await open("member");
   await p.waitForURL(/admin\.html$/, { timeout: 5000 }).catch(() => {});
   ok(/admin\.html$/.test(p.url()), "member page, admin: sent straight to the management area (owner: never the customer account)");
   await p.waitForTimeout(400);
-  ok(/Collected sales today/.test(await p.textContent("#adminRoot")) && await p.locator(".member-card, #memberHistory").count() === 0, "admin lands on management only: no customer card, history or points");
+  ok(/Gross collected today/.test(await p.textContent("#adminRoot")) && await p.locator(".member-card, #memberHistory").count() === 0, "admin lands on management only: no customer card, history or points");
   await p.close(); }
 { const { p } = await open("member", { role: "staff" });
   await p.waitForURL(/staff\.html$/, { timeout: 5000 }).catch(() => {});
@@ -54,7 +61,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
 { const { p, sent } = await open("admin");
   const t = (await p.textContent("#adminRoot")).replace(/\s+/g, " ");
   ok(/Signed in as info@example\.invalid · Administrator/.test(t), "admin page: who and which role");
-  ok(/New, paid ?1/.test(t) && /Collected ?1/.test(t) && /Unpaid \(never reach the kitchen\) ?1/.test(t) && /Collected sales today: \$22\.59/.test(t) && /Active Majlis members: 42/.test(t), "overview: today's counts, collected sales, member count from the server");
+  ok(/New, paid ?1/.test(t) && /Collected ?1/.test(t) && /Unpaid \(never reach the kitchen\) ?1/.test(t) && /Gross collected today: \$22\.59/.test(t) && /Active Majlis members: 42/.test(t), "overview: today's counts, collected sales, member count from the server");
   ok(/ottawa: 3 orders today, 1 collected/.test(t), "per-branch line");
   const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
   ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
@@ -62,6 +69,24 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   ok(await p.locator("#adminScreen-home").isVisible() && await p.locator("#adminScreen-orders").isHidden(), "Admin shell opens Home first and keeps other screens out of the active view");
   await p.locator('.admin-shell-nav a[href="#reports"]').click();
   ok(await p.locator("#adminScreen-reports").isVisible(), "Reports destination opens as its own screen");
+  ok(await p.locator(".admin-who-bar").isHidden(), "identity and Sign out are hidden behind the header profile icon");
+  await p.locator(".admin-profile-trigger").click();
+  ok(await p.locator(".admin-who-bar").isVisible() && await p.locator(".admin-profile-trigger").getAttribute("aria-expanded")==="true", "profile icon reveals identity and Sign out accessibly");
+  await p.keyboard.press("Escape");
+  ok(await p.locator(".admin-who-bar").isHidden(), "Escape closes the profile menu");
+  const reportFrom=p.locator("#adminScreen-reports input[type=date]").nth(0), reportTo=p.locator("#adminScreen-reports input[type=date]").nth(1);
+  const nowToronto=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+  const [yr,mo]=nowToronto.split("-").map(Number);
+  await p.locator('#adminScreen-reports [data-period="month"]').click();
+  ok(await reportFrom.inputValue()===yr+"-"+String(mo).padStart(2,"0")+"-01" && await reportTo.inputValue()===new Date(Date.UTC(yr,mo,0)).toISOString().slice(0,10), "Monthly preset selects the full Toronto calendar month");
+  await p.locator('#adminScreen-reports [data-period="year"]').click();
+  ok(await reportFrom.inputValue()===yr+"-01-01" && await reportTo.inputValue()===yr+"-12-31", "Yearly preset selects the full Toronto calendar year");
+  await p.locator('#adminScreen-reports [data-period="day"]').click();
+  await p.locator('#adminScreen-reports button[type="submit"]').click();
+  await p.waitForFunction(()=>document.querySelector("#adminScreen-reports .admin-report-results")?.textContent.includes("Net collected"));
+  const reportText=await p.textContent("#adminScreen-reports");
+  ok(/Gross collected/.test(reportText)&&/Refunds/.test(reportText)&&/Net collected/.test(reportText), "Admin report shows gross, refunds and net separately");
+  ok(reportCalls.length===1 && reportCalls[0].p_branch_slug==null, "Admin report requests all branches through the server RPC");
   const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact"];
   ok(sent.every((s) => s.m === "GET" || (s.m === "POST" && postReads.some((path) => s.u.includes(path)))), "Admin page boot only calls read-only RPCs; no mutation endpoint runs automatically");
   ok(!sent.some((s) => s.u.includes("/rpc/azal_admin_customer_contact") || s.u.includes("/rpc/azal_admin_order_customer_emails")), "Admin boot does not fetch customer contact; lookup stays detail-only");
@@ -93,12 +118,12 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
     return r.fulfill({ status: 404, json: {} }); });
   await ctx.addInitScript(() => { if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded", "1"); if (!localStorage.getItem("azal-auth-v1") && !localStorage.getItem("signed-out")) localStorage.setItem("azal-auth-v1", JSON.stringify({ access_token: "T", refresh_token: "R", expires_at: 4e12, user: { id: "u1", email: "info@example.invalid" } })); } });
   const a = await ctx.newPage(); await a.goto(`${base}/admin.html`); await a.waitForTimeout(500);
-  ok(/Collected sales today/.test(await a.textContent("#adminRoot")), "tab A shows the overview");
+  ok(/Gross collected today/.test(await a.textContent("#adminRoot")), "tab A shows the overview");
   const t2 = await ctx.newPage(); await t2.goto(`${base}/index.html`);
   await t2.evaluate(() => { localStorage.setItem("signed-out", "1"); localStorage.removeItem("azal-auth-v1"); });
   await a.waitForTimeout(600);
   const t = await a.textContent("#adminRoot");
-  ok(!/Collected sales|42|ottawa/.test(t) && /Sign in first/.test(t), "signed out in tab B: tab A drops every number and asks to sign in");
+  ok(!/Gross collected today|42|ottawa/.test(t) && /Sign in first/.test(t), "signed out in tab B: tab A drops every number and asks to sign in");
   await ctx.close();
 }
 { // an overview that answers after a sign-out is discarded
@@ -109,7 +134,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   await p.evaluate(() => { localStorage.removeItem("azal-auth-v1"); document.dispatchEvent(new CustomEvent("azal:auth", { detail: { status: "signed_out" } })); });
   await p.waitForTimeout(200); release(); await p.waitForTimeout(500);
   const t = await p.textContent("#adminRoot");
-  ok(!/Collected sales|ottawa/.test(t) && /Sign in first/.test(t), "late overview after sign-out: never painted");
+  ok(!/Gross collected today|ottawa/.test(t) && /Sign in first/.test(t), "late overview after sign-out: never painted");
   await p.close();
 }
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");
