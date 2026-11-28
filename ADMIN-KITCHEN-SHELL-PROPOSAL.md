@@ -50,15 +50,15 @@ Borrow the *information architecture* of Uber's Manager and Orders tablet, not i
 | **Availability** | Searchable branch item list, **Sold out today** filter with count, per-item **Sold out / In stock** control. | Editing item names, prices, photos, modifiers or permanent menu data. |
 | **Settings** | Only operational settings already approved for the Orders identity (e.g. authorized branch context and sign-out); no credentials/password display. | Team roles, menu editing, customer data, financial settings. |
 
-### Sold-out control placement — explicit recommendation
+### Sold-out control placement — owner ruling at 11:07 EST
 
-**Both surfaces, with deliberately different authority and semantics:**
+**Kitchen only** for the temporary `Sold out today` control. The owner answered the lead's open question on current `main` at 11:07: «نفذ اليوم بالمطبخ».
 
-1. **Kitchen → Availability:** staff may set/clear a *temporary “Sold out today”* flag for an item at their currently authorized branch. This is the fast operational control during service. It must be branch-scoped server-side, auditable, and must not change the canonical menu item or another branch's availability.
-2. **Manager → Menu (T-21):** Manager owns the canonical menu and branch availability configuration (including planned/unavailable state); Admin retains oversight. The Manager sees the live kitchen “Sold out today” state but does not silently overwrite it when editing menu details.
-3. The two controls must be separate data concepts and labels: temporary service flag vs Manager-controlled menu availability. Staff cannot edit names, prices, photos, modifiers or permanent availability. If the current schema cannot represent that distinction safely, ship the kitchen view read-only until a separately gated backend card exists; do not simulate a toggle in the UI.
+1. **Kitchen → Availability:** when the authoritative availability state and server RPC exist, staff may set/clear a temporary `Sold out today / In stock` flag for an item at their own authorized branch. The state is audited (actor, time, item, branch) and automatically resets at the next business day. Staff cannot edit item names, prices, photos, modifiers, or permanent availability.
+2. **Manager → Menu (T-21):** Manager retains permanent/until-changed unavailability, item retirement, and every canonical menu edit. The Manager does not own the same-day kitchen toggle.
+3. This is a real authorization change: the Orders account's role matrix becomes **Sold out today: Yes, own branch only**. The server must enforce the branch through `azal_staff_can_access(branch)`; a hidden/disabled UI control is not a substitute for the RPC/RLS boundary.
+4. No authoritative branch × item availability state or audited toggle RPC exists yet. The Availability screen may be included in the future kitchen shell only when it ships with the real state and working toggle. Do not render a dead toggle or a fake client-only state. The backend card belongs with T-21, or a separately sequenced card ahead of it by the lead.
 
-This preserves the Orders identity's narrow role while giving the kitchen a useful service-time control. The exact persistence/audit contract is a separate lead-approved build slice, not part of T-25/T-26 aggregation.
 
 ## 3. T-25 / T-26 data contract
 
@@ -71,7 +71,7 @@ This preserves the Orders identity's narrow role while giving the kitchen a usef
 
 ## 4. Release boundaries
 
-- This proposal changes no page markup, CSS, permissions, database or live state.
+- This proposal changes no page markup, CSS, permissions, database or live state. The owner's kitchen-only Sold out today decision is a future full-review permission/backend card, not a presentation-only exception.
 - T-25/T-26 aggregation may be implemented independently of the shell; no UI is placed into the old stacked page.
 - T-27 owns the eventual presentation-only shell implementation after lead adjudication.
 - No SQL application, merge, deployment, outbound send, or live mutation is authorized by this proposal.
