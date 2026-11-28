@@ -2236,3 +2236,38 @@ At this audit:
 The owner clarified that the Uber dossier is a reference for useful patterns, not a checklist to reproduce wholesale. Muse's 19:30 adjudication already applies that principle: Admin alone manages users; Manager is kept away from payment/tax, points, refunds and settings; AZAL Staff do not edit the menu (the owner's F-OWN-7 rule); Orders-password reset stays Admin-only; modifiers are in scope because the actual menu needs options; menu/item hours, per-item tax classes, photo approval workflow and Uber's automatic timeout/pause are out. Keep those deliberate AZAL choices; do not add Uber features without a concrete restaurant benefit.
 
 **Safety:** no PR was merged by ChatGPT; no SQL was run by ChatGPT; no production/staging setting was changed; no booking, signup, real payment, refund or email was activated by this audit.
+
+
+## 2026-11-27 — Owner request: fast AZAL membership card inside the customer account
+
+The owner has reviewed the proposed premium AZAL membership-card concept and explicitly asked that this recommendation be sent to the team for fast implementation **inside the signed-in customer account**.
+
+### Recommendation — deliver the smallest useful version first
+
+@Muse — please prioritize this as a small customer-account UI slice and coordinate implementation with the active checkout/auth work. Do not wait for a full Apple Wallet / Google Wallet programme.
+
+**Where it belongs**
+- Add a clear **“AZAL Membership / عضوية AZAL”** card near the top of the customer account/profile page, visible after sign-in.
+- Keep the account's existing navigation and order-history functions intact; this is an addition, not a replacement or a new sign-in flow.
+
+**Visual direction**
+- Use the concept just shown to the owner: premium Yemeni identity, deep warm brown/burgundy, restrained gold accents, subtle Sana’a/Yemeni architectural geometry, and the existing AZAL logo/palette.
+- Make it elegant and mobile-first, with a compact card that fits the account screen without pushing order history far below.
+- Provide matching EN/FR/AR text and correct RTL rendering for Arabic.
+
+**Data and behaviour**
+- Show the signed-in member's real display name and available points balance from the existing authenticated account/points source.
+- Show the membership number only if a stable, non-sensitive member identifier already exists. Do not invent one or expose internal database IDs.
+- Add a simple “View rewards / Voir les récompenses / عرض المكافآت” action that opens the existing rewards/account area if available; otherwise use a clearly labelled placeholder state until that route exists.
+- Explain the currently approved redemption rule accurately: **10,000 points = $10 discount**. Do not offer 5,000-point redemption or invent tiers, birthday benefits, expiry rules, or other rewards.
+- If points are unavailable, show a calm empty/loading state rather than a fake balance. Never hardcode the sample name, member number, QR, or 12,740-point balance from the visual mockup.
+
+**Scope and safety for the fast first release**
+- First pass: account-page membership card + real account/points data + responsive EN/FR/AR UI + tests. Keep it read-only; no new personal-data collection and no changes to checkout, payment, ledger, or redemption logic.
+- Do **not** add a static or decorative QR code. A QR can be a later task only if the team implements a secure, revocable member token and a verified staff scan flow.
+- Apple Wallet / Google Wallet pass generation, member tiers, promotional offers, birthday perks, and new reward rules are later phases, not blockers for this small UI slice.
+- Use the existing account/points implementation and current branch/file ownership. Avoid overlapping edits with the active T-22 inline-auth task; register a separate file claim and sequence the work safely.
+- Include browser coverage for signed-in account, no-points/loading state, all three languages, RTL, and mobile widths. Report the exact commit SHA and exact-head CI result before calling it ready.
+
+**Priority:** please assess this as a quick, visible customer-facing improvement and schedule it immediately after the active auth/account task if files overlap. The owner asked for speed, but keep the existing review and release gates; this message is a product recommendation, not permission to merge or activate any live financial feature.
+
