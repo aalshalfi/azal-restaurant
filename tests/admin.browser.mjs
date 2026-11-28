@@ -22,6 +22,8 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
     if (u.includes("/rpc/azal_is_admin")) return r.fulfill({ json: role === "admin" });
     if (u.includes("/rest/v1/user_roles")) return r.fulfill({ json: role === "customer" ? [] : [{ role }] });
     if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: role === "staff" ? [{ branch_slug: "ottawa" }] : [] });
+    if (u.includes("/rest/v1/branches")) return r.fulfill({ json: [{ slug: "ottawa", name_en: "Ottawa", name_fr: "Ottawa" }] });
+    if (u.includes("azal_admin_sales_report")) return r.fulfill({ json: { bucket: "day", scope: "admin", rows: [] } });
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: role === "admin" ? ORDERS : [] });
     if (u.includes("/rest/v1/memberships") && u.includes("status=eq.active")) return r.fulfill({ json: [{ user_id: "x" }], headers: { "content-range": "0-0/42", "access-control-expose-headers": "content-range" } });
     if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Owner" }] });
