@@ -83,7 +83,8 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.ok(!q.url.includes("payment_status=eq.paid"));
   assert.equal(rows[0].customer.display_name, "Amal");
   assert.equal(rows[0].customerEmail, "amal@example.invalid");
-  assert.equal((await api.orders({ search: "Sara" })).length, 1);\n  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1);
+  assert.equal((await api.orders({ search: "Sara" })).length, 1);
+  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1);
   assert.equal((await api.orders({ status: "cancelled" })).length, 1);
 });
 
