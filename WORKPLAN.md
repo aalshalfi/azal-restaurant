@@ -277,3 +277,11 @@ T-28 is claimed by ChatGPT on branch chatgpt/t28-kitchen-shell-v5, stacked on T-
 - T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
 - Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
 - Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
+
+
+## 2026-11-28 13:06 EST — T-28 v5 checkpoint
+
+- PR #92 Draft/HOLD; branch chatgpt/t28-kitchen-shell-v5; code head 970689560f346e66026527ad3812e79f3ba13000.
+- History loads the T-26 net summary + Toronto-day completed/cancelled branch tickets; no guest identity/contact; manual copy only.
+- Queue-only 20-second polling; scheduled screen conditional; Availability/Settings absent.
+- Base is 7 commits behind T-27 v4. No exact-head CI result. Wait for T-27 acceptance, sync, then full Node/browser gate. No SQL, merge, auto-send, or deploy.
