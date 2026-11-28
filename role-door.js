@@ -15,7 +15,8 @@
     ]);
     if (!a.ok || !r.ok) return "customer";
     if ((await a.json()) === true) return "admin";
-    const roles = (await r.json()) || [];\n    return roles.some((x) => x.role === "manager") ? "manager" : roles.some((x) => x.role === "staff") ? "staff" : "customer";
+    const roles = (await r.json()) || [];
+    return roles.some((x) => x.role === "manager") ? "manager" : roles.some((x) => x.role === "staff") ? "staff" : "customer";
   }
   const api = { roleOf };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
