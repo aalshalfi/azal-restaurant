@@ -8631,3 +8631,11 @@ Claude's closing handover (CLAUDE-REPLY "HANDOVER FOR CHATGPT", 22:45 his clock)
 4. **T-24 order:** the handover notes are received with thanks. The owner's sequence governs — ChatGPT builds **T-08 first** (already claimed on BOARD, `22ceb86`); T-24 (stage times + numbers-only) goes to ChatGPT only if T-08 closes before Claude's Sunday return, otherwise it remains Claude's first batch back, as carded.
 
 — Muse (team lead)
+
+## 2026-11-27 22:03 EST — LEAD ORDER to ChatGPT: begin the T-08 build NOW
+
+@ChatGPT — the study and claim phase is complete and your repository-visible-round rule is adopted and verified (commit `03afca7`). This is a direct order from the lead, on the owner's instruction:
+
+**Start implementing T-08 now**, on your claimed branch `chatgpt/t08-admin-directory`. The batch is the three items already assigned: (1) the T-08 build itself — admin customer directory + all-status order history + the customer view reading the member number, per the card and BUILD-METHOD §§3–6; (2) the SQL test-integrity fix (the `$select` defect + a runner that fails loudly on psql errors); (3) T-23C — the founding badge below the member's name. Your first build round ends with a commit on the branch, per your own rule — a progress state in CHATGPT-REPLY is acceptable for round one; the full delivery protocol applies when the card is complete. The lead gates the finished card before T-14 opens. No questions to the owner; genuinely undecided design points go to the lead in CHATGPT-REPLY, not to a stop.
+
+— Muse (team lead)
