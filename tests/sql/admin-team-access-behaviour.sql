@@ -108,6 +108,7 @@ reset role;
 update public.orders set contact_phone='+16135550999' where user_id='00000000-0000-0000-0000-0000000000c2';
 create temporary table t14_order_financial_snapshot as select id,subtotal_cents,tax_cents,total_cents from public.orders where user_id='00000000-0000-0000-0000-0000000000c2';
 update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
+insert into auth.identities(user_id,provider_id,identity_data,provider) values('00000000-0000-0000-0000-0000000000c2','c2@example.invalid',pg_catalog.jsonb_build_object('sub','c2@example.invalid','email','c2@example.invalid','full_name','Customer Two','phone','+16135550102'),'email');
 select zz_eq('server anonymization refuses non-admin actor',
   public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
 select zz_eq('customer anonymization requires a reason',
@@ -116,6 +117,10 @@ select zz_eq('customer anonymization requires a reason',
 select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','Customer requested account removal');
 select zz_eq('Auth email is replaced with a reserved non-deliverable address',
   (select email from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'removed+000000000000000000000000000000c2@example.invalid');
+select zz_eq('Auth identity provider id is replaced',
+  (select provider_id from auth.identities where user_id='00000000-0000-0000-0000-0000000000c2'),'removed-000000000000000000000000000000c2');
+select zz_eq('Auth identity metadata retains no old name or phone',
+  (select ((identity_data->>'email'='removed+000000000000000000000000000000c2@example.invalid') and not (identity_data ? 'full_name') and not (identity_data ? 'phone'))::text from auth.identities where user_id='00000000-0000-0000-0000-0000000000c2'),'true');
 select zz_eq('Auth user metadata is scrubbed',
   (select (raw_user_meta_data='{}'::jsonb)::text from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'true');
 select zz_eq('Auth phone is scrubbed',
