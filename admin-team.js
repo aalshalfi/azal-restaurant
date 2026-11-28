@@ -223,7 +223,9 @@
         form.addEventListener("submit",async e=>{e.preventDefault();go.disabled=true;try{await edge("team_invite_revoke",{invite_id:i.id,reason:why.value});status(card,L("removed"));await refreshTeam(panel);}catch{status(card,L("error"),true);go.disabled=false;}});
         card.append(form);
       });
-      card.append(revoke);invites.append(card);
+      const renew=el("button","button admin-detail-button",L("renewInvite"));renew.type="button";
+      renew.addEventListener("click",async()=>{renew.disabled=true;try{await edge("team_assign",{email:i.email,display_name:i.name||i.email,role:i.role,branch_slugs:i.branches||[],reason:"Pending access renewed in portal"});status(card,L("pendingNote"));await refreshTeam(panel);}catch{status(card,L("error"),true);renew.disabled=false;}});
+      card.append(renew,revoke);invites.append(card);
     }
     const orders=panel.querySelector("#adminOrdersAccounts");orders.replaceChildren();
     const byBranch=new Map((data.orders_accounts||[]).map(x=>[x.branch_slug,x]));
