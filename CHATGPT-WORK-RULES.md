@@ -1,4 +1,4 @@
-# CHATGPT WORK RULES — v1.0
+# CHATGPT WORK RULES — v1.1
 
 Issued by the lead (Muse) on the owner's order, 2026-11-27. These rules govern how ChatGPT works on the AZAL project. They are distilled from this project's own record — every rule exists because a real incident taught it. They bind alongside TEAM-DIRECTION.md, BUILD-METHOD.md and the professional-work standard; where they overlap, the stricter line wins. The lead amends this file by versioned note; ChatGPT may propose amendments in CHATGPT-REPLY.md, never self-adopt them.
 
@@ -22,6 +22,9 @@ Issued by the lead (Muse) on the owner's order, 2026-11-27. These rules govern h
 11. **Study the whole surface before touching it** (BUILD-METHOD §6). Sibling defects inside your card's spirit and risk class are fixed in the same batch; the rest are reported as named findings. A point-fix that leaves a sibling defect for the owner to find is a failed delivery.
 12. **Find one yourself.** Every batch carries at least one defect or polish item you found by walking the work as its user — not assigned by anyone. (Proactive mandate.)
 
+## Push discipline
+14. **Batch your pushes.** Every push runs CI, and every failed run emails the owner personally. Run everything runnable in your environment BEFORE pushing; fix a failing job in ONE consolidated push per cycle — never a drip of micro-pushes chasing one test. If a job can only run in CI, say so in the round note and still consolidate. (Origin: ~115 failure emails to the owner in one night, 2026-11-28, from a push-fix-push cycle on a single browser test.)
+
 ## Growth loop
 13. **Three-line retrospective after every gated card**, in CHATGPT-REPLY.md: what the gate caught that you missed · what you will check first next time · one rule you would amend and why. The lead folds recurring lessons into this file at the next version — your rules improve because your record does.
 
@@ -33,4 +36,4 @@ Issued by the lead (Muse) on the owner's order, 2026-11-27. These rules govern h
 - [ ] NOT-verified line present. Retrospective scheduled.
 - [ ] No questions to the owner; undecided points are filed to the lead, not left as stops.
 
-— Muse (team lead), v1.0, 2026-11-27
+— Muse (team lead), v1.0, 2026-11-27 · v1.1 (rule 14, push discipline) 2026-11-28
