@@ -111,6 +111,8 @@ test("Admin UI uses safe DOM APIs, mandatory reasons and server mutation paths",
 test("sole Admin identity is fixed to the owner's verified email; Team UI cannot grant another Admin", () => {
   const sql=read("supabase/migrations/0015_admin_team_access.sql");
   assert.match(sql,/lower\(u\.email\) = 'info@azalrestaurant\.com'/);
+  assert.match(sql,/requires the existing owner Admin identity/);
+  assert.match(sql,/non-owner Admin roles to be reconciled/);
   assert.match(sql,/admin_role_reserved/);
   assert.match(sql,/root_admin_protected/);
   assert.match(read("docs/apply-0015.md"),/owner identity.*info@azalrestaurant\.com/i);
