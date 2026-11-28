@@ -58,6 +58,9 @@ select zz_eq('Manager report scope is assigned branches',
 select zz_eq('Manager report includes only assigned Ottawa order',
   (public.azal_admin_sales_report('day',(now() at time zone 'America/Toronto')::date,
     ((now() at time zone 'America/Toronto')::date+1),null)->'rows'->0->>'paid_orders'),'1');
+select zz_eq('Manager receives net collected total without a refund breakdown',
+  (public.azal_admin_sales_report('day',(now() at time zone 'America/Toronto')::date,
+    ((now() at time zone 'America/Toronto')::date+1),null)->'rows'->0->>'collected_cents'),'2824');
 select zz_eq('Manager cannot request an unassigned branch',
   public.zz_try($$select public.azal_admin_sales_report('day',(now() at time zone 'America/Toronto')::date,((now() at time zone 'America/Toronto')::date+1),'second')$$),'not_manager_for_branch');
 select zz_eq('Manager payload omits Admin financial breakdown',
