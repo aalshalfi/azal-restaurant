@@ -103,6 +103,6 @@ test("SQL behaviour runner fails on psql errors and explicit FAIL output", () =>
   const runner = read("tests/sql/run-one.sh");
   assert.match(runner, /set -Eeuo pipefail/);
   assert.match(runner, /psql .* -X -v ON_ERROR_STOP=1/);
-  assert.match(runner, /ERROR:\\|FAIL/);
+  assert.match(runner, /ERROR:|FAIL/);
   assert.match(runner, /DATABASE_URL/);
 });
