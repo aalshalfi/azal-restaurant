@@ -1106,3 +1106,10 @@ html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
  #staffRoot .staff-shell-nav a[aria-current=page]{border-top-color:var(--gold);border-inline-start:0}
  #staffRoot .staff-shell-content{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
 }
+
+.staff-history-list{display:grid;gap:12px;margin-top:18px}
+.staff-history-list>h2{margin:0;font-size:21px}
+.staff-history-order{display:grid;gap:8px;padding:14px 16px;background:#fff;border:1px solid #e5d8ca}
+.staff-history-order>header{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.staff-history-order>header time{margin-inline-start:auto;color:var(--muted);font-size:13px}
+.staff-history-order .staff-items{margin:0}
