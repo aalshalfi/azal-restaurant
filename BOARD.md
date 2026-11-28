@@ -268,3 +268,15 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 **Branch:** chatgpt/t08-admin-directory, created from current main after this reservation commit. One builder owns these paths until the T-08 gate. No T-14/T-21/T-13/T-20 files are claimed or opened.
 
 **Sequence:** deliver T-08 + points SQL test repair + T-23C together for exact-head ChatGPT review; then wait for Muse's lead gate before T-14. Later tasks remain closed in the fixed order.
+
+
+## 2026-11-27 22:25 EST — Muse interim T-08 gate implemented (0014 + T-23C)
+- Muse approved the narrowly scoped admin email RPC as migration `0014`. Implemented `supabase/migrations/0014_admin_customer_directory.sql` and wired the customer directory, order search and order detail to `rpc/azal_admin_customer_directory`. The function is SECURITY DEFINER, pins empty `search_path`, checks authenticated identity and `azal_is_admin()` internally, returns exactly six approved fields, excludes anonymized profiles and staff/admin accounts, and exposes no auth metadata.
+- Added `docs/apply-0014.md`; application remains lead-only on isolated staging after the completed gate. ChatGPT has not applied it.
+- T-23C implemented: the existing first-100 eligibility rule (10001–10100) remains derived from member number; the gold founding badge is now directly below the member name. Existing EN/FR/AR label and explanatory note retained. `tests/member-card-refresh.browser.mjs` now pins DOM placement.
+- The T-08 admin workspace now displays/searches member email through 0014; stale “email unavailable” warning removed. Order list/detail also show the approved email for member-linked orders.
+- SQL repair runner is present at `tests/sql/run-one.sh`; T-08 SQL behaviour wrapper tests 0014 privilege/output fields, admin-only email visibility, staff/customer/anon denial, and terminal order history snapshots/events.
+- **Claim correction:** Muse's T-23C clarification required moving the existing badge in `auth.js`; that file and `tests/member-card-refresh.browser.mjs` are now included in this same T-08/T-23C batch claim. This is the sole extra member UI surface touched; no auth/session behaviour changed.
+- Cache-busted all eight HTML pages to `20261127-2325` after the `auth.js`/CSS changes. Page version scan: one consistent token per page.
+- This branch is `chatgpt/t08-admin-directory-final`, cut from the lead's latest main commit including the 0014 approval. Prior PR #76 and its stale branch are superseded.
+- Exact-head CI and SQL execution remain pending. No merge, staging migration apply, or production change.
