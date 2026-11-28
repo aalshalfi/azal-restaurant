@@ -40,7 +40,7 @@ test("T-25 migration uses payment-event time, Toronto buckets and server-enforce
 test("Manager UI only renders Admin financial columns for Admin; Staff summary has no tax or sending path",()=>{
   const reports=read("reports.js"),staff=read("staff-summary.js"),admin=read("admin.html"),staffHtml=read("staff.html");
   assert.match(reports,/if\(admin\)\{cols\.push\("subtotal_cents","discount_cents","hst_cents","refunds_cents","net_collected_cents"\)/);
-  assert.match(reports,/branches\.filter\(b=>state\.access\.branches\.includes\(b\.slug\)\)/);
+  assert.match(reports,/bs\.filter\(b=>a\.branches\.includes\(b\.slug\)\)/);
   assert.match(staff,/azal_staff_today_summary/);
   assert.doesNotMatch(staff,/hst|tax|outbox|smtp|sendEmail|sendmail/i);
   assert.match(staff,/navigator\.clipboard\.writeText/);
