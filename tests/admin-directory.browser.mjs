@@ -43,7 +43,7 @@ async function open({role="admin",lang="en",width=390}={}){
   return r.fulfill({status:404,json:{}});
  });
  await page.addInitScript(l=>{localStorage.setItem("azal-language",l);localStorage.setItem("azal-auth-v1",JSON.stringify({access_token:"T",refresh_token:"R",expires_at:4e12,user:{id:"admin",email:"admin@example.invalid"}}));},lang);
- await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
+ await page.goto(base+"/admin.html");if(role==="admin"){await page.waitForSelector(".admin-shell-nav");await page.locator('.admin-shell-nav a[href="#more"]').click();await page.waitForSelector(".admin-workspace");}else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);if(role==="admin"){await page.waitForSelector("#adminTeamSearch");check(await page.locator("#adminTeamRole").count()===1,"Admin Team role filter mounts");check(await page.locator("#adminTeamBranch").count()===1,"Admin Team branch filter mounts");check(await page.locator("#adminTeamStatus").count()===1,"Admin Team status filter mounts");check(await page.locator("#adminTeamAudit").count()===1,"Admin audit history panel mounts");}
  return {page,requests};
 }
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
@@ -69,7 +69,16 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const listRead=requests.find(x=>x.url.includes("/rest/v1/orders?")&&!x.url.includes("order_items("));
  const listSelect=listRead?new URL(listRead.url).searchParams.get("select")||"":"";
  check(!!listRead&&!/user_id|guest_name|guest_email|contact_phone/.test(listSelect),lang+" "+width+": order-list SELECT excludes guest name, email and phone");
- const button=page.locator(".admin-workspace > .admin-panel:nth-child(2) .admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
+ await page.locator('.admin-shell-nav a[href="#customers"]').click();
+ const customerCard=page.locator('#adminScreen-customers .admin-record[data-user-id="u1"]');
+ check(await customerCard.locator(".admin-customer-anonymize").count()===0,lang+" "+width+": anonymize is absent from the customer directory");
+ await customerCard.locator(".admin-customer-open").click();
+ await page.waitForSelector("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize");
+ check(await page.locator("#adminScreen-customers .admin-customer-detail .admin-customer-anonymize").count()===1,lang+" "+width+": anonymize is available only inside customer detail");
+ await page.locator("#adminScreen-customers .admin-customer-detail > button").click();
+ await page.waitForFunction(()=>document.querySelectorAll('#adminScreen-customers .admin-record[data-user-id="u1"] .admin-customer-anonymize').length===0);
+ await page.locator('.admin-shell-nav a[href="#orders"]').click();
+ const button=page.locator('#adminScreen-orders [data-admin-screen-part="orders"] .admin-record button').first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
  check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_contact")),lang+" "+width+": single-customer contact is fetched only after opening order detail");
