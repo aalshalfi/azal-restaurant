@@ -96,7 +96,7 @@
     form.append(label(L("name"),name),label(L("email"),email),label(L("role"),roleSelect));
     let checks=branchChecks([]);
     form.append(checks);
-    roleSelect.addEventListener("change",()=>{const current=form.querySelector(".admin-team-branches");if(current)current.hidden=roleSelect.value==="admin";});
+    roleSelect.addEventListener("change",()=>{const current=form.querySelector(".admin-team-branches");if(current){current.hidden=roleSelect.value==="admin";if(roleSelect.value==="admin")for(const input of current.querySelectorAll("input[data-branch]"))input.checked=false;}});
     const reason=document.createElement("input"); reason.type="text"; reason.maxLength=500; reason.placeholder=L("reason");
     form.append(label(L("reason"),reason));
     const save=el("button","button button-gold",L("save")); save.type="submit"; form.append(save);
