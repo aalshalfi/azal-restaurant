@@ -59,6 +59,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
   ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
   ok(!/Menu|Availability/.test(destinations.join(" ")), "no dead Menu or Availability destination before T-21/T-29");
+  ok(await p.locator("#adminScreen-home .admin-needs-attention .admin-more-link").count() === 1, "Needs attention includes paid actionable orders only, not unpaid orders");
   const homeHidden = await p.locator("#adminScreen-home").getAttribute("hidden");
   const ordersHidden = await p.locator("#adminScreen-orders").getAttribute("hidden");
   const homeCurrent = await p.locator('.admin-shell-link[href="#home"]').getAttribute("aria-current");
