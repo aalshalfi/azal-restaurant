@@ -95,7 +95,7 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.ok(q);
   assert.ok(!calls.some(x => x.url.includes("/rest/v1/profiles?") || x.url.includes("/rest/v1/rpc/azal_admin_order_customer_emails")), "order list must not fetch customer profiles or emails");
   assert.ok(!calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory")), "order list must not download the whole customer directory");
-  assert.ok(!/guest_name|guest_email|contact_phone/.test(new URL(q.url).searchParams.get("select") || ""), "order list SELECT excludes contact fields");
+  assert.ok(!/user_id|guest_name|guest_email|contact_phone/.test(new URL(q.url).searchParams.get("select") || ""), "order list SELECT excludes contact fields");
   assert.ok(!q.url.includes("placed_at=gte"));
   assert.ok(!q.url.includes("fulfilment_status=neq"));
   assert.ok(!q.url.includes("payment_status=eq.paid"));
