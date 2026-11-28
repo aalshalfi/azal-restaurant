@@ -294,3 +294,12 @@ History is a branch-scoped Toronto-day view, not only a summary card:
 - EN/FR/AR loading, empty and error states are included.
 
 **Additional acceptance pins:** Node API test validates branch/status/date bounds, 23/24/25-hour Toronto day lengths and data minimization; browser test validates completed/cancelled rows, net-only summary, no identity fields, and no summary call while Queue is active. No schema, role, availability, automatic send or deployment change.
+
+
+## 2026-11-28 13:07 EST — T-28 v6 dependency checkpoint
+
+- PR #94 remains Draft/HOLD, stacked on T-27 PR #93.
+- Kitchen Queue identity is a T-24 dependency: final acceptance requires six-character code-only tickets, no sigil/guest name; keep this with Claude's T-24 assignment rather than duplicate it.
+- Keep tap-to-call and server-guarded transitions.
+- History is net-only and lists today's completed/cancelled branch tickets; manual copy only; Queue-only polling; Scheduled conditional.
+- Availability remains T-29, no SQL/merge/deploy.
