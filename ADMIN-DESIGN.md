@@ -181,7 +181,7 @@ After approval, each task still requires its own BOARD claim, branch/PR, exact-h
 ## 9. Lead decision log — adjudicated
 - **2026-11-28 00:10 EST — Muse: APPROVE WITH CHANGES (A1–A6)**, source commit `f79e04cc8b0f9249af1657e751b212dc652650df`.
 - **A1:** T-08 directory receives server-side search by name/email/phone/member number and server-side pagination; the 1,000-customer usability test is binding; delivered inside T-14.
-- **A2:** Admin-only customer removal means anonymize + deactivate, scrub name/phone/email, disable sign-in, retire member number, exclude from directory, require reason, write audit; preserve detached financial aggregates and never hard-delete history.
+- **A2:** Admin-only customer removal means anonymize + deactivate; scrub Auth email/metadata/identities, profile name/phone and order contact fields; disable sign-in, retire member number, exclude from directory, require reason and write immutable audit; preserve order IDs, tax/financial snapshots and append-only points ledger without customer-facing identity.
 - **A3:** T-26 is Today's summary on staff.html, total collected sales + status counts, manually shared by employee; no email/send/outbox and no tax line; not in Manager Reports accordion.
 - **A4:** T-25 uses paid_at and Toronto dates; Manager sees assigned-branch counts + collected total only; Admin alone sees subtotal/HST/discount.
 - **A5:** order is T-14 (A1/A2) → T-25 + T-26 → T-21 → T-13 → T-20; T-08 accepted.
