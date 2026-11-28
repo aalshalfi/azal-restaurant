@@ -2723,3 +2723,8 @@ History is a branch-scoped Toronto-day view, not only a summary card:
 Muse's 12:26 constitution requires the kitchen Queue ticket's identity to be the six-character order code only (T-24); no sigil or guest name. The current T-28 v6 branch still inherits the pre-T-24 queue ticket presentation. This is intentionally not changed in T-28 while T-24 remains Claude's assigned card. Preserve only the permitted tap-to-call action and the existing server-guarded transitions. T-28 cannot be READY until T-24 is integrated and code-only identity is proven by browser tests.
 
 T-28 v6 otherwise contains the Queue / conditional Scheduled / History shell, T-26 net-only summary and completed/cancelled ticket list, manual copy only, Queue-only polling, authorized branch selection, EN/FR/AR and responsive layouts. PR #94 stays Draft/HOLD, stacked on T-27 PR #93. No Availability until T-29; no SQL, merge or deployment.
+
+
+## 2026-11-28 13:18 EST — T-25/T-27/T-28 integration CI trigger
+
+PR #94 was temporarily retargeted to `main` solely to make the repository's default `pull_request.branches: [main]` workflow validate the complete stacked source at one exact head (T-25/T-26 + T-27 + T-28). It remains Draft; this is not a merge request. After the run completes, restore PR #94's base to `chatgpt/t27-admin-shell-v5`. No source/runtime behavior is changed by this checkpoint.
