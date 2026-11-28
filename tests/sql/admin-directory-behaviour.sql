@@ -1,4 +1,4 @@
--- T-08 database behaviour: run on a FRESH disposable PostgreSQL 16 database after the stub + 0001-0004.
+-- T-08 database behaviour: run on a FRESH disposable PostgreSQL 16 database after the stub + 0001-0004 + 0008 + 0013 + 0014.
 -- Reuses the full admin/staff/customer role matrix and synthetic order fixtures, then drives terminal states and
 -- verifies that the admin history/detail read path retains them and their immutable snapshots/events.
 \ir admin-scope-behaviour.sql
