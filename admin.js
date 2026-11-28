@@ -172,9 +172,9 @@
   // then lands on the member page, signed out. A later visit here finds no session and shows the signed-out state.
   async function signOut() {
     if (signingOut) return;
-    signingOut = true; seq++; ov = null; paint();
+    signingOut = true; seq++; ov = null; directoryRows = []; orderRows = []; detailRow = null; paint();
     try { if (auth) await auth.signOut(); } catch {}
-    acc = { status: "signed_out" }; paint();
+    acc = { status: "signed_out" }; directoryRows = []; orderRows = []; detailRow = null; paint();
     try { root.location.replace("member.html"); } catch {}
   }
   function workspace() {
@@ -184,7 +184,7 @@
     const cform = el("form", "admin-filter");
     const ci = el("input", "admin-search"); ci.type = "search"; ci.placeholder = L("customerSearch"); ci.setAttribute("aria-label", L("customerSearch"));
     const cb = el("button", "button button-gold", L("search")); cb.type = "submit"; cform.append(ci,cb);
-    cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; try { directoryRows=await adm.customers({search:ci.value}); customerVisible=100; workspaceError=false; } catch { workspaceError=true; } paint(); });
+    cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; const requestSeq=seq; try { const rows=await adm.customers({search:ci.value}); if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return; directoryRows=rows; customerVisible=100; workspaceError=false; } catch { if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return; workspaceError=true; } paint(); });
     customers.append(cform,el("p","admin-note",L("showing",{n:num(Math.min(customerVisible,directoryRows.length)),total:num(directoryRows.length)})));
     if(!directoryRows.length) customers.append(el("p","admin-note",L("noCustomers")));
     for(const p of directoryRows.slice(0,customerVisible)){
@@ -202,7 +202,7 @@
     const os=el("select","admin-status"); os.setAttribute("aria-label",L("allStatuses"));
     for(const [v,label] of [["all",L("allStatuses")],["placed",L("placed")],["accepted",L("accepted")],["preparing",L("preparing")],["ready",L("ready")],["handed_over",L("handed_over")],["cancelled",L("cancelled")]]){const op=el("option",null,label);op.value=v;os.append(op);}
     const ob=el("button","button button-gold",L("search")); ob.type="submit"; oform.append(oi,os,ob);
-    oform.addEventListener("submit",async e=>{e.preventDefault();ob.disabled=true;try{orderRows=await adm.orders({search:oi.value,status:os.value});orderVisible=100;workspaceError=false;}catch{workspaceError=true;}paint();});
+    oform.addEventListener("submit",async e=>{e.preventDefault();ob.disabled=true;const requestSeq=seq;try{const rows=await adm.orders({search:oi.value,status:os.value});if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return;orderRows=rows;orderVisible=100;workspaceError=false;}catch{if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;workspaceError=true;}paint();});
     orders.append(oform,el("p","admin-note",L("showing",{n:num(Math.min(orderVisible,orderRows.length)),total:num(orderRows.length)})));
     if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
     for(const o of orderRows.slice(0,orderVisible)){
@@ -211,7 +211,7 @@
       card.append(el("strong",null,L("order")+" "+String(o.id).slice(0,8).toUpperCase()),
         el("span","admin-record-meta",who+" · "+(o.contact_phone||(o.customer&&o.customer.phone)||o.customerEmail||o.guest_email||"")+" · "+o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
         el("span","admin-record-meta",money(o.total_cents)+" · "+new Date(o.placed_at).toLocaleString(loc())));
-      const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;try{detailRow=await adm.orderDetail(o.id);workspaceError=false;}catch{workspaceError=true;}paint();});
+      const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;const requestSeq=seq;try{const row=await adm.orderDetail(o.id);if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return;detailRow=row;workspaceError=false;}catch{if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;workspaceError=true;}paint();});
       card.append(view);orders.append(card);
     }
     if(orderRows.length>orderVisible){const more=el("button","button admin-detail-button",L("more"));more.type="button";more.addEventListener("click",()=>{orderVisible+=100;paint();});orders.append(more);}
@@ -280,7 +280,7 @@
   // ChatGPT #62 review: management data never outlives the session that fetched it. On a sign-out here, a sign-out or
   // account switch in another tab (storage event on the session key), or when the page comes back into view, the
   // counts are dropped at once, in-flight answers are discarded (seq), and the role is checked again.
-  function invalidate() { seq++; acc = null; ov = null; failed = false; paint(); if (adm.enabled) load(); }
+  function invalidate() { seq++; acc = null; ov = null; directoryRows = []; orderRows = []; detailRow = null; failed = false; workspaceError = false; paint(); if (adm.enabled) load(); }
   const AUTH_KEY = "azal-auth-v1";
   root.addEventListener("storage", (e) => { if (e.key === AUTH_KEY || e.key === null) invalidate(); });
   document.addEventListener("azal:auth", (e) => { if (!e.detail || e.detail.status !== "signed_in") invalidate(); });
