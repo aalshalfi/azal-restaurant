@@ -118,16 +118,30 @@ select zz_eq('Orders identity cannot be removed as an ordinary team member',
 \echo ===== A2 customer anonymization: identity scrub, membership suspension, financial history retained
 reset role;
 update public.orders set contact_phone='+16135550999' where user_id='00000000-0000-0000-0000-0000000000c2';
-create temporary table t14_order_financial_snapshot as select id,subtotal_cents,tax_cents,total_cents from public.orders where user_id='00000000-0000-0000-0000-0000000000c2';
+insert into public.orders(
+  id,branch_slug,user_id,guest_name,guest_email,idempotency_key,request_hash,
+  subtotal_cents,tax_rate_bps,tax_cents,total_cents,customer_note,contact_phone
+) values (
+  '00000000-0000-0000-0000-0000000000c3','ottawa',null,'Customer Two Guest','c2@example.invalid',
+  'guest-order-claim-0001',pg_catalog.repeat('b',64),1000,1300,130,1130,'guest order private note','+16135550988'
+);
+create temporary table t14_order_financial_snapshot as
+  select id,subtotal_cents,tax_cents,total_cents from public.orders
+   where user_id='00000000-0000-0000-0000-0000000000c2'
+      or id='00000000-0000-0000-0000-0000000000c3';
 insert into public.points_claims(order_id,guest_email,points,expires_at)
 select id,'c2@example.invalid',20,pg_catalog.now()+interval '90 days'
 from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'
+   or id='00000000-0000-0000-0000-0000000000c3'
 on conflict(order_id) do update set guest_email=excluded.guest_email;
+update public.points_claims set status='claimed',claimed_by='00000000-0000-0000-0000-0000000000c2',claimed_at=pg_catalog.now()
+where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2');
 insert into public.order_outbox(order_id,event_type,to_email,payload,status)
 select id,'NEW_ORDER','c2@example.invalid',
        pg_catalog.jsonb_build_object('guest_email','c2@example.invalid','customer_email','c2@example.invalid','customer_note','private customer note'),
        'blocked'
 from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'
+   or id='00000000-0000-0000-0000-0000000000c3'
 on conflict(order_id,event_type) do update set to_email=excluded.to_email,payload=excluded.payload;
 update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
 insert into auth.identities(user_id,provider_id,identity_data,provider) values('00000000-0000-0000-0000-0000000000c2','c2@example.invalid',pg_catalog.jsonb_build_object('sub','c2@example.invalid','email','c2@example.invalid','full_name','Customer Two','phone','+16135550102'),'email');
@@ -168,16 +182,29 @@ select zz_eq('order guest name and email are scrubbed',
   (select (guest_name is null and guest_email is null)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'true');
 select zz_eq('order free-text customer note is scrubbed',
   (select coalesce(customer_note,'∅') from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'∅');
-select zz_eq('pending and claimed guest-claim email is replaced',
-  (select guest_email from public.points_claims where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),
-  'removed+000000000000000000000000000000c2@example.invalid');
+select zz_eq('pending and claimed member/guest claim emails are both replaced',
+  (select count(*)::text from public.points_claims
+    where order_id in ((select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'00000000-0000-0000-0000-0000000000c3')
+      and guest_email='removed+000000000000000000000000000000c2@example.invalid'
+      and status in ('pending','claimed')),'2');
+select zz_eq('claimed points-claim status and owner are retained',
+  (select (status='claimed' and claimed_by='00000000-0000-0000-0000-0000000000c2'::uuid)::text
+   from public.points_claims where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),'true');
 select zz_eq('outbox recipient no longer contains the customer''s email',
   (select coalesce(to_email,'∅') from public.order_outbox where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),'∅');
 select zz_eq('outbox payload contains no customer email or note keys',
   (select (not (payload ? 'guest_email') and not (payload ? 'customer_email') and not (payload ? 'customer_note'))::text
    from public.order_outbox where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),'true');
+select zz_eq('guest order contact and note PII are scrubbed by matching original email',
+  (select (user_id is null and guest_name is null and guest_email is null and contact_phone is null and customer_note is null)::text
+   from public.orders where id='00000000-0000-0000-0000-0000000000c3'),'true');
+select zz_eq('guest order outbox recipient is scrubbed',
+  (select coalesce(to_email,'∅') from public.order_outbox where order_id='00000000-0000-0000-0000-0000000000c3'),'∅');
+select zz_eq('guest order outbox payload is scrubbed',
+  (select (not (payload ? 'guest_email') and not (payload ? 'customer_email') and not (payload ? 'customer_note'))::text
+   from public.order_outbox where order_id='00000000-0000-0000-0000-0000000000c3'),'true');
 select zz_eq('order tax and financial snapshots are unchanged',
-  (select count(*)::text from public.orders o join t14_order_financial_snapshot x using(id) where o.subtotal_cents=x.subtotal_cents and o.tax_cents=x.tax_cents and o.total_cents=x.total_cents),'1');
+  (select count(*)::text from public.orders o join t14_order_financial_snapshot x using(id) where o.subtotal_cents=x.subtotal_cents and o.tax_cents=x.tax_cents and o.total_cents=x.total_cents),'2');
 select zz_eq('customer order and its financial snapshot remain',
   (select count(*)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'1');
 select zz_eq('anonymization is audited with actor and reason',
