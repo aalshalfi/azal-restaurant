@@ -954,7 +954,7 @@ button.co-who-back{background:none;border:0;padding:0;cursor:pointer;font:inheri
 .mcard-watermark{position:absolute;inset-inline-end:-46px;bottom:34px;width:210px;height:auto;opacity:.09;z-index:-1}
 .mcard-kicker{color:#CD8E2D;font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
 html[lang="ar"] .mcard-kicker{letter-spacing:0;font-size:.9rem}
-.mcard-name{margin:14px 56px 14px 0;font-family:var(--serif, inherit);font-size:1.55rem;line-height:1.2;overflow-wrap:anywhere}
+.mcard-name{margin:14px 56px 6px 0;font-family:var(--serif, inherit);font-size:1.55rem;line-height:1.2;overflow-wrap:anywhere}
 html[dir="rtl"] .mcard-name{margin:14px 0 14px 56px}
 .mcard-meta{display:flex;flex-wrap:wrap;gap:8px 26px;margin-bottom:14px}
 .mcard-meta span{display:block;color:#CD8E2D;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
@@ -969,7 +969,7 @@ html[lang="ar"] .mcard-meta span{letter-spacing:0;font-size:.85rem}
 .mcard-next{margin:-4px 0 14px;color:#F8F1E7;opacity:.85;font-size:.9rem}
 .mcard-next[hidden]{display:none}
 /* F-OWN-26: the founding-member mark (official gold on the card) and its plain-words line */
-.mcard-founder{display:inline-block;margin-top:8px;padding:3px 10px;border:1px solid #CD8E2D;border-radius:999px;color:#CD8E2D;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.mcard-founder{display:inline-block;margin-top:0;margin-bottom:14px;padding:3px 10px;border:1px solid #CD8E2D;border-radius:999px;color:#CD8E2D;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
 .auth-founder-note{margin:-6px 0 18px;max-width:440px;padding:10px 14px;border-inline-start:3px solid #CD8E2D;background:rgba(205,142,45,.08);color:#42220E;font-size:.92rem;line-height:1.55}
 /* F-OWN-25: the profile panel behind the header icon */
