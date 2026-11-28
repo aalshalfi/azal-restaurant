@@ -13,7 +13,7 @@
       orders:"Branch Orders accounts", accessHistory:"Recent access history", auditUnavailable:"Access history is temporarily unavailable.", provision:"Create branch Orders account", reset:"Reset password", password:"New password (16+ characters)", provisionAccount:"Create account",
       assigned:"Access saved.", removed:"Access revoked.", created:"Branch Orders account created.", resetDone:"Branch password reset.", error:"The action could not be completed. Refresh and check the current state before retrying.",
       anonymize:"Anonymize & deactivate customer", anonymizeNote:"This scrubs identifying details, disables sign-in and retires the member number. Financial/order history is retained without customer contact details.",
-      confirmAnonymize:"Confirm anonymization", anonymized:"Customer anonymized and deactivated.", managerOrders:"Branch operations", noOrders:"No branch orders to display.", status:"Status", time:"Placed", items:"Items",
+      confirmAnonymize:"Confirm anonymization", anonymized:"Customer anonymized and deactivated.", managerOrders:"Branch operations", noOrders:"No branch orders to display.", status:"Status", time:"Placed", pickup:"Pickup", items:"Items",
       noBranch:"No branch assigned. Ask the Admin to assign one.", passwordHint:"The password is never displayed again after saving.", emailGate:"Email sending is disabled. No invitation or notification email is sent."
     },
     fr: {
@@ -23,7 +23,7 @@
       orders:"Comptes Commandes par succursale", accessHistory:"Historique récent des accès", auditUnavailable:"L’historique des accès est temporairement indisponible.", provision:"Créer un compte Commandes", reset:"Réinitialiser le mot de passe", password:"Nouveau mot de passe (16 caractères ou plus)", provisionAccount:"Créer le compte",
       assigned:"Accès enregistré.", removed:"Accès révoqué.", created:"Compte Commandes créé.", resetDone:"Mot de passe de succursale réinitialisé.", error:"L’action n’a pas abouti. Actualisez et vérifiez l’état avant de réessayer.",
       anonymize:"Anonymiser et désactiver le client", anonymizeNote:"Les renseignements identifiants sont effacés, la connexion est désactivée et le numéro de membre est retiré. L’historique financier et des commandes est conservé sans coordonnées client.",
-      confirmAnonymize:"Confirmer l’anonymisation", anonymized:"Client anonymisé et désactivé.", managerOrders:"Opérations de la succursale", noOrders:"Aucune commande de succursale à afficher.", status:"État", time:"Créée", items:"Articles",
+      confirmAnonymize:"Confirmer l’anonymisation", anonymized:"Client anonymisé et désactivé.", managerOrders:"Opérations de la succursale", noOrders:"Aucune commande de succursale à afficher.", status:"État", time:"Créée", pickup:"Ramassage", items:"Articles",
       noBranch:"Aucune succursale attribuée. Demandez à l’Admin de vous en attribuer une.", passwordHint:"Le mot de passe ne sera plus affiché après l’enregistrement.", emailGate:"L’envoi de courriels est désactivé. Aucun courriel d’invitation ou de notification n’est envoyé."
     },
     ar: {
@@ -33,7 +33,7 @@
       orders:"حسابات الطلبات للفروع", accessHistory:"سجل الصلاحيات الأخير", auditUnavailable:"سجل الصلاحيات غير متاح مؤقتاً.", provision:"إنشاء حساب طلبات للفرع", reset:"إعادة تعيين كلمة المرور", password:"كلمة مرور جديدة (16 حرفاً فأكثر)", provisionAccount:"إنشاء الحساب",
       assigned:"تم حفظ الصلاحية.", removed:"تم إلغاء الصلاحية.", created:"تم إنشاء حساب الطلبات.", resetDone:"تم تغيير كلمة مرور الفرع.", error:"تعذّر إتمام الإجراء. حدّث الصفحة وتحقق من الحالة قبل إعادة المحاولة.",
       anonymize:"إخفاء هوية العميل وتعطيل حسابه", anonymizeNote:"سيتم مسح بيانات التعريف وتعطيل الدخول وإحالة رقم العضوية للتقاعد. سيبقى السجل المالي وسجل الطلبات دون بيانات تواصل شخصية.",
-      confirmAnonymize:"تأكيد إخفاء الهوية", anonymized:"تم إخفاء هوية العميل وتعطيل حسابه.", managerOrders:"عمليات الفرع", noOrders:"لا توجد طلبات للفرع لعرضها.", status:"الحالة", time:"وقت الطلب", items:"الأصناف",
+      confirmAnonymize:"تأكيد إخفاء الهوية", anonymized:"تم إخفاء هوية العميل وتعطيل حسابه.", managerOrders:"عمليات الفرع", noOrders:"لا توجد طلبات للفرع لعرضها.", status:"الحالة", time:"وقت الطلب", pickup:"موعد الاستلام", items:"الأصناف",
       noBranch:"لا يوجد فرع معيّن لهذا الحساب. اطلب من مدير النظام تعيين فرع.", passwordHint:"لن تظهر كلمة المرور مرة أخرى بعد الحفظ.", emailGate:"إرسال البريد معطّل. لا تُرسل رسائل دعوة أو إشعارات."
     }
   };
@@ -219,6 +219,7 @@
           card.append(el("strong",null,String(o.id||"").slice(0,6).toUpperCase()),
             el("span","admin-record-meta",L("status")+": "+o.fulfilment_status),
             el("span","admin-record-meta",L("time")+": "+new Date(o.placed_at).toLocaleString(lang())),
+            el("span","admin-record-meta",L("pickup")+": "+(o.scheduled_for?new Date(o.scheduled_for).toLocaleString(lang()):"—")),
             el("span","admin-record-meta",L("items")+": "+(o.items||[]).map(x=>(x.quantity||1)+" × "+(lang()==="fr"?x.name_fr:lang()==="ar"?x.name_en:x.name_en)).join(" · ")));
           list.append(card);
         }
