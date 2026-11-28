@@ -955,7 +955,7 @@ button.co-who-back{background:none;border:0;padding:0;cursor:pointer;font:inheri
 .mcard-kicker{color:#CD8E2D;font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
 html[lang="ar"] .mcard-kicker{letter-spacing:0;font-size:.9rem}
 .mcard-name{margin:14px 56px 6px 0;font-family:var(--serif, inherit);font-size:1.55rem;line-height:1.2;overflow-wrap:anywhere}
-html[dir="rtl"] .mcard-name{margin:14px 0 14px 56px}
+html[dir="rtl"] .mcard-name{margin:14px 0 6px 56px}
 .mcard-meta{display:flex;flex-wrap:wrap;gap:8px 26px;margin-bottom:14px}
 .mcard-meta span{display:block;color:#CD8E2D;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
 html[lang="ar"] .mcard-meta span{letter-spacing:0;font-size:.85rem}
