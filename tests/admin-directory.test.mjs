@@ -14,6 +14,7 @@ function fixture() {
       { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z", balance: 100, membership_status: "active", joined_at: "2026-11-01T00:00:00Z" },
       { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z", balance: 55, membership_status: "suspended", joined_at: "2026-11-02T00:00:00Z" }
     ], total: 2, limit: 50, offset: 0 },
+    "/rest/v1/rpc/azal_admin_customer_contact": { user_id: "u1", display_name: "Amal", phone: "+16135550101", member_number: 10001, email: "amal@example.invalid" },
     "/rest/v1/rpc/azal_admin_customer_directory": [
       { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },
       { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z" }
@@ -91,14 +92,15 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.deepEqual(rows.map(x => x.payment_status), ["paid","refunded","unpaid"]);
   const q = calls.find(x => x.url.includes("/rest/v1/orders?select=id,user_id"));
   assert.ok(q);
-  assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number") && x.url.includes("order=created_at.desc,id.desc")));
+  assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number,member_number_retired") && x.url.includes("id=in.")));
+  assert.ok(!calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory")), "order list must not download the whole customer directory");
   assert.ok(!q.url.includes("placed_at=gte"));
   assert.ok(!q.url.includes("fulfilment_status=neq"));
   assert.ok(!q.url.includes("payment_status=eq.paid"));
   assert.equal(rows[0].customer.display_name, "Amal");
-  assert.equal(rows[0].customerEmail, "amal@example.invalid");
+  assert.equal(rows[0].customerEmail, null, "order list does not fetch customer emails in bulk");
   assert.equal((await api.orders({ search: "Sara" })).length, 1);
-  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1);
+  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 0, "customer email search stays in the paged directory, not a bulk order-list join");
   assert.equal((await api.orders({ search: "4D9D36" })).length, 1, "public six-character order code is searchable");
   assert.equal((await api.orders({ search: "4D9D36" }))[0].id, "4d9d36ab-1111-4111-8111-111111111111");
   assert.equal((await api.orders({ status: "cancelled" })).length, 1);
@@ -118,6 +120,7 @@ test("order detail includes immutable item snapshots, options, events, totals an
   assert.equal(d.order_events[0].event_type, "hand_over");
   assert.equal(d.customer_note, "No onions");
   assert.ok(calls.some(x => x.url.includes("order_item_options") && x.url.includes("order_events")));
+  assert.ok(calls.some(x => x.url.includes("/rpc/azal_admin_customer_contact")), "email is fetched only for the selected order detail");
 });
 
 test("T-08 browser source stays read-only, admin-only in UI, EN/FR/AR, and no destructive history controls", () => {
