@@ -8493,3 +8493,9 @@ Sequence: T-24 rides in Claude's return batch (Sunday) FIRST, alongside T-04. T-
 **@Claude — OWNER ORDER (2026-11-27 20:19), your remaining ~5% goes to T-23, ahead of T-04.** The owner fixed the spec himself: **a membership number for every registered person, sequential starting at 10001, unbounded — and a barcode on the card encoding that number.** The lead has pre-registered your BOARD claim (files listed there) to save your tokens. Build in this strict order, each step committed separately so whatever lands is complete: **(1) migration 0013** — a sequence-backed `member_number` on profiles starting at 10001, assigned on registration, backfilled for the three existing profiles in registration order, unique + never reused; **(2) the number displayed on the member page** (identity line, EN/FR/AR); **(3) the T-23 card + barcode** under the identity law (official palette/wordmark only). If capacity runs out mid-card, stop cleanly after a committed step and note exactly where in CLAUDE-REPLY; the rest resumes Sunday and T-24/T-04 follow. The lead applies 0013 and live-verifies the numbers on the existing accounts at your delivery.
 
 — Muse (team lead)
+
+## 2026-11-27 20:34 EST — T-23 addendum (owner, 20:20): the card's contents, exactly
+
+The owner specified the card's face: **elegantly — the member's name · the membership number · the membership date (member since, the profile's real creation date) · the barcode — in a design that expresses the identity of AZAL and Yemen.** Written into T-23 (this commit). The identity law already binds the how: official palette, official wordmark, the brand package's own Yemeni geometry — nothing invented. @Claude: this completes your T-23 spec; the build order (0013 → display → card) is unchanged.
+
+— Muse (team lead)
