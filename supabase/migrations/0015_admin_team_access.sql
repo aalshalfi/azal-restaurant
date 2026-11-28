@@ -11,6 +11,8 @@ begin
      or to_regclass('public.branches') is null
      or to_regclass('public.memberships') is null
      or to_regclass('public.points_ledger') is null
+     or to_regclass('public.points_claims') is null
+     or to_regclass('public.order_outbox') is null
      or to_regprocedure('public.azal_is_admin()') is null
      or to_regprocedure('public.azal_admin_customer_directory()') is null
      or to_regclass('auth.users') is null
@@ -546,24 +548,39 @@ grant execute on function public.azal_admin_orders_password_audit(text,text,text
 -- A2 anonymization is callable only from the server-side Edge Function after it has banned
 -- sign-in. It also scrubs Auth metadata/identities so no old email, phone or name survives there.
 create or replace function public.azal_admin_anonymize_customer_server(
-  p_actor_id uuid,p_user_id uuid,p_reason text
+  p_actor_id uuid,p_user_id uuid,p_reason text,p_email_to_scrub text
 )
 returns jsonb
 language plpgsql
 security definer
 set search_path = ''
 as $fn$
-declare v_member bigint; v_replacement text;
+declare
+  v_member bigint;
+  v_anonymized_at timestamptz;
+  v_replacement text;
+  v_claims_scrubbed bigint := 0;
+  v_outbox_scrubbed bigint := 0;
 begin
   if p_actor_id is null or not exists(
     select 1 from public.user_roles r where r.user_id=p_actor_id and r.role='admin'
   ) then raise exception 'not_admin' using errcode='42501'; end if;
   if p_user_id is null or pg_catalog.btrim(coalesce(p_reason,''))='' then raise exception 'reason_required'; end if;
-  v_replacement := 'removed+'||pg_catalog.replace(p_user_id::text,'-','')||'@example.invalid';
-  select p.member_number into v_member from public.profiles p where p.id=p_user_id and p.anonymized_at is null for update;
-  if v_member is null then raise exception 'customer_not_found_or_already_removed'; end if;
-  if exists(select 1 from public.user_roles r where r.user_id=p_user_id and r.role in ('admin','staff','manager')) then raise exception 'not_customer_account'; end if;
 
+  v_replacement := 'removed+'||pg_catalog.replace(p_user_id::text,'-','')||'@example.invalid';
+  select p.member_number,p.anonymized_at into v_member,v_anonymized_at
+    from public.profiles p where p.id=p_user_id for update;
+  if not found then raise exception 'customer_not_found'; end if;
+
+  -- Never anonymize a team or branch Orders identity. This check is inside the
+  -- service-role transaction as well as the Edge Function preflight.
+  if exists(select 1 from public.user_roles r where r.user_id=p_user_id and r.role in ('admin','staff','manager'))
+     or exists(select 1 from public.branch_orders_accounts a where a.auth_user_id=p_user_id) then
+    raise exception 'not_customer_account';
+  end if;
+
+  -- Repeating a request after a committed transaction / lost HTTP response is safe:
+  -- every scrub below is idempotent and an existing audit event is not duplicated.
   update auth.users
      set email=v_replacement, phone=null, raw_user_meta_data='{}'::jsonb
    where id=p_user_id;
@@ -574,19 +591,59 @@ begin
    where user_id=p_user_id;
 
   update public.profiles
-     set display_name=null, phone=null, anonymized_at=pg_catalog.now(), member_number_retired=true
+     set display_name=null, phone=null,
+         anonymized_at=coalesce(anonymized_at,pg_catalog.now()),
+         member_number_retired=true
    where id=p_user_id;
   update public.memberships set status='suspended' where user_id=p_user_id;
-  -- Remove contact PII from historical orders while preserving order IDs, item snapshots, tax and totals.
-  update public.orders set contact_phone=null, guest_name=null, guest_email=null where user_id=p_user_id;
-  insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
-  values(p_actor_id,'customer_anonymized','customer',p_user_id::text,pg_catalog.btrim(p_reason),
-         pg_catalog.jsonb_build_object('member_number_retired',true,'auth_email_replaced',true));
-  return pg_catalog.jsonb_build_object('status','anonymized','user_id',p_user_id);
+  -- Retain order/ledger identity and financial snapshots; remove customer-entered contact/note data.
+  update public.orders
+     set contact_phone=null, guest_name=null, guest_email=null, customer_note=null
+   where user_id=p_user_id;
+
+  -- A pending guest claim is keyed by email; a claimed row is keyed by user_id.
+  -- Replace the email in both cases without reopening or deleting the points claim.
+  update public.points_claims
+     set guest_email=v_replacement
+   where claimed_by=p_user_id
+      or order_id in (select o.id from public.orders o where o.user_id=p_user_id)
+      or (p_email_to_scrub is not null and pg_catalog.lower(guest_email)=pg_catalog.lower(p_email_to_scrub));
+  get diagnostics v_claims_scrubbed = row_count;
+
+  -- Outbox is sender-disabled, but durable payloads still require privacy scrubbing.
+  -- Keep restaurant routing addresses unless one is the customer's own email.
+  update public.order_outbox ob
+     set to_email=case
+           when p_email_to_scrub is not null and pg_catalog.lower(coalesce(ob.to_email,''))=pg_catalog.lower(p_email_to_scrub)
+             then null else ob.to_email end,
+         payload=coalesce(ob.payload,'{}'::jsonb) -
+           array['customer_note','customer_name','guest_name','guest_email','customer_email',
+                 'customer_phone','contact_phone','phone','email']::text[]
+   where ob.order_id in (select o.id from public.orders o where o.user_id=p_user_id)
+      or (p_email_to_scrub is not null and (
+           pg_catalog.lower(coalesce(ob.to_email,''))=pg_catalog.lower(p_email_to_scrub)
+           or pg_catalog.lower(coalesce(ob.payload->>'guest_email',''))=pg_catalog.lower(p_email_to_scrub)
+           or pg_catalog.lower(coalesce(ob.payload->>'customer_email',''))=pg_catalog.lower(p_email_to_scrub)
+         ));
+  get diagnostics v_outbox_scrubbed = row_count;
+
+  if v_anonymized_at is null then
+    insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
+    values(p_actor_id,'customer_anonymized','customer',p_user_id::text,pg_catalog.btrim(p_reason),
+           pg_catalog.jsonb_build_object(
+             'member_number_retired',true,'auth_email_replaced',true,
+             'claims_scrubbed',v_claims_scrubbed,'outbox_scrubbed',v_outbox_scrubbed
+           ));
+  end if;
+
+  return pg_catalog.jsonb_build_object(
+    'status',case when v_anonymized_at is null then 'anonymized' else 'already_anonymized' end,
+    'user_id',p_user_id,'claims_scrubbed',v_claims_scrubbed,'outbox_scrubbed',v_outbox_scrubbed
+  );
 end;
 $fn$;
-revoke all on function public.azal_admin_anonymize_customer_server(uuid,uuid,text) from public, anon, authenticated;
-grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text) to service_role;
+revoke all on function public.azal_admin_anonymize_customer_server(uuid,uuid,text,text) from public, anon, authenticated;
+grant execute on function public.azal_admin_anonymize_customer_server(uuid,uuid,text,text) to service_role;
 
 -- Apply pending in-portal invitations only after the invitee has verified the matching email.
 create or replace function public.azal_apply_team_invite()
