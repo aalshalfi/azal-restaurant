@@ -92,13 +92,12 @@ select zz_eq('Orders identity cannot be removed as an ordinary team member',
 \echo ===== A2 customer anonymization: identity scrub, membership suspension, financial history retained
 reset role;
 update public.orders set contact_phone='+16135550999',guest_name='Customer Two',guest_email='c2@example.invalid' where user_id='00000000-0000-0000-0000-0000000000c2';
-select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
-set role authenticated;
-
+update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
+select zz_eq('server anonymization refuses non-admin actor',
+  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
 select zz_eq('customer anonymization requires a reason',
   public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','')$$),
   'reason_required');
-update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
 select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','Customer requested account removal');
 select zz_eq('Auth email is replaced with a reserved non-deliverable address',
   (select email from auth.users where id='00000000-0000-0000-0000-0000000000c2'),'removed+000000000000000000000000000000c2@example.invalid');
@@ -122,12 +121,12 @@ select zz_eq('order guest name and email are scrubbed',
   (select (guest_name is null and guest_email is null)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'true');
 select zz_eq('customer order and its financial snapshot remain',
   (select count(*)::text from public.orders where user_id='00000000-0000-0000-0000-0000000000c2'),'1');
-select zz_eq('anonymized customer disappears from the directory',
-  (public.azal_admin_customer_directory_page('c2@example.invalid',50,0)->>'total'),'0');
 select zz_eq('anonymization is audited with actor and reason',
   (select count(*)::text from public.admin_audit_log where action='customer_anonymized' and target_id='00000000-0000-0000-0000-0000000000c2' and reason='Customer requested account removal'),'1');
-reset role;
-
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
+set role authenticated;
+select zz_eq('anonymized customer disappears from the directory',
+  (public.azal_admin_customer_directory_page('c2@example.invalid',50,0)->>'total'),'0');
 \echo ===== A1 1,000-customer scale fixture
 insert into auth.users(id,email,email_confirmed_at)
 select pg_catalog.gen_random_uuid(),'scale-'||g::text||'@example.invalid',pg_catalog.now()
