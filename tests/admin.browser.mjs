@@ -56,7 +56,12 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   ok(/Signed in as info@example\.invalid · Administrator/.test(t), "admin page: who and which role");
   ok(/New, paid ?1/.test(t) && /Collected ?1/.test(t) && /Unpaid \(never reach the kitchen\) ?1/.test(t) && /Collected sales today: \$22\.59/.test(t) && /Active Majlis members: 42/.test(t), "overview: today's counts, collected sales, member count from the server");
   ok(/ottawa: 3 orders today, 1 collected/.test(t), "per-branch line");
-  ok(await p.locator("#adminRoot nav, #adminRoot a[href*='customers'], #adminRoot a[href*='orders']").count() === 0, "no navigation to sections that are not built yet (no dead links)");
+  const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
+  ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
+  ok(!/Menu|Availability/.test(destinations.join(" ")), "no dead Menu or Availability destination before T-21/T-29");
+  ok(await p.locator("#adminScreen-home").isVisible() && await p.locator("#adminScreen-orders").isHidden(), "Admin shell opens Home first and keeps other screens out of the active view");
+  await p.locator('.admin-shell-nav a[href="#reports"]').click();
+  ok(await p.locator("#adminScreen-reports").isVisible(), "Reports destination opens as its own screen");
   const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact"];
   ok(sent.every((s) => s.m === "GET" || (s.m === "POST" && postReads.some((path) => s.u.includes(path)))), "Admin page boot only calls read-only RPCs; no mutation endpoint runs automatically");
   ok(!sent.some((s) => s.u.includes("/rpc/azal_admin_customer_contact") || s.u.includes("/rpc/azal_admin_order_customer_emails")), "Admin boot does not fetch customer contact; lookup stays detail-only");
