@@ -48,11 +48,11 @@ The manager portal keeps one persistent shell: AZAL mark, current branch selecto
 ### 3.2 T-14 — Team & Access (Admin only)
 **Team list:** name, email, role, assigned branch(es), invitation/account state, last known access state, row actions. Search and filter by role/branch/status. No password is ever displayed.
 
-**Add user flow:** Add person → enter name + email → choose Admin/Manager/Staff → choose branch scope (Admin may grant cross-branch Admin; Manager cannot access this screen) → review exact grant → send verified invitation → pending state. The invitee sets their own password through the verified auth flow. If the email already has an account, attach the role to that same identity; never create a duplicate identity.
+**Add user flow:** Add person → enter name + email → choose Manager/Staff → choose branch scope → review exact grant → record an in-portal pending invite (no email is sent). The sole Admin identity is info@azalrestaurant.com and cannot be granted through this form. The invitee sets their own password through the verified auth flow. If the email already has an account, attach the role to that same identity; never create a duplicate identity.
 
 **Edit flow:** Admin opens user → change role/branch scope or resend invite → show before/after → confirm → server rechecks caller authority → audit event. A caller cannot grant a role at or above their own authority; Manager cannot grant any role because Team is Admin-only.
 
-**Remove flow:** Admin selects Remove → impact summary → confirm → revoke access on the next server request/session validation → record actor, target, branch, timestamp and reason. Protect the owner/Admin root account from self-removal/demotion. Do not silently delete the auth identity or historical audit trail.
+**Remove flow:** Admin selects Remove → impact summary → confirm → revoke access on the next server request/session validation → record actor, target, branch, timestamp and reason. Protect the owner/Admin root account (info@azalrestaurant.com) from self-removal/demotion. If the owner loses access, owner + lead recover through the Supabase dashboard; no second login path. Do not silently delete the auth identity or historical audit trail.
 
 **Branch Orders credential panel:** one identity per branch, provisioned with the branch and retained through staff turnover. Admin sees the branch Orders username and can set/reset its password. Reset flow: choose branch → reset password → server-side Edge Function verifies current Admin → set new secret → return one-time success only (never read back current password) → audit actor/branch/time. Keep Manager and Orders usernames distinct. Staff actions through this credential are stamped as the branch Orders account.
 
