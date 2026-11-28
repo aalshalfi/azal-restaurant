@@ -14,8 +14,8 @@ async function open({ status = "accepted", lang = "en", w = 390, signedIn = true
   await page.route("https://fake.supabase.co/**", (r) => {
     const u = decodeURIComponent(r.request().url());
     if (u.includes("/rest/v1/orders?select=id,fulfilment_status")) { st.polls++; if (failAll) return r.fulfill({ status: 500, json: {} });
-      const row = { id: "abc12300-0000-4000-8000-000000000001", fulfilment_status: st.status, payment_status: st.pay, pickup_slot: "2026-11-27T17:30:00Z", updated_at: "2026-11-27T17:00:00Z" };
-      if (u.includes("fulfilment_status=not.in") && ["handed_over", "cancelled"].includes(st.status)) return r.fulfill({ json: [] });
+      const row = { id: "abc12300-0000-4000-8000-000000000001", fulfilment_status: st.status, payment_status: st.pay, rejection_reason: st.reason, pickup_slot: "2026-11-27T17:30:00Z", updated_at: "2026-11-27T17:00:00Z" };
+      if (u.includes("payment_status=eq.paid") && ["handed_over", "cancelled"].includes(st.status) && !st.reason) return r.fulfill({ json: [] });
       return r.fulfill({ json: [row] }); }
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [] });
     if (u.includes("/points_ledger")) return r.fulfill({ json: [] });
@@ -45,6 +45,10 @@ const labels = (page) => page.$$eval(".pulse-step", (ls) => ls.map((l) => l.clas
 }
 { const { page } = await open({ status: "preparing" }); await page.waitForSelector(".pulse-step");
   ok(/is-current:Being prepared/.test(await labels(page)), "Preparing shown only because the server reports preparing"); await page.close(); }
+{ const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");
+  st.status = "cancelled"; st.reason = "Sold out <b>today</b>"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-reason");
+  ok(/Rejected by the kitchen/.test(await page.textContent("#tablePulse")) && /Sold out <b>today<\/b>/.test(await page.textContent(".pulse-reason")) && await page.locator(".pulse-reason b").count() === 0, "status shows rejection and reason as text");
+  await page.close(); }
 { const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");
   st.status = "cancelled"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-step.is-cancelled");
   const t = await page.textContent("#tablePulse");

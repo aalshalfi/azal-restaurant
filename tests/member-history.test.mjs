@@ -12,7 +12,7 @@ test("reads only the signed-in member's own orders and ledger (explicit user_id 
   const h = H.createHistory({ config: CFG, getSession: async () => S, fetch: async (u, o) => { urls.push([decodeURIComponent(u), o.headers.Authorization]); return { ok: true, json: async () => (u.includes("points_ledger") ? [{ delta_points: 120 }, { delta_points: -50 }] : []) }; } });
   const d = await h.load();
   assert.equal(d.total, 70);
-  assert.match(urls[0][0], /\/rest\/v1\/orders\?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,order_items\(/);
+  assert.match(urls[0][0], /\/rest\/v1\/orders\?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,rejection_reason,order_items\(/);
   assert.match(urls[0][0], /&user_id=eq\.u-1&order=placed_at\.desc&limit=20$/);
   assert.match(urls[1][0], /\/rest\/v1\/points_ledger\?select=id,entry_type,delta_points,created_at,order_id&user_id=eq\.u-1&order=created_at\.desc,id\.desc&limit=500&offset=0$/);
   assert.ok(urls.every(([, a]) => a === "Bearer T"));
@@ -95,4 +95,10 @@ test("ChatGPT #59 review 3: inherited names are never timeline steps", () => {
 test("ChatGPT #59 review 2: the detail projection is an explicit allow-list", () => {
   assert.equal(H.DETAIL_COLS, "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status");
   assert.doesNotMatch(readFileSync(new URL("../member-history.js", import.meta.url), "utf8"), /select=\*/);
+});
+
+test("rejection reason and event survive the customer detail projection", () => {
+  const v = H.detailView({ rejection_reason: "Sold out", order_events: [{ event_type: "reject", created_at: "2026-11-25T17:05:00Z" }] });
+  assert.equal(v.reason, "Sold out");
+  assert.equal(v.timeline[0].step, "rejected");
 });

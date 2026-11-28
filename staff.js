@@ -38,9 +38,16 @@
           "&branch_slug=eq." + encodeURIComponent(branch) + "&payment_status=eq.paid&fulfilment_status=not.in.(handed_over,cancelled)&order=pickup_slot.asc.nullslast,placed_at.asc";
         return (await call("/rest/v1/orders?" + q)) || [];
       },
-      async act(orderId, action) {
-        if (!Object.values(NEXT).includes(action)) throw Object.assign(new Error("bad_transition"), { code: "bad_transition" });
-        return call("/rest/v1/rpc/staff_update_order", { method: "POST", body: { p_order: orderId, p_action: action } });
+      async act(orderId, action, reason) {
+        if (action !== "reject" && !Object.values(NEXT).includes(action)) throw Object.assign(new Error("bad_transition"), { code: "bad_transition" });
+        const body = { p_order: orderId, p_action: action };
+        if (action === "reject") {
+          reason = typeof reason === "string" ? reason.trim() : "";
+          if (!reason) throw Object.assign(new Error("reason_required"), { code: "reason_required" });
+          if (Array.from(reason).length > 500) throw Object.assign(new Error("reason_too_long"), { code: "reason_too_long" });
+          body.p_reason = reason;
+        }
+        return call("/rest/v1/rpc/staff_update_order", { method: "POST", body });
       }
     };
   }
@@ -57,19 +64,19 @@
   const S = {
     en: { title: "Kitchen orders", inert: "The orders screen turns on when the site is connected to the AZAL system.", signIn: "Sign in with your staff email on the Majlis page first.", signInLink: "Go to sign-in",
       notStaff: "This account is not set up as staff for this branch.", empty: "No paid orders waiting. New ones appear here by themselves.",
-      accept: "Accept", ready: "Ready", hand_over: "Hand over", asap: "As soon as possible", member: "Member",
+      accept: "Accept", ready: "Ready", hand_over: "Hand over", reject: "Reject", reason: "Reason for rejection (shown to the customer)", confirmReject: "Confirm rejection", cancelReject: "Keep order", e_reason_required: "Enter a reason for rejection.", e_reason_too_long: "The reason must be at most 500 characters.", asap: "As soon as possible", member: "Member",
       clash: "Same sigil as another order: check the code", s_placed: "New", s_accepted: "Accepted", s_preparing: "Preparing", s_ready: "Ready for pickup",
       updated: "Updated {time}", refresh: "Refresh", working: "One moment…", e_network: "Connection problem. The list will retry.", e_error: "That did not work. Refresh and try again.",
       e_bad_transition: "That order already moved on. Refreshed.", e_order_closed: "That order is already closed. Refreshed.", e_not_staff: "This account is not staff for this branch.", signedAs: "Signed in as {email}", signOut: "Sign out", signingOut: "Signing out…" },
     fr: { title: "Commandes cuisine", inert: "L’écran des commandes s’active quand le site est relié au système AZAL.", signIn: "Connectez-vous d’abord avec votre courriel du personnel sur la page Majlis.", signInLink: "Aller à la connexion",
       notStaff: "Ce compte n’est pas configuré comme personnel de cette succursale.", empty: "Aucune commande payée en attente. Les nouvelles apparaissent ici d’elles-mêmes.",
-      accept: "Accepter", ready: "Prête", hand_over: "Remettre", asap: "Dès que possible", member: "Membre",
+      accept: "Accepter", ready: "Prête", hand_over: "Remettre", reject: "Refuser", reason: "Motif du refus (visible par le client)", confirmReject: "Confirmer le refus", cancelReject: "Garder la commande", e_reason_required: "Indiquez le motif du refus.", e_reason_too_long: "Le motif ne doit pas dépasser 500 caractères.", asap: "Dès que possible", member: "Membre",
       clash: "Même signe qu’une autre commande : vérifiez le code", s_placed: "Nouvelle", s_accepted: "Acceptée", s_preparing: "En préparation", s_ready: "Prête à emporter",
       updated: "Mis à jour à {time}", refresh: "Actualiser", working: "Un instant…", e_network: "Problème de connexion. La liste va réessayer.", e_error: "Ça n’a pas marché. Actualisez et réessayez.",
       e_bad_transition: "Cette commande a déjà avancé. Liste actualisée.", e_order_closed: "Cette commande est déjà fermée. Liste actualisée.", e_not_staff: "Ce compte ne fait pas partie du personnel de cette succursale.", signedAs: "Connecté : {email}", signOut: "Se déconnecter", signingOut: "Déconnexion…" },
     ar: { title: "طلبات المطبخ", inert: "تعمل شاشة الطلبات حين يُربط الموقع بنظام أزال.", signIn: "سجّل الدخول أولاً ببريد الموظف من صفحة المجلس.", signInLink: "اذهب لتسجيل الدخول",
       notStaff: "هذا الحساب ليس حساب موظف في هذا الفرع.", empty: "لا طلبات مدفوعة تنتظر. تظهر الطلبات الجديدة هنا وحدها.",
-      accept: "قبول", ready: "جاهز", hand_over: "تسليم", asap: "في أقرب وقت", member: "عضو",
+      accept: "قبول", ready: "جاهز", hand_over: "تسليم", reject: "رفض", reason: "سبب الرفض (سيظهر للعميل)", confirmReject: "تأكيد الرفض", cancelReject: "إبقاء الطلب", e_reason_required: "اكتب سبب رفض الطلب.", e_reason_too_long: "يجب ألا يتجاوز السبب 500 حرف.", asap: "في أقرب وقت", member: "عضو",
       clash: "الرمز نفسه لطلب آخر: طابِق الرمز المكتوب تحته", s_placed: "جديد", s_accepted: "مقبول", s_preparing: "قيد التحضير", s_ready: "جاهز للاستلام",
       updated: "حُدّث {time}", refresh: "تحديث", working: "لحظة…", e_network: "مشكلة في الاتصال. ستُعاد المحاولة.", e_error: "لم تنجح العملية. حدّث الصفحة وحاول مرة أخرى.",
       e_bad_transition: "هذا الطلب تقدّم بالفعل. تم التحديث.", e_order_closed: "هذا الطلب مغلق بالفعل. تم التحديث.", e_not_staff: "هذا الحساب ليس موظفاً في هذا الفرع.", signedAs: "مسجّل باسم {email}", signOut: "تسجيل الخروج", signingOut: "جارٍ تسجيل الخروج…" },
@@ -82,7 +89,7 @@
   // Same bidi rule as script.js (F-WALK-3): in Arabic every price is a left-to-right isolate.
   const money = (c) => { const s = new Intl.NumberFormat(locOf(), { style: "currency", currency: "CAD" }).format(c / 100); return lang() === "ar" ? "\u2066" + s.replace(/\u200f/g, "") + "\u2069" : s; };
 
-  let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0;
+  let rows = [], state = "loading", flash = "", busyId = null, lastAt = null, timer = null, email = "", signingOut = false, gen = 0, rejectId = null, rejectReason = "";
   // T-01 / F-OWN-19: identity + sign-out on every signed-in state of the kitchen screen.
   const whoBar = () => `<div class="staff-who-bar"><p class="staff-who-line">${esc(L("signedAs", { email }))}</p><button type="button" class="button staff-signout" id="staffSignOut"${signingOut ? " disabled" : ""}>${esc(L(signingOut ? "signingOut" : "signOut"))}</button></div>`;
 
@@ -107,7 +114,8 @@
         const clash = clashes.has(r.id);
         html += `<article class="staff-order is-${esc(r.fulfilment_status)}${clash ? " is-clash" : ""}"><header>${sigilHtml(r.id, clash, esc, L("clash"))}<span class="staff-code">${esc(code(r.id))}</span><span class="staff-who">${esc(r.guest_name || L("member"))}</span><span class="staff-status">${esc(L("s_" + r.fulfilment_status))}</span></header>` +
           `<ul class="staff-items">${items}</ul>` + (r.customer_note ? `<p class="staff-note-guest">“${esc(r.customer_note)}”</p>` : "") +
-          `<footer><span>${esc(money(r.total_cents))}</span>${action ? `<button type="button" class="button button-gold staff-act" data-id="${esc(r.id)}" data-action="${action}"${busyId ? " disabled" : ""}>${esc(busyId === r.id ? L("working") : L(action))}</button>` : ""}</footer></article>`;
+          `<footer><span>${esc(money(r.total_cents))}</span>${action ? `<button type="button" class="button button-gold staff-act" data-id="${esc(r.id)}" data-action="${action}"${busyId ? " disabled" : ""}>${esc(busyId === r.id ? L("working") : L(action))}</button><button type="button" class="button staff-reject" data-id="${esc(r.id)}"${busyId ? " disabled" : ""}>${esc(L("reject"))}</button>` : ""}</footer>` +
+          (rejectId === r.id ? `<form class="staff-reject-form" data-id="${esc(r.id)}"><label>${esc(L("reason"))}<textarea name="reason" required maxlength="500">${esc(rejectReason)}</textarea></label><button type="submit" class="button button-gold"${busyId ? " disabled" : ""}>${esc(L("confirmReject"))}</button><button type="button" class="button staff-reject-cancel"${busyId ? " disabled" : ""}>${esc(L("cancelReject"))}</button></form>` : "") + `</article>`;
       }
       html += `</section>`;
     }
@@ -139,12 +147,14 @@
     if (b.id === "staffRefresh") { flash = ""; return load(); }
     if (b.id === "staffSignOut") {
       if (signingOut) return;
-      signingOut = true; gen++; clearInterval(timer); timer = null; rows = []; paint(); // the queue disappears at once; in-flight loads are void
+      signingOut = true; gen++; clearInterval(timer); timer = null; rows = []; rejectId = null; rejectReason = ""; paint(); // the queue disappears at once; in-flight loads are void
       try { if (auth) await auth.signOut(); } catch {}
       state = "signed_out"; paint();
       try { root.location.replace("member.html"); } catch {}
       return;
     }
+    if (b.classList.contains("staff-reject") && !busyId) { rejectId = b.dataset.id; rejectReason = ""; flash = ""; paint(); box.querySelector(".staff-reject-form textarea").focus(); return; }
+    if (b.classList.contains("staff-reject-cancel") && !busyId) { rejectId = null; rejectReason = ""; flash = ""; return paint(); }
     if (b.classList.contains("staff-act") && !busyId) {
       busyId = b.dataset.id; flash = ""; paint();
       try { await st.act(b.dataset.id, b.dataset.action); }
@@ -152,7 +162,19 @@
       busyId = null; await load();
     }
   });
+  box.addEventListener("input", (e) => { if (e.target.name === "reason") rejectReason = e.target.value; });
+  box.addEventListener("submit", async (e) => {
+    if (!e.target.classList.contains("staff-reject-form")) return;
+    e.preventDefault();
+    if (busyId) return;
+    if (!rejectReason.trim()) { flash = L("e_reason_required"); paint(); box.querySelector(".staff-reject-form textarea").focus(); return; }
+    const id = e.target.dataset.id;
+    busyId = id; flash = ""; paint();
+    try { await st.act(id, "reject", rejectReason); rejectId = null; rejectReason = ""; }
+    catch (err) { flash = L("e_" + err.code) !== "e_" + err.code ? L("e_" + err.code) : L("e_error"); }
+    busyId = null; await load();
+  });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
   load();
-  if (st.enabled) timer = setInterval(() => { if (!busyId && state === "ready" && !document.hidden) load(); }, 20000);
+  if (st.enabled) timer = setInterval(() => { if (!busyId && !rejectId && state === "ready" && !document.hidden) load(); }, 20000);
 })(typeof window !== "undefined" ? window : globalThis);

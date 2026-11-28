@@ -38,8 +38,12 @@
           }
         }
         const [orders, ledgerAll] = await Promise.all([
-          get("/rest/v1/orders?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
-            "&user_id=eq." + u + "&order=placed_at.desc&limit=20", s.access_token),
+          get("/rest/v1/orders?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,rejection_reason,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
+            "&user_id=eq." + u + "&order=placed_at.desc&limit=20", s.access_token).catch((e) => {
+              if (e.status !== 400) throw e;
+              return get("/rest/v1/orders?select=id,placed_at,pickup_slot,fulfilment_status,payment_status,total_cents,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
+                "&user_id=eq." + u + "&order=placed_at.desc&limit=20", s.access_token);
+            }),
           allLedger()
         ]);
         return { orders, ledger: ledgerAll.slice(0, 50), cups: cupsFrom(ledgerAll), entries: ledgerAll.length, total: ledgerAll.reduce((a, r) => a + Number(r.delta_points || 0), 0) };
@@ -57,8 +61,9 @@
         const q = (cols) => "/rest/v1/orders?select=" + cols + ",order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)" +
           "&id=eq." + encodeURIComponent(orderId) + "&user_id=eq." + encodeURIComponent(uid) + "&order_events.order=created_at.asc,id.asc&limit=1";
         let rows;
-        try { rows = await get(q(DETAIL_COLS + ",discount_cents,redeemed_points"), s.access_token); }
-        catch (e) { if (e.status !== 400) throw e; rows = await get(q(DETAIL_COLS), s.access_token); }
+        try { rows = await get(q(DETAIL_COLS + ",discount_cents,redeemed_points,rejection_reason"), s.access_token); }
+        catch (e) { if (e.status !== 400) throw e; try { rows = await get(q(DETAIL_COLS + ",discount_cents,redeemed_points"), s.access_token); }
+          catch (e2) { if (e2.status !== 400) throw e2; rows = await get(q(DETAIL_COLS), s.access_token); } }
         if (!rows.length) throw Object.assign(new Error("not_found"), { code: "not_found" });
         return detailView(rows[0]);
       }
@@ -68,13 +73,13 @@
   // F-OWN-3: everything the guest needs to check an order, from the server's own snapshot (never recomputed here).
   const DETAIL_COLS = "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status";
   // A Map, not an object literal: "constructor", "toString", "__proto__" are never steps (ChatGPT #59 review).
-  const STEP = new Map([["placed", "placed"], ["paid", "paid"], ["accept", "accepted"], ["prepare", "preparing"], ["ready", "ready"], ["hand_over", "handed_over"], ["cancel", "cancelled"]]);
+  const STEP = new Map([["placed", "placed"], ["paid", "paid"], ["accept", "accepted"], ["prepare", "preparing"], ["ready", "ready"], ["hand_over", "handed_over"], ["cancel", "cancelled"], ["reject", "rejected"]]);
   function detailView(r) {
     const lines = (r.order_items || []).map((i) => ({ q: Number(i.quantity), en: i.item_name_en_snapshot, fr: i.item_name_fr_snapshot || i.item_name_en_snapshot, unit: Number(i.unit_price_cents), line: Number(i.line_total_cents) }));
     const timeline = (r.order_events || []).filter((e) => STEP.has(e.event_type)).map((e) => ({ step: STEP.get(e.event_type), at: e.created_at }));
     return { id: r.id, lines, subtotal: Number(r.subtotal_cents), discount: Number(r.discount_cents || 0), points: Number(r.redeemed_points || 0),
       tax: Number(r.tax_cents), rateBps: Number(r.tax_rate_bps), total: Number(r.total_cents), pickup: r.scheduled_for || r.pickup_slot || null,
-      note: r.customer_note || null, status: r.fulfilment_status, payment: r.payment_status, timeline };
+      note: r.customer_note || null, reason: r.rejection_reason || null, status: r.fulfilment_status, payment: r.payment_status, timeline };
   }
 
   // V3 "Majlis as hospitality": one qahwa cup per collected paid order (earn rows minus reversals). The exact
@@ -91,7 +96,7 @@
   const S = {
     en: { orders: "Your orders", none: "No orders yet. Your pickups will appear here.", points: "Your points", noPoints: "No points yet. Points are added when a paid order is collected.",
       total: "Balance: {n} points", code: "Code {code}", pickup: "Pickup {time}", more: "and {n} more",
-      st_placed: "Received", st_accepted: "Accepted", st_preparing: "Preparing", st_ready: "Ready for pickup", st_handed_over: "Collected", st_cancelled: "Cancelled",
+      st_placed: "Received", st_accepted: "Accepted", st_preparing: "Preparing", st_ready: "Ready for pickup", st_handed_over: "Collected", st_cancelled: "Cancelled", st_rejected: "Rejected by the kitchen", rejectionReason: "Reason: {reason}", t_rejected: "Rejected by the kitchen",
       pay_unpaid: "Not paid", pay_paid: "Paid", pay_refunded: "Refunded", pay_voided: "Voided",
       e_earn: "Earned", e_redeem: "Used", e_earn_reversal: "Reversed", e_redeem_refund: "Returned",
       forOrder: "order {code}", error: "We couldn’t load your history. Refresh to try again.",
@@ -101,7 +106,7 @@
       loading: "Loading…", checked: "Checked at {time}. Close and reopen to check again.", detailError: "We couldn’t load this order. Try again." },
     fr: { orders: "Vos commandes", none: "Aucune commande pour l’instant. Vos retraits apparaîtront ici.", points: "Vos points", noPoints: "Pas encore de points. Ils sont ajoutés quand une commande payée est récupérée.",
       total: "Solde : {n} points", code: "Code {code}", pickup: "Retrait {time}", more: "et {n} de plus",
-      st_placed: "Reçue", st_accepted: "Acceptée", st_preparing: "En préparation", st_ready: "Prête à emporter", st_handed_over: "Récupérée", st_cancelled: "Annulée",
+      st_placed: "Reçue", st_accepted: "Acceptée", st_preparing: "En préparation", st_ready: "Prête à emporter", st_handed_over: "Récupérée", st_cancelled: "Annulée", st_rejected: "Refusée par la cuisine", rejectionReason: "Motif : {reason}", t_rejected: "Refusée par la cuisine",
       pay_unpaid: "Non payée", pay_paid: "Payée", pay_refunded: "Remboursée", pay_voided: "Annulée",
       e_earn: "Gagnés", e_redeem: "Utilisés", e_earn_reversal: "Retirés", e_redeem_refund: "Rendus",
       forOrder: "commande {code}", error: "Impossible de charger votre historique. Actualisez pour réessayer.",
@@ -111,7 +116,7 @@
       loading: "Chargement…", checked: "Vérifié à {time}. Fermez et rouvrez pour vérifier de nouveau.", detailError: "Impossible de charger cette commande. Réessayez." },
     ar: { orders: "طلباتك", none: "لا طلبات بعد. ستظهر هنا طلباتك للاستلام.", points: "نقاطك", noPoints: "لا نقاط بعد. تُضاف النقاط عند استلام طلب مدفوع.",
       total: "الرصيد: {n} نقطة", code: "الرمز {code}", pickup: "الاستلام {time}", more: "و{n} أخرى",
-      st_placed: "وصلنا طلبك", st_accepted: "قُبل", st_preparing: "قيد التحضير", st_ready: "جاهز للاستلام", st_handed_over: "تم الاستلام", st_cancelled: "أُلغي",
+      st_placed: "وصلنا طلبك", st_accepted: "قُبل", st_preparing: "قيد التحضير", st_ready: "جاهز للاستلام", st_handed_over: "تم الاستلام", st_cancelled: "أُلغي", st_rejected: "اعتذر المطبخ عن الطلب", rejectionReason: "السبب: {reason}", t_rejected: "اعتذر المطبخ عن الطلب",
       pay_unpaid: "غير مدفوع", pay_paid: "مدفوع", pay_refunded: "مُسترد", pay_voided: "مُلغى",
       e_earn: "مكتسبة", e_redeem: "مستخدمة", e_earn_reversal: "مسحوبة", e_redeem_refund: "مُعادة",
       forOrder: "الطلب {code}", error: "تعذّر تحميل سجلّك. حدّث الصفحة وحاول مرة أخرى.",
@@ -162,6 +167,7 @@
     if (d.checkedAt) panel.append(el("p", "mh-detail-meta mh-checked", L("checked", { time: when(d.checkedAt, { hour: "numeric", minute: "2-digit" }) }) + (loadingIds.has(id) ? " · " + L("loading") : "")));
     if (d.pickup) panel.append(el("p", "mh-detail-meta", L("pickupAt", { time: when(d.pickup, { dateStyle: "medium", timeStyle: "short" }) })));
     if (d.note) panel.append(el("p", "mh-detail-meta mh-detail-note", L("note", { note: d.note })));
+    if (d.reason) panel.append(el("p", "mh-detail-meta mh-rejection-reason", L("rejectionReason", { reason: d.reason })));
     if (d.timeline.length) {
       const tl = el("ol", "mh-timeline"); tl.setAttribute("aria-label", L("timeline"));
       for (const t of d.timeline) { const li = el("li"); li.append(el("span", null, L("t_" + t.step)), el("time", null, when(t.at, { hour: "numeric", minute: "2-digit" }))); li.lastChild.dateTime = t.at; tl.append(li); }
@@ -199,8 +205,9 @@
         top.append(el("strong", "mh-code", L("code", { code: code(r.id) })), el("span", "mh-date", when(r.placed_at, { dateStyle: "medium" })), el("span", "mh-total", money(r.total_cents)));
         const items = (r.order_items || []).map((i) => i.quantity + "× " + (lang() === "fr" ? i.item_name_fr_snapshot || i.item_name_en_snapshot : i.item_name_en_snapshot));
         const shown = items.slice(0, 3).join(", ") + (items.length > 3 ? " " + L("more", { n: items.length - 3 }) : "");
-        const status = [L("st_" + r.fulfilment_status), L("pay_" + r.payment_status)];
-        if (r.pickup_slot) status.push(L("pickup", { time: when(r.pickup_slot, { hour: "numeric", minute: "2-digit" }) }));
+        const status = [L("st_" + (r.rejection_reason ? "rejected" : r.fulfilment_status)), L("pay_" + r.payment_status)];
+        if (r.rejection_reason) status.push(L("rejectionReason", { reason: r.rejection_reason }));
+        if (r.pickup_slot && !r.rejection_reason) status.push(L("pickup", { time: when(r.pickup_slot, { hour: "numeric", minute: "2-digit" }) }));
         const isOpen = open.has(r.id);
         const btn = el("button", "mh-toggle text-link", isOpen ? L("hide") : L("details"));
         btn.type = "button"; btn.id = "mhb-" + r.id; btn.setAttribute("aria-expanded", String(isOpen)); btn.setAttribute("aria-controls", "mhd-" + r.id);

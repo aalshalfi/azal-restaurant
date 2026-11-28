@@ -33,6 +33,16 @@ test("act goes only through staff_update_order with a known action", async () =>
   assert.equal(calls.length, 1);
 });
 
+test("reject requires a nonblank reason and sends the trimmed reason to the guarded RPC", async () => {
+  const calls = [];
+  const s = T.createStaff({ config: CFG, getToken: async () => "STAFF", fetch: async (u, o) => { calls.push(JSON.parse(o.body)); return { ok: true, json: async () => ({}) }; } });
+  for (const reason of [undefined, "", " \t\n "]) await assert.rejects(s.act("o1", "reject", reason), { code: "reason_required" });
+  await assert.rejects(s.act("o1", "reject", "x".repeat(501)), { code: "reason_too_long" });
+  assert.equal(calls.length, 0);
+  await s.act("o1", "reject", "  Sold out  ");
+  assert.deepEqual(calls, [{ p_order: "o1", p_action: "reject", p_reason: "Sold out" }]);
+});
+
 test("signed out and server errors surface as codes", async () => {
   const s = T.createStaff({ config: CFG, getToken: async () => null, fetch: async () => ({ ok: true, json: async () => [] }) });
   await assert.rejects(s.list(), { code: "signed_out" });

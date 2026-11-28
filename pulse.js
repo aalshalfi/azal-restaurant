@@ -25,13 +25,14 @@
   function createPulse({ config, fetch: fetchFn, getSession }) {
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
-    const cols = "select=id,fulfilment_status,payment_status,pickup_slot"; // "Last checked" is the client poll time, labelled as such
+    const cols = "select=id,fulfilment_status,payment_status,pickup_slot,rejection_reason"; // "Last checked" is the client poll time, labelled as such
     async function get(q) {
       const s = getSession ? await getSession() : null;
       const uid = s && s.user && s.user.id;
       if (!uid) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
       let res;
-      try { res = await fetchFn(base + "/rest/v1/orders?" + cols + "&user_id=eq." + encodeURIComponent(uid) + q, { headers: { apikey: config.anonKey, Authorization: "Bearer " + s.access_token } }); }
+      try { res = await fetchFn(base + "/rest/v1/orders?" + cols + "&user_id=eq." + encodeURIComponent(uid) + q, { headers: { apikey: config.anonKey, Authorization: "Bearer " + s.access_token } });
+        if (res.status === 400) res = await fetchFn(base + "/rest/v1/orders?" + cols.replace(",rejection_reason", "") + "&user_id=eq." + encodeURIComponent(uid) + q.replace("&or=(fulfilment_status.not.in.(handed_over,cancelled),rejection_reason.not.is.null)", "&fulfilment_status=not.in.(handed_over,cancelled)"), { headers: { apikey: config.anonKey, Authorization: "Bearer " + s.access_token } }); }
       catch { throw Object.assign(new Error("network"), { code: "network" }); }
       if (!res.ok) throw Object.assign(new Error("http"), { code: res.status === 401 ? "signed_out" : "error" });
       const rows = await res.json();
@@ -40,7 +41,7 @@
     return {
       enabled,
       // The member's most recent PAID order that is still open (unpaid orders never reach the kitchen).
-      active: () => get("&payment_status=eq.paid&fulfilment_status=not.in.(handed_over,cancelled)&order=placed_at.desc&limit=1"),
+      active: () => get("&payment_status=eq.paid&or=(fulfilment_status.not.in.(handed_over,cancelled),rejection_reason.not.is.null)&order=placed_at.desc&limit=1"),
       byId: (id) => get("&id=eq." + encodeURIComponent(id) + "&limit=1")
     };
   }
@@ -57,13 +58,13 @@
   const S = {
     en: { title: "Your order", code: "Code {code}", updated: "Last checked {time}", refresh: "Refresh", pickup: "Pickup time: {time}",
       placed: "Received", accepted: "Accepted by the kitchen", preparing: "Being prepared", ready: "Ready for pickup", handed_over: "Collected", cancelled: "Order cancelled",
-      now: "Now", unavailable: "Status unavailable right now. Try again.", inactive: "This order is no longer active: its payment was refunded or voided.", hint: "This updates by itself. It shows what the kitchen has confirmed, not an estimate." },
+      rejected: "Rejected by the kitchen", reason: "Reason: {reason}", now: "Now", unavailable: "Status unavailable right now. Try again.", inactive: "This order is no longer active: its payment was refunded or voided.", hint: "This updates by itself. It shows what the kitchen has confirmed, not an estimate." },
     fr: { title: "Votre commande", code: "Code {code}", updated: "Dernière vérification à {time}", refresh: "Actualiser", pickup: "Heure de retrait : {time}",
       placed: "Reçue", accepted: "Acceptée par la cuisine", preparing: "En préparation", ready: "Prête à emporter", handed_over: "Récupérée", cancelled: "Commande annulée",
-      now: "En cours", unavailable: "Statut indisponible pour le moment. Réessayez.", inactive: "Cette commande n’est plus active\u00a0: son paiement a été remboursé ou annulé.", hint: "Cette page se met à jour seule. Elle montre ce que la cuisine a confirmé, pas une estimation." },
+      rejected: "Refusée par la cuisine", reason: "Motif : {reason}", now: "En cours", unavailable: "Statut indisponible pour le moment. Réessayez.", inactive: "Cette commande n’est plus active\u00a0: son paiement a été remboursé ou annulé.", hint: "Cette page se met à jour seule. Elle montre ce que la cuisine a confirmé, pas une estimation." },
     ar: { title: "طلبك", code: "الرمز {code}", updated: "تحقّقنا آخر مرة الساعة {time}", refresh: "تحديث", pickup: "وقت الاستلام: {time}",
       placed: "وصلنا طلبك", accepted: "قبله المطبخ", preparing: "قيد التحضير", ready: "جاهز للاستلام", handed_over: "تم الاستلام", cancelled: "أُلغي الطلب",
-      now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", inactive: "هذا الطلب لم يعد قائماً: أُعيد مبلغه أو أُلغي دفعه.", hint: "تتحدّث هذه الصفحة وحدها، وتعرض ما أكّده المطبخ فعلاً، لا وقتاً تقديرياً." }
+      rejected: "اعتذر المطبخ عن الطلب", reason: "السبب: {reason}", now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", inactive: "هذا الطلب لم يعد قائماً: أُعيد مبلغه أو أُلغي دفعه.", hint: "تتحدّث هذه الصفحة وحدها، وتعرض ما أكّده المطبخ فعلاً، لا وقتاً تقديرياً." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
   const L = (k, v) => { let s = S[lang()][k] || S.en[k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
@@ -84,7 +85,8 @@
     if (order) head.append(el("span", "pulse-code", L("code", { code: code(order.id) })));
     const out = [head];
     const steps = order && !isClosedPayment(order) && timeline(order.fulfilment_status);
-    if (order && isClosedPayment(order)) out.push(el("p", "pulse-inactive", L("inactive")));
+    if (order && order.rejection_reason) { out.push(el("p", "pulse-rejected", L("rejected")), el("p", "pulse-reason", L("reason", { reason: order.rejection_reason }))); }
+    else if (order && isClosedPayment(order)) out.push(el("p", "pulse-inactive", L("inactive")));
     else if (failed || !steps) out.push(el("p", "pulse-error", L("unavailable")));
     else {
       const ol = el("ol", "pulse-steps");
@@ -112,7 +114,7 @@
       const o = order ? await p.byId(order.id) : await p.active();
       if (my !== seq) return;
       order = o; failed = false; lastAt = new Date();
-      const key = o ? (isClosedPayment(o) ? "inactive" : o.fulfilment_status) : null;
+      const key = o ? (o.rejection_reason ? "rejected" : isClosedPayment(o) ? "inactive" : o.fulfilment_status) : null;
       if (o && key !== lastStatus) { if (lastStatus !== null) live.textContent = L(key) || ""; lastStatus = key; }
     } catch (e) { if (my !== seq) return; if (e.code === "signed_out") { order = null; failed = false; } else failed = true; }
     paint();

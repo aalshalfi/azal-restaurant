@@ -20,7 +20,7 @@ async function open({ staff = true, session = true, clash = false }) {
     const u = r.request().url();
     if (u.includes("azal_staff_can_access")) return r.fulfill({ json: staff });
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: orders.filter((o) => !["handed_over", "cancelled"].includes(o.fulfilment_status)) });
-    if (u.includes("staff_update_order")) { const bd = r.request().postDataJSON(); acts.push(bd); const o = orders.find((x) => x.id === bd.p_order); o.fulfilment_status = { accept: "accepted", ready: "ready", hand_over: "handed_over" }[bd.p_action]; return r.fulfill({ json: { order_id: o.id, fulfilment_status: o.fulfilment_status } }); }
+    if (u.includes("staff_update_order")) { const bd = r.request().postDataJSON(); acts.push(bd); const o = orders.find((x) => x.id === bd.p_order); o.fulfilment_status = { accept: "accepted", ready: "ready", hand_over: "handed_over", reject: "cancelled" }[bd.p_action]; return r.fulfill({ json: { order_id: o.id, fulfilment_status: o.fulfilment_status } }); }
     if (u.includes("/auth/v1/")) return r.fulfill({ status: 401, json: {} });
     return r.fulfill({ status: 404, json: {} });
   });
@@ -28,6 +28,13 @@ async function open({ staff = true, session = true, clash = false }) {
   await page.goto(`http://localhost:${port}/staff.html`);
   return { page, acts };
 }
+{ const { page, acts } = await open({}); await page.waitForSelector(".staff-order");
+  await page.locator(".staff-order.is-placed .staff-reject").click();
+  await page.locator(".staff-reject-form textarea").fill("   "); await page.locator(".staff-reject-form button[type=submit]").click();
+  ok(acts.length === 0 && /Enter a reason/.test(await page.textContent("#staffRoot")), "blank rejection reason is blocked");
+  await page.locator(".staff-reject-form textarea").fill("  Sold out  "); await page.locator(".staff-reject-form button[type=submit]").click();
+  await page.waitForFunction(() => document.querySelectorAll(".staff-order").length === 1);
+  ok(acts.length === 1 && acts[0].p_action === "reject" && acts[0].p_reason === "Sold out", "confirmed rejection sends reason and removes order from queue"); await page.close(); }
 {
   const { page, acts } = await open({});
   await page.waitForSelector(".staff-order");

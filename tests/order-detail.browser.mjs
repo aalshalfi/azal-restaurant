@@ -26,7 +26,7 @@ async function open({ lang = "en", w = 390, failDetail = false, pre0006 = false,
       if (state.hold) return state.hold.then(() => r.fulfill({ json: [d] }));
       return r.fulfill({ json: [d] });
     }
-    if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [{ id: ID, placed_at: "2026-11-25T17:00:00Z", pickup_slot: "2026-11-25T17:30:00Z", fulfilment_status: "handed_over", payment_status: "paid", total_cents: 5760, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi" }] }] });
+    if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [Object.assign({ id: ID, placed_at: "2026-11-25T17:00:00Z", pickup_slot: "2026-11-25T17:30:00Z", fulfilment_status: "handed_over", payment_status: "paid", total_cents: 5760, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi" }] }, state.summary || {})] });
     if (u.includes("/rest/v1/points_ledger")) return r.fulfill({ json: [] });
     if (u.includes("claim_guest_points")) return r.fulfill({ json: { points_added: 0 } });
     if (u.includes("/profiles")) return r.fulfill({ json: [{ id: "u1" }] });
@@ -39,6 +39,10 @@ async function open({ lang = "en", w = 390, failDetail = false, pre0006 = false,
 }
 const isDetail = (u) => u.includes("/rest/v1/orders") && /[?&]id=eq\./.test(u);
 const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, " ").trim() ?? null, s);
+{ const state = { summary: { fulfilment_status: "cancelled", rejection_reason: "Sold out <b>today</b>" }, override: { fulfilment_status: "cancelled", rejection_reason: "Sold out <b>today</b>", order_events: [{ event_type: "reject", created_at: "2026-11-25T17:05:00Z" }] } };
+  const { p } = await open({ state }); await p.locator(".mh-toggle").click(); await p.waitForSelector(".mh-rejection-reason");
+  ok(/Rejected by the kitchen.*Sold out <b>today<\/b>/.test(await txt(p, ".mh-status")) && /Sold out <b>today<\/b>/.test(await txt(p, ".mh-rejection-reason")) && /Rejected by the kitchen/.test(await txt(p, ".mh-timeline")) && await p.locator(".mh-status b, .mh-rejection-reason b").count() === 0, "customer status and detail show the rejection and escaped reason");
+  await p.close(); }
 {
   const { p, urls } = await open();
   const btn = p.locator(".mh-toggle");
@@ -92,7 +96,7 @@ const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.r
   const { p, urls } = await open();
   await p.locator(".mh-toggle").click(); await p.waitForSelector(".mh-detail .mh-lines");
   const u = urls.find(isDetail); const sel = new URL(u.replace(/ /g, "%20")).searchParams.get("select");
-  ok(sel === "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status,discount_cents,redeemed_points,order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)", "detail asks for exactly the rendered columns");
+  ok(sel === "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status,discount_cents,redeemed_points,rejection_reason,order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)", "detail asks for exactly the rendered columns");
   ok(!/\*|idempotency_key|request_hash|guest_email|guest_name|user_id,|actor_user_id|details/.test(sel), "no select=*, no hash, key, contact, actor or event details");
   await p.close();
 }
