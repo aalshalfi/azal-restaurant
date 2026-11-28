@@ -126,7 +126,7 @@
       loading: "لحظة…", checked: "آخر تحقّق الساعة {time}. أغلق التفاصيل وافتحها لتتحقّق من جديد.", detailError: "تعذّر تحميل هذا الطلب. حاول مرة أخرى." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
-  const L = (k, v) => { let s = S[lang()][k] || S.en[k] || k; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
+  const L = (k, v) => { let s = (S[lang()][k] || S.en[k] || k).replace(/\.\./g, "."); for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
   const loc = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
   const when = (iso, opts) => new Intl.DateTimeFormat(loc(), Object.assign({ timeZone: "America/Toronto" }, opts)).format(new Date(iso));
   // Same bidi rule as script.js (F-WALK-3): in Arabic every price is one left-to-right isolate.

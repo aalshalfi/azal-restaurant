@@ -39,9 +39,9 @@ async function open({ lang = "en", w = 390, failDetail = false, pre0006 = false,
 }
 const isDetail = (u) => u.includes("/rest/v1/orders") && /[?&]id=eq\./.test(u);
 const txt = (p, s) => p.evaluate((s) => document.querySelector(s)?.textContent.replace(/\s+/g, " ").trim() ?? null, s);
-{ const state = { summary: { fulfilment_status: "cancelled", rejection_reason: "Sold out <b>today</b>" }, override: { fulfilment_status: "cancelled", rejection_reason: "Sold out <b>today</b>", order_events: [{ event_type: "reject", created_at: "2026-11-25T17:05:00Z" }] } };
+{ const state = { summary: { fulfilment_status: "cancelled", rejection_reason: "Sold out... <b>today</b>" }, override: { fulfilment_status: "cancelled", rejection_reason: "Sold out... <b>today</b>", order_events: [{ event_type: "reject", created_at: "2026-11-25T17:05:00Z" }] } };
   const { p } = await open({ state }); await p.locator(".mh-toggle").click(); await p.waitForSelector(".mh-rejection-reason");
-  ok(/Rejected by the kitchen.*Sold out <b>today<\/b>/.test(await txt(p, ".mh-status")) && /Sold out <b>today<\/b>/.test(await txt(p, ".mh-rejection-reason")) && /Rejected by the kitchen/.test(await txt(p, ".mh-timeline")) && await p.locator(".mh-status b, .mh-rejection-reason b").count() === 0, "customer status and detail show the rejection and escaped reason");
+  ok(/Rejected by the kitchen.*Sold out\.\.\. <b>today<\/b>/.test(await txt(p, ".mh-status")) && /Sold out\.\.\. <b>today<\/b>/.test(await txt(p, ".mh-rejection-reason")) && /Rejected by the kitchen/.test(await txt(p, ".mh-timeline")) && await p.locator(".mh-status b, .mh-rejection-reason b").count() === 0, "customer status and detail show the exact rejection reason as text");
   await p.close(); }
 {
   const { p, urls } = await open();

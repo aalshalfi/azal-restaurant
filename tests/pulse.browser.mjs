@@ -47,8 +47,8 @@ const labels = (page) => page.$$eval(".pulse-step", (ls) => ls.map((l) => l.clas
 { const { page } = await open({ status: "preparing" }); await page.waitForSelector(".pulse-step");
   ok(/is-current:Being prepared/.test(await labels(page)), "Preparing shown only because the server reports preparing"); await page.close(); }
 { const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");
-  st.status = "cancelled"; st.reason = "Sold out <b>today</b>"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-reason");
-  ok(/Rejected by the kitchen/.test(await page.textContent("#tablePulse")) && /Sold out <b>today<\/b>/.test(await page.textContent(".pulse-reason")) && await page.locator(".pulse-reason b").count() === 0, "status shows rejection and reason as text");
+  st.status = "cancelled"; st.reason = "Sold out... <b>today</b>"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-reason");
+  ok(/Rejected by the kitchen/.test(await page.textContent("#tablePulse")) && /Sold out\.\.\. <b>today<\/b>/.test(await page.textContent(".pulse-reason")) && await page.locator(".pulse-reason b").count() === 0, "status shows exact rejection reason as text");
   await page.close(); }
 { const { page, st } = await open({ status: "accepted" }); await page.waitForSelector(".pulse-step");
   st.status = "cancelled"; await page.clock.runFor(26000); await page.waitForSelector(".pulse-step.is-cancelled");

@@ -69,7 +69,7 @@
       rejected: "اعتذر المطبخ عن الطلب", reason: "السبب: {reason}", now: "الآن", unavailable: "الحالة غير متاحة الآن. حاول مرة أخرى.", inactive: "هذا الطلب لم يعد قائماً: أُعيد مبلغه أو أُلغي دفعه.", hint: "تتحدّث هذه الصفحة وحدها، وتعرض ما أكّده المطبخ فعلاً، لا وقتاً تقديرياً." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
-  const L = (k, v) => { let s = S[lang()][k] || S.en[k]; for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s.replace(/\.\./g, "."); };
+  const L = (k, v) => { let s = (S[lang()][k] || S.en[k]).replace(/\.\./g, "."); for (const x in v || {}) s = s.split("{" + x + "}").join(v[x]); return s; };
   const loc = () => ({ en: "en-CA", fr: "fr-CA", ar: "ar-CA-u-nu-latn" })[lang()];
   const time = (d, opts) => new Intl.DateTimeFormat(loc(), Object.assign({ hour: "numeric", minute: "2-digit", timeZone: "America/Toronto" }, opts)).format(d);
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
