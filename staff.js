@@ -19,7 +19,8 @@
   function createStaff({ config, fetch: fetchFn, getToken, branch }) {
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
-    branch = branch || "ottawa";\n    let allowedBranches = [];
+    branch = branch || "ottawa";
+    let allowedBranches = [];
     async function call(path, { method = "GET", body } = {}) {
       const token = getToken && (await getToken());
       if (!token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
@@ -32,6 +33,9 @@
     }
     return {
       enabled,
+      async branches() { const list = await call("/rest/v1/rpc/azal_staff_my_branches", { method: "POST", body: {} }); allowedBranches = Array.isArray(list) ? list : []; return allowedBranches.slice(); },
+      setBranch(next) { if (!allowedBranches.includes(next)) throw Object.assign(new Error("bad_branch"), { code: "bad_branch" }); branch = next; return branch; },
+      currentBranch() { return branch; },
       async isStaff() { return (await call("/rest/v1/rpc/azal_staff_can_access", { method: "POST", body: { p_branch_slug: branch } })) === true; },
       async list() {
         // T-02: contact_phone (0010) so the kitchen can call; one fallback for a server without 0010 (400, unknown column).
@@ -94,7 +98,8 @@
     if (state === "inert") { box.innerHTML = h + `<p class="staff-note">${esc(L("inert"))}</p>`; return; }
     if (state === "signed_out") { box.innerHTML = h + `<p class="staff-note">${esc(L("signIn"))}</p><p><a class="button button-gold" href="member.html">${esc(L("signInLink"))}</a></p>`; return; }
     if (state === "not_staff") { box.innerHTML = h + whoBar() + `<p class="staff-note">${esc(L("notStaff"))}</p>`; return; }
-    const branchPicker = branchOptions.length > 1 ? `<label class="staff-branch-picker"><span>${esc(L("branch"))}</span><select id="staffBranch">${branchOptions.map(b => `<option value="${esc(b)}"${b === branchOptions[0] ? "" : ""}>${esc(b)}</option>`).join("")}</select></label>` : "";\n    const head = h + whoBar() + branchPicker + `<div class="staff-bar"><span class="staff-updated" aria-live="polite">${lastAt ? esc(L("updated", { time: tf(lastAt, { second: "2-digit" }) })) : ""}</span><button type="button" class="text-link dark-link" id="staffRefresh">${esc(L("refresh"))}</button></div>` +
+    const branchPicker = branchOptions.length > 1 ? `<label class="staff-branch-picker"><span>${esc(L("branch"))}</span><select id="staffBranch">${branchOptions.map(b => `<option value="${esc(b)}"${b === st.currentBranch() ? " selected" : ""}>${esc(b)}</option>`).join("")}</select></label>` : "";
+    const head = h + whoBar() + branchPicker + `<div class="staff-bar"><span class="staff-updated" aria-live="polite">${lastAt ? esc(L("updated", { time: tf(lastAt, { second: "2-digit" }) })) : ""}</span><button type="button" class="text-link dark-link" id="staffRefresh">${esc(L("refresh"))}</button></div>` +
       `<p class="staff-flash" role="status">${esc(flash)}</p>`;
     if (!rows.length) { box.innerHTML = head + `<p class="staff-note">${esc(L("empty"))}</p>`; return; }
     const groups = new Map();
@@ -125,6 +130,7 @@
     const stale = () => my !== gen || signingOut;
     try { const s = auth && (await auth.session()); if (stale()) return; email = (s && s.user && s.user.email) || ""; if (!s) { state = "signed_out"; rows = []; return paint(); } } catch {}
     try {
+      if (!branchOptions.length) { branchOptions = await st.branches(); if (stale()) return; if (!branchOptions.length) { state = "not_staff"; return paint(); } st.setBranch(branchOptions[0]); }
       if (state !== "ready") { const ok = await st.isStaff(); if (stale()) return; if (!ok) { state = "not_staff"; return paint(); } }
       const r = await st.list(); if (stale()) return;
       rows = r; lastAt = new Date(); state = "ready";
@@ -135,7 +141,12 @@
     paint();
   }
 
-  box.addEventListener("change", async (e) => {\n    if (e.target && e.target.id === "staffBranch" && branchOptions.includes(e.target.value)) {\n      try { st.setBranch(e.target.value); rows=[]; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }\n    }\n  });\n  box.addEventListener("click", async (e) => {
+  box.addEventListener("change", async (e) => {
+    if (e.target && e.target.id === "staffBranch" && branchOptions.includes(e.target.value)) {
+      try { st.setBranch(e.target.value); rows=[]; state="loading"; flash=""; paint(); await load(); } catch { flash=L("e_error"); paint(); }
+    }
+  });
+  box.addEventListener("click", async (e) => {
     const b = e.target.closest && e.target.closest("button");
     if (!b) return;
     if (b.id === "staffRefresh") { flash = ""; return load(); }
