@@ -19,9 +19,7 @@ async function open({ staff = true, session = true, clash = false, branches = ["
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
   await page.route("https://fake.supabase.co/**", async (r) => {
     const u = r.request().url();
-    if (u.includes("azal_is_admin")) return r.fulfill({ json: false });
-    if (u.includes("azal_staff_my_branches")) return r.fulfill({ json: staff ? branches : [] });
-    if (u.includes("azal_staff_today_summary")) return staff ? r.fulfill({ json: { date: "2026-11-26", collected_cents: 2824, placed_count: 1, accepted_count: 0, preparing_count: 0, ready_count: 0, handed_over_count: 1, cancelled_count: 0 } }) : r.fulfill({ status: 403, json: { message: "not_staff_for_branch" } });
+    if (u.includes("azal_staff_my_branches")) return r.fulfill({ json: branches });
     if (u.includes("azal_staff_can_access")) return r.fulfill({ json: staff });
     if (u.includes("/rest/v1/orders")) {
       requests.push(u);
