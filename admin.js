@@ -115,8 +115,14 @@
           if (!page || page.length < 500) break;
           if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
         }
-        const profiles = await call("/rest/v1/profiles?select=id,display_name,phone,member_number", s.access_token);
-        const profileById = new Map((profiles || []).map(p => [p.id, p]));
+        const profiles = [];
+        for (let offset = 0; ; offset += 500) {
+          const page = await call("/rest/v1/profiles?select=id,display_name,phone,member_number&limit=500&offset=" + offset, s.access_token);
+          profiles.push(...(page || []));
+          if (!page || page.length < 500) break;
+          if (profiles.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
+        }
+        const profileById = new Map(profiles.map(p => [p.id, p]));
         const enriched = rows.map(o => Object.assign({}, o, { customer: profileById.get(o.user_id) || null }));
         const term = String(search || "").trim().toLocaleLowerCase();
         return enriched.filter(o => (status === "all" || o.fulfilment_status === status) &&
@@ -154,7 +160,7 @@
   const link = (href, text, cls) => { const a = el("a", cls || "text-link dark-link", text); a.href = href; return a; };
 
   let acc = null, ov = null, failed = false, seq = 0, signingOut = false;
-  let directoryRows = [], orderRows = [], detailRow = null, workspaceError = false;
+  let directoryRows = [], orderRows = [], detailRow = null, workspaceError = false, customerVisible = 100, orderVisible = 100;
   // Sign-out ends the session (server logout + the local session key) and drops every number on this page at once,
   // then lands on the member page, signed out. A later visit here finds no session and shows the signed-out state.
   async function signOut() {
@@ -171,10 +177,10 @@
     const cform = el("form", "admin-filter");
     const ci = el("input", "admin-search"); ci.type = "search"; ci.placeholder = L("customerSearch"); ci.setAttribute("aria-label", L("customerSearch"));
     const cb = el("button", "button button-gold", L("search")); cb.type = "submit"; cform.append(ci,cb);
-    cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; try { directoryRows=await adm.customers({search:ci.value}); workspaceError=false; } catch { workspaceError=true; } paint(); });
+    cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; try { directoryRows=await adm.customers({search:ci.value}); customerVisible=100; workspaceError=false; } catch { workspaceError=true; } paint(); });
     customers.append(cform,el("p","admin-note",L("showing",{n:num(Math.min(100,directoryRows.length)),total:num(directoryRows.length)})));
     if(!directoryRows.length) customers.append(el("p","admin-note",L("noCustomers")));
-    for(const p of directoryRows.slice(0,100)){
+    for(const p of directoryRows.slice(0,customerVisible)){
       const card=el("article","admin-record");
       card.append(el("strong",null,p.display_name||"—"),el("span","admin-record-meta",L("memberNo")+": "+(p.member_number==null?"—":num(p.member_number))),
         el("span","admin-record-meta",(p.phone||"—")+" · "+L("balance")+": "+num(p.balance||0)),
@@ -187,10 +193,10 @@
     const os=el("select","admin-status"); os.setAttribute("aria-label",L("allStatuses"));
     for(const [v,label] of [["all",L("allStatuses")],["placed",L("placed")],["accepted",L("accepted")],["preparing",L("preparing")],["ready",L("ready")],["handed_over",L("handed_over")],["cancelled",L("cancelled")]]){const op=el("option",null,label);op.value=v;os.append(op);}
     const ob=el("button","button button-gold",L("search")); ob.type="submit"; oform.append(oi,os,ob);
-    oform.addEventListener("submit",async e=>{e.preventDefault();ob.disabled=true;try{orderRows=await adm.orders({search:oi.value,status:os.value});workspaceError=false;}catch{workspaceError=true;}paint();});
+    oform.addEventListener("submit",async e=>{e.preventDefault();ob.disabled=true;try{orderRows=await adm.orders({search:oi.value,status:os.value});orderVisible=100;workspaceError=false;}catch{workspaceError=true;}paint();});
     orders.append(oform,el("p","admin-note",L("showing",{n:num(Math.min(100,orderRows.length)),total:num(orderRows.length)})));
     if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
-    for(const o of orderRows.slice(0,100)){
+    for(const o of orderRows.slice(0,orderVisible)){
       const card=el("article","admin-record");
       const who=o.guest_name||(o.customer&&o.customer.display_name)||o.user_id||L("guest");
       card.append(el("strong",null,L("order")+" "+String(o.id).slice(0,8).toUpperCase()),
@@ -199,6 +205,7 @@
       const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;try{detailRow=await adm.orderDetail(o.id);workspaceError=false;}catch{workspaceError=true;}paint();});
       card.append(view);orders.append(card);
     }
+    if(orderRows.length>orderVisible){const more=el("button","button admin-detail-button",L("more"));more.type="button";more.addEventListener("click",()=>{orderVisible+=100;paint();});orders.append(more);}
     if(detailRow){
       const d=el("section","admin-panel admin-order-detail");d.append(el("h2",null,L("order")+" "+String(detailRow.id).slice(0,8).toUpperCase()));
       const cust=detailRow.customer;
