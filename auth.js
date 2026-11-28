@@ -278,8 +278,8 @@
       `<img class="mcard-watermark" src="assets/azal-symbol.svg" alt="" aria-hidden="true">` +
       `<div class="mcard-kicker">${esc(tr("memberCardKicker"))}</div>` +
       // F-OWN-26: founders are exactly the first 100 numbers (10001-10100); derived, no new flag. Others see nothing extra.
-      (isFounder(st) ? `<div class="mcard-founder" id="authFounderMark">${esc(tr("authFounder"))}</div>` : "") +
       `<div class="mcard-name">${esc(st.name || st.email || "")}</div>` +
+      (isFounder(st) ? `<div class="mcard-founder" id="authFounderMark">${esc(tr("authFounder"))}</div>` : "") +
       `<div class="mcard-meta"><div id="authMemberNo"><span>${esc(tr("authMemberNo"))}</span> <strong><bdi dir="ltr">${st.memberNumber}</bdi></strong></div>` +
       (since ? `<div id="authMemberSince"><span>${esc(tr("authMemberSince"))}</span> <strong>${esc(since)}</strong></div>` : "") +
       // V-1 (adopted 2-0): the balance lives on the card (presented once; the stats line folds into it).
