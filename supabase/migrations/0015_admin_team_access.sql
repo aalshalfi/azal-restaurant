@@ -1,4 +1,4 @@
--- 0016 T-14 ADM-4 + Muse A1/A2.
+-- 0015 T-14 ADM-4 + Muse A1/A2.
 -- Team and branch Orders identities, branch-scoped Manager access, paged customer directory,
 -- and customer anonymization. All writes are Admin-only and audited.
 begin;
@@ -34,6 +34,25 @@ $preflight$;
 alter table public.user_roles drop constraint if exists user_roles_role_check;
 alter table public.user_roles add constraint user_roles_role_check
   check (role in ('customer','staff','admin','manager'));
+
+-- F-OWN-6 / Muse 04:12 ruling: the owner identity is the sole Admin. Team UI/RPC cannot grant Admin.
+-- If this identity is lost, owner + lead recover it through the Supabase dashboard; no second door is built.
+create or replace function public.azal_is_admin()
+returns boolean
+language sql stable security definer
+set search_path = ''
+as $fn$
+  select auth.uid() is not null and exists (
+    select 1
+    from public.user_roles r
+    join auth.users u on u.id = r.user_id
+    where r.user_id = auth.uid()
+      and r.role = 'admin'
+      and pg_catalog.lower(u.email) = 'info@azalrestaurant.com'
+  );
+$fn$;
+revoke all on function public.azal_is_admin() from public, anon;
+grant execute on function public.azal_is_admin() to authenticated;
 
 alter table public.profiles
   add column if not exists member_number_retired boolean not null default false;
