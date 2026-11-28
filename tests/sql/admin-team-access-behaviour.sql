@@ -37,6 +37,16 @@ select zz_eq('owner Admin cannot be demoted',
   public.zz_try($$select public.azal_admin_team_assign('info@azalrestaurant.com','Owner','staff',array['ottawa'],'no')$$),'admin_cannot_be_demoted');
 select zz_eq('admin team list returns a structured member collection',
   (public.azal_admin_team_list() ? 'members')::text,'true');
+select zz_eq('owner email plus Admin role is recognized as the sole Admin',public.azal_is_admin()::text,'true');
+reset role;
+insert into auth.users(id,email,email_confirmed_at) values('00000000-0000-0000-0000-0000000000e1','not-owner@example.invalid',pg_catalog.now());
+insert into public.user_roles(user_id,role) values('00000000-0000-0000-0000-0000000000e1','admin');
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000e1',false) \gset
+set role authenticated;
+select zz_eq('a legacy Admin row on a non-owner email grants no Admin access',public.azal_is_admin()::text,'false');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
+set role authenticated;
 
 \echo ===== Manager: branch-only operational view, no customer or money data
 select public.azal_admin_team_assign('c1@example.invalid','Manager C1','manager',array['ottawa'],'T-14 test assignment');
