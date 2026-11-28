@@ -2177,3 +2177,62 @@ BOARD records T-02 (guest mobile + “Join & collect these points”) as assigne
 Muse has adopted the owner's literal Uber U1 model (separate Manager and Orders logins, one shared Orders login per branch controlled from the Manager panel, plus named Manager-side Admin/Manager/Staff roles). T-14 was rewritten and un-gated for its Phase-B slot. The owner also requested Uber-style menu management; Muse carded T-21 after T-08/T-14. `BUILD-METHOD.md` is now fixed for the admin phase and batches from T-04 onward, with one-pass requirements for all states, async invalidation, EN/FR/AR keys, three widths, pinning tests, role×forbidden-action coverage and explicit NOT-verified evidence. T-02 remains the current batch and is not superseded by these later Phase-B cards.
 
 **Safety:** ChatGPT did not merge a PR, apply SQL, change Supabase settings, enable sign-ups, open reservations, enable real payments, send real email, disclose secrets, or spend money in this run.
+
+
+## 2026-11-27 19:35 EST (Toronto) — Follow-up audit on main `7d91af4`: historical queue closed; T-22 is Claude's next batch; #70 HOLD
+
+**Audit base:** `main` = `7d91af456e57e32a4cbd4598842fd518665ffe28`. Read current PR metadata, branch comparisons, recent commits, `BOARD.md`, `MUSE-REPLY.md`, `CLAUDE-REPLY.md`, `WORKPLAN.md`, `SPEC.md`, `BUILD-METHOD.md`, and the exact #70 source/migration/tests. This is a source/coordination review; no merge, SQL, configuration, live order, payment, email or booking action was performed by ChatGPT.
+
+### A. Historical priority PRs #27, #29, #30, #31, #32, #33
+
+All six are closed and merged; there is no open merge task among them. Current branch comparisons against main:
+
+| PR | State / merge commit | Branch vs current main | Disposition |
+|---|---|---:|---|
+| #27 | merged `b232bff66add49b84e56d2cd6174c7f2ecb7a4e6` | 0 ahead / 639 behind | Dependency landed before #32. The 0001→0002 review is in the earlier audit; no repeat merge. |
+| #32 | merged `344a7c698e15c3abdce5460e1a68fe4f330189b2` | 0 / 429 | Table-only reservation implementation is already on main. |
+| #33 | merged `23490141978451717cca5a578cd43faa5ec6b42d` | 2 / 706 | Squash-landed; its old branch still has its two original commits, not a reason to re-merge. |
+| #31 | merged `a2158d75504a66ed4189edae18133c703e913258` | 0 / 378 | Landed; old branch has no outstanding work. |
+| #30 | merged `e9f6de13fbc7d4a82ad6e336cd8be45b5b0f402b` | 0 / 469 | Landed; actual email delivery remains an operational gate. |
+| #29 | merged `389f4f81e635ff4c7cafcdd2df4f3cb9fcc07483` | 0 / 304 | Landed; merge is not live-payment authorization. |
+
+#27's merge predates #32's merge. #33's 2-ahead result is the expected old squash branch lineage; do not merge it again.
+
+### B. #32 reservation safety — source remains fail-closed
+
+Current main still has the intended controls: migration 0005 declares `booking_enabled NOT NULL DEFAULT false`, and the server RPC refuses while disabled; `reservation-config.js` defaults both `bookingEnabled` and `goLiveAuthorized` to false; `reserve.js` requires both to be literal true and valid Supabase config before enabling the form/call. The browser tests cover default-off and each one-flag-only case.
+
+**IP trust limitation:** the Cloudflare-header/XFF spoof tests and removal of the temporary echo function are recorded by Muse as a successful gateway probe, but I did not independently repeat that live infrastructure test. `SPEC.md` still records 0005 as NOT applied and J8 pending; no booking go-live is inferred from #32's merge.
+
+### C. #68 / T-02 — completed, but one apply-record detail should be reconciled
+
+PR #68 merged at `b7260a2247c1c57f6820afa89a82cd584cfffcee`. Muse's current record says T-02 is closed, Node suite 200/200, migration 0010 applied to the `azal` staging project, `payments_mode='test'`, counts unchanged, and the live guest/mobile/join acceptance passed. `SPEC.md` identifies `azal` as staging, not production.
+
+One documentation gap: `docs/apply-0010.md` requires exporting/backing up `public.orders` before applying. Muse's 19:26 entry records the preflight count (6 orders, 3 profiles) and unchanged post-counts, but does not explicitly say whether that export was taken. @Muse: record the actual truth (backup/export taken, or not taken); do not infer one from unchanged counts, do not rerun 0010, and retain the documented rollback path.
+
+### D. New directly related work — PR #70 (Copilot T-06) remains HOLD
+
+PR #70 is open and draft at exact head `d1279f53d6425fd71312cbb707a4676585c378fc`; GitHub reports `mergeable=false`. Compared with current main it is 5 commits ahead / 10 behind (diverged). No status checks are attached to this exact head. Run `46086715103` is `action_required` and its recorded `head_sha` is the earlier initial-plan commit `35c431cd1f0fc1d6448fce1b2359734f03bc0cfb`, not `d1279f5`. The Node 201, browser 24-suite and PostgreSQL results in the PR body are builder-reported, not exact-head CI evidence.
+
+**Source positives:** migration 0012 performs server-side branch-staff and paid-order checks, requires a trimmed reason of at most 500 characters, writes an audit event, closes the ticket out of the queue and returns redeemed points idempotently. Member history and Table Pulse render the rejection reason as text.
+
+**Acceptance gaps:** the member queries filter by `user_id`, so guest orders have no secure status/reason/notification path; the PR body acknowledges this. The rejection RPC leaves payment status `paid` and does not refund the charge (it only returns redeemed points), so the UI must not imply a payment refund; the separate Admin/T-20 action remains distinct. I posted an exact-head HOLD comment on PR #70: https://github.com/aalshalfi/azal-restaurant/pull/70#issuecomment-7231069452. Required before any merge: resolve or explicitly scope the guest path, make the payment/refund state truthful, sync main without rewriting history, inspect the resulting diff, and attach green full CI to the final SHA. No SQL was applied.
+
+### E. Claude's next batch — T-22, not T-04
+
+Muse's latest lead record assigns **T-22 (inline sign-in/join inside the checkout sheet) to Claude**, after the owner's laptop test found that Sign in navigates away, Create account does nothing, and the guest form's “Sign in instead” link is dead. The owner explicitly chose Claude for this work; Copilot remains on the single T-06 task (#70). T-04 waits until T-22 is complete and lead-gated.
+
+At this audit:
+- `CLAUDE-REPLY.md` on main still ends with the T-02 delivery section; there is no T-22 acknowledgement, branch SHA, file list, tests or CI evidence.
+- No `claude/checkout-inline-auth` branch and no T-22 PR are published.
+- `WORKPLAN.md` contains the T-22 requirements, but `BOARD.md` has no T-22 file-claim row yet; the T-02 row also still says it awaits review/merge/apply, which is stale after #68 closed.
+
+**@Muse — please register the exact T-22 file claim in BOARD.md before edits, correct the stale T-02 row by an append-only dated note, and have Claude start T-22 now.** Keep T-04 paused. Claude's delivery in `CLAUDE-REPLY.md` must include: full branch HEAD SHA; exact changed-file list; test commands and actual Node/browser/SQL counts; exact-head CI run ID and conclusion; EN/FR/AR coverage at 320/390/1280; proof that Sign in, Create account and the guest-form “Sign in instead” switch in place with no navigation/dead end; wrong-password and email-verification-pending states; preservation of cart, pickup choice and note; sign-out/account-switch async protection; explicit NOT-verified items, blockers and next action.
+
+**Cadence:** the owner's latest instruction in this turn explicitly asks to keep Claude's evidence check every 30 minutes. This supersedes the lead's earlier statement that 30-minute check-ins ended as a team obligation. Please resume the 30-minute evidence cadence for Claude, with substantive updates only (no empty commits), and keep the owner informed only for a verified milestone or a blocker needing him.
+
+### F. Uber reference scope — inspiration, not a copy mandate
+
+The owner clarified that the Uber dossier is a reference for useful patterns, not a checklist to reproduce wholesale. Muse's 19:30 adjudication already applies that principle: Admin alone manages users; Manager is kept away from payment/tax, points, refunds and settings; AZAL Staff do not edit the menu (the owner's F-OWN-7 rule); Orders-password reset stays Admin-only; modifiers are in scope because the actual menu needs options; menu/item hours, per-item tax classes, photo approval workflow and Uber's automatic timeout/pause are out. Keep those deliberate AZAL choices; do not add Uber features without a concrete restaurant benefit.
+
+**Safety:** no PR was merged by ChatGPT; no SQL was run by ChatGPT; no production/staging setting was changed; no booking, signup, real payment, refund or email was activated by this audit.

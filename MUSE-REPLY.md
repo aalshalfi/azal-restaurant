@@ -8429,3 +8429,27 @@ The owner continued his laptop test (19:27, photo): after choosing guest, the fo
 The owner asked (19:29) whether the T-22 repair goes to Copilot for a try or stays with Claude — and answered it himself: **Claude.** Recorded: T-22 (inline auth in the checkout sheet) is Claude's, as the card already states — it is a repair on the money path in the surface he just built. Copilot's trial remains the single T-06 task, judged on PR #70 alone; no second task is loaded onto it mid-evaluation.
 
 — Muse (team lead)
+
+## 2026-11-27 19:52 EST — CAPACITY EVENT: Claude's weekly allowance exhausted in one day (owner report)
+
+The owner reports (19:46) that Claude has consumed his **weekly subscription allowance in a single day** — Claude is unavailable for building until his weekly reset. Consequences: T-22 (assigned to Claude minutes before this news) cannot start with him; T-04 and the Phase A queue pause on the Claude line. The lead has put the allocation choice to the owner: ChatGPT builds T-22 as a lead-assigned card under the full lead gate (his reviewer role already allows lead-assigned builds), or T-22 waits for Claude's reset. Copilot is NOT an option for T-22 — the owner's 19:29 allocation ruling stands. Planning note for the whole project: Claude's throughput must be budgeted as a scarce weekly resource, not a daily one — batch sizes and the Dec-8 plan must assume it.
+
+— Muse (team lead)
+
+## 2026-11-27 19:55 EST — Owner decision: T-22 STAYS with Claude despite the capacity event
+
+Put to the owner after the capacity news (19:52), the owner decided (19:47–19:55): **Claude works on T-22** — ChatGPT does NOT take the build. The checkout repair therefore waits for Claude's weekly reset; the Claude line (T-22 → T-04 → T-03) pauses until he returns. Unaffected and continuing under the lead's gate: Copilot's T-06 (PR #70) and ChatGPT's review debts (SQL test-integrity fix, #40 review, duel entry). When Claude returns, T-22 is his first task — the BOARD claim is registered by him before edits, per protocol.
+
+— Muse (team lead)
+
+## 2026-11-27 20:00 EST — CORRECTION to the capacity record: the 94% meter is MUSE's, reset Sunday 03:59
+
+The owner's screenshot (19:48) shows the **Muse app's Usage panel: weekly "All models" at 94% used, resetting Sunday (Nov 29) 03:59 EST**, with the warning that at the current pace it runs out tonight. So the allowance burning down is the **lead's own (Muse's)** — the 19:52 note above recorded it as Claude-the-builder's subscription, which the screenshot does NOT establish; Claude's own subscription state is unverified. Owner's allocation decision (T-22 stays with Claude) stands as made. Lead consequence: Muse conserves its remaining ~6% — gates and records only, no heavy operations — until the Sunday reset.
+
+— Muse (team lead)
+
+## 2026-11-27 20:05 EST — Owner confirms: the panel is CLAUDE's (the 20:00 correction is itself corrected)
+
+The owner states plainly (19:49): "هذا كلود" — the screenshot is **Claude's** usage panel. Final record: **Claude's weekly allowance stands at 94% used, resetting Sunday Nov 29, 03:59 EST** (session resets Sat 00:09) — nearly exhausted, effectively closed for heavy building until Sunday morning, not a full week. The lead's 20:00 note assumed the panel was Muse's own meter; that assumption was wrong and is superseded by this note. Muse's own meter was never shown. T-22 waits for Claude's Sunday reset per the owner's allocation decision.
+
+— Muse (team lead)
