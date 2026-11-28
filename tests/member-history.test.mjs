@@ -96,3 +96,9 @@ test("ChatGPT #59 review 2: the detail projection is an explicit allow-list", ()
   assert.equal(H.DETAIL_COLS, "id,subtotal_cents,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,fulfilment_status,payment_status");
   assert.doesNotMatch(readFileSync(new URL("../member-history.js", import.meta.url), "utf8"), /select=\*/);
 });
+
+test("T-02: the order's mobile is part of the detail, and asked for explicitly", () => {
+  assert.equal(H.detailView({ id: "p", subtotal_cents: 1, tax_rate_bps: 1300, tax_cents: 0, total_cents: 1, contact_phone: "+13439990002" }).phone, "+13439990002");
+  assert.equal(H.detailView({ id: "q", subtotal_cents: 1, tax_rate_bps: 1300, tax_cents: 0, total_cents: 1 }).phone, null);
+  assert.match(readFileSync(new URL("../member-history.js", import.meta.url), "utf8"), /",discount_cents,redeemed_points,contact_phone"/);
+});

@@ -57,8 +57,13 @@
         const q = (cols) => "/rest/v1/orders?select=" + cols + ",order_items(quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot),order_events(event_type,created_at)" +
           "&id=eq." + encodeURIComponent(orderId) + "&user_id=eq." + encodeURIComponent(uid) + "&order_events.order=created_at.asc,id.asc&limit=1";
         let rows;
-        try { rows = await get(q(DETAIL_COLS + ",discount_cents,redeemed_points"), s.access_token); }
-        catch (e) { if (e.status !== 400) throw e; rows = await get(q(DETAIL_COLS), s.access_token); }
+        // Newest columns first (0010 contact_phone, 0006 points); each older server answers 400 and we step back once.
+        rows = null;
+        for (const extra of [",discount_cents,redeemed_points,contact_phone", ",discount_cents,redeemed_points", ""]) {
+          try { rows = await get(q(DETAIL_COLS + extra), s.access_token); break; }
+          catch (e) { if (e.status !== 400) throw e; }
+        }
+        if (!rows) throw Object.assign(new Error("error"), { code: "error" });
         if (!rows.length) throw Object.assign(new Error("not_found"), { code: "not_found" });
         return detailView(rows[0]);
       }
@@ -74,7 +79,7 @@
     const timeline = (r.order_events || []).filter((e) => STEP.has(e.event_type)).map((e) => ({ step: STEP.get(e.event_type), at: e.created_at }));
     return { id: r.id, lines, subtotal: Number(r.subtotal_cents), discount: Number(r.discount_cents || 0), points: Number(r.redeemed_points || 0),
       tax: Number(r.tax_cents), rateBps: Number(r.tax_rate_bps), total: Number(r.total_cents), pickup: r.scheduled_for || r.pickup_slot || null,
-      note: r.customer_note || null, status: r.fulfilment_status, payment: r.payment_status, timeline };
+      note: r.customer_note || null, phone: r.contact_phone || null, status: r.fulfilment_status, payment: r.payment_status, timeline };
   }
 
   // V3 "Majlis as hospitality": one qahwa cup per collected paid order (earn rows minus reversals). The exact
@@ -97,7 +102,7 @@
       forOrder: "order {code}", error: "We couldn’t load your history. Refresh to try again.",
       cups: "{n} cups of qahwa poured for you: one for each order you collected.", cupsOne: "1 cup of qahwa poured for you: one for each order you collected.", cupsMore: "+{n}",
       details: "Order details", hide: "Hide details", each: "{price} each", subtotal: "Subtotal", pointsLine: "Majlis points ({n})", hst: "HST ({rate}%)", grand: "Total",
-      pickupAt: "Pickup: {time}", note: "Your note: {note}", timeline: "What happened", t_placed: "Received", t_paid: "Paid", t_accepted: "Accepted", t_preparing: "Preparing", t_ready: "Ready", t_handed_over: "Collected", t_cancelled: "Cancelled",
+      pickupAt: "Pickup: {time}", phoneLine: "Mobile for this order: {phone}", note: "Your note: {note}", timeline: "What happened", t_placed: "Received", t_paid: "Paid", t_accepted: "Accepted", t_preparing: "Preparing", t_ready: "Ready", t_handed_over: "Collected", t_cancelled: "Cancelled",
       loading: "Loading…", checked: "Checked at {time}. Close and reopen to check again.", detailError: "We couldn’t load this order. Try again." },
     fr: { orders: "Vos commandes", none: "Aucune commande pour l’instant. Vos retraits apparaîtront ici.", points: "Vos points", noPoints: "Pas encore de points. Ils sont ajoutés quand une commande payée est récupérée.",
       total: "Solde : {n} points", code: "Code {code}", pickup: "Retrait {time}", more: "et {n} de plus",
@@ -107,7 +112,7 @@
       forOrder: "commande {code}", error: "Impossible de charger votre historique. Actualisez pour réessayer.",
       cups: "{n} tasses de qahwa servies pour vous\u00a0: une pour chaque commande récupérée.", cupsOne: "1 tasse de qahwa servie pour vous\u00a0: une pour chaque commande récupérée.", cupsMore: "+{n}",
       details: "Détails de la commande", hide: "Masquer les détails", each: "{price} chacun", subtotal: "Sous-total", pointsLine: "Points Majlis ({n})", hst: "TVH ({rate}\u00a0%)", grand: "Total",
-      pickupAt: "Retrait\u00a0: {time}", note: "Votre note\u00a0: {note}", timeline: "Déroulement", t_placed: "Reçue", t_paid: "Payée", t_accepted: "Acceptée", t_preparing: "En préparation", t_ready: "Prête", t_handed_over: "Récupérée", t_cancelled: "Annulée",
+      pickupAt: "Retrait\u00a0: {time}", phoneLine: "Cellulaire pour cette commande\u00a0: {phone}", note: "Votre note\u00a0: {note}", timeline: "Déroulement", t_placed: "Reçue", t_paid: "Payée", t_accepted: "Acceptée", t_preparing: "En préparation", t_ready: "Prête", t_handed_over: "Récupérée", t_cancelled: "Annulée",
       loading: "Chargement…", checked: "Vérifié à {time}. Fermez et rouvrez pour vérifier de nouveau.", detailError: "Impossible de charger cette commande. Réessayez." },
     ar: { orders: "طلباتك", none: "لا طلبات بعد. ستظهر هنا طلباتك للاستلام.", points: "نقاطك", noPoints: "لا نقاط بعد. تُضاف النقاط عند استلام طلب مدفوع.",
       total: "الرصيد: {n} نقطة", code: "الرمز {code}", pickup: "الاستلام {time}", more: "و{n} أخرى",
@@ -117,7 +122,7 @@
       forOrder: "الطلب {code}", error: "تعذّر تحميل سجلّك. حدّث الصفحة وحاول مرة أخرى.",
       cups: "صببنا لك {n} فناجين قهوة: فنجان عن كل طلب استلمته.", cupsOne: "صببنا لك فنجان قهوة: فنجان عن كل طلب استلمته.", cupsMore: "+{n}",
       details: "تفاصيل الطلب", hide: "إخفاء التفاصيل", each: "{price} للواحد", subtotal: "المجموع قبل الضريبة", pointsLine: "نقاط المجلس ({n})", hst: "ضريبة المبيعات ({rate}%)", grand: "المجموع",
-      pickupAt: "الاستلام: {time}", note: "ملاحظتك: {note}", timeline: "مسار الطلب", t_placed: "وصلنا طلبك", t_paid: "تم الدفع", t_accepted: "قُبل", t_preparing: "قيد التحضير", t_ready: "جاهز", t_handed_over: "تم الاستلام", t_cancelled: "أُلغي",
+      pickupAt: "الاستلام: {time}", phoneLine: "رقم الجوال لهذا الطلب: {phone}", note: "ملاحظتك: {note}", timeline: "مسار الطلب", t_placed: "وصلنا طلبك", t_paid: "تم الدفع", t_accepted: "قُبل", t_preparing: "قيد التحضير", t_ready: "جاهز", t_handed_over: "تم الاستلام", t_cancelled: "أُلغي",
       loading: "لحظة…", checked: "آخر تحقّق الساعة {time}. أغلق التفاصيل وافتحها لتتحقّق من جديد.", detailError: "تعذّر تحميل هذا الطلب. حاول مرة أخرى." }
   };
   const lang = () => { const l = document.documentElement.lang; return l === "fr" || l === "ar" ? l : "en"; };
@@ -161,6 +166,7 @@
     panel.append(ul, sums);
     if (d.checkedAt) panel.append(el("p", "mh-detail-meta mh-checked", L("checked", { time: when(d.checkedAt, { hour: "numeric", minute: "2-digit" }) }) + (loadingIds.has(id) ? " · " + L("loading") : "")));
     if (d.pickup) panel.append(el("p", "mh-detail-meta", L("pickupAt", { time: when(d.pickup, { dateStyle: "medium", timeStyle: "short" }) })));
+    if (d.phone) { const ph = el("p", "mh-detail-meta", L("phoneLine", { phone: "" })); const sp = el("span", null, d.phone); sp.dir = "ltr"; ph.append(sp); panel.append(ph); }
     if (d.note) panel.append(el("p", "mh-detail-meta mh-detail-note", L("note", { note: d.note })));
     if (d.timeline.length) {
       const tl = el("ol", "mh-timeline"); tl.setAttribute("aria-label", L("timeline"));

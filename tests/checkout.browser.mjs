@@ -29,7 +29,7 @@ async function run({ lang = "en", card, second }) {
   if (lang === "fr") { const fr = page.locator("[data-lang='fr'], #langToggle, .lang-toggle").first(); if (await page.evaluate(() => document.documentElement.lang) !== "fr" && await fr.count()) await fr.click(); }
   await page.evaluate(() => { document.getElementById("cartButton")?.click(); });
   await page.evaluate(() => document.getElementById("checkoutButton").click());
-  await page.waitForSelector("#placeOrder");
+  await page.waitForSelector("#placeOrder", { state: "attached" }); await page.waitForTimeout(300); if (typeof choose === "undefined" || choose) { if (await page.locator("#coWhoGuest").isVisible()) await page.click("#coWhoGuest"); } // F-OWN-20 chooser
   return { page, sent };
 }
 
@@ -48,7 +48,7 @@ async function run({ lang = "en", card, second }) {
   await page.locator("#placeOrder").click();
   ok((await page.locator("#coError").textContent()).includes("name"), "missing name blocks submit");
   ok(sent.length === 0, "nothing sent before guest details are valid");
-  await page.fill("#coName", "Test Guest"); await page.fill("#coEmail", "guest@example.invalid");
+  await page.fill("#coName", "Test Guest"); await page.fill("#coEmail", "guest@example.invalid"); await page.fill("#coPhone", "343 999 0002"); // T-02: guests give a mobile
   await page.fill("#coNote", "Less spice please");
   await page.fill("#coCard", "4111 1111 1111 1111"); await page.locator("#placeOrder").click();
   ok(sent.length === 0, "a non-test card number sends nothing");
