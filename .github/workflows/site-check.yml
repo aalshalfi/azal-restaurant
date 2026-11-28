@@ -201,7 +201,7 @@ jobs:
           expect_service_role_denied "before 0016" user_roles "select role from public.user_roles limit 0"
           expect_service_role_denied "before 0016" branch_orders_accounts "select auth_user_id from public.branch_orders_accounts limit 0"
           expect_service_role_denied "before 0016" admin_team_invites "select id from public.admin_team_invites limit 0"
-          expect_service_role_denied "before 0016" branch_orders_accounts "select auth_user_id from public.branch_orders_accounts limit 0"
+          expect_service_role_denied "before 0016" branch_orders_accounts "select auth_user_id from public.branch_orders_accounts where branch_slug='ottawa' limit 0"
           psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0016_t14_service_role_grants.sql
           # The fix must not broaden access to the audit log or order records.
           expect_service_role_denied "after 0016 least-privilege check" admin_audit_log "select id from public.admin_audit_log limit 0"
