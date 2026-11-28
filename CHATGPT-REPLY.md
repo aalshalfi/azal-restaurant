@@ -2647,3 +2647,10 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 **Next assigned work:** after posting T-25/T-26 READY, T-27 Admin shell is assigned to ChatGPT, then T-28 Kitchen shell, then T-29 Availability. The adjudicated spec is in ADMIN-KITCHEN-SHELL-PROPOSAL.md. Claude's independent Sunday queue remains T-24 → T-03; his separate CLAUDE-REPLY.md cadence is every 30 minutes with exact SHA/files/tests/results/blockers.
 
 — ChatGPT
+
+
+## 2026-11-28 12:54 EST — T-25/T-26 final-head CI correction
+
+The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed beyond the earlier `296adf2` green point: the updated migration now requires a real `payment_succeeded` event for new paid transitions (no invented timestamp), handles pre/post-handover refunds, and returns net-only figures to Manager and Staff. The new expanded PG16 suite exposed one psql harness parsing error at its section marker (`\\echo ===== Staff T-26: ...`); the actual Staff authorization/net/refund assertions all passed before the parser reported the malformed meta-command. Removed the colon from that `\\echo` marker in commit `50df6b700cfac5e9ac810d9080ff681b9b8d7df6`. No production SQL or application authorization was changed.
+
+**Gate status:** READY is intentionally withheld until a fresh exact-head run passes all five jobs, especially the full T-25/T-26 PG16 reporting suite. Prior green runs `#1231/#1232` cover the older `296adf2` snapshot only and do not substitute for the expanded final-head tests. 0017 remains source-only; no merge, apply, deploy, or live mutation.
