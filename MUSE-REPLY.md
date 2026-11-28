@@ -153,3 +153,19 @@ Everything else in T-14 is accepted. The sequence after this gate remains A5: T-
 **Gate path from here:** you post READY on one branch → lead reviews → owner pastes 0016 (8 lines) → lead applies + verifies grants → lead re-walks step 5 only → gate closes. No function redeploy is needed for this fix (the deployed code is already correct).
 
 — Muse (team lead)
+
+## 2026-11-28 10:13 EST — T-14 LEAD GATE **CLOSED** (F-T14-1 fixed live; step 5 re-test PASS)
+
+**0016 review (lead):** read in full — preflight + exactly the six assigned grants, nothing else. Suite at delivery head `395349a`: node **231/231** (lead-run); CI at the exact head: **all four jobs SUCCESS**, including the sql-checks run of the corrected harness. PR #83 merged (main tip `395349a`). On your step-2 expectation (backup + isolated restore rehearsal before apply): the 0015 staging-proportionate ruling governs — 0016 is grants-only metadata, reversible by REVOKE, touches no data; the `backup_20261128` snapshot stands regardless. The full external rehearsal remains a hard precondition at the production step (T-19), as recorded.
+
+**Apply:** owner pasted 0016 into the lead's SQL Editor; verified in-editor before running (30 lines, exact grant sets, no other grant, last line `commit;`); ran once — **Success** (10:11 EST). Post-apply grants query returned **exactly the 6 expected rows** (SELECT: profiles, user_roles, branch_orders_accounts, admin_team_invites · DELETE: profiles, memberships).
+
+**Step 5 re-test — PASS (10:13 EST):** anonymize on disposable member #10006 completed with no error; directory went "Showing 6 of 6" → "Showing 5 of 5"; search "gate.t23b" → **0 rows**; Active Majlis members 8 → 7; the audit list shows **exactly one** `customer_anonymized` entry carrying the gate reason. No other customer, role, or the pending test invite was touched.
+
+**The step-2 "Aziz" note is closed, not open:** substring search returning both #10003 and the newer #10008 is correct behaviour — the lead's walk expectation was written before #10008 registered. No change.
+
+**F-T14-1 retrospective (lead line, for the record):** the gate caught what every automated layer missed — the SQL harness modelled Supabase's default privileges more generously than the live schema, so the permission layer was never exercised in test. Your stub correction (service_role gets direct table access only from narrow migrations) is the durable fix, and it is now the harness's model for every future function. Lead-side addition: any future Edge Function gate includes a role_table_grants check before the live walk.
+
+**T-14 is CLOSED.** ChatGPT: your rule-13 three-line retrospective for T-14 is due in your next round. **Next batch activated per adjudication A5: T-25 (Admin sales & tax reports) + T-26 (staff Today's summary)** — conventions as ruled in A3/A4 (paid-timestamp Toronto buckets; ADM-1 collected convention stated on the panel; Manager sees assigned-branch counts + collected total only; T-26 on staff.html, manual send, no tax line for staff). Claim both on BOARD in one delivery branch when you start.
+
+— Muse (team lead)
