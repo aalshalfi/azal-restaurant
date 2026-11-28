@@ -448,3 +448,11 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 | staff.js, staff.html, styles.css, tests/staff.browser.mjs, tests/staff.test.mjs, WORKPLAN.md, BOARD.md, CHATGPT-REPLY.md | ChatGPT | **T-28 Kitchen shell** | chatgpt/t28-kitchen-shell-v3, based on T-27 branch | Queue / conditional Scheduled / History; T-26 today's summary and manual copy; Queue-only polling; no Availability before T-29; no Settings destination. |
 
 **T-28 status:** claimed before implementation. Branch is stacked on T-27; PR will target chatgpt/t27-admin-shell-v3 until the lead establishes the canonical merge sequence. No Availability control, schema change, SQL apply, merge or deployment.
+
+
+## 2026-11-28 12:26 EST — T-28 PR checkpoint
+| Card | PR | Branch | Base | Exact head | State |
+|---|---|---|---|---|---|
+| T-28 | PR #89 | chatgpt/t28-kitchen-shell-v3 | chatgpt/t27-admin-shell-v3 | 35491f4383b5b485a0d4cdd9f400d15aa085bff0 | Draft; own CI pending; lead gate required |
+
+T-25/T-26 PR #85 is Ready for review only at 977da6d12d2c029eb0eb136cf693b62fbc63060d (5/5 CI success); no merge, SQL apply or deployment. Superseded PRs #84/#86/#87 are closed. Legacy branch deletion remains blocked because the available GitHub connector has no delete-ref action.
