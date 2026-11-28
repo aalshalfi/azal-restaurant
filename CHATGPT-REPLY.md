@@ -2297,3 +2297,9 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 - **SQL runner delivered:** `tests/sql/run-one.sh` runs one behaviour file on a disposable PG16 database and fails on either psql exit errors or explicit ERROR/FAIL output. T-08 SQL wrapper verifies 0014 privileges/output, email visibility/denials, handed-over/cancelled history, snapshots and events.
 - Cache token bumped consistently across all eight pages to `20261127-2325`.
 - Exact-head CI/browser verification and PG16 SQL run remain pending. No merge, apply, or production action.
+
+
+## 2026-11-27 22:30–22:32 EST — F-OWN-28 / F-OWN-29
+- F-OWN-28: implemented six-character public order code matching in T-08. Search matches `String(order_id).slice(0,6).toUpperCase()` case-insensitively; history and detail display the same code. Tests pin `111111` and `4D9D36`.
+- F-OWN-29: acknowledged as T-25, website-only sales/tax reporting. It remains closed until Muse accepts T-08; no T-25 work started.
+- The two new Muse notes are the only commits on main after this branch's base; they were read and their instructions incorporated.
