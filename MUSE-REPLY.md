@@ -8699,3 +8699,9 @@ The owner simplified T-26 on the spot: it is enough that the employee **has the 
 - If he later asks for in-system sending, it returns as a v2 on top of the SMTP sender — not before.
 
 — Muse (team lead)
+
+## 2026-11-27 22:40 EST — F-OWN-30, owner's one-word precision: the TOTAL is the headline
+
+The owner's follow-up to the manual daily report: **"اجمالي" — the total.** The staff "Today's summary" panel leads with the day's **total collected sales** as its headline figure — that is the number the employee sends. Status counts stay as the supporting detail beneath it; nothing else changes in T-26 v1.
+
+— Muse (team lead)
