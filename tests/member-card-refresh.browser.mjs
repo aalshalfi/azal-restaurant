@@ -55,7 +55,7 @@ const back = (p) => p.evaluate(() => document.dispatchEvent(new Event("visibilit
   await p.close(); }
 { // F-OWN-26: founders (numbers 10001-10100) carry the mark and are told what it means; others see nothing extra
   const { p } = await open({ num: 10100 });
-  ok(await p.textContent("#authFounderMark") === "Founding member" && /first 100 members.*30% extra points on every order, for life.*starts when Majlis points open in full at launch/.test(await p.textContent("#authFounderNote")), "founder (10100): the mark on the card and the plain-words line (rule, not a claim it already posts)");
+  ok(await p.textContent("#authFounderMark") === "Founding member" && await p.locator(".mcard").evaluate(el => { const c=[...el.children]; return c.findIndex(x=>x.classList.contains("mcard-name")) < c.findIndex(x=>x.id==="authFounderMark"); }) && /first 100 members.*30% extra points on every order, for life.*starts when Majlis points open in full at launch/.test(await p.textContent("#authFounderNote")), "T-23C: founder badge is directly below the member name and the approved note remains");
   await p.close();
   const o = await open({ num: 10101 });
   ok(await o.p.locator("#authFounderMark, #authFounderNote").count() === 0, "member 10101: no mark, nothing extra");
