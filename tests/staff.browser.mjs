@@ -54,8 +54,9 @@ async function open({ staff = true, session = true, clash = false, scheduled = f
   await page.locator(".staff-stage-chip[data-stage='ready']").click();
   ok(await page.locator("#staffScreen-queue .staff-order").count() === 1 && /Ready/.test(await page.textContent("#staffScreen-queue")), "stage chip filters the live queue");
   await page.locator(".staff-stage-chip[data-stage='all']").click();
-  await page.locator(".staff-shell-nav a[href='#history']").click();
   ok(summaryCalls.length===0, "Queue does not poll or fetch the History-only T-26 summary");
+  await page.locator(".staff-shell-nav a[href='#history']").click();
+  await page.waitForFunction(()=>/\$67\.75/.test(document.querySelector("#staffScreen-history")?.textContent||""));
   ok(/Today's summary/.test(await page.textContent("#staffScreen-history")) && /\$67\.75/.test(await page.textContent("#staffScreen-history")) && await page.locator("#staffCopySummary").count() === 1, "History shows T-26 net collected total and manual-copy action");
   await page.waitForFunction(()=>document.querySelectorAll("#staffScreen-history .staff-history-order").length===2);
   ok(/Completed Mandi/.test(await page.textContent("#staffScreen-history"))&&/Cancelled Chai/.test(await page.textContent("#staffScreen-history"))&&/Handed over/.test(await page.textContent("#staffScreen-history"))&&/Cancelled/.test(await page.textContent("#staffScreen-history")), "History lists today's completed and cancelled branch tickets");
