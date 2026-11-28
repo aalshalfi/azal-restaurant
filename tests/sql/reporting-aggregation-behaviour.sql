@@ -13,7 +13,7 @@ select zz_eq('payment transition stamped both paid_at values',
   (select count(*)::text from public.orders where id in ((:'o1'::jsonb->>'order_id')::uuid,(:'o2'::jsonb->>'order_id')::uuid) and paid_at is not null),'2');
 reset role;
 select zz_eq('paid_at is immutable after payment',
-  public.zz_try($update public.orders set paid_at=paid_at - interval '1 day' where id='$ || (:'o1'::jsonb->>'order_id') || $'$),'paid_at_is_immutable');
+  public.zz_try(pg_catalog.format('update public.orders set paid_at=paid_at - interval ''1 day'' where id=%L', (:'o1'::jsonb->>'order_id'))),'paid_at_is_immutable');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
 set role authenticated;
 select zz_eq('Admin report contains both branches',
