@@ -88,7 +88,8 @@
     const panel=el("section","admin-panel admin-team-panel"); panel.id="adminTeamPanel";
     panel.append(el("h2",null,L("team")),el("p","admin-note",L("emailGate")));
     const form=el("form","admin-team-form"); form.append(el("h3",null,L("add")));
-    form.id="adminTeamAddForm";\n    const name=document.createElement("input"); name.name="display_name"; name.type="text"; name.required=true; name.maxLength=80; name.autocomplete="name";
+    form.id="adminTeamAddForm";
+    const name=document.createElement("input"); name.name="display_name"; name.type="text"; name.required=true; name.maxLength=80; name.autocomplete="name";
     const email=document.createElement("input"); email.name="email"; email.type="email"; email.required=true; email.maxLength=254; email.autocomplete="email";
     const roleSelect=document.createElement("select"); roleSelect.name="role";
     for(const [v,k] of [["manager","manager"],["staff","staff"],["admin","admin"]]){const o=el("option",null,L(k));o.value=v;roleSelect.append(o);}
@@ -124,6 +125,17 @@
       el("span","admin-record-meta",(member.roles||[]).map(x=>L(x)).join(" · ")),
       el("span","admin-record-meta",(member.branches||[]).join(", ")||"—"));
     if(!member.is_orders_account && !(member.roles||[]).includes("admin")){
+      const edit=el("button","button admin-detail-button",L("edit")); edit.type="button";
+      edit.addEventListener("click",()=>{
+        const form=document.getElementById("adminTeamAddForm");if(!form)return;
+        form.querySelector("[name=display_name]").value=member.name||"";
+        form.querySelector("[name=email]").value=member.email||"";
+        form.querySelector("[name=role]").value=(member.roles||[]).includes("manager")?"manager":"staff";
+        const selected=new Set(member.branches||[]);
+        for(const input of form.querySelectorAll(".admin-team-branches input[data-branch]"))input.checked=selected.has(input.value);
+        form.scrollIntoView({block:"center"});form.querySelector("[name=display_name]").focus();
+      });
+      card.append(edit);
       const remove=el("button","button admin-detail-button",L("remove")); remove.type="button";
       remove.addEventListener("click",()=>{
         if(card.querySelector(".admin-team-revoke"))return;
@@ -222,16 +234,19 @@
     }
   }
   async function mount() {
-    const rootEl=document.getElementById("adminRoot");if(!rootEl||!cfg.url||!cfg.anonKey)return;
-    try{await detectRole();}catch{return;}
-    if(role==="admin"){
-      const host=rootEl.querySelector(".admin-workspace");
-      if(host&&!host.querySelector("#adminTeamPanel"))buildTeamPanel(host);
-      enhanceCustomers();
-    }else if(role==="manager"){
-      const host=rootEl.querySelector("#managerOperations");
-      if(host)await mountManager(host);
-    }
+    if(mountBusy){mountAgain=true;return;} mountBusy=true;
+    try{
+      const rootEl=document.getElementById("adminRoot");if(!rootEl||!cfg.url||!cfg.anonKey)return;
+      try{await detectRole();}catch{return;}
+      if(role==="admin"){
+        const host=rootEl.querySelector(".admin-workspace");
+        if(host&&!host.querySelector("#adminTeamPanel"))buildTeamPanel(host);
+        enhanceCustomers();
+      }else if(role==="manager"){
+        const host=rootEl.querySelector("#managerOperations");
+        if(host)await mountManager(host);
+      }
+    } finally {mountBusy=false;if(mountAgain){mountAgain=false;mount();}}
   }
   function observe() {
     const rootEl=document.getElementById("adminRoot");if(!rootEl||rootEl===lastRoot)return;
