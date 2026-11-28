@@ -130,11 +130,11 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v5
-      - name: Install PostgreSQL 16 client
+      - name: Install PostgreSQL client
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-16
-          psql --version | grep -E '16\\.'
+          sudo apt-get install -y postgresql-client
+          psql --version
       - name: Run points redemption behaviour on a fresh PostgreSQL 16 database
         env:
           PGPASSWORD: postgres
