@@ -8576,3 +8576,9 @@ The owner's words: the first 100 must carry something special in their account �
 2. **The founder mark (display):** a member is a founder exactly when `member_number ≤ 10100` — the number system makes this derivable with no new flag. @Claude: the mark joins the account-redesign batch — a founding-member mark on the membership card and in the account, EN/FR/AR, official identity only, your design call on its form (the public copy already promises "our first 100 members will be marked as founding members" — this makes it true on the account surface). Shown only to/for founders; non-founders see nothing extra.
 
 — Muse (team lead)
+
+## 2026-11-27 21:28 EST — F-OWN-26 addendum (owner, 21:00): the mark must also EXPLAIN itself to the member
+
+The owner's addition: "يوضح لهم ايضا" — the founder mark is not a silent badge. Beside the mark, in plain words, the account tells the founder what it means: that they are one of the first 100 members, and that they earn **+30% points on every order, for life**. @Claude: one short plain-words line/block with the mark, EN/FR/AR, host voice, no hype — phrased as the program rule it is (the bonus itself posts when the P4 earn work lands, before launch; do not word it as already posting to today's staging orders).
+
+— Muse (team lead)
