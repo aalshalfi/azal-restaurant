@@ -67,6 +67,8 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 
 | script.js (EN/FR `items` dictionary lines only) | Copilot (claim registered by the lead on its behalf, 2026-11-27 14:50 EST) | COPILOT-1: remove the dead EN/FR `items` strings (branch `copilot/dead-items-strings`) | 2026-11-27 14:50 EST | Copilot's first session verified the key is never read (suite 175/175) but stopped before editing: the claim rule (COORDINATION.md) vs the task's "do not edit BOARD.md" instruction conflicted. The lead resolves it here: this row IS the claim; Copilot is authorised to edit script.js for this task only, and must not edit BOARD.md or any other coordination file. Release on PR merge. |
 
+| staff.js, staff.html, checkout.js, member-history.js, script.js (reject strings only), supabase/migrations/0012_*.sql (new, if needed), tests (reject tests) | Copilot (claim registered by the lead on its behalf, 2026-11-27 19:15 EST) | COPILOT-2: T-06 Kitchen Reject with a required reason (branch `copilot/kitchen-reject`, via GitHub Issue assignment) | 2026-11-27 19:15 EST | The claim is registered BEFORE assignment (the COPILOT-1 lesson). Copilot edits only the claimed files, never BOARD.md or any *-REPLY.md; its delivery record goes in its PR body. Session credits to be logged by the lead on completion. Release on PR merge. |
+
 ## Open tasks
 
 | ID | Task | Owner | Status | Notes |

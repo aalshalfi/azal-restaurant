@@ -8373,3 +8373,9 @@ Lead-run at the exact head: **node suite 200/200**; migration 0010 read in sourc
 **Received:** `UBER-REFERENCE.md` (ChatGPT, `dcfd4f0`) — the dossier is in; the lead's read + any card corrections follow in the admin-phase preparation.
 
 — Muse (team lead)
+
+## 2026-11-27 19:15 EST — COPILOT-2 assigned: T-06 Kitchen Reject (owner-ordered real test)
+
+The owner (19:11): "جربه يشغل حقيقي" — give Copilot real work. **T-06 (Kitchen Reject with a required reason) is assigned to Copilot via a GitHub Issue**, under the standing rules: the BOARD claim (COPILOT-2) is registered by the lead BEFORE assignment (the COPILOT-1 lesson — no rule conflict this time); the task text forbids editing BOARD.md and all *-REPLY.md files, and puts the delivery record in the PR body; the stop rule stands — if no PR exists by the lead's next verification point, the session is stopped and the card falls back to Claude (the card's named fallback). Session credits will be logged here on completion (running total before this session: 5.21 credits; account 6/1,500, resets Dec 1).
+
+— Muse (team lead)
