@@ -2563,3 +2563,40 @@ Commits:
 **READY scope:** READY FOR MUSE/LEAD REVIEW AND STAGING APPLY GATE ONLY. This is not authorization to apply SQL. The CI database is disposable PostgreSQL 16, not the user's Supabase staging project. Muse/owner must independently confirm the isolated staging project, current backup and restore evidence, inspect the exact migration bytes/hash, apply 0016 once, verify the six grants and continued denial on audit_log/orders, then retry only synthetic member #10006 and confirm one audit entry. Do not reapply 0015. No production SQL, live customer action, Edge Function redeploy, booking, order, payment, email, or spend was performed by this delivery.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-28 10:49 EST — T-14 three-lens retrospective + T-25/T-26 claim
+
+### T-14 retrospective (three lenses)
+
+1. **Security / authorization — PASS after the live defect was closed.** T-14 preserved the owner-only Admin identity, server-side role and branch enforcement, contact-blind order listing, single-order Admin contact lookup, and reasoned/audited customer anonymization. The decisive production defect was not an authorization bypass in the UI or a faulty anonymization RPC: the Edge Function's service client lacked direct SELECT/DELETE privileges required by its preflight and cleanup paths. Migration 0016 grants only the four required SELECT tables and two required DELETE tables; it deliberately leaves `admin_audit_log` and `orders` without direct service_role access. The lead's 10:13 live retest confirms the intended customer-removal action completed.
+2. **Product / data integrity — PASS.** The delivered directory handles scale through server-side search and 50-row pagination; anonymization removes customer-facing identity and access while retaining order identifiers, tax/financial snapshots and append-only points history. The live acceptance evidence is specific: disposable member #10006 disappeared from the directory (6/6 → 5/5), its old email search returned zero rows, active member count fell 8 → 7, and exactly one `customer_anonymized` audit event carried the required reason. No unrelated customer, role or pending invite was changed.
+3. **Verification / release — PASS with a durable test-harness lesson.** The initial SQL suite was falsely reassuring because it executed as postgres and the stub granted service_role more access than the live Supabase schema. The repair models least-privilege defaults, proves the five exact Edge Function reads fail before 0016, then proves the allowed reads and two no-op cleanup DELETE statements succeed under `SET LOCAL ROLE service_role`; audit_log/orders remain denied. The lead reports 231/231 Node tests and all four exact-head CI jobs successful at delivery SHA `5b8a1ddcebe72ca4570332fa7ab644c1c46669d6`, followed by the 10:13 live step-5 PASS. The enduring rule for future Edge Function gates is to inspect `role_table_grants` before live acceptance, not infer service-role access from postgres-run SQL tests.
+
+**T-14 disposition:** Muse closed the gate at 10:13 EST on 2026-11-28. This retrospective does not reopen it and does not claim that ChatGPT performed the staging apply, deployment or live customer action; those were owner/lead-operated.
+
+### T-25 + T-26 — claim registered
+
+**Lead scope source:** current `MUSE-REPLY.md`, 10:13 EST T-14 closure and A3/A4/A5 rulings.  
+**Branch:** `chatgpt/t25-t26-sales-reports`  
+**Claim commit:** `7751f59c1adcb482ec354cef6b36dd79e84ffc4d` (BOARD claim)  
+**Base:** current `main` at branch creation; claim recorded before implementation.
+
+**T-25 — Sales & HST reports**
+- Use order `paid_at` and Toronto calendar boundaries for daily, monthly and yearly periods; state the ADM-1 collected-sales convention on the panel.
+- Admin can report across all branches or select one; Admin-only breakdown includes subtotal, discount, HST and collected total, with refunds separate and net clearly labelled.
+- Manager is fixed server-side to assigned branch(es) and receives only order/status counts and collected total. No subtotal, discount, HST, payment details, customer data or cross-branch totals.
+- Use stored authoritative order/tax/discount values; do not recalculate historical tax. Unpaid/failed orders are excluded; test-mode/refunded records are handled and labelled truthfully.
+
+**T-26 — Staff Today's summary**
+- Lives on `staff.html` / day-close, not inside the Manager Reports accordion.
+- Headline is today's collected-sales total, with order counts by status beneath, for the authenticated Staff/Orders branch only.
+- Employee may manually share the on-screen summary. No email, push, outbox, SMTP, scheduled or automatic send path; no tax/HST line or payment credentials.
+
+**Implementation boundary:** one delivery branch; no work on T-21/T-13/T-20. Migration 0017 will be added only if source inspection proves a schema/RPC change is required; otherwise reuse existing server-side data paths. No staging/production SQL apply, deployment, real-money action or live data mutation by this delivery.
+
+**NOT VERIFIED at claim time:** no T-25/T-26 code changes or tests have yet been made; exact current-main ancestry, existing report data paths, and whether migration 0017 is necessary remain to be inspected.
+
+— ChatGPT
