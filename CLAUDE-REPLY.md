@@ -2720,3 +2720,65 @@ What this settles, and what follows from it (design lead's reading, so both shel
 5. My F-OWN-32 shell proposal (Sunday queue, first) will draw the kitchen shell with this Availability screen in it.
 
 @Muse: recorded for your adjudication; nothing here changes T-25/T-26.
+
+## 2026-11-28 12:20 EST — F-OWN-32 PROPOSAL (Claude, design lead): the admin shell and the kitchen shell
+
+Presentation only, as ruled: every shipped RPC, permission and audit rule stays exactly as it is, with zero migrations. The one exception is the kitchen's "Sold out today" control; it needs the availability state (see my 11:10 entry) and ships only with it. Reference: Uber's structure, not its skin. AZAL's palette, type and calm stay.
+
+### 0. Rules every screen follows
+1. **One job per screen.** A screen never carries a second list or form "while we're here".
+2. **Five destinations at most** in the persistent navigation. Everything else is one tap deep, as a plain list of named pages.
+3. **A role sees only what it can use.** A destination the role cannot open is not rendered, never shown greyed. The shipped permission matrix decides; the shell only reads it.
+4. **No empty containers.** A box with nothing in it is not rendered. This covers the owner's 10:51 empty box above REVOKE INVITATION.
+5. **Every screen has an address** (`#orders`, `#orders/<code>`, `#customers`, `#more/team`…), so Back works and a link can open a screen directly.
+6. **A screen loads its own data when entered,** not everything at page load. Polling runs only on the live screens (admin Home, kitchen Queue). The existing sign-out and generation guards carry over unchanged.
+
+### 1. Admin shell (`admin.html`): Manager model
+**Navigation:**
+- **Phone:** a bottom bar of five icon + label items, 56 px tall, with safe-area padding.
+- **Tablet and desktop (≥ 801 px):** a left rail with labels.
+- The active item carries `aria-current="page"`. Each screen has an `h1`, and focus moves to it on navigation.
+- Identity and Sign out stay behind the header profile icon (F-OWN-25), the same on every page.
+
+| # | Destination | What the screen holds (and only that) |
+|---|---|---|
+| 1 | **Home** (*was the Today panel*) | Headline tiles only: New paid · In kitchen · Ready · Collected · Collected sales today · Active members. One line per branch. A **"Needs attention"** list built only from facts the data already has (pending invitations; orders ready and not yet collected), each item linking to its screen. Nothing else. |
+| 2 | **Orders** | Tabs **Active** (placed → ready) and **History** (search by code, status filter, pages). An order opens as its own view `#orders/<code>`, with Back. |
+| 3 | **Customers** | The directory (A1 server search + pagination). A customer opens as its own view, and Anonymize sits inside that view (Admin only, A2), never on the list. |
+| 4 | **Reports** | T-25 Sales & tax: date range, Toronto paid-timestamp buckets, the collected convention stated on the screen. A Manager sees assigned-branch counts and the collected total only (A3/A4). |
+| 5 | **More** | A plain list of named pages: **Team & access** (sub-tabs Active team / Pending invitations) · **Orders accounts** · **Access history** (audit) · **Menu** (appears when T-21 lands; until then it is not listed, so there is no dead link). |
+
+- **A pending-invite card** shows name, email, role, branch, sent/expiry, and Renew and Revoke on one row. No empty block.
+- **Manager:** same shell. Destinations and actions follow the shipped matrix; anything not permitted is absent.
+
+### 2. Kitchen shell (`staff.html`): Orders-tablet model
+**Navigation:**
+- **Tablet (the kitchen's real device) and desktop:** a left icon rail with labels, 64 px wide.
+- **Phone:** a bottom bar.
+- The Queue is the start screen, and the tablet's screen should be large enough to read from a step away.
+
+| # | Screen | What it holds |
+|---|---|---|
+| 1 | **Queue** (start) | Stage chips with live counts: **All · New · Preparing · Ready**. Then ticket cards: the 6-character code (numbers-only, T-24), items, pickup time, the call button, and the next-step button. Nothing else on this screen. |
+| 2 | **Scheduled** | Orders whose pickup is later than the current queue window. **The rail item appears only when there is at least one**, with its count. |
+| 3 | **History** | Today's collected and cancelled orders. **T-26 Today's summary** at the top (collected total, order count, manual send, no tax line for staff), as ruled in A3. |
+| 4 | **Availability** | **Owner, 11:07: "Sold out today" lives here.** Search, a "Sold out" filter with its count, and a per-item Sold out today / In stock toggle, own branch only, back in stock automatically the next day, every change audited. **Ships only with the availability state** (T-21's model or a card ahead of it). Until then the screen is not rendered. |
+
+The kitchen never sees menu editing, customers, reports or team. Identity and Sign out sit behind the header profile icon, as on the admin page.
+
+### 3. Build cards I propose to the lead
+- **T-27, admin shell:** routing, rail and bottom bar, the five destinations, today's sections moved in. No feature changes. T-25's UI lands in Reports.
+- **T-28, kitchen shell:** Queue, Scheduled and History, with T-26 in History. Availability comes with its state.
+- **Order:** T-27 first, because the owner flagged it first. T-28 follows, or runs in parallel with another builder; they touch different files.
+- **Tests per shell:**
+  - each address opens the right single screen;
+  - a role × destination matrix (an absent destination is not in the DOM);
+  - no empty containers;
+  - Back and deep links;
+  - focus and `aria-current`;
+  - 320/390/768/1280 in EN/FR/AR, no overflow;
+  - polling only on the live screen;
+  - the existing admin and staff suites still pass after moving into the screens.
+
+### 4. Sold-out placement
+The question was put to both proposers. The owner has answered it himself (kitchen, 11:07), so it is not voted on. Manager-side T-21 keeps unavailable-indefinitely, retire, and all menu editing.
