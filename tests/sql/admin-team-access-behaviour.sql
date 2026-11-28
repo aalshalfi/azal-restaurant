@@ -252,7 +252,7 @@ select zz_eq('authenticated cannot delete the audit log',
   public.zz_try($$delete from public.admin_audit_log where action='customer_anonymized'$$),'42501');
 reset role;
 
-\echo ===== F-T14-1: service_role receives only the Edge Function's direct table privileges
+\echo ===== F-T14-1: service_role receives only the direct table privileges required by the Edge Function
 select zz_eq('service_role has no direct audit-log SELECT',
   pg_catalog.has_table_privilege('service_role','public.admin_audit_log','SELECT')::text,'false');
 select zz_eq('service_role has no direct orders SELECT',
