@@ -1,51 +1,62 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-const require=createRequire(import.meta.url);
-const R=require("../reports.js");
 const read=(p)=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 
-test("reports access resolves Admin and Manager from server-side identity and assigned branches",async()=>{
-  const calls=[];
-  const api=R.createReports({config:{url:"https://example.supabase.co",anonKey:"anon"},getSession:async()=>({access_token:"T",user:{id:"m1"}}),fetch:async(url,opts)=>{calls.push([url,opts]);let value=url.includes("azal_is_admin")?false:url.includes("user_roles")?[{role:"manager"}]:[{branch_slug:"ottawa"}];return{ok:true,json:async()=>value};}});
-  const a=await api.access();
-  assert.deepEqual({role:a.role,branches:a.branches},{role:"manager",branches:["ottawa"]});
-  assert.equal(calls.length,3);
-  assert.ok(calls.every(([,o])=>o.headers.Authorization==="Bearer T"));
-});
-
-test("report request sends an exclusive end date and never fetches raw orders",async()=>{
-  let request;
-  const api=R.createReports({config:{url:"https://example.supabase.co",anonKey:"anon"},getSession:async()=>({access_token:"T",user:{id:"a"}}),fetch:async(url,opts)=>{request={url,opts};return{ok:true,json:async()=>({rows:[]})};}});
-  await api.report("T",{bucket:"month",from:"2026-11-01",to:"2026-11-30",branch:"ottawa"});
-  assert.equal(request.url,"https://example.supabase.co/rest/v1/rpc/azal_admin_sales_report");
-  assert.deepEqual(JSON.parse(request.opts.body),{p_bucket:"month",p_from:"2026-11-01",p_to:"2026-12-01",p_branch_slug:"ottawa"});
-  assert.equal(request.opts.method,"POST");
-});
-
-test("T-25 migration uses payment-event time, Toronto buckets and server-enforced role/branch gates",()=>{
+test("T-25 migration uses successful payment event time and Toronto-local buckets",()=>{
   const sql=read("supabase/migrations/0017_t25_t26_sales_reports.sql");
   assert.match(sql,/payment_events[\s\S]*received_at/);
+  assert.match(sql,/event_type='payment_succeeded'/);
+  assert.match(sql,/min\(pe\.received_at\)/);
   assert.match(sql,/America\/Toronto/);
-  assert.match(sql,/azal_is_admin\(\)/);
-  assert.match(sql,/azal_is_manager\(\)/);
-  assert.match(sql,/azal_manager_can_access/);
-  assert.match(sql,/azal_staff_can_access/);
+  assert.match(sql,/date_trunc\(p_bucket/);
+  assert.match(sql,/p_bucket is null or p_bucket not in \('day','month','year'\)/);
+  assert.doesNotMatch(sql,/orders\.paid_at|placed_at|updated_at/);
+});
+
+test("T-25 role gates and output shapes are server-enforced",()=>{
+  const sql=read("supabase/migrations/0017_t25_t26_sales_reports.sql");
+  assert.match(sql,/public\.azal_is_admin\(\)/);
+  assert.match(sql,/public\.azal_is_manager\(\)/);
+  assert.match(sql,/public\.azal_manager_can_access\(p_branch_slug\)/);
+  assert.match(sql,/staff_branch_access/);
   assert.match(sql,/revoke all on function public\.azal_admin_sales_report/);
-  assert.match(sql,/revoke all on function public\.azal_staff_today_summary/);
+  assert.match(sql,/grant execute on function public\.azal_admin_sales_report[^;]+to authenticated/);
+  assert.match(sql,/subtotal_cents/);
+  assert.match(sql,/discount_cents/);
+  assert.match(sql,/hst_cents/);
+  assert.match(sql,/refunds_cents/);
+  assert.match(sql,/net_collected_cents/);
+  assert.match(sql,/coalesce\(collected_cents,0\)-coalesce\(collected_refund_cents,0\)/);
   assert.doesNotMatch(sql,/guest_email|contact_phone|display_name|customer_note/);
 });
 
-test("Manager UI only renders Admin financial columns for Admin; Staff summary has no tax or sending path",()=>{
-  const reports=read("reports.js"),staff=read("staff-summary.js"),admin=read("admin.html"),staffHtml=read("staff.html");
-  assert.match(reports,/if\(admin\)\{cols\.push\("subtotal_cents","discount_cents","hst_cents","refunds_cents","net_collected_cents"\)/);
-  assert.match(reports,/bs\.filter\(b=>a\.branches\.includes\(b\.slug\)\)/);
-  assert.match(staff,/azal_staff_today_summary/);
-  assert.doesNotMatch(staff,/hst|tax|outbox|smtp|sendEmail|sendmail/i);
-  assert.match(staff,/navigator\.clipboard\.writeText/);
-  assert.match(admin,/id="reportsRoot"/);
-  assert.match(admin,/reports\.js/);
-  assert.match(staffHtml,/id="staffSummaryRoot"/);
-  assert.match(staffHtml,/staff-summary\.js/);
+test("T-26 is Staff-only, branch-bound, Toronto-day, and tax-free",()=>{
+  const sql=read("supabase/migrations/0017_t25_t26_sales_reports.sql");
+  const staff=sql.slice(sql.indexOf("create or replace function public.azal_staff_today_summary"));
+  assert.match(staff,/r\.role='staff'/);
+  assert.match(staff,/azal_staff_can_access\(p_branch_slug\)/);
+  assert.match(staff,/America\/Toronto/);
+  assert.match(staff,/refund_cents/);
+  assert.match(staff,/collected_cents/);
+  assert.doesNotMatch(staff,/hst_cents|subtotal_cents|discount_cents|contact_phone|guest_email/);
+  assert.match(staff,/revoke all on function public\.azal_staff_today_summary/);
+  assert.match(staff,/grant execute on function public\.azal_staff_today_summary\(text\) to authenticated/);
+});
+
+test("PostgreSQL regression suite covers Admin, Manager, Staff and forbidden callers",()=>{
+  const sql=read("tests/sql/admin-reports-behaviour.sql");
+  for(const token of ["Admin daily report","Admin net collected","Manager report scope","Manager payload omits","Staff today summary","Staff cannot request another branch","Customer cannot invoke sales report","Anonymous cannot execute sales report"])
+    assert.ok(sql.includes(token),"missing SQL assertion: "+token);
+  assert.match(sql,/Monthly grouping/);
+  assert.match(sql,/Yearly grouping/);
+});
+
+test("T-25/T-26 UI remains parked until the T-27 shell is adjudicated",()=>{
+  const admin=read("admin.html"),staff=read("staff.html"),proposal=read("ADMIN-SHELL-PROPOSAL-CHATGPT.md");
+  assert.doesNotMatch(admin,/reports\.js|reportsRoot/);
+  assert.doesNotMatch(staff,/staff-summary\.js|staffSummaryRoot/);
+  assert.match(proposal,/T-25 is More → Reports/);
+  assert.match(proposal,/T-26 is Staff → History/);
+  assert.match(proposal,/Manager surface only/);
 });
