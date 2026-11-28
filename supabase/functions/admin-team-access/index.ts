@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { anonymizeAuthPatch, captureAuthState, restoreAuthPatch } from "./auth-state.mjs";
 
 const url = Deno.env.get("SUPABASE_URL") || "";
 const anonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
@@ -73,31 +74,50 @@ Deno.serve(async (req: Request) => {
       const userId = clean(body.user_id, 64);
       const reason = clean(body.reason, 500);
       if (!userId || !reason) return reply(400, { error: "reason_required" });
-      const { data: targetData, error: targetError } = await service.auth.admin.getUserById(userId);
-      if (targetError || !targetData.user?.email) return reply(404, { error: "customer_not_found" });
-      const oldEmail = targetData.user.email;
-      const replacement = `removed+${userId.replaceAll("-", "")}@example.invalid`;
-      const bannedUntil = targetData.user.banned_until ? Date.parse(targetData.user.banned_until) : 0;
-      const wasBanned = Number.isFinite(bannedUntil) && bannedUntil > Date.now();
-      const previousBanDuration = wasBanned ? `${Math.max(1, Math.ceil((bannedUntil - Date.now()) / 3600000))}h` : "none";
-      const { error: banError } = await service.auth.admin.updateUserById(userId, {
-        email: replacement,
-        email_confirm: true,
-        user_metadata: {},
-        ban_duration: "876000h"
-      });
-      if (banError) return reply(502, { error: "account_deactivation_failed" });
+
+      // Read-only preflight before the first Auth mutation. A profile alone is not
+      // enough: team and branch Orders identities must never enter this operation.
+      const [profileResult, rolesResult, ordersResult, targetResult] = await Promise.all([
+        service.from("profiles").select("id,anonymized_at").eq("id", userId).maybeSingle(),
+        service.from("user_roles").select("role").eq("user_id", userId),
+        service.from("branch_orders_accounts").select("auth_user_id").eq("auth_user_id", userId).maybeSingle(),
+        service.auth.admin.getUserById(userId)
+      ]);
+      if (profileResult.error || rolesResult.error || ordersResult.error) {
+        return reply(500, { error: "customer_preflight_failed" });
+      }
+      if (!profileResult.data || targetResult.error || !targetResult.data.user?.email) {
+        return reply(404, { error: "customer_not_found" });
+      }
+      const protectedRoles = new Set(["admin", "manager", "staff"]);
+      if ((rolesResult.data || []).some((row) => protectedRoles.has(row.role)) || ordersResult.data) {
+        return reply(409, { error: "not_customer_account" });
+      }
+
+      const targetUser = targetResult.data.user;
+      const previousAuthState = captureAuthState(targetUser);
+      const alreadyAnonymized = Boolean(profileResult.data.anonymized_at);
+      const { error: authUpdateError } = await service.auth.admin.updateUserById(
+        userId,
+        anonymizeAuthPatch(userId)
+      );
+      if (authUpdateError) return reply(502, { error: "account_deactivation_failed" });
+
       const { data, error } = await service.rpc("azal_admin_anonymize_customer_server", {
         p_actor_id: authData.user.id,
         p_user_id: userId,
-        p_reason: reason
+        p_reason: reason,
+        p_email_to_scrub: previousAuthState.email
       });
       if (error) {
-        await service.auth.admin.updateUserById(userId, {
-          email: oldEmail,
-          email_confirm: true,
-          ban_duration: previousBanDuration
-        });
+        // A retry after a committed SQL transaction must never restore an identity
+        // that the database has already anonymized. The SQL function is idempotent.
+        if (alreadyAnonymized) return reply(502, { error: "anonymization_retry_failed" });
+        const { error: rollbackError } = await service.auth.admin.updateUserById(
+          userId,
+          restoreAuthPatch(previousAuthState)
+        );
+        if (rollbackError) return reply(500, { error: "anonymization_compensation_failed" });
         return reply(400, { error: error.message });
       }
       return reply(200, data || { status: "anonymized" });
