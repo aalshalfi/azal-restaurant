@@ -6,10 +6,10 @@
 reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
 set role authenticated;
-select public.staff_update_order(:'o1'::jsonb->>'order_id','ready');
-select public.staff_update_order(:'o1'::jsonb->>'order_id','hand_over');
-select public.staff_update_order(:'o2'::jsonb->>'order_id','ready');
-select public.staff_update_order(:'o2'::jsonb->>'order_id','hand_over');
+select public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'ready');
+select public.staff_update_order((:'o1'::jsonb->>'order_id')::uuid,'hand_over');
+select public.staff_update_order((:'o2'::jsonb->>'order_id')::uuid,'ready');
+select public.staff_update_order((:'o2'::jsonb->>'order_id')::uuid,'hand_over');
 reset role;
 -- Simulate a full refund of one handed-over test order. Payment history remains append-only.
 insert into public.payment_events(order_id,provider,provider_event_id,event_type,amount_cents)
@@ -86,5 +86,7 @@ select zz_eq('Customer cannot invoke sales report',
 select zz_eq('Customer cannot invoke staff summary',
   public.zz_try($$select public.azal_staff_today_summary('ottawa')$$),'not_staff_for_branch');
 reset role;
+set role anon;
 select zz_eq('anonymous cannot execute sales report',
-  public.zz_try($$set role anon; select public.azal_admin_sales_report('day',current_date,current_date+1,null)$$),'42501');
+  public.zz_try($select public.azal_admin_sales_report('day',current_date,current_date+1,null)$),'42501');
+reset role;
