@@ -26,13 +26,14 @@
     const enabled = Boolean(config && config.url && config.anonKey && fetchFn);
     const base = enabled ? String(config.url).replace(/\/+$/, "") : "";
     const cols = "select=id,fulfilment_status,payment_status,pickup_slot,rejection_reason"; // "Last checked" is the client poll time, labelled as such
-    async function get(q) {
+    async function get(q, fallback = true) {
       const s = getSession ? await getSession() : null;
       const uid = s && s.user && s.user.id;
       if (!uid) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
       let res;
       try { res = await fetchFn(base + "/rest/v1/orders?" + cols + "&user_id=eq." + encodeURIComponent(uid) + q, { headers: { apikey: config.anonKey, Authorization: "Bearer " + s.access_token } });
-        if (res.status === 400) res = await fetchFn(base + "/rest/v1/orders?" + cols.replace(",rejection_reason", "") + "&user_id=eq." + encodeURIComponent(uid) + q.replace("&or=(fulfilment_status.not.in.(handed_over,cancelled),rejection_reason.not.is.null)", "&fulfilment_status=not.in.(handed_over,cancelled)"), { headers: { apikey: config.anonKey, Authorization: "Bearer " + s.access_token } }); }
+        if (res.status === 400 && !fallback) return null;
+        if (res.status === 400) res = await fetchFn(base + "/rest/v1/orders?" + cols.replace(",rejection_reason", "") + "&user_id=eq." + encodeURIComponent(uid) + q, { headers: { apikey: config.anonKey, Authorization: "Bearer " + s.access_token } }); }
       catch { throw Object.assign(new Error("network"), { code: "network" }); }
       if (!res.ok) throw Object.assign(new Error("http"), { code: res.status === 401 ? "signed_out" : "error" });
       const rows = await res.json();
@@ -41,7 +42,8 @@
     return {
       enabled,
       // The member's most recent PAID order that is still open (unpaid orders never reach the kitchen).
-      active: () => get("&payment_status=eq.paid&or=(fulfilment_status.not.in.(handed_over,cancelled),rejection_reason.not.is.null)&order=placed_at.desc&limit=1"),
+      active: async () => (await get("&payment_status=eq.paid&fulfilment_status=not.in.(handed_over,cancelled)&order=placed_at.desc&limit=1")) ||
+        get("&payment_status=eq.paid&rejection_reason=not.is.null&order=placed_at.desc&limit=1", false),
       byId: (id) => get("&id=eq." + encodeURIComponent(id) + "&limit=1")
     };
   }
@@ -85,7 +87,7 @@
     if (order) head.append(el("span", "pulse-code", L("code", { code: code(order.id) })));
     const out = [head];
     const steps = order && !isClosedPayment(order) && timeline(order.fulfilment_status);
-    if (order && order.rejection_reason) { out.push(el("p", "pulse-rejected", L("rejected")), el("p", "pulse-reason", L("reason", { reason: order.rejection_reason }))); }
+    if (order && order.rejection_reason) { const reason = el("p", "pulse-reason", L("reason", { reason: order.rejection_reason })); reason.style.overflowWrap = "anywhere"; out.push(el("p", "pulse-rejected", L("rejected")), reason); }
     else if (order && isClosedPayment(order)) out.push(el("p", "pulse-inactive", L("inactive")));
     else if (failed || !steps) out.push(el("p", "pulse-error", L("unavailable")));
     else {

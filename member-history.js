@@ -167,7 +167,7 @@
     if (d.checkedAt) panel.append(el("p", "mh-detail-meta mh-checked", L("checked", { time: when(d.checkedAt, { hour: "numeric", minute: "2-digit" }) }) + (loadingIds.has(id) ? " · " + L("loading") : "")));
     if (d.pickup) panel.append(el("p", "mh-detail-meta", L("pickupAt", { time: when(d.pickup, { dateStyle: "medium", timeStyle: "short" }) })));
     if (d.note) panel.append(el("p", "mh-detail-meta mh-detail-note", L("note", { note: d.note })));
-    if (d.reason) panel.append(el("p", "mh-detail-meta mh-rejection-reason", L("rejectionReason", { reason: d.reason })));
+    if (d.reason) { const reason = el("p", "mh-detail-meta mh-rejection-reason", L("rejectionReason", { reason: d.reason })); reason.style.overflowWrap = "anywhere"; panel.append(reason); }
     if (d.timeline.length) {
       const tl = el("ol", "mh-timeline"); tl.setAttribute("aria-label", L("timeline"));
       for (const t of d.timeline) { const li = el("li"); li.append(el("span", null, L("t_" + t.step)), el("time", null, when(t.at, { hour: "numeric", minute: "2-digit" }))); li.lastChild.dateTime = t.at; tl.append(li); }
@@ -212,7 +212,8 @@
         const btn = el("button", "mh-toggle text-link", isOpen ? L("hide") : L("details"));
         btn.type = "button"; btn.id = "mhb-" + r.id; btn.setAttribute("aria-expanded", String(isOpen)); btn.setAttribute("aria-controls", "mhd-" + r.id);
         btn.addEventListener("click", () => toggle(r.id));
-        li.append(top, el("p", "mh-items", shown), el("p", "mh-status", status.join(" · ")), btn);
+        const statusEl = el("p", "mh-status", status.join(" · ")); statusEl.style.overflowWrap = "anywhere";
+        li.append(top, el("p", "mh-items", shown), statusEl, btn);
         if (isOpen) li.append(detailPanel(r.id));
         ul.append(li);
       }

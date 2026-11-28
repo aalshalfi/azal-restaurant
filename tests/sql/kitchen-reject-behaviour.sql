@@ -23,8 +23,9 @@ insert into public.staff_branch_access(user_id,branch_slug) values
  ('00000000-0000-0000-0000-0000000000f3','reject-test');
 insert into public.orders(id,branch_slug,user_id,idempotency_key,request_hash,fulfilment_status,payment_status,subtotal_cents,tax_rate_bps,tax_cents,total_cents)
 values
- ('00000000-0000-0000-0000-000000000001','reject-test','00000000-0000-0000-0000-0000000000c1','reject-test-key-0001',repeat('a',64),'placed','paid',100,0,0,100),
+ ('00000000-0000-0000-0000-000000000001','reject-test','00000000-0000-0000-0000-0000000000c1','reject-test-key-0001',repeat('a',64),'placed','paid',1000,0,0,1000),
  ('00000000-0000-0000-0000-000000000002','reject-test','00000000-0000-0000-0000-0000000000c1','reject-test-key-0002',repeat('b',64),'placed','unpaid',100,0,0,100);
+update public.orders set redeemed_points = 10000, discount_cents = 500, total_cents = 500 where id = '00000000-0000-0000-0000-000000000001';
 
 do $$ begin
   if has_function_privilege('anon', 'public.staff_update_order(uuid,text,text)', 'execute') then raise exception 'anon may execute'; end if;
@@ -42,6 +43,7 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000f1'
 do $$ begin
   if public.zz_reject_try($q$select public.staff_update_order('00000000-0000-0000-0000-000000000001','reject',null)$q$) <> 'reason_required' then raise exception 'null reason allowed'; end if;
   if public.zz_reject_try($q$select public.staff_update_order('00000000-0000-0000-0000-000000000001','reject',E' \t\n ')$q$) <> 'reason_required' then raise exception 'blank reason allowed'; end if;
+  if public.zz_reject_try($q$select public.staff_update_order('00000000-0000-0000-0000-000000000001','reject',chr(160)||chr(8195))$q$) <> 'reason_required' then raise exception 'unicode blank reason allowed'; end if;
   if public.zz_reject_try($q$select public.staff_update_order('00000000-0000-0000-0000-000000000001','reject',repeat('x',501))$q$) <> 'reason_too_long' then raise exception 'long reason allowed'; end if;
   if public.zz_reject_try($q$select public.staff_update_order('00000000-0000-0000-0000-000000000002','reject','no')$q$) <> 'unpaid_order' then raise exception 'unpaid allowed'; end if;
   if public.zz_reject_try($q$select public.staff_update_order('00000000-0000-0000-0000-000000000001','accept','no')$q$) <> 'bad_transition' then raise exception 'other action allowed'; end if;
@@ -60,7 +62,8 @@ do $$ begin
 end $$;
 reset role;
 do $$ begin
-  if exists (select 1 from public.payment_events where order_id = '00000000-0000-0000-0000-000000000001') or exists (select 1 from public.points_ledger where order_id = '00000000-0000-0000-0000-000000000001') then raise exception 'rejection changed money or points'; end if;
+  if exists (select 1 from public.payment_events where order_id = '00000000-0000-0000-0000-000000000001') then raise exception 'rejection changed payment'; end if;
+  if (select count(*) from public.points_ledger where order_id = '00000000-0000-0000-0000-000000000001' and entry_type = 'redeem_refund' and delta_points = 10000) <> 1 then raise exception 'redeemed points not returned exactly once'; end if;
 end $$;
 select 'PASS kitchen rejection authorization, validation, audit, queue, history and payment';
 rollback;

@@ -114,8 +114,8 @@
         const clash = clashes.has(r.id);
         html += `<article class="staff-order is-${esc(r.fulfilment_status)}${clash ? " is-clash" : ""}"><header>${sigilHtml(r.id, clash, esc, L("clash"))}<span class="staff-code">${esc(code(r.id))}</span><span class="staff-who">${esc(r.guest_name || L("member"))}</span><span class="staff-status">${esc(L("s_" + r.fulfilment_status))}</span></header>` +
           `<ul class="staff-items">${items}</ul>` + (r.customer_note ? `<p class="staff-note-guest">“${esc(r.customer_note)}”</p>` : "") +
-          `<footer><span>${esc(money(r.total_cents))}</span>${action ? `<button type="button" class="button button-gold staff-act" data-id="${esc(r.id)}" data-action="${action}"${busyId ? " disabled" : ""}>${esc(busyId === r.id ? L("working") : L(action))}</button><button type="button" class="button staff-reject" data-id="${esc(r.id)}"${busyId ? " disabled" : ""}>${esc(L("reject"))}</button>` : ""}</footer>` +
-          (rejectId === r.id ? `<form class="staff-reject-form" data-id="${esc(r.id)}"><label>${esc(L("reason"))}<textarea name="reason" required maxlength="500">${esc(rejectReason)}</textarea></label><button type="submit" class="button button-gold"${busyId ? " disabled" : ""}>${esc(L("confirmReject"))}</button><button type="button" class="button staff-reject-cancel"${busyId ? " disabled" : ""}>${esc(L("cancelReject"))}</button></form>` : "") + `</article>`;
+          `<footer style="flex-wrap:wrap"><span>${esc(money(r.total_cents))}</span>${action ? `<button type="button" class="button button-gold staff-act" data-id="${esc(r.id)}" data-action="${action}"${busyId || rejectId ? " disabled" : ""}>${esc(busyId === r.id ? L("working") : L(action))}</button><button type="button" class="button staff-reject" data-id="${esc(r.id)}"${busyId || rejectId ? " disabled" : ""}>${esc(L("reject"))}</button>` : ""}</footer>` +
+          (rejectId === r.id ? `<form class="staff-reject-form" data-id="${esc(r.id)}"><label>${esc(L("reason"))}<textarea name="reason" required maxlength="500" style="display:block;max-width:100%">${esc(rejectReason)}</textarea></label><button type="submit" class="button button-gold"${busyId ? " disabled" : ""}>${esc(L("confirmReject"))}</button><button type="button" class="button staff-reject-cancel"${busyId ? " disabled" : ""}>${esc(L("cancelReject"))}</button></form>` : "") + `</article>`;
       }
       html += `</section>`;
     }
@@ -133,7 +133,8 @@
     try {
       if (state !== "ready") { const ok = await st.isStaff(); if (stale()) return; if (!ok) { state = "not_staff"; return paint(); } }
       const r = await st.list(); if (stale()) return;
-      rows = r; lastAt = new Date(); state = "ready";
+      rows = r; if (rejectId && !rows.some((row) => row.id === rejectId)) { rejectId = null; rejectReason = ""; }
+      lastAt = new Date(); state = "ready";
     } catch (e) {
       if (stale()) return;
       if (e.code === "signed_out") state = "signed_out"; else flash = L("e_network");

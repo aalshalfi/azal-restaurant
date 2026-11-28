@@ -15,7 +15,8 @@ async function open({ status = "accepted", lang = "en", w = 390, signedIn = true
     const u = decodeURIComponent(r.request().url());
     if (u.includes("/rest/v1/orders?select=id,fulfilment_status")) { st.polls++; if (failAll) return r.fulfill({ status: 500, json: {} });
       const row = { id: "abc12300-0000-4000-8000-000000000001", fulfilment_status: st.status, payment_status: st.pay, rejection_reason: st.reason, pickup_slot: "2026-11-27T17:30:00Z", updated_at: "2026-11-27T17:00:00Z" };
-      if (u.includes("payment_status=eq.paid") && ["handed_over", "cancelled"].includes(st.status) && !st.reason) return r.fulfill({ json: [] });
+      if (u.includes("fulfilment_status=not.in") && ["handed_over", "cancelled"].includes(st.status)) return r.fulfill({ json: [] });
+      if (u.includes("rejection_reason=not.is.null") && !st.reason) return r.fulfill({ json: [] });
       return r.fulfill({ json: [row] }); }
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: [] });
     if (u.includes("/points_ledger")) return r.fulfill({ json: [] });

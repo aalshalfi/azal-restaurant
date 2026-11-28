@@ -24,12 +24,20 @@ test("reads only the member's own PAID order (explicit user_id); no guest path; 
   const urls = [];
   const p = P.createPulse({ config: { url: "https://x.supabase.co", anonKey: "a" }, getSession: async () => ({ access_token: "T", user: { id: "u1" } }), fetch: async (u) => { urls.push(decodeURIComponent(u)); return { ok: true, json: async () => [] }; } });
   await p.active(); await p.byId("o-1");
-  assert.match(urls[0], /\/rest\/v1\/orders\?select=id,fulfilment_status,payment_status,pickup_slot,rejection_reason&user_id=eq\.u1&payment_status=eq\.paid&or=\(fulfilment_status\.not\.in\.\(handed_over,cancelled\),rejection_reason\.not\.is\.null\)/);
-  assert.match(urls[1], /&user_id=eq\.u1&id=eq\.o-1&limit=1$/);
+  assert.match(urls[0], /\/rest\/v1\/orders\?select=id,fulfilment_status,payment_status,pickup_slot,rejection_reason&user_id=eq\.u1&payment_status=eq\.paid&fulfilment_status=not\.in\.\(handed_over,cancelled\)/);
+  assert.match(urls[1], /rejection_reason=not\.is\.null/);
+  assert.match(urls[2], /&user_id=eq\.u1&id=eq\.o-1&limit=1$/);
   await assert.rejects(P.createPulse({ config: { url: "https://x.supabase.co", anonKey: "a" }, getSession: async () => null, fetch: async () => ({}) }).active(), { code: "signed_out" });
   const src = readFileSync(new URL("../pulse.js", import.meta.url), "utf8");
   assert.doesNotMatch(src.slice(src.indexOf("const S = {"), src.indexOf("const lang =")), /\bminutes?\b|\bmin\b|ETA|almost ready|%|دقيقة|minute/i, "no time estimate in any copy");
   assert.doesNotMatch(src, /innerHTML/);
+});
+
+test("open orders take precedence over a more recent rejection", async () => {
+  const urls = [];
+  const p = P.createPulse({ config: { url: "https://x.supabase.co", anonKey: "a" }, getSession: async () => ({ access_token: "T", user: { id: "u1" } }), fetch: async (u) => { urls.push(u); return { ok: true, json: async () => [{ id: "open", fulfilment_status: "accepted" }] }; } });
+  assert.equal((await p.active()).id, "open");
+  assert.equal(urls.length, 1);
 });
 
 test("payment no longer paid (refunded/voided) = not an active order", () => {

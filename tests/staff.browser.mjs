@@ -6,8 +6,8 @@ const root = new URL("..", import.meta.url).pathname; const T = { ".html": "text
 const srv = http.createServer((q, r) => { const p = join(root, decodeURIComponent(q.url.split("?")[0])); if (!existsSync(p)) { r.writeHead(404); return r.end(); } r.writeHead(200, { "Content-Type": T[extname(p)] || "application/octet-stream" }); r.end(readFileSync(p)); }).listen(0);
 let fails = 0; const ok = (c, m) => { console.log((c ? "ok   " : "FAIL ") + m); if (!c) fails++; };
 const b = nullConfig(await chromium.launch()); const port = srv.address().port;
-async function open({ staff = true, session = true, clash = false }) {
-  const page = await b.newPage({ viewport: { width: 390, height: 844 } });
+async function open({ staff = true, session = true, clash = false, width = 390 }) {
+  const page = await b.newPage({ viewport: { width, height: 844 } });
   const orders = [
     { id: "aaaaaa11-0000-4000-8000-000000000001", pickup_slot: "2026-11-26T17:15:00Z", guest_name: "Sara", customer_note: "Less spice", fulfilment_status: "placed", total_cents: 6325, order_items: [{ quantity: 2, item_name_en_snapshot: "Lamb Mandi", item_name_fr_snapshot: "Mandi d’agneau" }] },
     { id: "bbbbbb22-0000-4000-8000-000000000002", pickup_slot: "2026-11-26T17:15:00Z", guest_name: null, customer_note: null, fulfilment_status: "ready", total_cents: 451, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] }
@@ -35,6 +35,16 @@ async function open({ staff = true, session = true, clash = false }) {
   await page.locator(".staff-reject-form textarea").fill("  Sold out  "); await page.locator(".staff-reject-form button[type=submit]").click();
   await page.waitForFunction(() => document.querySelectorAll(".staff-order").length === 1);
   ok(acts.length === 1 && acts[0].p_action === "reject" && acts[0].p_reason === "Sold out", "confirmed rejection sends reason and removes order from queue"); await page.close(); }
+for (const width of [320, 390, 1280]) for (const language of ["en", "fr", "ar"]) {
+  const { page } = await open({ width }); await page.waitForSelector(".staff-order");
+  await page.evaluate((l) => { document.documentElement.lang = l; document.documentElement.dir = l === "ar" ? "rtl" : "ltr"; }, language);
+  await page.locator(".staff-order.is-placed .staff-reject").click();
+  await page.locator(".staff-reject-form textarea").fill("draft reason");
+  const fits = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+  await page.evaluate(() => { document.documentElement.lang = document.documentElement.lang === "en" ? "fr" : "en"; });
+  ok(fits && await page.locator(".staff-reject-form textarea").inputValue() === "draft reason" && await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `reject form keeps draft without overflow at ${width}px ${language}`);
+  await page.close();
+}
 {
   const { page, acts } = await open({});
   await page.waitForSelector(".staff-order");
