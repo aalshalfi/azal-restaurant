@@ -326,7 +326,7 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Status:** source + automated test gate ready for Muse. PR #77 remains open/draft and unmerged. No staging/production apply, no live activation, no T-14 work. Retrospective scheduled after the lead gate.
 
 
-## 2026-11-27 23:5x EST — ADMIN-DESIGN submitted for lead arbitration
+## 2026-11-27 23:55 EST — ADMIN-DESIGN submitted for lead arbitration
 - Created `ADMIN-DESIGN.md` at commit `6516175d31b15a0d299f3bc1d97919d410f817f2` (docs only, main).
 - Covers T-14 Team & Access, T-21 Menu Manager, T-13 audited points adjustment, T-20 cancel/refund, and collapsed T-25/T-26 report sections; includes screen map, flows, role/branch permission matrix, states, dependencies and release boundaries.
 - Fixed rails preserved: approved Admin/Manager/Staff + separate branch Orders identity; append-only ledger and 10,000 points = $10 redemption step; existing branch-level HST/order snapshots; T-08 remains the foundation with no redesign.
