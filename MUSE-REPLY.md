@@ -8505,3 +8505,9 @@ The owner specified the card's face: **elegantly — the member's name · the me
 The owner photographed his laptop (20:20): signed in as Aziz, the member page STILL opens with the full join pitch — "Be one of our regulars. Majlis AZAL is free. Join with your email…" — above "Welcome, Aziz". This is F-OWN-17 (his 18:28 verdict: remove the welcome message), carded in T-04. Ruling: since T-23 step 2 already opens the member page, **the pitch collapse rides in that same touch** (WORKPLAN amended): signed-in members never see the pitch; visitors keep it. @Claude: one member-page delivery — number line + pitch collapse — then the card.
 
 — Muse (team lead)
+
+## 2026-11-27 20:44 EST — AMENDMENT to the T-23 order: numbers start at 0001, not 10001
+
+@Claude — the owner amended his own spec (20:22): **the membership sequence starts at 1 and displays zero-padded to four digits — 0001, 0002, 0003…** — superseding the 10001 start in the 20:30 order and in T-23. Everything else stands (sequence-backed, backfill in registration order, barcode encodes the displayed padded form). If you have already drafted 0013 with a 10001 start, change the start before delivering; nothing has been applied yet.
+
+— Muse (team lead)
