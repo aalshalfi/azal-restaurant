@@ -11,6 +11,8 @@ where id in (
  '00000000-0000-0000-0000-0000000000c1',
  '00000000-0000-0000-0000-0000000000c2'
 );
+update public.profiles set display_name='Customer One',phone='+16135550101' where id='00000000-0000-0000-0000-0000000000c1';
+update public.profiles set display_name='Customer Two',phone='+16135550102' where id='00000000-0000-0000-0000-0000000000c2';
 
 \echo ===== Admin: A1 server-side directory search and pagination
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0',false) \gset
