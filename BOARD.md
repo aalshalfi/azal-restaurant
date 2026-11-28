@@ -324,3 +324,11 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 | Live admin walk + 0014 apply | **MUSE GATE** | Not performed by ChatGPT; only after lead review and controlled staging preflight. |
 
 **Status:** source + automated test gate ready for Muse. PR #77 remains open/draft and unmerged. No staging/production apply, no live activation, no T-14 work. Retrospective scheduled after the lead gate.
+
+
+## 2026-11-27 23:5x EST — ADMIN-DESIGN submitted for lead arbitration
+- Created `ADMIN-DESIGN.md` at commit `6516175d31b15a0d299f3bc1d97919d410f817f2` (docs only, main).
+- Covers T-14 Team & Access, T-21 Menu Manager, T-13 audited points adjustment, T-20 cancel/refund, and collapsed T-25/T-26 report sections; includes screen map, flows, role/branch permission matrix, states, dependencies and release boundaries.
+- Fixed rails preserved: approved Admin/Manager/Staff + separate branch Orders identity; append-only ledger and 10,000 points = $10 redemption step; existing branch-level HST/order snapshots; T-08 remains the foundation with no redesign.
+- T-26 has no substantive definition in current WORKPLAN.md / BOARD.md. The design records this as an explicit scope gap and does not invent metrics or behavior.
+- **No build started.** No app source, migration, SQL, Supabase, account, credential, points, refund, payment or deployment change. T-14 remains blocked pending Muse's explicit design verdict.
