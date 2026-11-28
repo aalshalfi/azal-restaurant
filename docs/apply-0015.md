@@ -56,6 +56,7 @@ Expected coverage:
 Also run:
 
     node --test tests/admin-team.test.mjs tests/admin-directory.test.mjs tests/admin.test.mjs tests/staff.test.mjs
+    node tests/admin.browser.mjs
     node tests/admin-directory.browser.mjs
     node tests/staff.browser.mjs
 
