@@ -26,7 +26,7 @@ select zz_eq('server-side search matches verified email',
 select zz_eq('server-side search matches phone',
   (public.azal_admin_customer_directory_page('6135550102',50,0)->>'total'),'1');
 select zz_eq('server-side search matches member number',
-  (public.azal_admin_customer_directory_page('10001',50,0)->>'total'),'1');
+  (public.azal_admin_customer_directory_page('10004',50,0)->>'total'),'1');
 select zz_eq('directory page includes ledger-derived balance',
   ((public.azal_admin_customer_directory_page('c1@example.invalid',50,0)->'rows'->0)->>'balance'),'300');
 select zz_eq('admin team list returns a structured member collection',
