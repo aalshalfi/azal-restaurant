@@ -14,7 +14,7 @@ async function open({ signedIn = true, lang = "en", w = 390, server = "0013" } =
   await p.route("https://fake.supabase.co/**", (r) => { const u = decodeURIComponent(r.request().url());
     if (u.includes("/rest/v1/profiles")) { asked.push(u);
       if (u.includes("member_number") && server !== "0013") return r.fulfill({ status: 400, json: { code: "42703", message: "column profiles.member_number does not exist" } });
-      return r.fulfill({ json: [{ id: "u1", display_name: "Aziz", phone: "+16135550180", ...(u.includes("member_number") ? { member_number: 10001 } : {}) }] }); }
+      return r.fulfill({ json: [{ id: "u1", display_name: "Aziz", phone: "+16135550180", ...(u.includes("member_number") ? { member_number: 10001, created_at: "2026-11-20T15:00:00Z" } : {}) }] }); }
     if (u.includes("/rpc/azal_is_admin")) return r.fulfill({ json: false });
     if (u.includes("/rest/v1/user_roles")) return r.fulfill({ json: [] });
     if (u.includes("/rest/v1/memberships")) return r.fulfill({ json: [{ status: "active", joined_at: "2026-11-20T15:00:00Z" }] });
@@ -29,6 +29,12 @@ async function open({ signedIn = true, lang = "en", w = 390, server = "0013" } =
   ok(/Membership no\. 10001/.test((await p.textContent("#authMemberNo")).replace(/\s+/g, " ")), "signed in: the membership number is shown");
   ok(await p.locator(".member-banner").isHidden() && !/Be one of our regulars|Join with your email/.test(await p.innerText("main")), "signed in: the join pitch is gone (F-OWN-17)");
   ok(/Welcome|Aziz/.test(await p.textContent(".member-card")), "the account itself is shown");
+  // step 3: the card — name, number, member since, barcode (owner 20:20)
+  ok(await p.locator(".mcard").isVisible() && await p.textContent(".mcard-name") === "Aziz", "card: the member's name");
+  ok(/Member since\s*November 2026/.test(await p.textContent("#authMemberSince")), "card: member since, from the profile's creation date");
+  const bc = p.locator(".mcard-barcode");
+  ok(await bc.isVisible() && await bc.getAttribute("aria-label") === "Membership barcode 10001" && await p.locator(".mcard-barcode rect").count() === 35 && await p.textContent(".mcard-digits") === "10001", "card: Code 39 barcode of the number (35 bars), digits printed under it");
+  ok(await p.getAttribute(".mcard-mark", "src") === "assets/azal-symbol.svg" && await p.evaluate(() => [...document.querySelectorAll(".mcard *")].every((e) => !/burgundy|#8|#7/i.test(getComputedStyle(e).color))), "card: the official AZAL symbol; no colour outside the palette");
   await p.close(); }
 { const { p } = await open({ signedIn: false });
   ok(await p.locator(".member-banner").isVisible() && /Be one of our regulars/.test(await p.textContent(".member-banner")) && await p.locator("#authMemberNo").count() === 0, "visitor: the pitch stays, no number");
@@ -40,6 +46,6 @@ async function open({ signedIn = true, lang = "en", w = 390, server = "0013" } =
 for (const [lang, w, word] of [["ar", 320, "رقم العضوية"], ["fr", 390, "N° de membre"], ["en", 1280, "Membership no."]]) {
   const { p } = await open({ lang, w });
   const t = await p.textContent("#authMemberNo");
-  ok(t.includes(word) && t.includes("10001") && await p.getAttribute("#authMemberNo bdi", "dir") === "ltr" && await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${lang} @${w}: number line in ${lang}, digits left-to-right, no sideways scroll`);
+  ok(t.includes(word) && t.includes("10001") && await p.evaluate(() => { const r = document.querySelector(".mcard").getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }) && await p.getAttribute("#authMemberNo bdi", "dir") === "ltr" && await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${lang} @${w}: number line in ${lang}, digits left-to-right, no sideways scroll`);
   await p.close(); }
 await b.close(); srv.close(); if (fails) { console.log(fails + " failed"); process.exit(1); } else console.log("all passed");

@@ -947,5 +947,20 @@ button.co-who-back{background:none;border:0;padding:0;cursor:pointer;font:inheri
 .co-auth input[readonly]{background:#F8F1E7;color:#914820}
 /* T-23 step 2: membership number; the join pitch is hidden for signed-in members */
 .member-banner[hidden]{display:none}
-.auth-member-no{margin:2px 0 10px;color:#914820;font-size:.95rem;letter-spacing:.02em}
-.auth-member-no strong{color:#42220E;font-size:1.08rem;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+/* T-23 step 3: membership card — official palette and the official AZAL symbol only */
+.mcard{position:relative;overflow:hidden;margin:6px 0 18px;padding:20px 20px 16px;border-radius:18px;background:#42220E;color:#F8F1E7;max-width:440px;box-shadow:0 10px 28px rgba(66,34,14,.28);isolation:isolate}
+.mcard::before{content:"";position:absolute;inset:7px;border:1px solid rgba(205,142,45,.45);border-radius:13px;pointer-events:none}
+.mcard-mark{position:absolute;top:16px;inset-inline-end:18px;width:42px;height:auto}
+.mcard-watermark{position:absolute;inset-inline-end:-46px;bottom:34px;width:210px;height:auto;opacity:.09;z-index:-1}
+.mcard-kicker{color:#CD8E2D;font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+html[lang="ar"] .mcard-kicker{letter-spacing:0;font-size:.9rem}
+.mcard-name{margin:14px 56px 14px 0;font-family:var(--serif, inherit);font-size:1.55rem;line-height:1.2;overflow-wrap:anywhere}
+html[dir="rtl"] .mcard-name{margin:14px 0 14px 56px}
+.mcard-meta{display:flex;flex-wrap:wrap;gap:8px 26px;margin-bottom:14px}
+.mcard-meta span{display:block;color:#CD8E2D;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+html[lang="ar"] .mcard-meta span{letter-spacing:0;font-size:.85rem}
+.mcard-meta strong{font-size:1.02rem;font-weight:600;letter-spacing:.04em}
+.mcard-meta #authMemberNo strong{color:#F8F1E7;font-size:1.18rem;letter-spacing:.1em;font-variant-numeric:tabular-nums}
+.mcard-code{background:#F8F1E7;border-radius:10px;padding:10px 10px 6px;text-align:center}
+.mcard-barcode{display:block;width:100%;height:54px}
+.mcard-digits{color:#42220E;font-size:.82rem;letter-spacing:.4em;margin-top:4px;font-variant-numeric:tabular-nums}
