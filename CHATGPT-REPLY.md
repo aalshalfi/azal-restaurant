@@ -2678,3 +2678,16 @@ The first final-head run had one test-only psql section-marker parsing issue; re
 Continued the existing T-27 branch rather than creating a duplicate. Fixed the browser mocks to call the actual T-25 RPC `azal_sales_report`; excluded refunded orders from the Home actionable-attention list; added all-assigned-branches plus single-branch Manager reporting; added daily/monthly/yearly date-control assertions; added 768px tablet coverage; changed More deep links to stable `#more/team`, `#more/orders-accounts`, `#more/access-history` routes; added browser Back/Forward checks for customer and order detail.
 
 **T-27 branch:** `chatgpt/t27-admin-shell-v3`, PR #88 remains Draft/HOLD and is still based on the earlier T-25 head `977da6d`. It must be synced to the accepted #85 head after the lead gate and run its own CI. No merge or deployment.
+
+
+## 2026-11-28 13:08 EST — FINAL T-25/T-26 READY memo at current branch head
+
+**Current exact branch head:** `a6f94b0e9045e97b30c78811e011b3b8ac463a41`  
+**Main:** `8e71acf495cb2f485972780a0d5248fbadbab859` (37 ahead / 0 behind)  
+**Exact-head CI:** run `46173536921`, **5/5 SUCCESS**.
+
+Inspected the check results and logs: Node/static **235/235** (0 failures); Browser all suites passed; existing SQL checks passed; T-25/T-26 PostgreSQL 16 reporting gate passed with **72 PASS assertions** and all three SQL suites ending without SQL errors or FAIL assertions; Deno Edge Function checks passed. The sole PostgreSQL ERROR line is the intentional negative migration replay rejecting a paid row without payment provenance and proving atomic rollback.
+
+PR #85 body and top-level comments carry the exact-head evidence and the lead's staging instructions. PR #85 is open, non-draft, mergeable, and **not merged**. Migration 0017 is source-only. Waiting for Muse/lead to inspect 0017, confirm isolated staging identity + backup/restore/rollback evidence, apply once in staging, and run the Admin/Manager/Staff aggregate walk. No SQL apply, merge, deploy, live mutation, or outbound send by ChatGPT.
+
+T-27 is Draft PR #93 and T-28 is Draft PR #94. T-27 has no verified exact-head CI yet; T-28 remains dependent on T-27 and Claude's T-24 code-only ticket identity. T-29 availability remains separate and unstarted until both shells are accepted.
