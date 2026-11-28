@@ -12,8 +12,8 @@ The owner identity is the only Admin identity: **info@azalrestaurant.com**. The 
 - Adds the Manager role to the existing user_roles model and branch-scoped Manager authorization.
 - Adds the branch-owned Orders identity registry and append-only Admin audit log.
 - Adds in-portal pending team invitations. A6 is binding: **no invitation, notification, or password email is sent**. A pending team grant is attached only after the matching Auth account exists and its email is verified through the existing Auth flow.
-- Adds server-side customer directory search/pagination (A1), with balances aggregated only for the returned page.
-- Adds Admin-only customer anonymization/deactivation data operation (A2). The Edge Function scrubs the Auth email and bans sign-in; the RPC scrubs profile and order contact PII, suspends membership and retires the member number. Order IDs, item snapshots, tax/financial columns and append-only points ledger remain. No hard delete, ledger edit, or tax rewrite.
+- Adds server-side customer directory search/pagination (A1), with balances aggregated only for the returned page. The all-orders list is contact-blind (no guest name/email/phone or bulk profile/email RPC); contact data is fetched only for the single order detail the Admin opens.
+- Adds Admin-only, service-role-only, reason-required and idempotent customer anonymization/deactivation (A2). The Edge Function preflights the profile, team roles and branch Orders identity before Auth mutation; snapshots email, email verification, user metadata and ban state; and re-reads the durable marker after an RPC error before deciding whether Auth compensation is safe. The SQL transaction scrubs Auth/profile data, member and guest-order contact/free-text fields (guest orders are matched by the original email and marked `guest_identity_scrubbed`), pending/claimed points-claim emails and related outbox recipients/payloads; suspends membership and retires the member number. Order IDs, item snapshots, tax/financial columns and append-only points ledger remain. No hard delete, ledger edit, or tax rewrite.
 - Adds a narrow Manager orders RPC that returns only assigned-branch operational data; it omits customer contact, payment status, totals, subtotal, discounts and tax.
 - Adds a server-derived branch list for the kitchen screen so each shared Orders account sees only its branch; named Staff with multiple assignments can choose only among those assignments.
 
@@ -37,7 +37,7 @@ Confirm this is the intended staging project and the following are present:
            to_regclass('auth.users') as auth_users,
        to_regclass('auth.identities') as auth_identities;
 
-Expected: every object exists. Confirm profiles.display_name, phone, member_number, anonymized_at; orders.contact_phone, guest_name, guest_email, placed_at, fulfilment_status; and order_items.item_name_en_snapshot / item_name_fr_snapshot exist. Stop if the schema differs.
+Expected: every object exists. Confirm profiles.display_name, phone, member_number, anonymized_at; orders.contact_phone, guest_name, guest_email, guest_identity_scrubbed, placed_at, fulfilment_status; and order_items.item_name_en_snapshot / item_name_fr_snapshot exist. Stop if the schema differs.
 
 The migration itself preflights T-08's directory RPC and the required tables. It is transaction-wrapped. Do not infer that a successful local PG16 test means staging is ready.
 
@@ -135,7 +135,7 @@ The function supports Admin-checked team assignment/removal, branch Orders accou
 2. Create one branch Orders account and verify it can open only that branch's kitchen queue; reset its password and verify the old password no longer works. No email is sent.
 3. Remove a named Staff user; confirm server-side access is denied on the next request. Confirm the owner/Admin root cannot be demoted or removed.
 4. Exercise A1 with at least 1,000 synthetic staging customers; verify page size stays bounded and search matches all four fields.
-5. Exercise A2 only with a disposable staging customer; verify Auth sign-in is banned, Auth email/phone/identity metadata scrubbed, profile/order contact + customer note PII scrubbed, pending and claimed points-claim emails replaced, outbox recipient/payload PII removed, member number retired, directory exclusion, and ledger/order/tax aggregates retained. Repeat the same request to verify idempotent success and no duplicate audit event.
+5. Exercise A2 only with a disposable staging customer; verify Auth sign-in is banned, Auth email/phone/identity metadata scrubbed, profile/member/guest-order contact + customer note PII scrubbed (including guest orders with user_id IS NULL), guest_identity_scrubbed marker set, pending and claimed points-claim emails replaced, outbox recipient/payload PII removed, member number retired, directory exclusion, and ledger/order/tax aggregates retained. Repeat the same request to verify idempotent success and no duplicate audit event.
 6. Confirm Manager branch RPC exposes no customer PII, payment state, subtotal, discount or HST.
 7. Walk EN/FR/AR at 320 / 390 / 1280 px, including signed-out, forbidden, loading, empty, error, stale, success and sign-out states.
 
