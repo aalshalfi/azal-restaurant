@@ -247,3 +247,11 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 - **Owner:** assigned after T-27/T-28; full-review class.
 - **Scope:** own-branch temporary Sold out today state, actor/time/item audit, next-business-day auto-reset; staff may only change own authorized branch. Manager/T-21 retains permanent availability, retirement and all canonical menu edits.
 - **Boundary:** T-28 must not render Availability until T-29's authoritative state and server enforcement are delivered and gated. Migration/RPC/role matrix require full review and live acceptance.
+
+
+## 2026-11-28 12:26 EST — T-27 delivery checkpoint
+- PR #88 opened as a stacked draft PR; branch chatgpt/t27-admin-shell-v3; base chatgpt/t25-t26-reporting-shell-proposal.
+- Exact head at PR creation: 977da6d12d2c029eb0eb136cf693b62fbc63060d. Own Node/browser CI remains pending; do not merge until every required job passes and the lead reviews the exact head.
+- T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
+- Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
+- Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
