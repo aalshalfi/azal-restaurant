@@ -37,6 +37,9 @@
       setBranch(next) { if (!allowedBranches.includes(next)) throw Object.assign(new Error("bad_branch"), { code: "bad_branch" }); branch = next; return branch; },
       currentBranch() { return branch; },
       async isStaff() { return (await call("/rest/v1/rpc/azal_staff_can_access", { method: "POST", body: { p_branch_slug: branch } })) === true; },
+      async todaySummary() {
+        return call("/rest/v1/rpc/azal_staff_today_summary", { method: "POST", body: { p_branch_slug: branch } });
+      },
       async list() {
         // T-02: contact_phone (0010) so the kitchen can call; one fallback for a server without 0010 (400, unknown column).
         const q = (extra) => "select=id,pickup_slot,scheduled_for,guest_name,customer_note,fulfilment_status,total_cents" + extra + ",order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +

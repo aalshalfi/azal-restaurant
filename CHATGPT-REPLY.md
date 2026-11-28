@@ -2563,3 +2563,131 @@ Commits:
 **READY scope:** READY FOR MUSE/LEAD REVIEW AND STAGING APPLY GATE ONLY. This is not authorization to apply SQL. The CI database is disposable PostgreSQL 16, not the user's Supabase staging project. Muse/owner must independently confirm the isolated staging project, current backup and restore evidence, inspect the exact migration bytes/hash, apply 0016 once, verify the six grants and continued denial on audit_log/orders, then retry only synthetic member #10006 and confirm one audit entry. Do not reapply 0015. No production SQL, live customer action, Edge Function redeploy, booking, order, payment, email, or spend was performed by this delivery.
 
 — ChatGPT
+
+
+---
+
+## 2026-11-28 11:03 EST — T-14 three-line retrospective + F-OWN-32 dual-shell proposal
+
+### T-14 retrospective (three lenses)
+
+1. **Security:** T-14 demonstrated that the live privilege model must be represented faithfully in tests; the service_role gap escaped because the old SQL stub was more permissive than Supabase.
+2. **Engineering:** the narrow six-grant 0016 migration, pre-apply denial checks, post-apply exact-grant checks and SET ROLE test are the right durable correction; broad grants would have hidden rather than solved the defect.
+3. **Release/product:** the lead's disposable-member walk proved the full customer lifecycle and exactly-one audit event, closing T-14 on evidence rather than a green code-only suite. Future Edge Function gates should inspect role_table_grants before live acceptance.
+
+### F-OWN-32 proposal submitted
+
+Read Muse's 10:53 ruling and 10:59 addendum on current main. The detailed proposal is in `ADMIN-KITCHEN-SHELL-PROPOSAL.md`.
+
+**Admin shell:** persistent Home / Orders / Menu / More navigation (bottom on phone, left rail on desktop). Home keeps headline stats and actionable alerts; Orders becomes Active / Scheduled / History; Menu is the future T-21 workspace; More holds focused pages for Reports, Customers, Team & access, Invitations, Orders accounts and Audit. T-25 Reports is More → Reports with Daily / Monthly / Yearly periods. The Today panel is reduced to a compact Home snapshot, not retained as a long stacked section.
+
+**Kitchen shell:** persistent Queue / History / Scheduled / Availability / Settings rail. Queue is first and contains stage chips with live counts; History owns T-26 Today's summary and manual copy/share only; Scheduled and Availability are separate screens. No tax line or automatic send appears in staff summary.
+
+**Sold-out placement:** recommend both surfaces with distinct semantics: kitchen staff can set a temporary branch-scoped “Sold out today” flag; Manager owns canonical menu/branch availability in T-21 and can see the temporary flag. These must not be the same write operation. If a safe server-side distinction is unavailable, kitchen control stays read-only until a separately gated slice exists.
+
+### T-25 + T-26 aggregation round — started
+
+**Branch:** `chatgpt/t25-t26-reporting-shell-proposal`  
+**Base:** current `main` at branch creation  
+**BOARD claim:** recorded before implementation.
+
+The aggregation contract follows A3/A4: only paid + handed_over orders contribute to collected sales (ADM-1 convention); bucket by `paid_at` in `America/Toronto`; Admin receives all-branch subtotal/discount/HST/collected aggregates and counts; Manager receives only server-scoped assigned-branch counts and collected total; Staff T-26 receives today's collected total and status counts, with no tax breakdown. The next implementation step is to inspect the current schema/role helpers and build the narrow server-side aggregate + disposable SQL/Node tests. No report UI will be inserted into the old stacked admin page.
+
+**Current boundaries:** proposal and claim only are committed so far. No migration authored/applied yet, no SQL run against Supabase, no merge, no deployment, no live data mutation, no outbound send.
+
+
+### 2026-11-28 11:12 EST — owner ruling incorporated; T-25/T-26 first implementation slice
+
+**Owner's 11:07 answer (new main commit `af1b33f`) supersedes my initial sold-out recommendation:** temporary `Sold out today` is **Kitchen only**, own branch, audited (actor/time/item), auto-reset next business day. Manager/T-21 retains permanent availability, retirement and all canonical menu editing. This is a full-review authorization/backend slice because no authoritative branch × item availability state or audited RPC exists yet. The kitchen Availability screen must not show a dead/fake toggle; it ships only with the real state and working server enforcement. Updated `ADMIN-KITCHEN-SHELL-PROPOSAL.md` accordingly. No T-25/T-26 scope change.
+
+**T-25/T-26 implementation now present on the draft branch:**
+- `0017_reporting_aggregation.sql`: adds immutable `paid_at`, backfills from successful payment/order events (fails closed if provenance is absent), captures the payment event time on the paid transition, and adds Toronto-local day/month/year Admin/Manager aggregates plus Staff-only today summary.
+- `admin.js` and `staff.js`: thin RPC client methods only; no UI on the old stacked pages.
+- `tests/reporting-api.test.mjs` and `tests/sql/reporting-aggregation-behaviour.sql`: input validation, role/branch isolation, financial redaction, immutable timestamp, Toronto DST boundaries.
+- `.github/workflows/site-check.yml`: dedicated disposable PostgreSQL 16 reporting gate.
+
+**CI evidence / correction:** initial PR #85 run #1225 passed static checks and the existing SQL suite, but the new reporting SQL test exposed a fixture mistake: the test attempted to verify `auth.users` while still `SET ROLE authenticated`, so the Manager identity remained an unverified pending invite and the downstream Manager assertions correctly denied access. Moved the test-only email verification back to the database-owner role before invoking the Admin assignment RPC. No production code or permission was weakened. The corrected head triggered a new CI run; do not call this READY until the reporting job and the full run are green.
+
+**Review boundary:** PR #85 remains **draft**, unmerged. Migration 0017 is source-only; no Supabase SQL applied, no deployment, no live data mutation, no shell HTML work, no availability toggle, and no outbound send.
+
+
+**CI update — run #1226 (corrected implementation head `ea563b7`):** reporting-checks **PASS** on fresh PostgreSQL 16; existing sql-checks **PASS** (points, T-08 directory, T-14 A1/A2); static-checks **PASS** (JS syntax, Node smoke tests, page markup); edge-function-checks **PASS**. Browser-checks are still running at this note. The only code-test correction was the disposable Manager fixture's verification context; no production authorization was loosened. Current proposal/board documentation also records the owner's 11:07 kitchen-only decision. PR #85 remains draft and unmerged; no Supabase apply or deployment.
+
+
+**Latest-head CI — run #1231 (`42f873a`, PR #85 merge ref includes current main):** static-checks **PASS** and Edge Function type-check **PASS**; SQL regression, dedicated reporting PostgreSQL 16 gate, and browser suites are still running. Earlier corrected implementation run #1226 already recorded reporting-checks **PASS**, sql-checks **PASS**, static-checks **PASS**, and edge-function-checks **PASS**; its browser suite was still in progress at the last poll. No merge or SQL apply is authorized before the lead gate.
+
+
+## 2026-11-28 12:xx EST — T-25/T-26 source review remediation after Muse 12:26 adjudication
+
+**Lead source:** main \`8e71acf495cb2f485972780a0d5248fbadbab859\`, MUSE-REPLY 11:50 consolidation and 12:26 T-27 adjudication. The four newer main commits (only CLAUDE-REPLY.md and MUSE-REPLY.md changed) were merged non-destructively into this delivery branch with two-parent merge commit \`33f9037eef952e752f73dd35535b343a3b2f31e9\`. Current delivery head at this note: \`ed69489f5e8dea057486bff1e3a1b3c8761bb98b\`; compare to main: 30 ahead / 0 behind.
+
+**Supersession:** PR #84 was closed unmerged per Muse. Its competing payment_events-derived 0017 is retired. PR #85 is kept Draft/HOLD as the single delivery branch.
+
+**Source findings fixed on #85:**
+1. Removed the paid-transition \`clock_timestamp()\` fallback. New paid transitions require a pre-existing \`payment_succeeded\` event or raise \`paid_at_payment_event_required\`. Legacy backfill uses payment_events first and order_events.event_type='paid' only as the documented legacy fallback; preflight fails closed if neither exists.
+2. Added a payment_events(order_id,event_type,received_at) lookup index.
+3. Added refund_succeeded aggregation for handed-over orders. Admin receives gross collected, separate refunds, net and stored financial snapshots. Manager receives assigned-branch counts and net only; Manager can query all assigned branches or one authorized branch. Refunds before handover do not count as collected refunds; refunds after handover reduce net once.
+4. T-26 Staff summary returns net_collected_cents only, without gross, refund, tax, subtotal or discount fields.
+5. Added a pre-migration fixture file to exercise payment_events and legacy order_events paid_at backfills; expanded SQL tests for missing-event fail-closed behavior, paid_at immutability, refunds before/after handover, and deterministic Toronto day/month/year boundaries. The workflow now clones a disposable PG16 database, proves a paid row without either provenance source aborts 0017 atomically without leaving paid_at, then applies 0017 to a clean disposable DB.
+6. Updated the Staff API mock to assert net-only output. Replaced the stale shell proposal with Muse's adopted five-destination Admin / four-screen Kitchen spec; updated the reporting contract, WORKPLAN and BOARD.
+
+**Exact source blobs at review:**
+- Migration 0017: \`b2d6b3a3533f2cc5fa11109a008d493ba8515ce6\`
+- Reporting behavior SQL: \`d8ecfe17281f0800c6ea69440d22f0a374a1ce4a\`
+- CI workflow: \`8ff58e8264708a268e25dc8819f5799a33ef8f51\`
+- Pre-migration fixtures: commit \`c3f6d68909e69e0604f6bf86a30f5d61df3c21c1\`
+- Staff API test: commit \`26a455a4a5f9ca00ccb91d6a2dd9a7941a93b3b0\`
+- Reporting contract: commit \`a3281373dce6518bec3ba8d359b5deff20de4f7b\`
+- Adjudicated shell spec: commit \`65b7df35d777ef52d99a1de1d1422ddcf4a8b17f\`
+
+**Verification status:** no local Node/PostgreSQL result is claimed. Exact-head GitHub Actions run \`46171321172\` was queued for source head \`ed69489\`; READY is withheld until all five jobs succeed on the final head and the reporting SQL log is inspected. Previous green CI at \`296adf2\` does not cover these source changes.
+
+**Operational boundary:** 0017 remains source-only. No Supabase SQL, deployment, live order/payment/refund/email, customer mutation or spend was performed. After exact-head CI and Muse's review, the lead must verify isolated staging + backup/restore evidence, apply 0017 once, and perform the Admin/Manager/Staff aggregate walk.
+
+**Next assigned work:** after posting T-25/T-26 READY, T-27 Admin shell is assigned to ChatGPT, then T-28 Kitchen shell, then T-29 Availability. The adjudicated spec is in ADMIN-KITCHEN-SHELL-PROPOSAL.md. Claude's independent Sunday queue remains T-24 → T-03; his separate CLAUDE-REPLY.md cadence is every 30 minutes with exact SHA/files/tests/results/blockers.
+
+— ChatGPT
+
+
+## 2026-11-28 12:54 EST — T-25/T-26 final-head CI correction
+
+The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed beyond the earlier `296adf2` green point: the updated migration now requires a real `payment_succeeded` event for new paid transitions (no invented timestamp), handles pre/post-handover refunds, and returns net-only figures to Manager and Staff. The new expanded PG16 suite exposed one psql harness parsing error at its section marker (`\\echo ===== Staff T-26: ...`); the actual Staff authorization/net/refund assertions all passed before the parser reported the malformed meta-command. Removed the colon from that `\\echo` marker in commit `50df6b700cfac5e9ac810d9080ff681b9b8d7df6`. No production SQL or application authorization was changed.
+
+**Gate status:** READY is intentionally withheld until a fresh exact-head run passes all five jobs, especially the full T-25/T-26 PG16 reporting suite. Prior green runs `#1231/#1232` cover the older `296adf2` snapshot only and do not substitute for the expanded final-head tests. 0017 remains source-only; no merge, apply, deploy, or live mutation.
+
+
+## 2026-11-28 13:00 EST — T-25/T-26 READY FOR LEAD GATE (final exact head)
+
+**Exact head:** `262015f734c6f8e59434c1bfc43942e6981f6095`  
+**Main:** `8e71acf495cb2f485972780a0d5248fbadbab859` (34 ahead / 0 behind)  
+**CI:** run `46172964009`, all five jobs SUCCESS.
+
+Evidence inspected directly:
+- Node/static: 235/235 pass, zero failures.
+- Browser: all browser suites pass.
+- Existing PostgreSQL 16 SQL checks pass.
+- Dedicated T-25/T-26 reporting PostgreSQL 16 job passes: 72 PASS assertions; admin-scope, backfill-fixtures and reporting-aggregation suites each end with no SQL errors or FAIL assertions.
+- Deno Edge Function type checks pass.
+
+The first final-head run had one test-only psql section-marker parsing issue; removed the colon from the Staff T-26 \\echo marker. The corrected exact head above is fully green. The production migration was not weakened.
+
+**READY memo** is now in the PR #85 body and a top-level PR comment. PR #85 is open, non-draft, mergeable, and **not merged**. Migration 0017 remains source-only. Next action belongs to Muse/lead: inspect 0017, confirm staging identity + backup/restore + rollback evidence, apply once in isolated staging, then verify Admin/Manager/Staff aggregate walk. I have not applied any SQL, deployed any Edge Function, or changed live data.
+
+## T-27 Admin shell review improvements — draft PR #88
+
+Continued the existing T-27 branch rather than creating a duplicate. Fixed the browser mocks to call the actual T-25 RPC `azal_sales_report`; excluded refunded orders from the Home actionable-attention list; added all-assigned-branches plus single-branch Manager reporting; added daily/monthly/yearly date-control assertions; added 768px tablet coverage; changed More deep links to stable `#more/team`, `#more/orders-accounts`, `#more/access-history` routes; added browser Back/Forward checks for customer and order detail.
+
+**T-27 branch:** `chatgpt/t27-admin-shell-v3`, PR #88 remains Draft/HOLD and is still based on the earlier T-25 head `977da6d`. It must be synced to the accepted #85 head after the lead gate and run its own CI. No merge or deployment.
+
+
+## 2026-11-28 13:08 EST — FINAL T-25/T-26 READY memo at current branch head
+
+**Current exact branch head:** `a6f94b0e9045e97b30c78811e011b3b8ac463a41`  
+**Main:** `8e71acf495cb2f485972780a0d5248fbadbab859` (37 ahead / 0 behind)  
+**Exact-head CI:** run `46173536921`, **5/5 SUCCESS**.
+
+Inspected the check results and logs: Node/static **235/235** (0 failures); Browser all suites passed; existing SQL checks passed; T-25/T-26 PostgreSQL 16 reporting gate passed with **72 PASS assertions** and all three SQL suites ending without SQL errors or FAIL assertions; Deno Edge Function checks passed. The sole PostgreSQL ERROR line is the intentional negative migration replay rejecting a paid row without payment provenance and proving atomic rollback.
+
+PR #85 body and top-level comments carry the exact-head evidence and the lead's staging instructions. PR #85 is open, non-draft, mergeable, and **not merged**. Migration 0017 is source-only. Waiting for Muse/lead to inspect 0017, confirm isolated staging identity + backup/restore/rollback evidence, apply once in staging, and run the Admin/Manager/Staff aggregate walk. No SQL apply, merge, deploy, live mutation, or outbound send by ChatGPT.
+
+T-27 is Draft PR #93 and T-28 is Draft PR #94. T-27 has no verified exact-head CI yet; T-28 remains dependent on T-27 and Claude's T-24 code-only ticket identity. T-29 availability remains separate and unstarted until both shells are accepted.
