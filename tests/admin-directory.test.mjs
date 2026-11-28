@@ -143,6 +143,8 @@ test("0014 exposes only explicit customer fields behind a fixed-path admin-only 
   assert.match(sql, /auth\.uid\(\) is null or not public\.azal_is_admin\(\)/);
   assert.match(sql, /join auth\.users u on u\.id = p\.id/);
   assert.match(sql, /u\.email::text/);
+  assert.match(sql, /p\.anonymized_at is null/);
+  assert.match(sql, /r\.role in \('admin', 'staff'\)/);
   assert.doesNotMatch(sql, /raw_user_meta_data|encrypted_password|user_metadata|app_metadata/i);
   assert.match(sql, /revoke all on function public\.azal_admin_customer_directory\(\) from public, anon, authenticated/i);
   assert.match(sql, /grant execute on function public\.azal_admin_customer_directory\(\) to authenticated/i);
