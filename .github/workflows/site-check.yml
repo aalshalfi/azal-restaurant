@@ -177,6 +177,35 @@ jobs:
           psql "$DB" -X -v ON_ERROR_STOP=1 -c "insert into auth.users(id,email,email_confirmed_at) values ('00000000-0000-0000-0000-0000000000a0','info@azalrestaurant.com',now()) on conflict (id) do update set email=excluded.email,email_confirmed_at=coalesce(auth.users.email_confirmed_at,excluded.email_confirmed_at)"
           psql "$DB" -X -v ON_ERROR_STOP=1 -c "insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000a0','admin') on conflict do nothing"
           psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0015_admin_team_access.sql
+          # Prove the live-reported defect on the pre-0016 schema: each exact
+          # service_role preflight read must fail with PostgreSQL permission denied.
+          expect_service_role_denied() {
+            local phase="$1" table="$2" query="$3" output
+            output="$(mktemp)"
+            if psql "$DB" -X -v ON_ERROR_STOP=1 -c "set role service_role; $query" >"$output" 2>&1; then
+              cat "$output"
+              rm -f "$output"
+              echo "ERROR: expected service_role SELECT denial for $table ($phase)" >&2
+              exit 1
+            fi
+            if ! grep -Fq "permission denied for table $table" "$output"; then
+              cat "$output"
+              rm -f "$output"
+              echo "ERROR: expected permission-denied for $table ($phase)" >&2
+              exit 1
+            fi
+            echo "PASS: service_role SELECT denied on $table ($phase)"
+            rm -f "$output"
+          }
+          expect_service_role_denied "before 0016" profiles "select id, anonymized_at from public.profiles limit 0"
+          expect_service_role_denied "before 0016" user_roles "select role from public.user_roles limit 0"
+          expect_service_role_denied "before 0016" branch_orders_accounts "select auth_user_id from public.branch_orders_accounts limit 0"
+          expect_service_role_denied "before 0016" admin_team_invites "select id from public.admin_team_invites limit 0"
+          expect_service_role_denied "before 0016" branch_orders_accounts "select auth_user_id from public.branch_orders_accounts limit 0"
+          psql "$DB" -X -v ON_ERROR_STOP=1 -f supabase/migrations/0016_t14_service_role_grants.sql
+          # The fix must not broaden access to the audit log or order records.
+          expect_service_role_denied "after 0016 least-privilege check" admin_audit_log "select id from public.admin_audit_log limit 0"
+          expect_service_role_denied "after 0016 least-privilege check" orders "select id from public.orders limit 0"
           DATABASE_URL="$DB" bash tests/sql/run-one.sh tests/sql/admin-team-access-behaviour.sql
 
   edge-function-checks:
