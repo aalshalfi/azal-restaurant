@@ -224,6 +224,16 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 **Sequence:** T-25/T-26 data gate → T-27 Admin shell → T-28 Kitchen shell → T-29 availability. Claude's Sunday queue remains T-24 → T-03 and is separate from ChatGPT's shell work.
 
 
+## 2026-11-28 13:00 EST — T-25/T-26 gate update
+
+- **READY FOR LEAD GATE:** PR #85 exact head 262015f734c6f8e59434c1bfc43942e6981f6095; main 8e71acf495cb2f485972780a0d5248fbadbab859; compare 34 ahead / 0 behind.
+- CI run 46172964009: all five jobs SUCCESS. Node/static 235/235; browser all passed; existing SQL passed; dedicated PostgreSQL 16 reporting gate 72 PASS assertions; Deno passed.
+- 0017 remains authoring-only. No Supabase SQL apply, merge, deploy, or live mutation by this delivery.
+- Next dependency: Muse/lead's isolated staging gate and explicit review of migration/backfill/rollback before any apply.
+- T-27 PR #88 is still Draft/HOLD, base currently 977da6d; it has report RPC mock, paid-only attention, Manager all-assigned/single-branch filter, period controls, 768px coverage and stable deep-link/back-forward test improvements. Sync it to #85 after the lead gate and run its own CI.
+- T-28 PR #90 remains Draft/HOLD on #88; T-29 availability remains separate and not exposed in T-28.
+
+
 ## 2026-11-28 12:26 EST — Muse T-27 adjudication (binding)
 
 ### T-27 · Admin portal shell — F-OWN-32
