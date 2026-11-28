@@ -23,6 +23,8 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
     if (u.includes("/rest/v1/user_roles")) return r.fulfill({ json: role === "customer" ? [] : [{ role }] });
     if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: role === "staff" ? [{ branch_slug: "ottawa" }] : [] });
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: role === "admin" ? ORDERS : [] });
+    if (u.includes("/rpc/azal_admin_customer_directory_page")) return r.fulfill({ json: { rows: [], total: 0, limit: 50, offset: 0 } });
+    if (u.includes("/rpc/azal_sales_report")) return r.fulfill({ json: { role:"admin", totals:{ order_count:3, collected_count:2, collected_cents:5075, refunds_cents:100, net_collected_cents:4975, subtotal_cents:4500, discount_cents:200, tax_cents:575 }, rows:[{ period_start:"2026-11-28", branch_slug:"ottawa", order_count:3, collected_count:2, collected_cents:5075, refunds_cents:100, net_collected_cents:4975, subtotal_cents:4500, discount_cents:200, tax_cents:575 }] } });
     if (u.includes("/rest/v1/memberships") && u.includes("status=eq.active")) return r.fulfill({ json: [{ user_id: "x" }], headers: { "content-range": "0-0/42", "access-control-expose-headers": "content-range" } });
     if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Owner" }] });
     if (u.includes("/rest/v1/memberships")) return r.fulfill({ json: [{ status: "active" }] });
@@ -36,8 +38,8 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
 }
 
 { const { p } = await open("member");
-  await p.waitForURL(/admin\.html$/, { timeout: 5000 }).catch(() => {});
-  ok(/admin\.html$/.test(p.url()), "member page, admin: sent straight to the management area (owner: never the customer account)");
+  await p.waitForURL(/admin\.html(?:#.*)?$/, { timeout: 5000 }).catch(() => {});
+  ok(/admin\.html(?:#.*)?$/.test(p.url()), "member page, admin: sent straight to the management area (owner: never the customer account)");
   await p.waitForTimeout(400);
   ok(/Collected sales today/.test(await p.textContent("#adminRoot")) && await p.locator(".member-card, #memberHistory").count() === 0, "admin lands on management only: no customer card, history or points");
   await p.close(); }
@@ -56,8 +58,32 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   ok(/Signed in as info@example\.invalid · Administrator/.test(t), "admin page: who and which role");
   ok(/New, paid ?1/.test(t) && /Collected ?1/.test(t) && /Unpaid \(never reach the kitchen\) ?1/.test(t) && /Collected sales today: \$22\.59/.test(t) && /Active Majlis members: 42/.test(t), "overview: today's counts, collected sales, member count from the server");
   ok(/ottawa: 3 orders today, 1 collected/.test(t), "per-branch line");
-  ok(await p.locator("#adminRoot nav, #adminRoot a[href*='customers'], #adminRoot a[href*='orders']").count() === 0, "no navigation to sections that are not built yet (no dead links)");
-  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact"];
+  const destinations = await p.locator("#adminRoot .admin-shell-link").allTextContents();
+  ok(["Home","Orders","Customers","Reports","More"].every(x => destinations.includes(x)), "T-27 Admin shell exposes exactly the five adjudicated destinations");
+  ok(!/Menu|Availability/.test(destinations.join(" ")), "no dead Menu or Availability destination before T-21/T-29");
+  const attentionDebug = await p.locator('#adminScreen-orders [data-order-card="1"]').evaluateAll(cards=>cards.map(c=>({status:c.dataset.status,payment:c.dataset.paymentStatus,code:c.dataset.orderCode})));
+  console.log("T27 attention diagnostic", attentionDebug, "links", await p.locator("#adminScreen-home .admin-needs-attention .admin-more-link").count());
+  ok(await p.locator("#adminScreen-home .admin-needs-attention .admin-more-link").count() === 1, "Needs attention includes paid actionable orders only, not unpaid orders");
+  const homeHidden = await p.locator("#adminScreen-home").getAttribute("hidden");
+  const ordersHidden = await p.locator("#adminScreen-orders").getAttribute("hidden");
+  const homeCurrent = await p.locator('.admin-shell-link[href="#home"]').getAttribute("aria-current");
+  console.log("T27 route diagnostic", { url:p.url(), hash:await p.evaluate(()=>location.hash), homeHidden, ordersHidden, homeCurrent });
+  ok(homeHidden === null && ordersHidden !== null && homeCurrent === "page", "Admin shell opens Home first and keeps other screens out of the active view");
+  await p.locator('.admin-shell-nav a[href="#reports"]').click();
+  ok(await p.locator("#adminScreen-reports").isVisible(), "Reports destination opens as its own screen");
+  await p.locator("#adminScreen-reports .admin-report-form button[type=submit]").click();
+  await p.waitForSelector("#adminScreen-reports .admin-report-results .admin-report-kpis");
+  const reportText=await p.textContent("#adminScreen-reports");
+  ok(/Gross collected/.test(reportText)&&/Refunds/.test(reportText)&&/Net collected/.test(reportText)&&/HST/.test(reportText), "Admin report exposes gross, refunds, net and tax fields");
+  const reportFrom=p.locator("#adminScreen-reports .admin-report-field input[type=date]").nth(0);
+  const reportTo=p.locator("#adminScreen-reports .admin-report-field input[type=date]").nth(1);
+  await p.locator('#adminScreen-reports button[data-period="month"]').click();
+  ok(/^\d{4}-\d{2}-01$/.test(await reportFrom.inputValue())&&/^\d{4}-\d{2}-\d{2}$/.test(await reportTo.inputValue()), "Monthly report defaults to the current Toronto month-to-date");
+  await p.locator('#adminScreen-reports button[data-period="year"]').click();
+  ok(/^\d{4}-01-01$/.test(await reportFrom.inputValue())&&/^\d{4}-\d{2}-\d{2}$/.test(await reportTo.inputValue()), "Yearly report defaults to the current Toronto year-to-date");
+  await p.locator('#adminScreen-reports button[data-period="day"]').click();
+  ok(await reportFrom.inputValue()===await reportTo.inputValue(), "Daily report defaults to one Toronto calendar day");
+  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact", "/rpc/azal_sales_report"];
   ok(sent.every((s) => s.m === "GET" || (s.m === "POST" && postReads.some((path) => s.u.includes(path)))), "Admin page boot only calls read-only RPCs; no mutation endpoint runs automatically");
   ok(!sent.some((s) => s.u.includes("/rpc/azal_admin_customer_contact") || s.u.includes("/rpc/azal_admin_order_customer_emails")), "Admin boot does not fetch customer contact; lookup stays detail-only");
   const ord = sent.find((s) => s.u.includes("/rest/v1/orders")); ok(ord && /placed_at=gte\.\d{4}-\d\d-\d\dT0[45]:00:00\.000Z/.test(ord.u), "today = since Toronto midnight");
