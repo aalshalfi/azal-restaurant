@@ -280,3 +280,9 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Cache-busted all eight HTML pages to `20261127-2325` after the `auth.js`/CSS changes. Page version scan: one consistent token per page.
 - This branch is `chatgpt/t08-admin-directory-final`, cut from the lead's latest main commit including the 0014 approval. Prior PR #76 and its stale branch are superseded.
 - Exact-head CI and SQL execution remain pending. No merge, staging migration apply, or production change.
+
+
+## 2026-11-27 22:30–22:32 EST — F-OWN-28 / F-OWN-29 lead instructions
+- **F-OWN-28 completed in T-08:** admin order search now matches the six-character public code derived from the first six characters of the UUID, case-insensitively; list and detail display that same six-character code. Added Node and browser pinning tests for known code `111111` and format `4D9D36`.
+- **F-OWN-29 acknowledged, not started:** website-only daily/monthly/yearly sales & HST reports are carded as T-25 and remain closed until the T-08 gate is accepted. No report or aggregation work has been mixed into this batch.
+- Main advanced after the current branch base only through two lead-note commits in `MUSE-REPLY.md` (F-OWN-28 and F-OWN-29); these instructions have been read and incorporated. No code-file conflict identified.
