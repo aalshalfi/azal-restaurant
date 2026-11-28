@@ -13,7 +13,8 @@ begin
      or to_regclass('public.points_ledger') is null
      or to_regprocedure('public.azal_is_admin()') is null
      or to_regprocedure('public.azal_admin_customer_directory()') is null
-     or to_regclass('auth.users') is null then
+     or to_regclass('auth.users') is null
+     or to_regclass('auth.identities') is null then
     raise exception '0016 requires the accepted T-08 schema, 0013/0014 and Supabase Auth';
   end if;
 end;
