@@ -129,7 +129,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,768,1280]){
  const oneBranchCall=requests.filter(x=>x.url.includes("/rpc/azal_sales_report")).at(-1);
  check(JSON.parse(oneBranchCall.body).p_branch_slug==="ottawa",lang+" "+width+": Manager can filter to one authorized branch");
  const managerReportText=await page.textContent("#adminScreen-reports");
- check(/Net collected/.test(managerReportText)&&!/Refunds|Subtotal|Discount|HST|TVH|Tax/.test(managerReportText),lang+" "+width+": Manager report exposes net and counts only, with no tax/refund breakdown");
+ const netLabel=lang==="fr"?/Total net encaissé/:lang==="ar"?/صافي المحصّل/:/Net collected/; const restrictedBreakdown=/Refunds|Remboursements|المبالغ المستردة|Subtotal|Sous-total|المجموع الفرعي|Discount|Rabais|الخصم|HST|TVH|Tax|ضريبة/; check(netLabel.test(managerReportText)&&!restrictedBreakdown.test(managerReportText),lang+" "+width+": Manager report exposes localized net and counts only, with no tax/refund breakdown");
  await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
  const text=await page.textContent("#managerOperations");
  check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
