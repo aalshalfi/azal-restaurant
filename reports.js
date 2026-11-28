@@ -53,7 +53,7 @@
     if(!state.access||!["admin","manager"].includes(state.access.role)){host.replaceChildren();return;}
     const admin=state.access.role==="admin";
     const branches=admin?state.branches:state.branches.filter(b=>state.access.branches.includes(b.slug));
-    const opts=(admin?[{slug:"",name_en:L("all"),name_fr:L("all")}]:[]).concat(branches).map(b=>'<option value="'+esc(b.slug)+'"'+(b.slug===state.branch?' selected':'')+'>'+esc(b.slug?labelBranch(b.slug):L("all"))+'</option>').join("");
+    const opts=[{slug:"",name_en:L("all"),name_fr:L("all")}].concat(branches).map(b=>'<option value="'+esc(b.slug)+'"'+(b.slug===state.branch?' selected':'')+'>'+esc(b.slug?labelBranch(b.slug):L("all"))+'</option>').join("");
     let html='<section class="admin-panel report-panel"><h2>'+esc(L("title"))+'</h2><p class="admin-note">'+esc(L("intro"))+'</p><p class="admin-note">'+esc(L(admin?"admin":"manager"))+'</p>';
     html+='<form id="salesReportForm" class="report-filters"><label>'+esc(L("bucket"))+'<select name="bucket"><option value="day"'+(state.bucket==="day"?" selected":"")+'>'+esc(L("day"))+'</option><option value="month"'+(state.bucket==="month"?" selected":"")+'>'+esc(L("month"))+'</option><option value="year"'+(state.bucket==="year"?" selected":"")+'>'+esc(L("year"))+'</option></select></label><label>'+esc(L("from"))+'<input type="date" name="from" value="'+esc(state.from)+'" required></label><label>'+esc(L("to"))+'<input type="date" name="to" value="'+esc(state.to)+'" required></label><label>'+esc(L("branch"))+'<select name="branch">'+opts+'</select></label><button class="button button-gold" type="submit"'+(state.busy?" disabled":"")+'>'+esc(state.busy?"…":L("run"))+'</button></form>';
     if(state.error)html+='<p class="member-history-error" role="alert">'+esc(L("error"))+'</p>';
@@ -80,7 +80,7 @@
       const bs=await apiClient.branchNames(a.token);if(seq!==state.seq)return;
       state.branches=a.role==="manager"?bs.filter(b=>a.branches.includes(b.slug)):bs;
       if(!state.from){const t=today(now());state.to=t;state.from=t.slice(0,7)+"-01";}
-      if(a.role==="manager"&&!state.branch)state.branch=state.branches[0]?.slug||"";
+      if(a.role==="manager"&&state.branch&&!state.access.branches.includes(state.branch))state.branch="";
       state.busy=false;render();
       if(state.from&&state.to)await runReport();
     }catch{if(seq!==state.seq)return;state.busy=false;state.error=true;render();}
