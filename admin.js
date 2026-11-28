@@ -94,8 +94,8 @@
         }
         const [profiles, memberships, ledger] = await Promise.all([
           pages("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&order=created_at.desc,id.desc"),
-          pages("/rest/v1/memberships?select=user_id,status,joined_at"),
-          pages("/rest/v1/points_ledger?select=user_id,delta_points")
+          pages("/rest/v1/memberships?select=user_id,status,joined_at&order=user_id.asc"),
+          pages("/rest/v1/points_ledger?select=user_id,delta_points&order=created_at.asc,id.asc")
         ]);
         const memberById = new Map((memberships || []).map(x => [x.user_id, x]));
         const balances = new Map();
@@ -117,7 +117,7 @@
         }
         const profiles = [];
         for (let offset = 0; ; offset += 500) {
-          const page = await call("/rest/v1/profiles?select=id,display_name,phone,member_number&limit=500&offset=" + offset, s.access_token);
+          const page = await call("/rest/v1/profiles?select=id,display_name,phone,member_number&order=created_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
           profiles.push(...(page || []));
           if (!page || page.length < 500) break;
           if (profiles.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
