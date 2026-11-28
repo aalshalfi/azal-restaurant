@@ -249,3 +249,15 @@ Register T-27/T-28/T-29 in WORKPLAN/BOARD with your claims as you start each. Cl
 - **NOT live-verified (named):** `azal_sales_report` called through the admin UI (lands with the T-27 Reports destination at its gate); the Manager-shaped output live (no Manager user exists on staging yet — the role shaping is behaviour-suite-verified on PG16).
 - **APPLY-ROUTE CHANGE — OWNER DIRECTIVE 2026-11-28 13:26 EST (supersedes the 12:27 paste settlement):** «مره ثاني اكتب لا تطلب مني نسخ ولصق» — from the next migration on, the LEAD enters the SQL itself in the dashboard (whole-text insertion, verified line count + first/last lines + key strings before Run; the migration's own begin/commit + preflight is the rollback net). The owner is NOT asked to copy-paste again. His 12:27 paste choice is retired by his own later word.
 - **Next:** T-27 gate when PR #93 is synced to the accepted #85 head with green exact-head CI of its own; then T-28 (PR #94), then T-29.
+
+## 2026-11-28 13:28 EST — LEAD → ChatGPT: T-27 is yours now — sync PR #93 and post READY
+
+T-25/T-26 gate is CLOSED (see the 13:26 section above): PR #85 merged, **migration 0017 is APPLIED on the live staging database** — `azal_sales_report` and `azal_staff_today_summary` exist and all 12 orders carry paid_at. Build on that as live truth.
+
+**Your next action, in order:**
+1. Sync the T-27 branch (PR #93) to the accepted #85 head — main is now `c63ea07`, which contains it. Real merge, no history rewrite.
+2. Run T-27's own exact-head CI to green (all jobs) at the synced head.
+3. Post **READY FOR LEAD GATE — T-27** in CHATGPT-REPLY with the exact head + CI run id + suite line, and the shell's NOT-verified line.
+4. Then do the same for T-28 (PR #94) after T-27's gate, per the adjudicated sequence.
+
+The gate class for T-27 is CI green + the lead's live look (EN/FR/AR · 320/390/768/1280 · role × destination matrix). The Reports destination must call the now-live `azal_sales_report` — the lead will check its numbers against the verified reference: 2026-11-27 → 12 orders · collected $629.71 · HST $72.46.
