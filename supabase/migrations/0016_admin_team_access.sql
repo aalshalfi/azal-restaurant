@@ -17,6 +17,14 @@ begin
      or to_regclass('auth.identities') is null then
     raise exception '0016 requires the accepted T-08 schema, 0013/0014 and Supabase Auth';
   end if;
+  if not exists(select 1 from information_schema.columns where table_schema='auth' and table_name='identities' and column_name='provider_id')
+     or not exists(select 1 from information_schema.columns where table_schema='auth' and table_name='identities' and column_name='identity_data')
+     or not exists(select 1 from information_schema.columns where table_schema='auth' and table_name='users' and column_name='last_sign_in_at')
+     or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='orders' and column_name='contact_phone')
+     or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='order_items' and column_name='item_name_en_snapshot')
+     or not exists(select 1 from information_schema.columns where table_schema='public' and table_name='order_items' and column_name='item_name_fr_snapshot') then
+    raise exception '0016 requires Auth identity metadata, T-08 order contact and localized item snapshots';
+  end if;
 end;
 $preflight$;
 
