@@ -13,7 +13,7 @@ async function open({ staff = true, session = true, clash = false, branches = ["
     { id: "bbbbbb22-0000-4000-8000-000000000002", pickup_slot: "2026-11-26T17:15:00Z", guest_name: null, customer_note: null, fulfilment_status: "ready", branch_slug: "ottawa", total_cents: 451, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] }
   ];
   // V8: same first 8 hex as Sara's order -> same pickup sigil
-  if (clash) orders.push({ id: "aaaaaa11-9999-4000-8000-000000000003", pickup_slot: "2026-11-26T17:30:00Z", guest_name: "Omar", customer_note: null, fulfilment_status: "placed", total_cents: 999, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] });
+  if (clash) orders.push({ id: "aaaaaa11-9999-4000-8000-000000000003", pickup_slot: "2026-11-26T17:30:00Z", guest_name: "Omar", customer_note: null, fulfilment_status: "placed", branch_slug: "ottawa", total_cents: 999, order_items: [{ quantity: 1, item_name_en_snapshot: "Adeni Chai", item_name_fr_snapshot: "Thé adéni" }] });
   if (branches.includes("second")) orders.push({ id:"cccccc33-0000-4000-8000-000000000003", pickup_slot:"2026-11-26T18:00:00Z", guest_name:"Second branch", customer_note:null, fulfilment_status:"placed", branch_slug:"second", total_cents:700, order_items:[{quantity:1,item_name_en_snapshot:"Second Branch Dish",item_name_fr_snapshot:"Plat deuxième succursale"}] });
   const acts = [], requests = [];
   await page.route("**/supabase-config.js*", (r) => r.fulfill({ contentType: "text/javascript", body: 'window.AZAL_SUPABASE=Object.freeze({url:"https://fake.supabase.co",anonKey:"anon"});' }));
