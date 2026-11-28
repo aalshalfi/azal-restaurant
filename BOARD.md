@@ -368,8 +368,21 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 
 **T-14 owner-only Admin ruling:** the only Admin identity is info@azalrestaurant.com. Migration 0015 fails closed if that owner identity is absent or any non-owner Admin role remains; azal_is_admin() checks role + exact Auth email; Team UI cannot grant Admin; root Admin cannot be removed/demoted. Supabase dashboard is the documented owner + lead recovery route; no second Admin door.
 
-**Branch / PR:** latest main lead note synced into T-14 branch by documentation-only PR #81 (merged). Delivery PR #80 remains Draft/open and mergeable; do not merge until Muse/lead staging acceptance.
+**T-14 release correction (Muse 07:44):** PR #80 was merged into main at `58043bb` after migration 0015 apply and Edge Function deployment. Live walk passed steps 1–4; step 5 (customer anonymization) failed twice with Edge Function 500 while the direct SQL RPC succeeded inside a rolled-back diagnostic transaction. Gate remains OPEN only on F-T14-1; no second customer was affected and test member #10006 remains unchanged.
 
 **CI snapshot on delivery head 8f2c4a87aeba26c6bc5628b7967ad49647d7f1b8 (run #1139):** static checks PASS; Deno Edge Function type-check PASS; disposable PostgreSQL 16 PASS (173 PASS assertions across points redemption, T-08 admin directory, and T-14 team/A1/A2 behavior). Browser suites are still running at this snapshot; do not mark the full gate green until the exact-head browser job completes successfully.
 
 **Safety boundary unchanged:** no staging/production SQL apply, Edge Function deployment, invite/account creation, password reset, customer anonymization, email, payment, refund, or public deployment has been performed by ChatGPT.
+
+
+## 2026-11-28 — F-T14-1 diagnostic patch claim
+
+**Owner:** ChatGPT · **Branch:** `chatgpt/t14-f-t14-1-ready` · **Base:** main `d817978c8126b9d55b361d25c65e167deca04255`
+
+**Scope:** instrument the `admin-team-access` Edge Function's action catch path. It now logs the action name and caught exception (name/message/stack) server-side through `error-log.mjs`, while preserving the generic client response `{ error: "internal_error" }`. Added Node regression coverage for Error and non-Error throws. No request body, user ID, email, token, or prior Auth state is logged.
+
+**Changed files:** `supabase/functions/admin-team-access/index.ts`, `supabase/functions/admin-team-access/error-log.mjs`, `tests/admin-team-access-function.test.mjs`.
+
+**Commits:** `523f947f997934660e7540c376a9f2f612b599b8`, `620f43490ccf99b23e9e23580127fe35878c2976`, `41d212264b834b0bc8afa03ab626fea3b7997323`.
+
+**NOT verified:** local Node suite, Deno check, exact-head CI, and live Edge Function redeploy/retest have not yet run. This patch adds the missing server-side exception evidence; the precise thrown cause is not yet known because the deployed catch path previously swallowed it. F-T14-1 is not declared closed and no READY FOR LEAD GATE claim is made until exact-head automated checks pass and Muse redeploys/retries #10006, confirming anonymization + audit. The old branch `chatgpt/t14-f-t14-1` is superseded; use this clean branch based on the latest main head.
