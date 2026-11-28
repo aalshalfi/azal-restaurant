@@ -255,3 +255,15 @@ This dated addendum is authoritative over earlier unadjudicated shell sketches; 
 - T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
 - Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
 - Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
+
+
+### T-28 implementation claim — 2026-11-28 12:26 EST
+T-28 is claimed by ChatGPT on branch chatgpt/t28-kitchen-shell-v4, stacked on T-27 branch head e47e9261885c0b7f00a690986cdef19a3a398b40. Scope is the four-screen kitchen model adjudicated by Muse: Queue / conditional Scheduled / History with T-26 summary; Availability remains absent until T-29. No schema, role or deployment changes.
+
+
+## 2026-11-28 12:26 EST — T-28 delivery checkpoint
+- PR #89 opened as a stacked draft PR; branch chatgpt/t28-kitchen-shell-v4; base chatgpt/t27-admin-shell-v3.
+- Exact head at PR creation: 35491f4383b5b485a0d4cdd9f400d15aa085bff0. Own Node/browser CI remains pending; do not merge until every required job passes and the lead reviews the exact head.
+- T-25/T-26 PR #85 is Ready for review (not merge), exact head 977da6d12d2c029eb0eb136cf693b62fbc63060d; all five CI jobs SUCCESS. No SQL applied and no deployment.
+- Superseded PR #86 and #87 are closed; PR #84 was already closed as superseded.
+- Old branch deletion remains outstanding: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No deletion is claimed.
