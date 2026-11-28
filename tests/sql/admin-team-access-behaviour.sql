@@ -196,7 +196,7 @@ select zz_eq('outbox payload contains no customer email or note keys',
   (select (not (payload ? 'guest_email') and not (payload ? 'customer_email') and not (payload ? 'customer_note'))::text
    from public.order_outbox where order_id=(select id from public.orders where user_id='00000000-0000-0000-0000-0000000000c2')),'true');
 select zz_eq('guest order contact and note PII are scrubbed by matching original email',
-  (select (user_id is null and guest_name is null and guest_email is null and contact_phone is null and customer_note is null)::text
+  (select (user_id is null and guest_name is null and guest_email is null and contact_phone is null and customer_note is null and guest_identity_scrubbed)::text
    from public.orders where id='00000000-0000-0000-0000-0000000000c3'),'true');
 select zz_eq('guest order outbox recipient is scrubbed',
   (select coalesce(to_email,'∅') from public.order_outbox where order_id='00000000-0000-0000-0000-0000000000c3'),'∅');
