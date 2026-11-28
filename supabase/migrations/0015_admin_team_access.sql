@@ -331,29 +331,7 @@ $fn$;
 revoke all on function public.azal_admin_team_list() from public, anon, authenticated;
 grant execute on function public.azal_admin_team_list() to authenticated;
 
--- Narrow order-history enrichment: only emails for user IDs already present in the Admin's
--- all-status order result. This is not the customer directory and never returns a directory page.
-create or replace function public.azal_admin_order_customer_emails(p_user_ids uuid[])
-returns jsonb
-language plpgsql
-stable
-security definer
-set search_path = ''
-as $fn$
-declare v_rows jsonb;
-begin
-  if auth.uid() is null or not public.azal_is_admin() then raise exception 'not_admin' using errcode='42501'; end if;
-  if coalesce(pg_catalog.cardinality(p_user_ids),0)>1000 then raise exception 'too_many_customer_ids'; end if;
-  select coalesce(pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object('user_id',u.id,'email',u.email)),'[]'::jsonb)
-    into v_rows
-  from auth.users u join public.profiles p on p.id=u.id
-  where u.id=any(coalesce(p_user_ids,'{}'::uuid[]))
-    and p.anonymized_at is null and not p.member_number_retired;
-  return v_rows;
-end;
-$fn$;
-revoke all on function public.azal_admin_order_customer_emails(uuid[]) from public, anon, authenticated;
-grant execute on function public.azal_admin_order_customer_emails(uuid[]) to authenticated;
+-- No bulk order-email enrichment RPC: customer contact is fetched only for a single opened order.
 
 -- Admin-only read path for the immutable access/action audit trail.
 create or replace function public.azal_admin_audit_recent(p_limit integer default 50)
