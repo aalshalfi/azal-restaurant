@@ -2678,3 +2678,17 @@ The first final-head run had one test-only psql section-marker parsing issue; re
 Continued the existing T-27 branch rather than creating a duplicate. Fixed the browser mocks to call the actual T-25 RPC `azal_sales_report`; excluded refunded orders from the Home actionable-attention list; added all-assigned-branches plus single-branch Manager reporting; added daily/monthly/yearly date-control assertions; added 768px tablet coverage; changed More deep links to stable `#more/team`, `#more/orders-accounts`, `#more/access-history` routes; added browser Back/Forward checks for customer and order detail.
 
 **T-27 branch:** `chatgpt/t27-admin-shell-v3`, PR #88 remains Draft/HOLD and is still based on the earlier T-25 head `977da6d`. It must be synced to the accepted #85 head after the lead gate and run its own CI. No merge or deployment.
+
+
+## 2026-11-28 12:26 EST — T-27 handoff
+- T-27 Admin portal shell is in PR #93 on `chatgpt/t27-admin-shell-v5`, stacked on the latest T-25/T-26 branch head 262015f734c6f8e59434c1bfc43942e6981f6095.
+- Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
+- Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
+- CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 13:04 EST — T-27 review pass on v4 branch
+
+Current T-27 code head at review: `cc0bd0c1447cff65cb772a0960b53d6403181110` (PR #93, Draft). Inherited the corrected report RPC mocks, paid-only Home attention list, Manager all-assigned/single-branch report selector, daily/monthly/yearly Toronto date controls, 768px tablet viewport, and stable More route slugs. Added the missing browser assertions for `#more/team` and customer/order detail Back/Forward behavior.
+
+The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=false. The exact T-27 browser suite is not yet verified green. Keep Draft; after PR #85 lead/staging gate, sync branch to the accepted base and run the full Node/browser matrix. No merge, SQL, permission, live-data or deployment changes.
