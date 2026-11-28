@@ -178,7 +178,7 @@
     const ci = el("input", "admin-search"); ci.type = "search"; ci.placeholder = L("customerSearch"); ci.setAttribute("aria-label", L("customerSearch"));
     const cb = el("button", "button button-gold", L("search")); cb.type = "submit"; cform.append(ci,cb);
     cform.addEventListener("submit", async e => { e.preventDefault(); cb.disabled=true; try { directoryRows=await adm.customers({search:ci.value}); customerVisible=100; workspaceError=false; } catch { workspaceError=true; } paint(); });
-    customers.append(cform,el("p","admin-note",L("showing",{n:num(Math.min(100,directoryRows.length)),total:num(directoryRows.length)})));
+    customers.append(cform,el("p","admin-note",L("showing",{n:num(Math.min(customerVisible,directoryRows.length)),total:num(directoryRows.length)})));
     if(!directoryRows.length) customers.append(el("p","admin-note",L("noCustomers")));
     for(const p of directoryRows.slice(0,customerVisible)){
       const card=el("article","admin-record");
@@ -187,6 +187,7 @@
         el("span","admin-record-meta",L("membership")+": "+(p.membership?L(p.membership.status):L("noMembership"))));
       customers.append(card);
     }
+    if(directoryRows.length>customerVisible){const more=el("button","button admin-detail-button",L("more"));more.type="button";more.addEventListener("click",()=>{customerVisible+=100;paint();});customers.append(more);}
     const orders=el("section","admin-panel"); orders.append(el("h2",null,L("ordersTitle")));
     const oform=el("form","admin-filter");
     const oi=el("input","admin-search"); oi.type="search"; oi.placeholder=L("orderSearch"); oi.setAttribute("aria-label",L("orderSearch"));
@@ -194,7 +195,7 @@
     for(const [v,label] of [["all",L("allStatuses")],["placed",L("placed")],["accepted",L("accepted")],["preparing",L("preparing")],["ready",L("ready")],["handed_over",L("handed_over")],["cancelled",L("cancelled")]]){const op=el("option",null,label);op.value=v;os.append(op);}
     const ob=el("button","button button-gold",L("search")); ob.type="submit"; oform.append(oi,os,ob);
     oform.addEventListener("submit",async e=>{e.preventDefault();ob.disabled=true;try{orderRows=await adm.orders({search:oi.value,status:os.value});orderVisible=100;workspaceError=false;}catch{workspaceError=true;}paint();});
-    orders.append(oform,el("p","admin-note",L("showing",{n:num(Math.min(100,orderRows.length)),total:num(orderRows.length)})));
+    orders.append(oform,el("p","admin-note",L("showing",{n:num(Math.min(orderVisible,orderRows.length)),total:num(orderRows.length)})));
     if(!orderRows.length) orders.append(el("p","admin-note",L("noOrders")));
     for(const o of orderRows.slice(0,orderVisible)){
       const card=el("article","admin-record");
