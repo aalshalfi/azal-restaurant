@@ -217,7 +217,10 @@
       }
       o.append(ul);
     }
-    const p = el("div", "mh-block"); p.append(el("h2", null, L("points")), el("p", "mh-balance", L("total", { n: pts(data.total) })));
+    // F-OWN-24 (owner): points are presented once. When the membership card shows the balance, this section keeps the
+    // ledger itself and drops its own Balance line; without the card (server before 0013) the line stays.
+    const p = el("div", "mh-block"); p.append(el("h2", null, L("points")));
+    if (!document.querySelector("#authCardPoints")) p.append(el("p", "mh-balance", L("total", { n: pts(data.total) })));
     const cups = data.cups;
     if (cups > 0) {
       const row = el("div", "mh-cups"); row.setAttribute("role", "img"); row.setAttribute("aria-label", cups === 1 ? L("cupsOne") : L("cups", { n: pts(cups) }));
@@ -256,5 +259,7 @@
       refresh();
     } else { seq++; forget(); lastUid = null; data = null; failed = false; paint(); }
   });
+  // T-23B residual (lead 21:35): when the card's balance changes in place, this section re-reads as well (same guards).
+  document.addEventListener("azal:points-changed", () => { if (lastUid) refresh(); });
   new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
 })(typeof window !== "undefined" ? window : globalThis);
