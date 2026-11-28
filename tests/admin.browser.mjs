@@ -57,7 +57,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   ok(/New, paid ?1/.test(t) && /Collected ?1/.test(t) && /Unpaid \(never reach the kitchen\) ?1/.test(t) && /Collected sales today: \$22\.59/.test(t) && /Active Majlis members: 42/.test(t), "overview: today's counts, collected sales, member count from the server");
   ok(/ottawa: 3 orders today, 1 collected/.test(t), "per-branch line");
   ok(await p.locator("#adminRoot nav, #adminRoot a[href*='customers'], #adminRoot a[href*='orders']").count() === 0, "no navigation to sections that are not built yet (no dead links)");
-  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent"];
+  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact"];
   ok(sent.every((s) => s.m === "GET" || (s.m === "POST" && postReads.some((path) => s.u.includes(path)))), "Admin page boot only calls read-only RPCs; no mutation endpoint runs automatically");
   const ord = sent.find((s) => s.u.includes("/rest/v1/orders")); ok(ord && /placed_at=gte\.\d{4}-\d\d-\d\dT0[45]:00:00\.000Z/.test(ord.u), "today = since Toronto midnight");
   await p.close(); }
