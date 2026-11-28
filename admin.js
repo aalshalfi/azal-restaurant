@@ -242,6 +242,10 @@
     const out = el("button", "button admin-signout", L(signingOut ? "signingOut" : "signOut")); out.type = "button"; out.id = "adminSignOut"; out.disabled = signingOut;
     out.addEventListener("click", signOut);
     who.append(el("p", "admin-who", L("signedAs", { email: acc.email || "", role: L("r_" + acc.role) })), out);
+    if (acc.role === "manager") {
+      const manager = el("section", "admin-panel manager-operations"); manager.id = "managerOperations"; manager.append(el("h2", null, L("managerOperations")), el("p", "admin-note", L("managerScope")));
+      return rootEl.replaceChildren(h, who, manager);
+    }
     if (acc.role !== "admin") {
       const parts = [h, who, el("p", "admin-note", L("notAdmin"))];
       if (acc.role === "staff") parts.push(link("staff.html", L("staffGo"), "button button-gold"));
