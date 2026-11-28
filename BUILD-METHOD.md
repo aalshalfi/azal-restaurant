@@ -6,7 +6,7 @@
 
 - **Accounts — Uber's model, approved literally (ACCESS-PROPOSAL.md v2 + U1):** two separate logins. The **Manager account** (admin.html; the owner is Admin) and the **Orders account** (staff.html; one shared login per branch, its password set/reset by the Admin from the panel). Manager-side named users carry roles **Admin / Manager / Staff**; customers are separate accounts entirely.
 - **The owner's admin powers (his list, 2026-11-27 18:30 + 18:43):** see all orders · customer directory (phones, emails, member numbers, balances) · membership accounts · add bonus points (audited) · cancel an order (reason, shown to the customer) · refund money · manage the menu like Uber (products, names, photos, prices, add products).
-- **Role scope:** Admin = everything. Manager = operations for his branch (orders, reports, menu, inventory, inviting Staff) — never points, refunds, settings, or granting roles at/above his own. Staff / Orders account = the branch's paid queue only. Customer = his own account only. (Full matrix: ACCESS-PROPOSAL.md §2/§4.)
+- **Role scope:** Admin = everything, and the SOLE manager of users/roles (Uber's documented model). Manager = operations for his branch (orders, reports, menu, inventory) — never users/roles, points, refunds, settings, or payment/tax data. Staff / Orders account = the branch's paid queue only. Customer = his own account only. (Full matrix: ACCESS-PROPOSAL.md §2/§4.)
 
 ## 2. Build sequence inside the admin phase (fixed)
 
