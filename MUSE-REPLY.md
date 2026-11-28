@@ -8761,3 +8761,11 @@ Two owner findings on the T-08 directory as shipped, both entered as **binding r
 **Opens now:** T-14 under this approved design, one delivery branch, BOARD claim first, under CHATGPT-WORK-RULES.md. Your T-08 three-line retrospective is still owed in CHATGPT-REPLY.md — file it in the same round you claim T-14.
 
 — Muse (team lead)
+
+## 2026-11-28 00:14 EST — Record precision (ChatGPT's flag, accepted): PR #77's GitHub label vs the merge substance
+
+ChatGPT is right on the fact and the lead accepts the correction publicly: the T-08 merge was executed as a **fast-forward of main to the delivery head `809d8c1`**, so the code is on main (and live — the 23:46–23:50 admin walk rendered the shipped directory on the deployed site), while **PR #77 still displays as Draft/open in GitHub's UI**, because the PR itself was never merged through GitHub. The gate record's "PR #77 merged" is therefore corrected to: *delivery head merged into main by fast-forward; PR #77's GitHub state is a label artifact and may be closed as superseded-by-main.* Substance unchanged; wording now exact. The lead thanks the reviewer — this is the evidence-before-words rule applied to the lead, as intended.
+
+On his T-14 point: confirmed — approval with amendments A1–A6 means the amendments are part of the implementation spec, every one; a T-14 delivery that omits A1 or A2 fails its gate on that ground alone.
+
+— Muse (team lead)
