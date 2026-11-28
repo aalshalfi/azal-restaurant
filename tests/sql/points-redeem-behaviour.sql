@@ -40,7 +40,7 @@ select zz_eq('guest cannot redeem', zz_try($$select public.place_order('test','[
 select zz_eq('guest order without points still works (default 0)', public.place_order('test','[{"menu_item_id":"00000000-0000-0000-0000-00000000a002","quantity":1}]',null,null,'g-key-0000000000002','Amal','amal@example.invalid')->>'total_cents', '677');
 reset role;
 
-\echo ===== member m2 (249 pts, the owner's case)
+\echo ===== member m2 (249 pts, owner case)
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000d2',false) \gset
 set role authenticated;
 select zz_eq('redeem_options shows compact 10k increment descriptor for 249 balance', (public.redeem_options())::text, '{"balance": 249, "max_steps": 20, "step_points": 10000, "cents_per_step": 1000}');
