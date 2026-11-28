@@ -2661,3 +2661,17 @@ The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed 
 - Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
 - Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
 - CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
+
+
+## 2026-11-28 13:02 EST — T-27 source review corrections (PR #88 remains Draft)
+
+Reviewed the adjudicated shell implementation against the 12:26 acceptance list and latest T-25 RPC:
+- Corrected both browser mocks to call the real `azal_sales_report` endpoint (they previously mocked the wrong RPC path).
+- Home Needs attention now includes paid actionable orders only; refunded active-state records are not promoted as kitchen work.
+- Manager Reports defaults to **All assigned branches**, with a selector to one server-authorized branch; test asserts both request payloads and redaction.
+- Daily / Monthly / Yearly buttons now have explicit browser assertions for Toronto date defaults.
+- Responsive matrix now includes 320 / 390 / 768 / 1280.
+- More sub-destinations use stable URLs: `#more/team`, `#more/orders-accounts`, `#more/access-history`.
+- Added browser Back/Forward assertions for customer and order detail deep links.
+
+**T-27 current head at this note:** 513af6eb2caac2f67d113b54252424b088d174eb. PR #88 is still Draft/HOLD; its base is stale relative to the moving #85 branch and it has no verified green CI at this latest code head. Do not mark READY or merge. After #85's staging gate/lead acceptance, sync T-27 to the accepted #85/main head and run full Node + browser matrix before its own READY memo. No SQL, permission, live data, or deployment changes.
