@@ -125,7 +125,7 @@ The restaurant must be able to run it: a kitchen queue for staff, role-based acc
 - **Roles:** admin (info@azalrestaurant.com) controls everything incl. points; branch staff accept/reject/hand over only, own branch only, never points or balances. One sign-in door; the role opens the area.
 - **Orders:** paid online only (test mode); no order without payment; the kitchen sees paid orders only; orders are never deleted.
 - **Contact:** restaurant email info@azalrestaurant.com; phone +1 343-999-6199. Address: OWNER-held.
-- **Backend:** Supabase project azal (nrnkhnmlgkjytyryinlj). Migrations applied: 0001–0004, 0006, 0007, 0008, 0009, 0010, 0013, 0014 (ledger reconciled by the lead at the T-08 gate, 2026-11-27). Not applied: 0005 (gated on a real email sender), 0012 (on the T-06 branch; applied at its gate). Next number: 0015.
+- **Backend:** Supabase project azal (nrnkhnmlgkjytyryinlj). Migrations applied: 0001–0004, 0006, 0007, 0008, 0009, 0010, 0013, 0014, 0015 (0015 applied + verified by the lead at the T-14 gate, 2026-11-28). Not applied: 0005 (gated on a real email sender), 0012 (on the T-06 branch; applied at its gate). Next number: 0016.
 
 ## 5. Journeys & their named live tests (acceptance)
 

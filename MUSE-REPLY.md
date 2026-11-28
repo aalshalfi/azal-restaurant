@@ -106,3 +106,31 @@ Attempt 2 stopped before any entry, exactly as instructed: the lead's browser to
 Final mechanics finding, verified twice: the lead's browser tooling refuses clipboard shortcuts outright in both cloud environments, and offers no context-menu copy — so the agent cannot transfer the migration text, and retyping remains prohibited after attempt 1's corruption. Read-only checks in the dashboard confirm the database is still exactly pre-0015 (0 of the new functions, 0 of the new tables, `azal_is_admin` unchanged); the `backup_20261128` snapshot stands. A second environment also failed (no signed-in session; the owner's manual GitHub sign-in attempt there was rejected by GitHub). Two doors remain, both the owner's: (a) he pastes the file himself inside the lead's open live window (raw-file tab + SQL Editor tab ready; far easier from a computer than a phone), after which the lead verifies (a)–(d) and runs it once; (b) the Supabase access-token route via the Secure Vault link already sent — after which the lead applies this and every future migration from exact file bytes through the Management API. The gate is paused safely on his choice; staging carries no partial state. ChatGPT: still no action on your side.
 
 — Muse (team lead)
+
+## 2026-11-28 07:44 EST — T-14 LEAD GATE: migration applied, PR merged, function deployed; live walk 4/5 — gate stays OPEN on one defect (F-T14-1)
+
+**Apply (phase 2, completed):** the owner pasted migration 0015 himself from his phone into the lead's SQL Editor window (the takeover clipboard bridge reads the device clipboard — the working transfer, recorded after every automated route failed). Pasted text verified before running: 715 lines, first line correct, `azal_admin_anonymize_customer_server` present, `guest_identity_scrubbed` present, `branch_id` absent, last line `commit;`. Ran exactly once: **Success**. Post-apply verification: the four new functions exist with prosecdef = true; tables `admin_audit_log`, `admin_team_invites`, `branch_orders_accounts` exist; `azal_is_admin` definition contains the owner-email condition = true. The `backup_20261128` snapshot (taken 05:55, baselines: profiles 8 · orders 12 · auth_users 8 · points_claims 5 · order_outbox 10) stands.
+
+**Merge:** PR #80 merged into main at `58043bb`; merged-tree suite **229/229**. SPEC §4 ledger updated in the same batch (0015 applied; next number 0016).
+
+**Edge Function:** `admin-team-access` deployed via the dashboard editor (index.ts pasted by the owner and verified: 201 lines, exact first line, both sentinels; auth-state.mjs verified line-for-line: 31 lines). Endpoint live. "Verify JWT with legacy secret" left ON — correct for this function, which authenticates the caller itself and then checks `azal_is_admin()`.
+
+**Live walk (admin, production site) — steps 1–4 PASS:**
+1. Sign-in routes info@ to the management interface (never the customer view). PASS.
+2. Directory loads server-side ("Showing 6 of 6"); search works. Note: search "Aziz" returns 2 rows because a NEW member **#10008** ("Aziz", a self-registration first observed in this walk) now exists alongside #10003 — the 8th profile from the snapshot. Not a defect.
+3. All-status history "Showing 12 of 12"; order 9E3B60 detail shows the per-order customer contact (name · phone · email · member number) — contact is fetched per-order only, as designed. PASS.
+4. Team list renders (admin + staff-granted member; branch "AZAL Ottawa (concept)"); test invite t14gate@muse.ai (Staff · ottawa) recorded as pending, **no email sent** (A6), audit entry `team_invite_recorded` present with the reason. PASS.
+
+**Step 5 — FAIL (F-T14-1, the gate blocker):** Remove customer on the disposable test member #10006 failed twice (07:37, 07:38 EST) with the page message "The action could not be completed." Function logs: POST 500 `internal_error` on both attempts; the 503/401/403 guards did not trigger. #10006 is untouched (still Active, 39 pts, no `customer_anonymized` audit entry); no other customer was affected; the compensation path left no partial state.
+
+**Lead diagnostic (rolled back, zero side effects):** the SQL half is SOUND — calling `azal_admin_anonymize_customer_server` directly with the same arguments returned `{"status":"anonymized","claims_scrubbed":0,"outbox_scrubbed":1}` inside a transaction that was then rolled back. **The defect is therefore in the Edge Function's JS path around the RPC** (the Auth Admin API calls before/after it, or the request handling) — and the handler's catch-all swallows the exception without logging it, which is itself part of the defect: a staging function must log the caught error server-side.
+
+**Assignment — ChatGPT (fix round on the same T-14 claim):**
+1. Reproduce the `customer_anonymize` 500 locally/mentally against the deployed code path; find the throw.
+2. Fix it, AND make the catch path log the exception (console.error with the action name) so dashboard logs carry the real error — keep the client response generic.
+3. Add/extend a test that would have caught this class of failure (the SQL behaviour suite passed while the live action failed — the gap is the function layer; say in your delivery what now covers it).
+4. Post READY with the usual evidence. The lead redeploys via the dashboard and re-walks step 5 only; the gate closes when #10006 anonymizes live with its audit entry.
+
+Everything else in T-14 is accepted. The sequence after this gate remains A5: T-25 + T-26 → T-21 → T-13 → T-20.
+
+— Muse (team lead)
