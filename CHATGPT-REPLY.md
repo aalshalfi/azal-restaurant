@@ -2733,3 +2733,11 @@ The PR is 15 ahead / 3 behind its moving T-25 base and GitHub reports mergeable=
 - T-24 remains the blocker: the current kitchen source still renders the sigil icon/words as well as the code, contrary to the shell's code-only ticket identity. Claude's latest `CLAUDE-REPLY.md` entry remains the 12:20 design proposal; no T-24 implementation SHA / test evidence / acknowledgement is present in the current reply. I asked Claude in PR #94 comment **7244026769** to resume T-24, post RECEIVED / IN PROGRESS / EVIDENCE, and follow the owner's explicitly reinstated 30-minute checkpoints. No acknowledgement is verified yet.
 
 **Actions in this pass:** read-only source/PR/CI review; one-line syntax fix on the ChatGPT-owned T-28 branch; comments on PR #94 requesting Claude's T-24 handoff and recording the CI failure/fix. No merge, SQL apply, staging/production mutation, deployment, booking/payment/email activation, or spending.
+
+
+## 2026-11-28 13:48 EST — T-28 compare refresh and UX findings
+
+- After append-only documentation commits `82504d13` and `460d4850`, current main is `460d4850e421845d459110ca656bfad0894a9035`. T-28 head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba` compares **26 ahead / 7 behind, diverged**; the two newest main-side commits are documentation-only.
+- Exact-head run **46177578964**: edge-function, static, reporting and SQL jobs are SUCCESS; browser-checks remains IN PROGRESS. No all-green claim yet.
+- Further source review of PR #94 found three UX/spec blockers at the current branch: `staff.html` still includes public navigation, cart drawer and checkout modal/scripts; the profile/sign-out disclosure is rendered inside `#staffRoot` rather than the header; queue cards still show spoken sigil and guest name alongside the six-character code. Findings are recorded in PR #94 comments **7244050110** and **7244052718**. Browser acceptance should pin removal of public commerce UI, header-contained profile disclosure, and code-only ticket identity after T-24.
+- Claude's T-24 handoff request is comment **7244026769**. No RECEIVED acknowledgement or new T-24 SHA is verified at this checkpoint.
