@@ -12,9 +12,9 @@
   };
   const locale = () => document.documentElement.lang === "fr" ? "fr" : document.documentElement.lang === "ar" ? "ar" : "en";
   const words = {
-    en: { home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",all:"All",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",back:"Back to customers",collected:"Gross collected",refunds:"Refunds",netCollected:"Net collected",count:"Orders",collectedCount:"Collected orders",subtotal:"Subtotal",discount:"Discount",tax:"HST",noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",team:"Team & access",accounts:"Orders accounts",audit:"Access history",needsAttention:"Needs attention" },
-    fr: { home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher",from:"Du",to:"Au",all:"Toutes",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",back:"Retour aux clients",collected:"Total brut encaissé",refunds:"Remboursements",netCollected:"Total net encaissé",count:"Commandes",collectedCount:"Commandes encaissées",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",team:"Équipe et accès",accounts:"Comptes de commandes",audit:"Historique d’accès",needsAttention:"À traiter" },
-    ar: { home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",all:"الكل",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",back:"العودة إلى العملاء",collected:"إجمالي المحصّل",refunds:"المبالغ المستردة",netCollected:"صافي المحصّل",count:"الطلبات",collectedCount:"الطلبات المستلمة",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",team:"الفريق والصلاحيات",accounts:"حسابات الطلبات",audit:"سجل الوصول",needsAttention:"تحتاج إلى متابعة" }
+    en: { home:"Home",orders:"Orders",customers:"Customers",reports:"Reports",more:"More",daily:"Daily",monthly:"Monthly",yearly:"Yearly",run:"Run report",from:"From",to:"To",all:"All",active:"Active",scheduled:"Scheduled",history:"History",open:"Open",back:"Back to customers",collected:"Gross collected",refunds:"Refunds",netCollected:"Net collected",count:"Orders",collectedCount:"Collected orders",subtotal:"Subtotal",discount:"Discount",tax:"HST",noReport:"Choose a period and run the report.",reportError:"The report could not be loaded. Try again.",team:"Team & access",accounts:"Orders accounts",audit:"Access history",needsAttention:"Needs attention",noAssignedBranch:"No assigned branch is available for this report." },
+    fr: { home:"Accueil",orders:"Commandes",customers:"Clients",reports:"Rapports",more:"Plus",daily:"Quotidien",monthly:"Mensuel",yearly:"Annuel",run:"Afficher",from:"Du",to:"Au",all:"Toutes",active:"Actives",scheduled:"Planifiées",history:"Historique",open:"Ouvrir",back:"Retour aux clients",collected:"Total brut encaissé",refunds:"Remboursements",netCollected:"Total net encaissé",count:"Commandes",collectedCount:"Commandes encaissées",subtotal:"Sous-total",discount:"Rabais",tax:"TVH",noReport:"Choisissez une période et affichez le rapport.",reportError:"Impossible de charger le rapport. Réessayez.",team:"Équipe et accès",accounts:"Comptes de commandes",audit:"Historique d’accès",needsAttention:"À traiter",noAssignedBranch:"Aucune succursale attribuée n’est disponible pour ce rapport." },
+    ar: { home:"الرئيسية",orders:"الطلبات",customers:"العملاء",reports:"التقارير",more:"المزيد",daily:"يومي",monthly:"شهري",yearly:"سنوي",run:"عرض التقرير",from:"من",to:"إلى",all:"الكل",active:"النشطة",scheduled:"المجدولة",history:"السجل",open:"فتح",back:"العودة إلى العملاء",collected:"إجمالي المحصّل",refunds:"المبالغ المستردة",netCollected:"صافي المحصّل",count:"الطلبات",collectedCount:"الطلبات المستلمة",subtotal:"المجموع الفرعي",discount:"الخصم",tax:"ضريبة HST",noReport:"اختر الفترة ثم اعرض التقرير.",reportError:"تعذّر تحميل التقرير. حاول مرة أخرى.",team:"الفريق والصلاحيات",accounts:"حسابات الطلبات",audit:"سجل الوصول",needsAttention:"تحتاج إلى متابعة",noAssignedBranch:"لا يوجد فرع معيّن متاح لهذا التقرير." }
   };
   const L = (key) => words[locale()][key] || words.en[key] || key;
   const cad = (cents) => new Intl.NumberFormat(locale()==="fr"?"fr-CA":locale()==="ar"?"ar-CA-u-nu-latn":"en-CA",{style:"currency",currency:"CAD"}).format(Number(cents||0)/100);
@@ -37,8 +37,9 @@
     const fromLabel=make("label","admin-report-field",L("from"));fromLabel.append(from);
     const toLabel=make("label","admin-report-field",L("to"));toLabel.append(to);
     const run=make("button","button button-gold",L("run"));run.type="submit";
-    const status=make("p","admin-note",L("noReport"));status.setAttribute("role","status");
+    const status=make("p","admin-note",role==="manager"&&!(branches||[]).length?L("noAssignedBranch"):L("noReport"));status.setAttribute("role","status");
     const results=make("div","admin-report-results");
+    if(role==="manager"&&!(branches||[]).length)run.disabled=true;
     form.append(fromLabel,toLabel,run);
     form.addEventListener("submit",async e=>{
       e.preventDefault();run.disabled=true;status.textContent="…";results.replaceChildren();
@@ -73,7 +74,7 @@
         }
         status.textContent="";
       } catch { status.textContent=L("reportError"); }
-      finally {run.disabled=false;}
+      finally {run.disabled=role==="manager"&&!(branches||[]).length;}
     });
     panel.append(tabs,form,status,results);
     return panel;
@@ -156,7 +157,7 @@
         const target=rootEl.querySelector("#"+sub);if(target){target.scrollIntoView({block:"start"});target.setAttribute("tabindex","-1");target.focus({preventScroll:true});}
       }
     }
-    if(root.__AZALAdminShellRouteHandler)root.removeEventListener("popstate",root.__AZALAdminShellRouteHandler);
+    if(root.__AZALAdminShellRouteHandler){root.removeEventListener("popstate",root.__AZALAdminShellRouteHandler);root.removeEventListener("hashchange",root.__AZALAdminShellRouteHandler);}
     root.__AZALAdminShellRouteHandler=routeFromHash;
     root.addEventListener("popstate",routeFromHash);
     root.addEventListener("hashchange",routeFromHash);
