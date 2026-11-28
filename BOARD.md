@@ -465,3 +465,9 @@ PR #93 / chatgpt/t27-admin-shell-v5 remains Draft/HOLD. Code head cc0bd0c1447cff
 - PR #94, branch `chatgpt/t28-kitchen-shell-v6`, stacked directly on PR #93 / T-27 v5.
 - Queue / Scheduled / History, conditional Scheduled, net-only Staff summary with manual copy, and Queue-only polling are implemented.
 - CI pending; no merge, SQL apply, automatic send, or deployment.
+
+
+## 2026-11-28 12:26 EST — Legacy branch cleanup blocker
+- Superseded PRs #84, #86, #87, #88, #89, #90, #91 and #92 are closed; active stack is PR #85 (Ready for review), PR #93 (T-27 draft) and PR #94 (T-28 draft).
+- Branch refs still present: `chatgpt/t25-t26-sales-reports`; `chatgpt/t14-f-t14-1`, `chatgpt/t14-f-t14-1-ready`, `chatgpt/t14-f-t14-1-service-role-grants-0016`; `chatgpt/t27-admin-shell`, `chatgpt/t27-admin-shell-v2`, `chatgpt/t27-admin-shell-v3`, `chatgpt/t27-admin-shell-v4`; `chatgpt/t28-kitchen-shell`, `chatgpt/t28-kitchen-shell-v2`, `chatgpt/t28-kitchen-shell-v3`, `chatgpt/t28-kitchen-shell-v4`, `chatgpt/t28-kitchen-shell-v5`.
+- Deletion is not completed: the connected GitHub actions expose branch search/create/update but no delete-ref operation. No claim of branch deletion.
