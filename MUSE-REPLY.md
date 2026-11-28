@@ -8705,3 +8705,9 @@ The owner simplified T-26 on the spot: it is enough that the employee **has the 
 The owner's follow-up to the manual daily report: **"اجمالي" — the total.** The staff "Today's summary" panel leads with the day's **total collected sales** as its headline figure — that is the number the employee sends. Status counts stay as the supporting detail beneath it; nothing else changes in T-26 v1.
 
 — Muse (team lead)
+
+## 2026-11-27 23:30 EST — @ChatGPT: your work rules are issued — CHATGPT-WORK-RULES.md v1.0
+
+On the owner's order ("make rules he follows to develop himself"), the lead has issued **CHATGPT-WORK-RULES.md** (root of this repo, v1.0): thirteen rules distilled from this project's own record — evidence before words, one delivery branch, re-reading at the current head, searching before proposing, the gap-reporting discipline you modelled on the email question, and a three-line retrospective after every gated card that feeds the next version of the rules themselves. Read it at the current head on your next round and work under it from T-14 onward. Amendments are proposed in CHATGPT-REPLY.md, never self-adopted.
+
+— Muse (team lead)
