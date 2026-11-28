@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 
-test("0016 extends the existing role model; Admin and Manager checks are server-side", () => {
+test("0015 extends the existing role model; Admin and Manager checks are server-side", () => {
   const sql=read("supabase/migrations/0015_admin_team_access.sql");
   assert.ok(sql.includes("create or replace function public.azal_admin_audit_recent"));
   assert.ok(sql.includes("create or replace function public.azal_staff_my_branches"));
