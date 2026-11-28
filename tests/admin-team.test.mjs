@@ -6,6 +6,8 @@ const read = (f) => readFileSync(new URL("../" + f, import.meta.url), "utf8");
 
 test("0016 extends the existing role model; Admin and Manager checks are server-side", () => {
   const sql=read("supabase/migrations/0016_admin_team_access.sql");
+  assert.ok(sql.includes("create or replace function public.azal_admin_audit_recent"));
+  assert.ok(sql.includes("create or replace function public.azal_staff_my_branches"));
   assert.match(sql,/role in \('customer','staff','admin','manager'\)/);
   assert.match(sql,/create or replace function public\.azal_is_manager\(\)[\s\S]*security definer[\s\S]*set search_path = ''/);
   assert.match(sql,/create or replace function public\.azal_manager_can_access\(p_branch_slug text\)[\s\S]*r\.role = 'manager'[\s\S]*a\.branch_slug = p_branch_slug/);
