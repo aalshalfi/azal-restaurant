@@ -15,6 +15,7 @@ function fixture() {
       { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z", balance: 55, membership_status: "suspended", joined_at: "2026-11-02T00:00:00Z" }
     ], total: 2, limit: 50, offset: 0 },
     "/rest/v1/rpc/azal_admin_customer_contact": { user_id: "u1", display_name: "Amal", phone: "+16135550101", member_number: 10001, email: "amal@example.invalid" },
+    "/rest/v1/rpc/azal_admin_order_customer_emails": [{user_id:"u1",email:"amal@example.invalid"},{user_id:"u2",email:"sara@example.invalid"}],
     "/rest/v1/rpc/azal_admin_customer_directory": [
       { user_id: "u1", display_name: "Amal", phone: "+16135550101", email: "amal@example.invalid", member_number: 10001, created_at: "2026-11-01T00:00:00Z" },
       { user_id: "u2", display_name: "Sara", phone: "+16135550102", email: "sara@example.invalid", member_number: 10002, created_at: "2026-11-02T00:00:00Z" }
@@ -94,13 +95,14 @@ test("order history has no date/status exclusion and preserves handed_over, canc
   assert.ok(q);
   assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number,member_number_retired") && x.url.includes("id=in.")));
   assert.ok(!calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_customer_directory")), "order list must not download the whole customer directory");
+  assert.ok(calls.some(x => x.url.includes("/rest/v1/rpc/azal_admin_order_customer_emails")), "order history uses a narrow order-linked email lookup");
   assert.ok(!q.url.includes("placed_at=gte"));
   assert.ok(!q.url.includes("fulfilment_status=neq"));
   assert.ok(!q.url.includes("payment_status=eq.paid"));
   assert.equal(rows[0].customer.display_name, "Amal");
-  assert.equal(rows[0].customerEmail, null, "order list does not fetch customer emails in bulk");
+  assert.equal(rows[0].customerEmail, "amal@example.invalid", "order list preserves T-08 customer email search");
   assert.equal((await api.orders({ search: "Sara" })).length, 1);
-  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 0, "customer email search stays in the paged directory, not a bulk order-list join");
+  assert.equal((await api.orders({ search: "amal@example.invalid" })).length, 1, "T-08 order history still searches by member email");
   assert.equal((await api.orders({ search: "4D9D36" })).length, 1, "public six-character order code is searchable");
   assert.equal((await api.orders({ search: "4D9D36" }))[0].id, "4d9d36ab-1111-4111-8111-111111111111");
   assert.equal((await api.orders({ status: "cancelled" })).length, 1);
