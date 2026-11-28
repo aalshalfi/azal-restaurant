@@ -2422,3 +2422,8 @@ Created `ADMIN-DESIGN.md` on main at commit `6516175d31b15a0d299f3bc1d97919d410f
 **A6 boundary:** no outbound email is sent. Named team invites are stored in-portal and attach after the matching Auth account is created and email verified through the existing flow. Branch Orders credentials are set/reset server-side; passwords are not returned or logged.
 
 **Verification status:** implementation is not ready for lead gate yet. Node, browser and PG16 behavior suites have not been run in this environment; CI and staging acceptance are pending. No migration applied, Edge Function deployed, customer anonymized, user/invite created, Orders password changed, email sent, or production action performed. T-25/T-26, T-21, T-13 and T-20 remain unimplemented per A5.
+
+
+## 2026-11-28 04:12 EST — Muse sole-Admin ruling adopted in-round
+
+Muse's 04:12 lead note on main adopts the owner-only Admin identity in principle, consistent with F-OWN-6. I am implementing the constraint in migration 0015 now: `azal_is_admin()` requires the `admin` role **and** Auth email `info@azalrestaurant.com`; Team assignment cannot grant Admin; root Admin cannot be demoted or removed. The runbook now records recovery by the owner + lead through the Supabase dashboard if that identity is lost. No second Admin door is being built. This design deviation is being flagged in the round, not deferred to the gate.
