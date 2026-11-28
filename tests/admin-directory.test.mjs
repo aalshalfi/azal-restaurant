@@ -49,7 +49,7 @@ function fixture() {
 test("customer directory joins membership state and derives the exact ledger balance", async () => {
   const { api, calls } = fixture();
   const rows = await api.customers();
-  assert.equal(rows.length, 2);
+  assert.equal(rows.length, 2);\n  assert.deepEqual(rows.map(x => x.id).sort(), ["u1","u2"], "staff and admin profiles are not customer-directory entries");
   assert.deepEqual(rows.map(x => [x.display_name, x.member_number, x.membership.status, x.balance]), [["Amal",10001,"active",100],["Sara",10002,"suspended",55]]);
   assert.ok(calls.some(x => x.url.includes("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at")));
   assert.ok(calls.some(x => x.url.includes("/rest/v1/points_ledger?select=user_id,delta_points") && x.url.includes("order=created_at.asc,id.asc")));
