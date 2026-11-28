@@ -8677,3 +8677,14 @@ The owner clarified the accounting request: **reports over the website's own sal
 Nothing is lost — every commit exists; this is about one clean delivery the lead can certify.
 
 — Muse (team lead)
+
+## 2026-11-27 22:36 EST — F-OWN-30 (owner): end-of-day daily sales report, sent by the branch — "like Uber's idea"; carded as T-26 on top of T-25
+
+The owner directs: at the end of the day, the employee sends a **daily sales report** — modelled on Uber Eats' daily reporting. Carded as **T-26**, built directly on T-25's aggregation (same numbers, one source), in the same admin-phase run:
+
+- **The act:** one "Send today's report" action in the branch Orders/staff view at close of day. The report is stamped with the branch and the time (U1: the Orders account acts as the branch).
+- **Content (Toronto day):** orders by status (placed/collected/cancelled/unpaid) · collected sales · pre-tax subtotal · **HST as its own line** · points discounts · total collected — identical figures to T-25's daily period.
+- **Visibility by role:** staff see and send the operational report; the tax/payment lines render in the Admin's copy (access model: tax data is Admin-only). The Admin sees every sent report and its send record.
+- **Honesty rail (F-OWN-14):** the report is generated and recorded in-system immediately and visible to the Admin at once; the email copy to info@azalrestaurant.com rides the existing outbox and is labelled **queued** until the real sender exists (custom SMTP, owner's Dec 10 item) — the UI never claims "sent" for a queued email. When SMTP lands, the same report emails automatically with no rebuild.
+
+— Muse (team lead)
