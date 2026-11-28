@@ -58,6 +58,12 @@ The manager portal keeps one persistent shell: AZAL mark, current branch selecto
 
 **Critical states:** no team members; pending invite; invite expired/resend; email already registered; removed/revoked; branch unavailable; Edge Function failure; signed-out; unauthorized deep link. Never imply an invite or reset succeeded until server confirmation.
 
+### 3.2.1 A1/A2 — T-08 customer directory and lifecycle (delivered inside T-14)
+
+**A1 — directory interaction:** the existing T-08 directory remains in place, with a 50-row server-paged result, server-side search over name/email/phone/member number, total count, and Previous/Next controls. The database computes balances only for the returned page. The order-history list must not bulk-fetch the entire customer directory to enrich orders; customer email/contact is fetched only when Admin opens one order detail. Acceptance includes 1,000 synthetic customers, deep-page navigation, and each search field.
+
+**A2 — remove customer:** each Admin customer record has an “Anonymize & deactivate” action. The Admin must enter a reason and review the impact before confirming. A server-only Edge Function verifies the Admin, replaces the Auth email with a reserved example.invalid address, clears Auth user metadata, and bans sign-in; a service-role-only database function then scrubs Auth identity metadata, profile name/phone, and order contact fields, suspends membership, retires the member number, excludes the profile from the directory, and writes an immutable audit event. The member-number value remains reserved and is never reused. No hard delete is permitted. Keep order IDs, item/option snapshots, tax and financial columns, and append-only points-ledger rows unchanged; the remaining profile UUID is a non-identifying reconciliation key, not a customer-facing identity. No customer email is sent.
+
 ### 3.3 T-21 — Menu Manager (Admin + assigned-branch Manager)
 **Menu list:** categories and products with photo, localized names, category, base price, availability, and status. Manager sees only assigned branch. Admin can select any branch.
 
