@@ -2654,3 +2654,7 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 - CI pending; no merge or deployment.
 - PR #85 T-25/T-26 is Ready for review at 977da6d12d2c029eb0eb136cf693b62fbc63060d; five CI jobs succeeded. No SQL apply.
 - Superseded PRs #84/#86/#87 closed. Old branch deletion not completed: GitHub connector exposes no delete-ref operation.
+
+
+## 2026-11-28 12:26 EST — T-28 stacked handoff
+T-28 is rebuilt on the current T-27 branch as chatgpt/t28-kitchen-shell-v4; PR #90 will target PR #88's branch. It uses net_collected_cents only in Staff History, with manual copy, no tax/refund breakdown, no auto-send, and Queue-only polling. CI pending; no merge or deploy.
