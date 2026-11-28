@@ -76,7 +76,12 @@ begin
   end if;
 
   if old.payment_status is distinct from 'paid' and new.payment_status='paid' then
-    new.paid_at := coalesce(old.paid_at, pg_catalog.clock_timestamp());
+    new.paid_at := coalesce(
+      old.paid_at,
+      (select min(pe.received_at) from public.payment_events pe
+       where pe.order_id=new.id and pe.event_type='payment_succeeded'),
+      pg_catalog.clock_timestamp()
+    );
   elsif new.payment_status in ('paid','refunded') and coalesce(new.paid_at,old.paid_at) is null then
     raise exception 'paid_at_required_for_paid_order';
   else
@@ -125,7 +130,7 @@ begin
   if auth.uid() is null or (not v_admin and not v_manager) then
     raise exception 'not_authorized' using errcode='42501';
   end if;
-  if p_period not in ('day','month','year') or p_start_date is null or p_end_date is null or p_end_date < p_start_date then
+  if p_period is null or p_period not in ('day','month','year') or p_start_date is null or p_end_date is null or p_end_date < p_start_date then
     raise exception 'invalid_report_period';
   end if;
   if v_manager and (p_branch_slug is null or not public.azal_manager_can_access(p_branch_slug)) then
@@ -235,13 +240,13 @@ begin
     'accepted_count',count(*) filter(where fulfilment_status='accepted'),
     'preparing_count',count(*) filter(where fulfilment_status='preparing'),
     'ready_count',count(*) filter(where fulfilment_status='ready'),
-    'collected_count',count(*) filter(where fulfilment_status='handed_over'),
+    'collected_count',count(*) filter(where fulfilment_status='handed_over' and payment_status='paid'),
     'cancelled_count',count(*) filter(where fulfilment_status='cancelled'),
-    'collected_cents',coalesce(sum(total_cents) filter(where fulfilment_status='handed_over'),0)
+    'collected_cents',coalesce(sum(total_cents) filter(where fulfilment_status='handed_over' and payment_status='paid'),0)
   ) into v_result
   from public.orders
   where branch_slug=p_branch_slug and paid_at >= v_from and paid_at < v_until
-    and payment_status='paid';
+    and payment_status in ('paid','refunded');
 
   return v_result;
 end;
