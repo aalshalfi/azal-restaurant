@@ -92,6 +92,9 @@
     const members=panel.querySelector("#adminTeamMembers"),invites=panel.querySelector("#adminTeamInvites");
     if(members)members.hidden=state==="pending";
     if(invites)invites.hidden=state==="active";
+    const membersTitle=panel.querySelector("#adminTeamMembersTitle"),invitesTitle=panel.querySelector("#adminTeamInvitesTitle");
+    if(membersTitle)membersTitle.hidden=state==="pending";
+    if(invitesTitle)invitesTitle.hidden=state==="active";
     for(const card of panel.querySelectorAll(".admin-team-filterable")){
       const matchTerm=!term||(card.dataset.search||"").includes(term);
       const matchRole=!role||(card.dataset.role||"").split(",").includes(role);
