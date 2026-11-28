@@ -31,6 +31,8 @@ select zz_eq('directory page includes ledger-derived balance',
   ((public.azal_admin_customer_directory_page('c1@example.invalid',50,0)->'rows'->0)->>'balance'),'300');
 select zz_eq('admin team list returns a structured member collection',
   (public.azal_admin_team_list() ? 'members')::text,'true');
+select zz_eq('Admin can read recent immutable audit history',
+  (pg_catalog.jsonb_array_length(public.azal_admin_audit_recent(10))>0)::text,'true');
 
 \echo ===== Manager: branch-only operational view, no customer or money data
 select public.azal_admin_team_assign('c1@example.invalid','Manager C1','manager',array['ottawa'],'T-14 test assignment');
@@ -48,6 +50,7 @@ select zz_eq('Manager operational payload omits payment, tax, totals and PII',
    (public.azal_manager_branch_orders('ottawa',50,0)->0 ? 'total_cents') or
    (public.azal_manager_branch_orders('ottawa',50,0)->0 ? 'customer_email'))::text,'false');
 select zz_eq('Manager cannot read Admin team directory',public.zz_try('select public.azal_admin_team_list()'),'42501');
+select zz_eq('Manager cannot read Admin audit history',public.zz_try('select public.azal_admin_audit_recent(10)'),'42501');
 select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no')$$),'42501');
 reset role;
 
