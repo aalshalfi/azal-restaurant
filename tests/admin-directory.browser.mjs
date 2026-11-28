@@ -59,10 +59,17 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
  check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_directory_page")),lang+" "+width+": directory uses the server-side page RPC");
-  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_order_customer_emails")||x.url.includes("/rpc/azal_admin_customer_directory")),lang+" "+width+": workspace is read-only");
+  check(requests.every(x=>x.method==="GET"||x.url.includes("/rpc/azal_is_admin")||x.url.includes("/rpc/azal_admin_team_list")||x.url.includes("/rpc/azal_admin_audit_recent")||x.url.includes("/rpc/azal_admin_customer_directory_page")||x.url.includes("/rpc/azal_admin_customer_contact")||x.url.includes("/rpc/azal_admin_customer_directory")),lang+" "+width+": workspace is read-only");
+ const contactBeforeDetail=requests.filter(x=>x.url.includes("/rest/v1/profiles")||x.url.includes("/rpc/azal_admin_order_customer_emails")||x.url.includes("/rpc/azal_admin_customer_contact"));
+ check(contactBeforeDetail.length===0,lang+" "+width+": order list does not fetch customer profile or contact data");
+ const listRead=requests.find(x=>x.url.includes("/rest/v1/orders?")&&!x.url.includes("order_items(")&&!x.url.includes("placed_at=gte."));
+ const listSelect=listRead?new URL(listRead.url).searchParams.get("select")||"":"";
+ check(!!listRead&&!/guest_name|guest_email|contact_phone/.test(listSelect),lang+" "+width+": order-list SELECT excludes guest name, email and phone");
  const button=page.locator(".admin-workspace > .admin-panel:nth-child(2) .admin-record button").first();await button.click();await page.waitForSelector(".admin-order-detail");
  const detail=await page.textContent(".admin-order-detail");
  check(detail.includes("4D9D36")&&detail.includes("Lamb Mandi")&&detail.includes("Extra sauce")&&detail.includes("hand_over")&&detail.includes("No onions"),lang+" "+width+": item snapshots, options, event and note detail");
+ check(requests.some(x=>x.url.includes("/rpc/azal_admin_customer_contact")),lang+" "+width+": single-customer contact is fetched only after opening order detail");
+ check(!requests.some(x=>x.url.includes("/rpc/azal_admin_order_customer_emails")),lang+" "+width+": bulk customer-email RPC is never called");
  await page.close();
 }
 {
