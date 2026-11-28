@@ -1073,3 +1073,21 @@ html[lang="ar"] .mcard-founder{letter-spacing:0;font-size:.85rem}
  .admin-shell-content{padding-bottom:calc(74px + env(safe-area-inset-bottom))}
 }
 @media(min-width:801px){.admin-shell-layout{min-height:60vh}}
+
+
+/* T-27: account identity and sign-out stay behind the Admin header profile control. */
+.admin-shell-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.admin-profile{position:relative;display:flex;align-items:center;justify-content:flex-end;z-index:5}
+.admin-profile-trigger{display:inline-flex;align-items:center;justify-content:center;width:2.75rem;height:2.75rem;border:1px solid rgba(66,34,14,.28);border-radius:999px;background:var(--paper,#fffaf3);color:var(--ink,#42220e);cursor:pointer}
+.admin-profile-trigger:focus-visible{outline:3px solid var(--gold,#b77b24);outline-offset:3px}
+.admin-profile-icon{position:relative;display:block;width:1.25rem;height:1.25rem;border:2px solid currentColor;border-radius:50%}
+.admin-profile-icon:before{content:"";position:absolute;top:.15rem;left:50%;width:.28rem;height:.28rem;border:1.5px solid currentColor;border-radius:50%;transform:translateX(-50%)}
+.admin-profile-icon:after{content:"";position:absolute;left:50%;bottom:.1rem;width:.7rem;height:.34rem;border:1.5px solid currentColor;border-bottom:0;border-radius:.6rem .6rem 0 0;transform:translateX(-50%)}
+.admin-profile-menu{position:absolute;inset-block-start:calc(100% + .5rem);inset-inline-end:0;min-width:min(20rem,calc(100vw - 2rem));padding:.85rem;background:var(--paper,#fffaf3);border:1px solid rgba(66,34,14,.18);border-radius:.8rem;box-shadow:0 12px 32px rgba(31,20,12,.16)}
+.admin-profile-menu[hidden]{display:none}
+.admin-profile-menu .admin-who-bar{display:grid;gap:.65rem;margin:0;padding:0;border:0;background:transparent}
+.admin-profile-menu .admin-who{margin:0}
+.admin-report-field select{width:100%;min-height:2.8rem;padding:.6rem .75rem;border:1px solid rgba(66,34,14,.28);border-radius:.45rem;background:var(--paper,#fffaf3);color:var(--ink,#42220e)}
+.admin-report-results[hidden]{display:none}
+.admin-order-route-status{margin-block:.5rem}
+@media(max-width:560px){.admin-shell-heading{align-items:flex-start}.admin-profile-menu{position:fixed;inset-inline:1rem;inset-block-start:6rem;min-width:0}.admin-report-form{grid-template-columns:1fr}.admin-report-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
