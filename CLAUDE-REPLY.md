@@ -2509,3 +2509,61 @@ The owner told me 17:19 «نحن نعاني انصحنا» ("we are suffering, a
 - **Review class:** full exact-head review (SQL, checkout, auth).
 - **NOT verified:** the live acceptance (lead); the live claim after a real confirmation email; real phone.
 - **Next:** T-04 (Batch 3, the member page) after T-02 merges, per the lead's re-sequence.
+
+## 2026-11-27 19:20 EST — F-OWN-20 delivered on T-02: PR #68 @ `cf08fef` (CI 46086759079 ✓) (restored to main 20:10: the PR merged at `cf08fef`, before this docs commit)
+
+- **Acknowledged:** BUILD-METHOD.md binds me from T-04 and the admin phase. This delivery already states its §4 checklist below.
+- **What changed** (same branch as T-02; `56d5920` plus a merge of main, docs only):
+  - A signed-out checkout opens with **Sign in · Create an account · Continue as guest** at the top of the sheet, above the pickup time.
+  - The guest consequence is one line under the choice, before any field.
+  - Fields and the pay button stay hidden until a choice is made.
+  - Inside the guest form, a "Have an account? Sign in instead" link is the way back.
+  - Sign-in and join (`member.html#return=checkout&mode=signin|join`) carry the pickup time and the note through sessionStorage. The cart is already stored. After signing in, `location.replace(<page>#checkout)` reopens the sheet with all three intact; the carried values are removed, and the stash expires after 30 minutes.
+  - Signed-in customers never see the choice.
+- **Fix found by the pinning test:** the checkout button copies the *current* pickup choice into `keep`, so the restored time was silently lost. It is now restored as the current choice. The round-trip test failed before this fix and passes after it.
+- **BUILD-METHOD §4:**
+  1. **Controls:** all 3 choices, the way-back link and the reopen are wired. Other states: signed in (no choice); after success (the choice stays hidden); a stale stash (ignored).
+  2. **Sign-out and async:** no new async paint. The return path runs only on `signed_in`. The stash is removed once used.
+  3. **Strings:** EN/FR/AR key diff 61/61/61, zero difference. `authJoinLocked` is in all three languages. Script tags are unchanged.
+  4. **Widths:** checked at 320 (AR), 390 (EN, FR guest) and 1280 (EN), with no page or panel overflow. I looked at screenshots of each. No sticky element covers the choice.
+  5. **Tests:**
+     - new checks in `guest-phone.browser.mjs`: choice shown, fields hidden, guest reveals fields, signed in sees no choice, the full sign-in round trip (cart, time, note, clean URL, stash cleared), AR at 320;
+     - the checkout and points-redeem helpers choose guest;
+     - node **200/200**; browser **25 files, 528 checks**; SQL `contact-phone` 14/14, `admin-scope` 27/27, `profile` 23/23, `points-redeem` 44 PASS plus the known `:53` error (ChatGPT's fix is pending);
+     - CI **46086759079** ✓ at `cf08fef`;
+     - role×forbidden-action matrix: there is no new server action, so 0010's guest/member rules stand as reviewed.
+  6. **NOT verified:** the live round trip on a real phone and Supabase (lead, after merge); the join path's round trip after a real confirmation email (signup confirms by email, so the return happens only once the account is signed in).
+- **Review class:** delta review (checkout.js, auth.js, CSS, tests); SQL is unchanged since `7d2b8f4`.
+- **Next:** the lead merges, applies 0010 per `docs/apply-0010.md`, and runs the live acceptance. Then T-04.
+
+## 2026-11-27 20:10 EST — T-22 / F-OWN-21 delivered: PR #71 @ `b566c13` (CI 46091284050 ✓)
+
+- **Owner finding accepted in full:** Sign in left the sheet; Create an account and Sign in instead did nothing. My F-OWN-20 design sent auth to another page, and that was the root mistake.
+- **What changed** (branch `claude/checkout-inline-auth`; `c643ad9` plus a merge of main, docs only):
+  - Every auth control in the sheet is a button that opens one in-sheet panel. No `<a href>` is left in the sheet, and this is pinned.
+  - **Sign in:** on success the sheet flips to the member state in place (profile mobile, points). Guest points are claimed and the header updates through `azal:signed-in`.
+  - **Join:** if Supabase returns a session, the sheet flips to the member state. If the email must be confirmed first, the sheet says so and offers *I've confirmed: sign in* · *Continue as guest* · *Back*.
+  - **Guest form:** "Sign in instead" opens the panel in place; Back keeps what was typed.
+  - **After a guest order:** Join & collect opens the join form in the sheet with the email locked and the name and mobile prefilled.
+  - Stash-and-return is removed from `checkout.js` and `auth.js`.
+- **BUILD-METHOD §4:**
+  1. **Controls:** every control is wired in every state: choice, sign-in, join, confirmation pending, already registered, wrong password, back from each origin, close and reopen (starts again at the choice), after the order.
+  2. **Async:** `authGen` drops late answers after Back, a switch, the guest path or a reopen. No new polling.
+  3. **Strings:** EN/FR/AR key diff 71/71/71, zero difference. The member page's strings are reused via `t()`. `arabic.test` passes. Script tags are unchanged on every page.
+  4. **Widths:** 1280, 390 and 320 (AR), plus FR at 390, with no page or panel overflow (pinned). I looked at screenshots of the forms open. No sticky element covers the panel.
+  5. **Tests:**
+     - `tests/checkout-inline-auth.browser.mjs` **fails on main** (first FAIL: no-links; then a timeout) **and passes here**;
+     - node **200/200**; browser **26 files, 573 checks**;
+     - SQL is unchanged (no migration);
+     - CI **46091284050** ✓;
+     - role matrix: no new server action; sign-in and sign-up use the existing Auth endpoints.
+  6. **NOT verified:** a real Supabase sign-in and sign-up from the sheet on the published site; the real confirmation email and whether this project returns a session at sign-up; real phones. These are the lead's live acceptance on desktop and phone.
+- **Defect-ledger self-review:**
+  - scroll traps: none (pinned);
+  - bidi: emails and phones are LTR inputs; no prices added;
+  - truncation: none at 320;
+  - state reset: a reopen resets the panel by design, while cart, time and note persist;
+  - encode loss: the phone is normalised before signup (pinned);
+  - dead controls: none (each one pinned).
+- **Review class:** delta review (checkout.js, auth.js, CSS, tests).
+- **Next:** T-04 after T-22 merges.
