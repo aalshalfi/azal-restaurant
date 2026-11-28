@@ -24,6 +24,7 @@ async function open({role="admin",lang="en",width=390}={}){
  await page.route("https://fake.supabase.co/**",r=>{
   const req=r.request(),url=decodeURIComponent(req.url()),path=new URL(req.url()).pathname;requests.push({url,method:req.method()});
   if(path.endsWith("/rpc/azal_is_admin"))return r.fulfill({json:role==="admin"});
+  if(path.endsWith("/rpc/azal_admin_customer_directory"))return r.fulfill({json:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z"}]});
   if(path.endsWith("/user_roles"))return r.fulfill({json:role==="admin"?[{role:"admin"}]:role==="staff"?[{role:"staff"}]:[]});
   if(path.endsWith("/staff_branch_access"))return r.fulfill({json:role==="staff"?[{branch_slug:"ottawa"}]:[]});
   if(path==="/rest/v1/orders"&&url.includes("order_items("))return r.fulfill({json:[{...allOrders[0],customer_note:"No onions",scheduled_for:"2026-11-20T10:30:00Z",order_items:[{id:"i1",quantity:1,item_name_en_snapshot:"Lamb Mandi",item_name_fr_snapshot:"Mandi",unit_price_cents:2499,line_total_cents:2499,order_item_options:[{id:"op1",option_name_en_snapshot:"Extra sauce",option_name_fr_snapshot:"Sauce",quantity:1,line_delta_cents:100}]}],order_events:[{id:1,event_type:"hand_over",from_status:"ready",to_status:"handed_over",details:{source:"staff"},created_at:"2026-11-20T11:00:00Z"}]}]});
@@ -45,7 +46,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  const directory=lang==="en"?"Customer directory":lang==="fr"?"Répertoire des clients":"دليل العملاء";
  const orders=lang==="en"?"All orders":lang==="fr"?"Toutes les commandes":"جميع الطلبات";
  check(text.includes(directory)&&text.includes(orders),lang+" "+width+": directory and order history localized");
- check(text.includes("100")&&text.includes("+1")&&text.includes("Amal")&&text.includes("Sara"),lang+" "+width+": customer profiles, phone and member numbers visible");
+ check(text.includes("100")&&text.includes("+1")&&text.includes("Amal")&&text.includes("Sara")&&text.includes("amal@example.invalid"),lang+" "+width+": customer profiles, phone and member numbers visible");
  check(text.includes("Handed over")||text.includes("Remise")||text.includes("تم التسليم"),lang+" "+width+": handed-over order remains visible");
  check(text.includes("Cancelled")||text.includes("Annulée")||text.includes("ملغي"),lang+" "+width+": cancelled order remains visible");
  check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),lang+" "+width+": no horizontal overflow");
