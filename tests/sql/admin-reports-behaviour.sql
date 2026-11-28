@@ -74,7 +74,7 @@ select zz_eq('Manager payload omits Admin financial breakdown',
     ((now() at time zone 'America/Toronto')::date+1),null)->'rows'->0) ? 'refunds_cents')::text,'false');
 reset role;
 
-\echo ===== T-26: Staff Today's summary is branch-bound and tax-free
+\echo ===== T-26: Staff day summary is branch-bound and tax-free
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000aa',false) \gset
 set role authenticated;
 select zz_eq('Staff today summary returns one Ottawa handover',
