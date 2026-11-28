@@ -16,6 +16,14 @@ test("0015 extends the existing role model; Admin and Manager checks are server-
   assert.match(sql,/revoke all on public\.branch_orders_accounts from public, anon, authenticated/);
 });
 
+test("A1 all-orders list is contact-blind until one order detail is opened", () => {
+  const admin=read("admin.js");
+  const list=admin.slice(admin.indexOf("async orders("),admin.indexOf("async orderDetail("));
+  const detail=admin.slice(admin.indexOf("async orderDetail("),admin.indexOf("const api ="));
+  assert.doesNotMatch(list,/guest_name|guest_email|contact_phone|azal_admin_order_customer_emails|rest\\/v1\\/profiles/);
+  assert.match(detail,/azal_admin_customer_contact/);
+  assert.match(admin,/Search order code or branch/);
+});
 test("A1 directory search and pagination run in a fixed-path Admin RPC with a hard page cap", () => {
   const sql=read("supabase/migrations/0015_admin_team_access.sql");
   const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_customer_directory_page"),sql.indexOf("create or replace function public.azal_admin_team_list"));
@@ -141,7 +149,7 @@ test("A2 SQL retry is idempotent and scrubs guest claims and durable outbox payl
   const sql=read("supabase/migrations/0015_admin_team_access.sql");
   const fn=sql.slice(sql.indexOf("create or replace function public.azal_admin_anonymize_customer_server"),sql.indexOf("-- Apply pending in-portal invitations"));
   assert.match(fn,/update public\.points_claims[\s\S]*guest_email=v_replacement/);
-  assert.match(fn,/update public\.order_outbox[\s\S]*payload=.*array\[/);
+  assert.match(fn,/update public\.order_outbox[\s\S]*payload=[\s\S]*array\[/);
   assert.match(fn,/already_anonymized/);
   assert.match(fn,/if v_anonymized_at is null then[\s\S]*insert into public\.admin_audit_log/);
 });
