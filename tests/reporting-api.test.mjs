@@ -56,10 +56,13 @@ test("T-26 requests the staff summary for the selected authorized branch", async
     config: { url: "https://example.invalid", anonKey: "public" },
     getToken: async () => "staff-token",
     branch: "ottawa",
-    fetch: async (url, options) => { calls.push({ url, options }); return response({ branch_slug: "ottawa", collected_cents: 2499 }); }
+    fetch: async (url, options) => { calls.push({ url, options }); return response({ branch_slug: "ottawa", net_collected_cents: 1999 }); }
   });
   const result = await api.todaySummary();
   assert.equal(result.branch_slug, "ottawa");
+  assert.equal(result.net_collected_cents, 1999);
+  assert.equal(Object.hasOwn(result, "collected_cents"), false);
+  assert.equal(Object.hasOwn(result, "refunds_cents"), false);
   assert.match(calls[0].url, /\/rpc\/azal_staff_today_summary$/);
   assert.deepEqual(JSON.parse(calls[0].options.body), { p_branch_slug: "ottawa" });
 });
