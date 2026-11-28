@@ -8325,3 +8325,51 @@ The owner ordered: think first, research, write — implementation only after hi
 The owner directed: "نفذ طريقة اوبر ياخي في حساب الطلبات وفي حسب المدير ابحث عنه بتطلع بمعلومات". Researched from Uber's own pages (help.uber.com "Managing access in Uber Eats Manager"; the merchants.ubereats.com Manager guide): Uber's model = **two separate logins** — Uber Eats Manager (business: menu, payments/tax, reports, Users) vs Uber Eats Orders (tablet: live orders only), with the Orders username/password managed FROM the Manager's Users section ("Uber Eats Orders" tab); three roles inside Manager — Admin (full; adds Managers/Staff; bank/ownership), Manager (all features incl. menu, analytics, user management), Staff (excludes Payments, Tax, Users, Settings, Marketing); users added by name+email invite. **ACCESS-PROPOSAL.md is rewritten as v2 on this model** (v1's Square/Toast basis superseded by his directive): our Admin = Manager-portal account, our kitchen = the Orders account, Manager role = operational-everything except points/refunds/settings (our payments-equivalent, Admin-only per F-OWN-7). **One fork is his: U1 (Uber literal — one shared store orders login, password set from the panel) vs U2 (lead recommendation — Uber's separation with per-person orders logins, his own "each with his own user, everything secret" rule). T-14 stays gated on his approval of v2.** The v1 A/B manager question is answered by the model itself: Uber has the Manager role.
 
 — Muse (team lead)
+
+## 2026-11-27 18:57 EST — APPROVED: the Uber model, literally (U1) — T-14 rewritten to it and un-gated
+
+The owner approved (18:42): **"اوبر حرفيا"** — ACCESS-PROPOSAL v2 with **U1**. The model is now fixed: two separate logins (Manager account / Orders account); Manager-side named users with Admin / Manager / Staff roles added by name+email invite; **one shared Orders login per branch** whose username the Admin can view and whose password the Admin sets/resets from the panel's Team section (Uber's Users → "Uber Eats Orders" tab); orders-account actions stamped as the branch account. Named Staff logins remain in the model (Uber has both doors) for branches that prefer per-person stamps. **WORKPLAN T-14 is rewritten to this model in this commit** (incl. the constraint that the orders-password mechanism ships no service key to the browser; an Edge Function, if needed, is part of the card) and is **un-gated** — it builds in its Phase-B slot. This approval supersedes the per-person-only framing of the 18:32 clarification where the two conflict; the separation he demanded there (staff never on the info@ account) holds in full.
+
+— Muse (team lead)
+
+## 2026-11-27 19:00 EST — Owner directive: menu management inside the manager account, Uber-style — carded as T-21
+
+The owner (18:43): in the manager account he wants to manage, like Uber, the menu — the photos, the names, adding products. **Carded as T-21 · Admin menu manager** (WORKPLAN, Phase B after T-08, role scope per the approved Uber model: Admin full, Manager edits his branch's menu, orders account never): add/edit products (names, story, region in EN/FR/AR, price, category), photo upload/replace via a Storage bucket with admin-only write, per-branch availability incl. sold-out-today, soft retire only (history keeps its snapshots), and the public menu + checkout reading the same live catalog so the admin's edit is the customer's menu. **Consequence recorded on the card: the December content swap (T-18) becomes the owner's own panel work, team assisting on request, with the 56 real photos loaded into the library.**
+
+— Muse (team lead)
+
+## 2026-11-27 19:03 EST — LEAD ORDER @Claude: BUILD-METHOD.md — the method is fixed; build in one pass
+
+The owner (18:45): "فهمت المطلوب لا يكفي لازم نحدد لكلود الطريقة وتخليه يلحق تفاصيل اكثر عشان يشتغل مره واحده" — understanding is not enough; the method must be specified so the work is done once. **`BUILD-METHOD.md` is on main and binds the admin phase (and every batch from T-04):** §1 the approved basis in one place (Uber accounts, the owner's power list, role scope) · §2 the fixed sequence T-08 → T-14 → T-21 → T-13 → T-20 · §3 technical decisions pre-made (roles on the existing tables + manager value; the Orders-account password via an Edge Function with the service key server-side only; DB as the menu's single source of truth with a `menu-photos` bucket and soft retire; money/points via the ADM-3 RPC pattern; one audit table) · §4 a six-line detail checklist the builder clears and states BEFORE posting READY (states, sign-out + async guard, three-language key diff, three widths, pinning tests + the role×forbidden-action matrix, honest NOT-verified) — a delivery with an unexamined checklist line is returned unreviewed · §5 the one-pass rule (a gap is reported, never improvised around). @Claude: acknowledge in your next CLAUDE-REPLY section and build to it. T-02 (already claimed) finishes under its card; the method applies from your next batch.
+
+— Muse (team lead)
+
+## 2026-11-27 19:06 EST — Owner clarification pinned: the Orders account belongs to the branch
+
+The owner (18:48): "حساب الطلبات مرتبط بالفرع وليس موظف بعينه" — the Orders account is tied to the branch, not to a specific employee. Recorded on the T-14 card in this commit: the account is created with the branch, named for it, Admin-password-controlled, and unchanged as employees come and go; its stamps are the branch's. Named users on the Manager side (Admin/Manager/Staff roles) are a separate Uber element and are unaffected — the kitchen's working account is the branch's own.
+
+— Muse (team lead)
+
+## 2026-11-27 19:09 EST — LEAD ORDER (short form, per the owner): implement the Uber Eats method
+
+**@Claude: implement the Uber Eats method** — accounts, admin powers, and menu management — per ACCESS-PROPOSAL v2 (U1) and cards T-08/T-14/T-21/T-13/T-20, built to BUILD-METHOD.md. Where a detail is not named in the cards, **Uber Eats' actual behaviour decides it** — do not invent a local variant.
+
+**@ChatGPT — your task: assemble the Uber Eats reference dossier.** From Uber's official merchant help/guide pages, compile `UBER-REFERENCE.md`: the Manager portal (Users section — roles, add/edit/remove flows, the "Uber Eats Orders" tab and its password control; Menu management — the item fields, photo handling, categories, availability; Payments/Reports scope per role) and the Orders app (queue behaviour, accept/reject/ready, sold-out marking). Cite the Uber page for each behaviour. **Flag every point where our cards/proposal diverge from Uber's actual behaviour** — the lead will correct the cards to Uber, not the other way round. This dossier is the builders' detail source for the admin phase.
+
+— Muse (team lead)
+
+## 2026-11-27 19:12 EST — F-OWN-20 + T-02 AMENDED in-flight: the identity choice comes before the fields
+
+The owner, at checkout on his phone (18:58, screenshot — the sheet drops a signed-out customer straight into the guest form): at purchase time the customer must be TOLD his options — sign in, create an account, or order as a guest. Correct, and it is the SPEC §9 benchmark line (guest-points consequence stated BEFORE the choice) which today has no choice to attach to. **T-02 is amended in-flight (same batch, same surface, same builder — WORKPLAN carries the amendment):** signed-out checkout opens with **Sign in · Create an account · Continue as guest** at the top of the sheet; the guest path states its consequence in one line before the fields; sign-in/join returns to the open checkout with cart, slot, and note intact (pinning test); signed-in customers never see it. @Claude: this is part of your claimed T-02 — build it in the same branch.
+
+— Muse (team lead)
+
+## 2026-11-27 19:20 EST — LEAD GATE on PR #68 (T-02) at `7d2b8f4`: delivered scope VERIFIED; merge held for the F-OWN-20 amendment only
+
+Lead-run at the exact head: **node suite 200/200**; migration 0010 read in source (`orders.contact_phone` + E.164 check; `p_guest_phone` default null, back-compatible; guest validation present); CI 46084856531 green as delivered. The delivered scope (mobile, tap-to-call ticket, detail line, locked-email join action) is accepted. **One addition before merge — not a defect:** the owner's F-OWN-20 amendment (19:12, after the 18:55 delivery) put the explicit identity choice at checkout into THIS batch. @Claude: add it on this branch per the WORKPLAN amendment; on the new head the lead does a delta review + full suite, merges, applies 0010 after deploy (per `docs/apply-0010.md`), and runs the live acceptance.
+
+**Test-integrity item — @ChatGPT (file owner):** Claude's self-hunt is confirmed by the lead in source: `tests/sql/points-redeem-behaviour.sql:53` uses `$select` for `$$select`, so the assertion "legacy 5,000-point redemption is rejected by place_order" never ran while the suite showed PASS. Fix the character AND make the SQL runner fail loudly on any psql error (an error line in output = a failed suite, never a pass). For the record: the 5,000-rejection behaviour itself is live-proven by the lead's own post-apply DB assertions of 2026-11-27 16:18 (azal_redeem_cents(5000) → NULL on the real project) — this is a regression-suite repair, not a live-behaviour doubt. Small branch, lead gate on delivery.
+
+**Received:** `UBER-REFERENCE.md` (ChatGPT, `dcfd4f0`) — the dossier is in; the lead's read + any card corrections follow in the admin-phase preparation.
+
+— Muse (team lead)
