@@ -7,6 +7,7 @@
 (function (root) {
   "use strict";
   const TZ = "America/Toronto";
+  const publicCode = (id) => String(id || "").slice(0, 6).toUpperCase();
 
   // Start of "today" in Toronto as an ISO instant (DST-safe, no library).
   function torontoMidnight(nowMs) {
@@ -128,7 +129,7 @@
         const enriched = rows.map(o => Object.assign({}, o, { customer: profileById.get(o.user_id) || null, customerEmail: (directoryById.get(o.user_id) || {}).email || null }));
         const term = String(search || "").trim().toLocaleLowerCase();
         return enriched.filter(o => (status === "all" || o.fulfilment_status === status) &&
-          (!term || [o.id, o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id, o.customer && o.customer.display_name, o.customer && o.customer.phone, o.customer && o.customer.member_number, o.customerEmail].some(v => String(v || "").toLocaleLowerCase().includes(term))));
+          (!term || [o.id, publicCode(o.id), o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id, o.customer && o.customer.display_name, o.customer && o.customer.phone, o.customer && o.customer.member_number, o.customerEmail].some(v => String(v || "").toLocaleLowerCase().includes(term))));
       },
       async orderDetail(orderId) {
         const s = await getSession();
@@ -148,7 +149,7 @@
     };
   }
 
-  const api = { createAdmin, summarise, torontoMidnight };
+  const api = { createAdmin, summarise, torontoMidnight, publicCode };
   if (typeof module !== "undefined" && module.exports) { module.exports = api; return; }
 
   /* ---------- browser wiring ---------- */
@@ -208,7 +209,7 @@
     for(const o of orderRows.slice(0,orderVisible)){
       const card=el("article","admin-record");
       const who=o.guest_name||(o.customer&&o.customer.display_name)||o.user_id||L("guest");
-      card.append(el("strong",null,L("order")+" "+String(o.id).slice(0,8).toUpperCase()),
+      card.append(el("strong",null,L("order")+" "+publicCode(o.id)),
         el("span","admin-record-meta",who+" · "+(o.contact_phone||(o.customer&&o.customer.phone)||o.customerEmail||o.guest_email||"")+" · "+o.branch_slug+" · "+L(o.fulfilment_status)+" / "+L(o.payment_status)),
         el("span","admin-record-meta",money(o.total_cents)+" · "+new Date(o.placed_at).toLocaleString(loc())));
       const view=el("button","button admin-detail-button",L("view"));view.type="button";view.addEventListener("click",async()=>{view.disabled=true;const requestSeq=seq;try{const row=await adm.orderDetail(o.id);if(requestSeq!==seq||!acc||acc.status!=="signed_in"||acc.role!=="admin"||signingOut)return;detailRow=row;workspaceError=false;}catch{if(requestSeq!==seq||!acc||acc.role!=="admin"||signingOut)return;workspaceError=true;}paint();});
@@ -216,7 +217,7 @@
     }
     if(orderRows.length>orderVisible){const more=el("button","button admin-detail-button",L("more"));more.type="button";more.addEventListener("click",()=>{orderVisible+=100;paint();});orders.append(more);}
     if(detailRow){
-      const d=el("section","admin-panel admin-order-detail");d.append(el("h2",null,L("order")+" "+String(detailRow.id).slice(0,8).toUpperCase()));
+      const d=el("section","admin-panel admin-order-detail");d.append(el("h2",null,L("order")+" "+publicCode(detailRow.id)));
       const cust=detailRow.customer;
       for(const [k,v] of [["customer",cust?((cust.display_name||"—")+" · "+(cust.phone||"—")+" · "+(cust.email||"—")+" · #"+(cust.member_number||"—")):(detailRow.guest_name||L("guest")+" · "+(detailRow.guest_email||"")+" · "+(detailRow.contact_phone||""))],["branchLabel",detailRow.branch_slug],["fulfilment",L(detailRow.fulfilment_status)],["payment",L(detailRow.payment_status)],["subtotal",money(detailRow.subtotal_cents)],["discount",money(detailRow.discount_cents)],["tax",money(detailRow.tax_cents)+" ("+(Number(detailRow.tax_rate_bps||0)/100)+"%)"],["total",money(detailRow.total_cents)],["note",detailRow.customer_note||"—"]])d.append(el("p","admin-line",L(k)+": "+v));
       d.append(el("h3",null,L("items")));
