@@ -28,7 +28,8 @@ Confirm this is the intended staging project and the following are present:
            to_regclass('public.orders') as orders,
            to_regclass('public.order_items') as order_items,
            to_regclass('public.branches') as branches,
-           to_regclass('auth.users') as auth_users;
+           to_regclass('auth.users') as auth_users,
+       to_regclass('auth.identities') as auth_identities;
 
 Expected: every object exists. Confirm profiles.display_name, phone, member_number, anonymized_at; orders.contact_phone, guest_name, guest_email, placed_at, fulfilment_status; and order_items.item_name_en_snapshot / item_name_fr_snapshot exist. Stop if the schema differs.
 
@@ -72,7 +73,7 @@ The function supports Admin-checked team assignment/removal, branch Orders accou
 2. Create one branch Orders account and verify it can open only that branch's kitchen queue; reset its password and verify the old password no longer works. No email is sent.
 3. Remove a named Staff user; confirm server-side access is denied on the next request. Confirm the owner/Admin root cannot be demoted or removed.
 4. Exercise A1 with at least 1,000 synthetic staging customers; verify page size stays bounded and search matches all four fields.
-5. Exercise A2 only with a disposable staging customer; verify Auth sign-in is banned, Auth email replaced with a reserved .invalid address, profile/order contact PII scrubbed, member number retired, directory exclusion, and ledger/order/tax aggregates retained.
+5. Exercise A2 only with a disposable staging customer; verify Auth sign-in is banned, Auth email and identity metadata replaced/scrubbed, Auth sign-in banned, profile/order contact PII scrubbed, member number retired, directory exclusion, and ledger/order/tax aggregates retained.
 6. Confirm Manager branch RPC exposes no customer PII, payment state, subtotal, discount or HST.
 7. Walk EN/FR/AR at 320 / 390 / 1280 px, including signed-out, forbidden, loading, empty, error, stale, success and sign-out states.
 
