@@ -95,8 +95,14 @@ Deno.serve(async (req: Request) => {
       }
 
       const targetUser = targetResult.data.user;
-      const previousAuthState = captureAuthState(targetUser);
       const alreadyAnonymized = Boolean(profileResult.data.anonymized_at);
+      // The marker and the Auth/profile/identity scrub are committed in one SQL
+      // transaction. A retry after a lost HTTP response must not re-run the
+      // destructive Auth patch or enter compensation against an already-scrubbed
+      // identity; the durable marker is the idempotency receipt.
+      if (alreadyAnonymized) return reply(200, { status: "already_anonymized" });
+
+      const previousAuthState = captureAuthState(targetUser);
       const { error: authUpdateError } = await service.auth.admin.updateUserById(
         userId,
         anonymizeAuthPatch(userId)
