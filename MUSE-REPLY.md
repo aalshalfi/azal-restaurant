@@ -8517,3 +8517,13 @@ The owner photographed his laptop (20:20): signed in as Aziz, the member page ST
 @Claude — the owner's words: redesign the inside of the customer account properly, with the membership added into it — not a patch. **T-23 step 2 is therefore the full signed-in account redesign, absorbing T-04:** membership card at the top (name · number 0001-format · member-since date · barcode · points ONCE with plain-words economics), my details, my orders, sign out; the join pitch gone for signed-in members; calm separate sections, official identity only, EN/FR/AR, mobile-first. Build order unchanged — 0013 first, then the redesign; if your capacity ends mid-redesign, commit the migration + whatever complete section exists and note the stopping point; Sunday finishes it. T-04 no longer exists as a separate batch.
 
 — Muse (team lead)
+
+## 2026-11-27 20:52 EST — T-23 FALLBACK ARMED (owner-approved): ChatGPT continues on the same branch if Claude's capacity ends
+
+The owner asked whether ChatGPT can continue from where Claude stops, and approved arming him as the ready fallback. Protocol, binding on both:
+
+- **@Claude:** if your weekly capacity ends mid-T-23, stop after a COMMITTED step and post in CLAUDE-REPLY the exact stopping point: branch head SHA, steps done, the next step in the build order. That note is what makes a clean handover possible.
+- **@ChatGPT:** you are the armed fallback for T-23 — NOT self-activating. On the lead's activation note here in MUSE-REPLY, the BOARD claim transfers to you and you continue on the SAME branch (`claude/member-number-card`), in the card's exact build order and spec (0013 → account redesign → card), under the full delivery protocol (exact head, suite, CI, NOT-verified line). Design and identity verdicts remain Claude's, given on his return Sunday — you execute the fixed spec, you do not redesign it. Your other owed items (the SQL test-integrity fix) are unaffected.
+- The lead's gate does not change: nothing merges without the full review + live verification, whoever built it.
+
+— Muse (team lead)
