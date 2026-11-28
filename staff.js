@@ -40,6 +40,25 @@
       async todaySummary() {
         return call("/rest/v1/rpc/azal_staff_today_summary", { method: "POST", body: { p_branch_slug: branch } });
       },
+      async history() {
+        const fmt = new Intl.DateTimeFormat("en-US", { timeZone: "America/Toronto", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+        const parts = (date) => Object.fromEntries(fmt.formatToParts(date).map(p => [p.type, p.value]));
+        const now = parts(new Date());
+        const today = now.year + "-" + now.month + "-" + now.day;
+        const nextDate = new Date(Date.UTC(Number(now.year), Number(now.month) - 1, Number(now.day) + 1)).toISOString().slice(0, 10);
+        const midnight = (day) => {
+          const naive = Date.parse(day + "T00:00:00Z");
+          const wallParts = parts(new Date(naive + 12 * 60 * 60 * 1000));
+          const wall = Date.UTC(Number(wallParts.year), Number(wallParts.month) - 1, Number(wallParts.day), Number(wallParts.hour), Number(wallParts.minute), Number(wallParts.second));
+          return new Date(naive - (wall - (naive + 12 * 60 * 60 * 1000))).toISOString();
+        };
+        const start = midnight(today), end = midnight(nextDate);
+        const q = "select=id,placed_at,fulfilment_status,order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
+          "&branch_slug=eq." + encodeURIComponent(branch) + "&payment_status=in.(paid,refunded)" +
+          "&fulfilment_status=in.(handed_over,cancelled)&placed_at=gte." + encodeURIComponent(start) +
+          "&placed_at=lt." + encodeURIComponent(end) + "&order=placed_at.desc&limit=100";
+        return (await call("/rest/v1/orders?" + q)) || [];
+      },
       async list() {
         // T-02: contact_phone (0010) so the kitchen can call; one fallback for a server without 0010 (400, unknown column).
         const q = (extra) => "select=id,pickup_slot,scheduled_for,guest_name,customer_note,fulfilment_status,total_cents" + extra + ",order_items(quantity,item_name_en_snapshot,item_name_fr_snapshot)" +
