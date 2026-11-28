@@ -78,6 +78,56 @@
           call("/rest/v1/memberships?select=user_id&status=eq.active&limit=1", s.access_token, { count: true })
         ]);
         return Object.assign(summarise(orders), { members, since, truncated: (orders || []).length >= 1000 });
+      },
+      // T-08: paged reads only. RLS is the enforcement boundary; the UI also requires the server admin verdict.
+      async customers({ search = "" } = {}) {
+        const s = await getSession();
+        if (!s || !s.access_token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
+        async function pages(path) {
+          const rows = [];
+          for (let offset = 0; ; offset += 500) {
+            const page = await call(path + (path.includes("?") ? "&" : "?") + "limit=500&offset=" + offset, s.access_token);
+            rows.push(...(page || []));
+            if (!page || page.length < 500) return rows;
+            if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
+          }
+        }
+        const [profiles, memberships, ledger] = await Promise.all([
+          pages("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&order=created_at.desc,id.desc"),
+          pages("/rest/v1/memberships?select=user_id,status,joined_at"),
+          pages("/rest/v1/points_ledger?select=user_id,delta_points")
+        ]);
+        const memberById = new Map((memberships || []).map(x => [x.user_id, x]));
+        const balances = new Map();
+        for (const row of ledger || []) balances.set(row.user_id, (balances.get(row.user_id) || 0) + Number(row.delta_points || 0));
+        const term = String(search || "").trim().toLocaleLowerCase();
+        return (profiles || []).map(p => Object.assign({}, p, {
+          membership: memberById.get(p.id) || null, balance: balances.get(p.id) || 0
+        })).filter(p => !term || [p.display_name, p.phone, p.member_number == null ? "" : String(p.member_number)].some(v => String(v || "").toLocaleLowerCase().includes(term)));
+      },
+      async orders({ search = "", status = "all" } = {}) {
+        const s = await getSession();
+        if (!s || !s.access_token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
+        const rows = [];
+        for (let offset = 0; ; offset += 500) {
+          const page = await call("/rest/v1/orders?select=id,user_id,branch_slug,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,placed_at,scheduled_for,pickup_slot,guest_name,guest_email,contact_phone&order=placed_at.desc,id.desc&limit=500&offset=" + offset, s.access_token);
+          rows.push(...(page || []));
+          if (!page || page.length < 500) break;
+          if (rows.length >= 100000) throw Object.assign(new Error("result_too_large"), { code: "error" });
+        }
+        const term = String(search || "").trim().toLocaleLowerCase();
+        return rows.filter(o => (status === "all" || o.fulfilment_status === status) &&
+          (!term || [o.id, o.branch_slug, o.guest_name, o.guest_email, o.contact_phone, o.user_id].some(v => String(v || "").toLocaleLowerCase().includes(term))));
+      },
+      async orderDetail(orderId) {
+        const s = await getSession();
+        if (!s || !s.access_token) throw Object.assign(new Error("signed_out"), { code: "signed_out" });
+        if (!/^[0-9a-f-]{36}$/i.test(String(orderId))) throw Object.assign(new Error("not_found"), { code: "not_found" });
+        const rows = await call("/rest/v1/orders?select=id,user_id,branch_slug,fulfilment_type,fulfilment_status,payment_status,subtotal_cents,discount_cents,redeemed_points,tax_rate_bps,tax_cents,total_cents,scheduled_for,pickup_slot,customer_note,guest_name,guest_email,contact_phone,placed_at,updated_at,handed_over_at,order_items(id,quantity,unit_price_cents,line_total_cents,item_name_en_snapshot,item_name_fr_snapshot,order_item_options(id,option_name_en_snapshot,option_name_fr_snapshot,quantity,unit_delta_cents,line_delta_cents)),order_events(id,actor_user_id,event_type,from_status,to_status,details,created_at)&id=eq." + encodeURIComponent(orderId) + "&order_events.order=created_at.asc,id.asc&limit=1", s.access_token);
+        if (!rows || !rows.length) throw Object.assign(new Error("not_found"), { code: "not_found" });
+        const order = rows[0];
+        const profiles = order.user_id ? await call("/rest/v1/profiles?select=id,display_name,phone,member_number,created_at&id=eq." + encodeURIComponent(order.user_id) + "&limit=1", s.access_token) : [];
+        return Object.assign({}, order, { customer: profiles && profiles[0] || null });
       }
     };
   }
