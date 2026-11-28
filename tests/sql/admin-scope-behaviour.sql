@@ -16,8 +16,10 @@ insert into public.menu_items(id,slug,name_en,name_fr,active) values ('00000000-
 insert into public.branch_menu_items(branch_slug,menu_item_id,price_cents,available) values ('ottawa','00000000-0000-0000-0000-00000000a001',2499,true),('second','00000000-0000-0000-0000-00000000a001',2499,true) on conflict do nothing;
 insert into auth.users(id,email) values
  ('00000000-0000-0000-0000-0000000000a0','info@azalrestaurant.com'),('00000000-0000-0000-0000-0000000000aa','staffa@example.invalid'),('00000000-0000-0000-0000-0000000000ab','staffb@example.invalid'),
- ('00000000-0000-0000-0000-0000000000c1','c1@example.invalid'),('00000000-0000-0000-0000-0000000000c2','c2@example.invalid');
-insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000a0','admin'),('00000000-0000-0000-0000-0000000000aa','staff'),('00000000-0000-0000-0000-0000000000ab','staff');
+ ('00000000-0000-0000-0000-0000000000c1','c1@example.invalid'),('00000000-0000-0000-0000-0000000000c2','c2@example.invalid')
+on conflict (id) do update set email=excluded.email;
+insert into public.user_roles(user_id,role) values ('00000000-0000-0000-0000-0000000000a0','admin'),('00000000-0000-0000-0000-0000000000aa','staff'),('00000000-0000-0000-0000-0000000000ab','staff')
+on conflict do nothing;
 insert into public.staff_branch_access(user_id,branch_slug) values ('00000000-0000-0000-0000-0000000000aa','ottawa'),('00000000-0000-0000-0000-0000000000ab','second');
 update public.app_settings set value = 'test' where key = 'payments_mode';
 -- one paid order per customer: c1 at ottawa, c2 at second; plus a points row each
