@@ -273,3 +273,9 @@ Updated by whoever works. See `COORDINATION.md` for the rules. Last organized: 2
 - Every ChatGPT work round ends with a repository-visible artifact: a code/test/doc commit, or a concise status update in the relevant coordination file recording what was checked, what changed, blockers, and the next action.
 - A conversational progress message alone does not close a work round.
 - Current T-08 work remains on `chatgpt/t08-admin-directory`; no merge, production change, or live database operation is implied by this note.
+
+
+## 2026-11-27 — ChatGPT T-08 work round
+- Repaired the malformed dollar-quoted SQL call in `tests/sql/points-redeem-behaviour.sql` (legacy 5,000-point rejection assertion). Exact resulting line now wraps the query in `$$...$$`; commit `739d308c`.
+- This is a source correction only. The PostgreSQL behaviour suite has **not** yet been run; no SQL was applied to any database.
+- T-08 implementation is in schema/RLS reconnaissance. The existing admin surface is still overview-only; directory/history/detail are not yet delivered. Next: map actual order, profile, membership, order-item and event columns/policies before choosing a safe read path. No migration or production changes.
