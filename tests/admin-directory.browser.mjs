@@ -27,9 +27,10 @@ async function open({role="admin",lang="en",width=390}={}){
   if(path.endsWith("/rpc/azal_admin_customer_directory_page"))return r.fulfill({json:{rows:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z",balance:100,membership_status:"active",joined_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z",balance:55,membership_status:"suspended",joined_at:"2026-11-02T00:00:00Z"}],total:2,limit:50,offset:0}});
   if(path.endsWith("/rpc/azal_admin_team_list"))return r.fulfill({json:{members:[],invites:[],branches:[{slug:"ottawa",name:"Ottawa"}],orders_accounts:[]}});
   if(path.endsWith("/rpc/azal_admin_customer_contact"))return r.fulfill({json:{user_id:"u1",display_name:"Amal",phone:"+16135550101",member_number:10001,email:"amal@example.invalid"}});
+  if(path.endsWith("/rpc/azal_manager_branch_orders"))return r.fulfill({json:[{id:"4d9d36ab-1111-4111-8111-111111111111",branch_slug:"ottawa",fulfilment_status:"placed",placed_at:"2026-11-20T10:00:00Z",items:[{quantity:1,name_en:"Lamb Mandi",name_fr:"Mandi"}]}]});
   if(path.endsWith("/rpc/azal_admin_customer_directory"))return r.fulfill({json:[{user_id:"u1",display_name:"Amal",phone:"+16135550101",email:"amal@example.invalid",member_number:10001,created_at:"2026-11-01T00:00:00Z"},{user_id:"u2",display_name:"Sara",phone:"+16135550102",email:"sara@example.invalid",member_number:10002,created_at:"2026-11-02T00:00:00Z"}]});
-  if(path.endsWith("/user_roles"))return r.fulfill({json:role==="admin"?[{role:"admin"}]:role==="staff"?[{role:"staff"}]:[]});
-  if(path.endsWith("/staff_branch_access"))return r.fulfill({json:role==="staff"?[{branch_slug:"ottawa"}]:[]});
+  if(path.endsWith("/user_roles"))return r.fulfill({json:role==="admin"?[{role:"admin"}]:role==="manager"?[{role:"manager"}]:role==="staff"?[{role:"staff"}]:[]});
+  if(path.endsWith("/staff_branch_access"))return r.fulfill({json:role==="staff"||role==="manager"?[{branch_slug:"ottawa"}]:[]});
   if(path==="/rest/v1/orders"&&url.includes("order_items("))return r.fulfill({json:[{...allOrders[0],customer_note:"No onions",scheduled_for:"2026-11-20T10:30:00Z",order_items:[{id:"i1",quantity:1,item_name_en_snapshot:"Lamb Mandi",item_name_fr_snapshot:"Mandi",unit_price_cents:2499,line_total_cents:2499,order_item_options:[{id:"op1",option_name_en_snapshot:"Extra sauce",option_name_fr_snapshot:"Sauce",quantity:1,line_delta_cents:100}]}],order_events:[{id:1,event_type:"hand_over",from_status:"ready",to_status:"handed_over",details:{source:"staff"},created_at:"2026-11-20T11:00:00Z"}]}]});
   if(path==="/rest/v1/orders"&&url.includes("placed_at=gte."))return r.fulfill({json:[{...allOrders[0],fulfilment_status:"handed_over"},{...allOrders[1],fulfilment_status:"cancelled"},{...allOrders[2],fulfilment_status:"placed"}]});
   if(path==="/rest/v1/orders")return r.fulfill({json:allOrders});
@@ -40,7 +41,7 @@ async function open({role="admin",lang="en",width=390}={}){
   return r.fulfill({status:404,json:{}});
  });
  await page.addInitScript(l=>{localStorage.setItem("azal-language",l);localStorage.setItem("azal-auth-v1",JSON.stringify({access_token:"T",refresh_token:"R",expires_at:4e12,user:{id:"admin",email:"admin@example.invalid"}}));},lang);
- await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);
+ await page.goto(base+"/admin.html");if(role==="admin")await page.waitForSelector(".admin-workspace");else if(role==="manager")await page.waitForSelector("#managerOperations");else await page.waitForSelector("#adminRoot .admin-note");await page.waitForTimeout(100);
  return {page,requests};
 }
 for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
@@ -69,4 +70,15 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
  check(!requests.some(x=>(x.url.includes("/rest/v1/points_ledger")&&!x.url.includes("user_id=eq."))||(x.url.includes("/rest/v1/profiles")&&!x.url.includes("id=eq."))),"staff reads only its own profile/points; no cross-customer directory or ledger request");
  await page.close();
 }
+
+for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
+ const {page,requests}=await open({role:"manager",lang,width});
+ await page.waitForFunction(()=>/Lamb Mandi|Mandi/.test(document.querySelector("#managerOperations")?.textContent||""));
+ const text=await page.textContent("#managerOperations");
+ check(text.includes("Lamb Mandi")||text.includes("Mandi"),lang+" "+width+": Manager sees assigned-branch operational orders");
+ check(!/Payment|Subtotal|Discount|Tax|Total|taxe|Sous-total|الضريبة|الإجمالي|الدفع/.test(text),lang+" "+width+": Manager view omits payment and financial fields");
+ check(!requests.some(x=>/\/rest\/v1\/(orders|profiles|points_ledger|memberships)/.test(x.url)),lang+" "+width+": Manager never reads customer or raw order tables");
+ await page.close();
+}
+
 await browser.close();server.close();console.log(failures?failures+" failed":"all passed");process.exit(failures?1:0);
