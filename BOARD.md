@@ -486,3 +486,11 @@ No merge, SQL apply, deployment, live-data mutation, booking/order/payment/email
 Main advanced to `460d4850e421845d459110ca656bfad0894a9035` through two append-only documentation commits. T-28 head `30f18fd2e87e23d82afd1cae7a44144cd25d37ba` is **26 ahead / 7 behind, diverged** (the newest two main commits are documentation-only). Run **46177578964** has edge/static/reporting/SQL SUCCESS; browser-checks is still in progress. No merge-ready claim.
 
 PR #94 source review also found public cart/checkout/navigation retained in `staff.html`, profile/sign-out inside main content instead of the header, and sigil + guest-name identity still in kitchen queue tickets. These need explicit browser assertions and resolution alongside T-24. Findings are in PR comments 7244050110 / 7244052718. Claude's T-24 request is comment 7244026769; acknowledgement/evidence pending.
+
+
+## 2026-11-28 13:54 EST — T-28 exact-head CI follow-up
+
+- T-28 PR #94 remains Draft/HOLD. Failed run 46177578964: SQL, static, reporting and edge-function jobs passed; browser job failed at `tests/sign-out.browser.mjs:82` because the race test clicked a correctly hidden sign-out button without opening its profile disclosure.
+- Test-only correction committed to `chatgpt/t28-kitchen-shell-v6`: `774185782895fcac7c1bb79f6bad239a7e91e6e1`. The test now opens `.staff-profile summary` before clicking `#staffSignOut`. PR comment 7244150040 records log evidence and the correction. Await exact-head CI; no green claim.
+- Remaining blockers: Claude-owned T-24 code-only ticket identity; remove public shopping/cart/checkout UI from `staff.html`; move profile/sign-out from `#staffRoot` into the header; add browser assertions for these acceptance points. Do not duplicate T-24.
+- No merge, SQL, deployment, live mutation, activation, or spend.
