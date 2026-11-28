@@ -399,3 +399,12 @@ PR #77 comment 7233932428 carries the internal handoff. No merge, SQL apply, or 
 **Changed files:** `supabase/migrations/0016_t14_service_role_grants.sql`, `tests/sql/admin-team-access-behaviour.sql`, `tests/sql/supabase-stub.sql`, `.github/workflows/site-check.yml`.
 
 **Verification status:** source changes committed; exact-head CI and PostgreSQL results pending. No staging/production SQL or Edge Function deployment performed. Muse must apply 0016 after reviewing the branch and verify the live role grants before retrying test member #10006. No customer action.
+
+
+## 2026-11-28 11:03 EST — ChatGPT claim: T-25 + T-26 aggregation and dual-shell proposal
+
+| Files reserved | Owner | Batch | Branch / base | Scope |
+|---|---|---|---|---|
+| `admin.js`, `staff.js`, `supabase/migrations/0017_reporting_aggregation.sql` (only if source review confirms server-side aggregate RPCs are required), `tests/reporting*.mjs`, `tests/sql/reporting*.sql`, `ADMIN-KITCHEN-SHELL-PROPOSAL.md`, `CHATGPT-REPLY.md` | ChatGPT | **T-25 + T-26 + F-OWN-32 proposal** | `chatgpt/t25-t26-reporting-shell-proposal`, cut from current `main` | T-25: paid_at Toronto calendar buckets; Admin all branches with collected totals + subtotal/HST/discount; Manager assigned branch only with counts + collected total. T-26: staff Today's summary (collected sales + status counts), manual employee share only, no send/outbox and no tax. Also propose separate Manager-style admin portal and Orders-tablet kitchen shell, including sold-out control placement. |
+
+**Reservation boundary:** aggregation/data layer and tests may be built; no reports UI is to be placed on the old stacked admin page. No changes to `admin.html`/`staff.html` shell until T-27 adjudication. Existing role/RLS boundaries remain authoritative. No SQL applied, no merge, no deployment, no live data mutation, no outbound send. Migration 0017 is authoring-only and must remain unapplied pending the lead gate.
