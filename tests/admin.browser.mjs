@@ -78,9 +78,9 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   const reportFrom=p.locator("#adminScreen-reports .admin-report-field input[type=date]").nth(0);
   const reportTo=p.locator("#adminScreen-reports .admin-report-field input[type=date]").nth(1);
   await p.locator('#adminScreen-reports button[data-period="month"]').click();
-  ok(/^\\d{4}-\\d{2}-01$/.test(await reportFrom.inputValue())&&/^\\d{4}-\\d{2}-\\d{2}$/.test(await reportTo.inputValue()), "Monthly report defaults to the current Toronto month-to-date");
+  ok(/^\d{4}-\d{2}-01$/.test(await reportFrom.inputValue())&&/^\d{4}-\d{2}-\d{2}$/.test(await reportTo.inputValue()), "Monthly report defaults to the current Toronto month-to-date");
   await p.locator('#adminScreen-reports button[data-period="year"]').click();
-  ok(/^\\d{4}-01-01$/.test(await reportFrom.inputValue())&&/^\\d{4}-\\d{2}-\\d{2}$/.test(await reportTo.inputValue()), "Yearly report defaults to the current Toronto year-to-date");
+  ok(/^\d{4}-01-01$/.test(await reportFrom.inputValue())&&/^\d{4}-\d{2}-\d{2}$/.test(await reportTo.inputValue()), "Yearly report defaults to the current Toronto year-to-date");
   await p.locator('#adminScreen-reports button[data-period="day"]').click();
   ok(await reportFrom.inputValue()===await reportTo.inputValue(), "Daily report defaults to one Toronto calendar day");
   const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact", "/rpc/azal_sales_report"];
