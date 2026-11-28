@@ -47,3 +47,21 @@ test("staff page is not indexed, not in the nav, inert with shipped config", () 
   for (const p of ["index", "menu", "member", "reserve", "story", "404"]) assert.doesNotMatch(readFileSync(new URL(`../${p}.html`, import.meta.url), "utf8"), /href="staff\.html"/);
   assert.equal(T.createStaff({ config: { url: null, anonKey: null }, fetch: async () => {} }).enabled, false);
 });
+
+
+test("T-14 kitchen branch list comes from server assignments and cannot be switched outside scope", async () => {
+  const calls=[];
+  const s=T.createStaff({config:CFG,getToken:async()=>"STAFF",fetch:async(u,o)=>{
+    calls.push([u,o]);
+    if(u.includes("azal_staff_my_branches"))return {ok:true,json:async()=>["second","ottawa"]};
+    if(u.includes("azal_staff_can_access"))return {ok:true,json:async()=>true};
+    return {ok:true,json:async()=>[]};
+  }});
+  assert.deepEqual(await s.branches(),["second","ottawa"]);
+  assert.equal(s.setBranch("second"),"second");
+  assert.equal(s.currentBranch(),"second");
+  await s.isStaff();
+  await s.list();
+  assert.ok(calls.some(([u])=>u.includes("branch_slug=eq.second")));
+  assert.throws(()=>s.setBranch("other"),{code:"bad_branch"});
+});
