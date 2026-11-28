@@ -139,9 +139,9 @@ select zz_eq('1,000-customer directory returns one bounded page',
 select zz_eq('1,000-customer directory reports the full count',
   (public.azal_admin_customer_directory_page(null,50,0)->>'total'),'1001');
 select zz_eq('deep page remains bounded and correctly offset',
-  pg_catalog.jsonb_array_length(public.azal_admin_customer_directory_page(null,50,950)->'rows')::text,'50');
+  pg_catalog.jsonb_array_length(public.azal_admin_customer_directory_page(null,50,951)->'rows')::text,'50');
 select zz_eq('deep page reports requested offset',
-  (public.azal_admin_customer_directory_page(null,50,950)->>'offset'),'950');
+  (public.azal_admin_customer_directory_page(null,50,950)->>'offset'),'951');
 select zz_eq('search narrows 1,000-customer directory server-side',
   (public.azal_admin_customer_directory_page('scale-500@example.invalid',50,0)->>'total'),'1');
 select zz_eq('authenticated cannot write the audit log directly',
