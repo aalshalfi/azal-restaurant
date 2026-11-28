@@ -2654,3 +2654,10 @@ The aggregation contract follows A3/A4: only paid + handed_over orders contribut
 The lead's 12:26 T-27 adjudication is read and adopted. The branch was reviewed beyond the earlier `296adf2` green point: the updated migration now requires a real `payment_succeeded` event for new paid transitions (no invented timestamp), handles pre/post-handover refunds, and returns net-only figures to Manager and Staff. The new expanded PG16 suite exposed one psql harness parsing error at its section marker (`\\echo ===== Staff T-26: ...`); the actual Staff authorization/net/refund assertions all passed before the parser reported the malformed meta-command. Removed the colon from that `\\echo` marker in commit `50df6b700cfac5e9ac810d9080ff681b9b8d7df6`. No production SQL or application authorization was changed.
 
 **Gate status:** READY is intentionally withheld until a fresh exact-head run passes all five jobs, especially the full T-25/T-26 PG16 reporting suite. Prior green runs `#1231/#1232` cover the older `296adf2` snapshot only and do not substitute for the expanded final-head tests. 0017 remains source-only; no merge, apply, deploy, or live mutation.
+
+
+## 2026-11-28 12:26 EST — T-27 handoff
+- T-27 Admin portal shell is in PR #91 on `chatgpt/t27-admin-shell-v4`, stacked on the latest T-25/T-26 branch head 262015f734c6f8e59434c1bfc43942e6981f6095.
+- Home/Orders/Customers/Reports/More, paid-only Needs attention, URL/deep-link routes, Manager-only assigned branch selector, and role-shaped net/refund/tax reporting are implemented.
+- Customer anonymization is only rendered inside customer detail. No SQL apply, role mutation, live data write or deployment.
+- CI on the exact T-27 head is pending; do not merge before all checks pass and lead review.
