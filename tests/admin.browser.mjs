@@ -24,7 +24,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
     if (u.includes("/rest/v1/staff_branch_access")) return r.fulfill({ json: role === "staff" ? [{ branch_slug: "ottawa" }] : [] });
     if (u.includes("/rest/v1/orders")) return r.fulfill({ json: role === "admin" ? ORDERS : [] });
     if (u.includes("/rpc/azal_admin_customer_directory_page")) return r.fulfill({ json: { rows: [], total: 0, limit: 50, offset: 0 } });
-    if (u.includes("/rpc/azal_admin_sales_report")) return r.fulfill({ json: { role:"admin", totals:{ order_count:3, collected_count:2, collected_cents:5075, refunds_cents:100, net_collected_cents:4975, subtotal_cents:4500, discount_cents:200, tax_cents:575 }, rows:[{ period_start:"2026-11-28", branch_slug:"ottawa", order_count:3, collected_count:2, collected_cents:5075, refunds_cents:100, net_collected_cents:4975, subtotal_cents:4500, discount_cents:200, tax_cents:575 }] } });
+    if (u.includes("/rpc/azal_sales_report")) return r.fulfill({ json: { role:"admin", totals:{ order_count:3, collected_count:2, collected_cents:5075, refunds_cents:100, net_collected_cents:4975, subtotal_cents:4500, discount_cents:200, tax_cents:575 }, rows:[{ period_start:"2026-11-28", branch_slug:"ottawa", order_count:3, collected_count:2, collected_cents:5075, refunds_cents:100, net_collected_cents:4975, subtotal_cents:4500, discount_cents:200, tax_cents:575 }] } });
     if (u.includes("/rest/v1/memberships") && u.includes("status=eq.active")) return r.fulfill({ json: [{ user_id: "x" }], headers: { "content-range": "0-0/42", "access-control-expose-headers": "content-range" } });
     if (u.includes("/rest/v1/profiles")) return r.fulfill({ json: [{ id: "u1", display_name: "Owner" }] });
     if (u.includes("/rest/v1/memberships")) return r.fulfill({ json: [{ status: "active" }] });
@@ -75,7 +75,7 @@ async function open(pageName, { role = "admin", signedIn = true, lang = "en", w 
   await p.waitForSelector("#adminScreen-reports .admin-report-results .admin-report-kpis");
   const reportText=await p.textContent("#adminScreen-reports");
   ok(/Gross collected/.test(reportText)&&/Refunds/.test(reportText)&&/Net collected/.test(reportText)&&/HST/.test(reportText), "Admin report exposes gross, refunds, net and tax fields");
-  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact", "/rpc/azal_admin_sales_report"];
+  const postReads = ["/rpc/azal_is_admin", "/rpc/azal_admin_customer_directory_page", "/rpc/azal_admin_team_list", "/rpc/azal_admin_audit_recent", "/rpc/azal_admin_order_customer_emails", "/rpc/azal_admin_customer_contact", "/rpc/azal_sales_report"];
   ok(sent.every((s) => s.m === "GET" || (s.m === "POST" && postReads.some((path) => s.u.includes(path)))), "Admin page boot only calls read-only RPCs; no mutation endpoint runs automatically");
   ok(!sent.some((s) => s.u.includes("/rpc/azal_admin_customer_contact") || s.u.includes("/rpc/azal_admin_order_customer_emails")), "Admin boot does not fetch customer contact; lookup stays detail-only");
   const ord = sent.find((s) => s.u.includes("/rest/v1/orders")); ok(ord && /placed_at=gte\.\d{4}-\d\d-\d\dT0[45]:00:00\.000Z/.test(ord.u), "today = since Toronto midnight");
