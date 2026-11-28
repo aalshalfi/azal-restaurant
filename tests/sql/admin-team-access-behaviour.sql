@@ -69,7 +69,7 @@ select zz_eq('Manager cannot read Admin team directory',public.zz_try('select pu
 select zz_eq('Manager cannot read Admin audit history',public.zz_try('select public.azal_admin_audit_recent(10)'),'42501');
 select zz_eq('Manager cannot grant team roles',
   public.zz_try('select public.azal_admin_team_assign(''new@example.invalid'',''New User'',''staff'',array[''ottawa''],''no'')'),'42501');
-select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no','c2@example.invalid')$$),'42501');
+select zz_eq('Manager cannot anonymize a customer',public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no','c2@example.invalid')$$$),'42501');
 reset role;
 
 \echo ===== Admin: revoke named Manager access
@@ -132,14 +132,14 @@ on conflict(order_id,event_type) do update set to_email=excluded.to_email,payloa
 update auth.users set banned_until=pg_catalog.now()+interval '100 years' where id='00000000-0000-0000-0000-0000000000c2';
 insert into auth.identities(user_id,provider_id,identity_data,provider) values('00000000-0000-0000-0000-0000000000c2','c2@example.invalid',pg_catalog.jsonb_build_object('sub','c2@example.invalid','email','c2@example.invalid','full_name','Customer Two','phone','+16135550102'),'email');
 select zz_eq('server anonymization refuses non-admin actor',
-  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no','c2@example.invalid')$$),'42501');
+  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000c1','00000000-0000-0000-0000-0000000000c2','no','c2@example.invalid')$$$),'42501');
 insert into public.user_roles(user_id,role) values('00000000-0000-0000-0000-0000000000c2','staff');
 select zz_eq('A2 rejects a non-customer target before identity mutation',
-  public.zz_try($select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','reject staff','c2@example.invalid')$),
+  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','reject staff','c2@example.invalid')$$),
   'not_customer_account');
 delete from public.user_roles where user_id='00000000-0000-0000-0000-0000000000c2' and role='staff';
 select zz_eq('customer anonymization requires a reason',
-  public.zz_try($select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','','c2@example.invalid')$),
+  public.zz_try($$select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','','c2@example.invalid')$$),
   'reason_required');
 select public.azal_admin_anonymize_customer_server('00000000-0000-0000-0000-0000000000a0','00000000-0000-0000-0000-0000000000c2','Customer requested account removal','c2@example.invalid');
 select zz_eq('Auth email is replaced with a reserved non-deliverable address',
@@ -191,11 +191,12 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a0'
 set role authenticated;
 select zz_eq('authenticated Admin cannot call server-only anonymization RPC',
   public.zz_try('select public.azal_admin_anonymize_customer_server(''00000000-0000-0000-0000-0000000000a0'',''00000000-0000-0000-0000-0000000000c2'',''retry'',''c2@example.invalid'')'),'42501');
-select zz_eq('T-08 order-linked email lookup retains active customer email',
-  (select e.value->>'email' from pg_catalog.jsonb_array_elements(public.azal_admin_order_customer_emails(array['00000000-0000-0000-0000-0000000000c1'::uuid,'00000000-0000-0000-0000-0000000000c2'::uuid])) as e(value) where e.value->>'user_id'='00000000-0000-0000-0000-0000000000c1'),
+select zz_eq('single-order detail contact returns active customer email',
+  public.azal_admin_customer_contact('00000000-0000-0000-0000-0000000000c1'::uuid)->>'email',
   'c1@example.invalid');
-select zz_eq('T-08 order-linked email lookup omits anonymized customer',
-  pg_catalog.jsonb_array_length(public.azal_admin_order_customer_emails(array['00000000-0000-0000-0000-0000000000c1'::uuid,'00000000-0000-0000-0000-0000000000c2'::uuid]))::text,'1');
+select zz_eq('single-order detail contact omits anonymized customer',
+  coalesce(public.azal_admin_customer_contact('00000000-0000-0000-0000-0000000000c2'::uuid)->>'email','∅'),
+  '∅');
 select zz_eq('anonymized customer disappears from the directory',
   (public.azal_admin_customer_directory_page('c2@example.invalid',50,0)->>'total'),'0');
 \echo ===== A1 1,000-customer scale fixture
