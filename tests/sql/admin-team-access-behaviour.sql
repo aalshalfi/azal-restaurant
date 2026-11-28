@@ -39,6 +39,7 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1'
 select zz_eq('assigned Manager can access own branch',public.azal_manager_can_access('ottawa')::text,'true');
 select zz_eq('Manager cannot access a different branch',public.azal_manager_can_access('second')::text,'false');
 select zz_eq('Manager is not granted the Staff kitchen credential',public.azal_staff_can_access('ottawa')::text,'false');
+select zz_eq('Manager receives no kitchen branch list',pg_catalog.cardinality(public.azal_staff_my_branches())::text,'0');
 select zz_eq('Manager operational RPC returns only its assigned branch',
   (select count(*)::text from pg_catalog.jsonb_array_elements(public.azal_manager_branch_orders('ottawa',50,0))),'1');
 select zz_eq('Manager operational payload omits payment, tax, totals and PII',
@@ -58,6 +59,10 @@ reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000c1',false) \gset
 set role authenticated;
 select zz_eq('revoked Manager loses branch access immediately',public.azal_manager_can_access('ottawa')::text,'false');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000aa',false) \\gset
+set role authenticated;
+select zz_eq('Staff A branch picker returns only ottawa',public.azal_staff_my_branches()::text,'{ottawa}');
 reset role;
 
 \echo ===== Pending team invite: no email sent; role applies only after verified Auth identity exists
