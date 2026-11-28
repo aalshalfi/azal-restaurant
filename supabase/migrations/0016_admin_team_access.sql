@@ -395,6 +395,7 @@ as $fn$
 declare v_invite public.admin_team_invites%rowtype; v_branch text;
 begin
   if new.email is null or new.email_confirmed_at is null then return new; end if;
+  insert into public.profiles(id) values(new.id) on conflict (id) do nothing;
   select * into v_invite from public.admin_team_invites i
    where pg_catalog.lower(i.email)=pg_catalog.lower(new.email)
      and i.accepted_at is null and i.revoked_at is null and i.expires_at>pg_catalog.now()
@@ -406,7 +407,9 @@ begin
   delete from public.staff_branch_access where user_id=new.id;
   insert into public.user_roles(user_id,role) values(new.id,v_invite.role) on conflict do nothing;
   foreach v_branch in array v_invite.branch_slugs loop
-    insert into public.staff_branch_access(user_id,branch_slug) values(new.id,v_branch) on conflict do nothing;
+    if exists(select 1 from public.branches b where b.slug=v_branch and b.active) then
+      insert into public.staff_branch_access(user_id,branch_slug) values(new.id,v_branch) on conflict do nothing;
+    end if;
   end loop;
   update public.admin_team_invites set accepted_user_id=new.id,accepted_at=pg_catalog.now() where id=v_invite.id;
   insert into public.admin_audit_log(actor_user_id,action,target_type,target_id,reason,metadata)
