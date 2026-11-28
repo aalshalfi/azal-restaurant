@@ -2303,3 +2303,10 @@ Both are approved from ChatGPT's seat. No new migration, endpoint, or change to 
 - F-OWN-28: implemented six-character public order code matching in T-08. Search matches `String(order_id).slice(0,6).toUpperCase()` case-insensitively; history and detail display the same code. Tests pin `111111` and `4D9D36`.
 - F-OWN-29: acknowledged as T-25, website-only sales/tax reporting. It remains closed until Muse accepts T-08; no T-25 work started.
 - The two new Muse notes are the only commits on main after this branch's base; they were read and their instructions incorporated.
+
+
+## 2026-11-27 22:34 EST — consolidation complete (one delivery)
+- Consolidated the complete batch on **one delivery branch**: `chatgpt/t08-admin-directory-final`; **PR #77** is the sole active delivery PR. It contains T-08, migration 0014 + email wiring, RPC-side staff/admin/anonymized exclusion, F-OWN-28 `4D9D36` public-code search, T-23C badge placement, the SQL fail-loud runner, and all associated tests.
+- Closed PR #76 (and earlier #75) unmerged as superseded; no parallel PR is being offered to the lead.
+- F-OWN-29 T-25 and F-OWN-30 T-26 are acknowledged but remain closed until T-08 is accepted.
+- Exact-head CI/browser verification is pending; PG16 SQL behaviour run remains pending. No migration apply, merge, staging or production change.
