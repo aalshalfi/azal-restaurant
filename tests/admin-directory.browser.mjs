@@ -125,7 +125,7 @@ for(const lang of ["en","fr","ar"])for(const width of [320,390,1280]){
   const branchSelect=page.locator("#adminScreen-reports select");
   check(await branchSelect.count()===1&&await branchSelect.inputValue()==="",lang+" "+width+": Manager report defaults to all assigned branches");
   await page.locator('#adminScreen-reports button[type="submit"]').click();
-  await page.waitForFunction(()=>document.querySelector("#adminScreen-reports .admin-report-results")?.textContent.includes("Net collected"));
+  await page.waitForFunction(()=>document.querySelector("#adminScreen-reports .admin-report-results")?.hidden===false);
   const reportText=await page.textContent("#adminScreen-reports");
   check(/Net collected|Net encaissé|صافي المحصّل/.test(reportText)&&!/Gross collected|Refunds|Brut encaissé|Remboursements|إجمالي المحصّل|المبالغ المستردة/.test(reportText),lang+" "+width+": Manager report shows net only, no gross/refund breakdown");
   check(reportCalls.length===1&&reportCalls[0].p_branch_slug==null,lang+" "+width+": Manager default query covers all assigned branches");
